@@ -221,7 +221,7 @@ int XCrypto_Test()
 		printf("%02X ", tszEncoder[i]);
 	}
 	printf("\r\n%s\n", tszEncoder);
-
+		
 	OPenSsl_XCrypto_Decoder((LPCSTR)tszEncoder, &nLen, tszDecoder, "123");
 	printf("%s\n", tszDecoder);
 	return 0;
