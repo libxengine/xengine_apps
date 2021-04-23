@@ -1,6 +1,7 @@
 ﻿#ifdef _WINDOWS
 #include <Windows.h>
 #include <tchar.h>
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/NetHelp_APIHelp.lib")
 #else
 #include <stdio.h>
@@ -9,6 +10,7 @@
 #endif
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_APIHelp/APIHelp_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_APIHelp/APIHelp_Error.h"
 
@@ -35,13 +37,22 @@ int Test_HttpRequest()
 }
 int Test_NetGetIPAddr()
 {
-	TCHAR tszLocalBuffer[1024];
+	int nListCount = 0;
+	APIHELP_NETCARD** ppSt_NetCard;
+
 	TCHAR tszRemoteBuffer[1024];
-	memset(tszLocalBuffer, '\0', sizeof(tszLocalBuffer));
 	memset(tszRemoteBuffer, '\0', sizeof(tszRemoteBuffer));
 
-	APIHelp_NetWork_GetIPAddr(tszLocalBuffer, tszRemoteBuffer);
-	printf("%s\n%s\n", tszLocalBuffer, tszRemoteBuffer);
+	if (!APIHelp_NetWork_GetIPAddr(&ppSt_NetCard, &nListCount, FALSE, tszRemoteBuffer))
+	{
+		printf("APIHelp_NetWork_GetIPAddr:%lX", APIHelp_GetLastError());
+	}
+	for (int i = 0; i < nListCount; i++)
+	{
+		printf("%s %s %s %s %s\n", ppSt_NetCard[i]->tszIFName, ppSt_NetCard[i]->tszIPAddr, ppSt_NetCard[i]->tszBroadAddr, ppSt_NetCard[i]->tszMaskAddr, ppSt_NetCard[i]->tszMacAddr);
+	}
+	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_NetCard, nListCount);
+	printf("%s\n", tszRemoteBuffer);
 	return 0;
 }
 

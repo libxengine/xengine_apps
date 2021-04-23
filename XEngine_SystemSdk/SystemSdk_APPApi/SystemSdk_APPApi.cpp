@@ -42,21 +42,35 @@ int main()
 	memset(tszOSBuffer, '\0', MAX_PATH);
 	SystemApi_System_GetSystemVer(tszOSBuffer, &dwOSVersion, &dwOSBuild, &dwOSProcessor);
 
+	int nVerHigh = 0;
+	int nVerLow = 0;
+	BaseLib_OperatorBit_BYTERead(&dwOSVersion, sizeof(DWORD), 1, (CHAR&)nVerHigh);
+	BaseLib_OperatorBit_BYTERead(&dwOSVersion, sizeof(DWORD), 2, (CHAR&)nVerLow);
+
+#ifdef _WINDOWS
+	printf("%s %d %d %d\n", tszOSBuffer, dwOSVersion, dwOSBuild, dwOSProcessor);
+#else
+	printf("%s %d.%d %ld %ld\n", tszOSBuffer, nVerHigh, nVerLow, dwOSBuild, dwOSProcessor);
+#endif
+
 #ifndef _WINDOWS
-	strcpy(st_SDKSerial.tszMacAddress, "ens33");
 	strcpy(st_SDKSerial.tszDiskSerial, "/dev/sda1");
 #endif
 	if (!SystemApi_HardWare_GetSerial(&st_SDKSerial))
 	{
 		return -1;
 	}
-	printf("%s %s %s %s %s\n", st_SDKSerial.tszBaseBoardSerial, st_SDKSerial.tszBiosSerail, st_SDKSerial.tszCpuSerial, st_SDKSerial.tszDiskSerial, st_SDKSerial.tszMacAddress);
+	printf("%s %s %s %s\n", st_SDKSerial.tszBaseBoardSerial, st_SDKSerial.tszBiosSerail, st_SDKSerial.tszCpuSerial, st_SDKSerial.tszDiskSerial);
 	SYSTEMAPI_PROCESS_INFOMATION st_ProcessInfo;
 	memset(&st_ProcessInfo, '\0', sizeof(SYSTEMAPI_PROCESS_INFOMATION));
 
 	SystemApi_Process_GetProcessInfo(&st_ProcessInfo);
 	printf("%d %s %s %d %d\n", st_ProcessInfo.nPid, st_ProcessInfo.tszAppName, st_ProcessInfo.tszAppUser, st_ProcessInfo.nThreadCount, st_ProcessInfo.st_MemoryInfo.nUsePhysicalMemory);
 
-	SystemApi_File_EnumFile("G:\\", NULL, NULL, EnumFile);
+#ifdef _WINDOWS
+	SystemApi_File_EnumFile("G:\\ffmpeg", NULL, NULL, EnumFile);
+#else
+	SystemApi_File_EnumFile("/tmp", NULL, NULL, EnumFile);
+#endif
 	return 0;
 }

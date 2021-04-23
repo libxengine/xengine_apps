@@ -27,7 +27,7 @@ TCHAR tszClientAddr[64];
 
 BOOL CALLBACK TCPOverlapped_Login(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
 {
-	_tcscpy(tszClientAddr, lpszClientAddr);
+	strcpy(tszClientAddr, lpszClientAddr);
 	printf("TCPOverlapped_Login:%s = %d\n", lpszClientAddr, hSocket);
 	return TRUE;
 }
@@ -153,15 +153,12 @@ int main()
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 	test_tcpselectserver();
-	//test_tcpxpoll();
+	test_tcpxpoll();
 	test_tcpxcore();
 	test_unixdomain();
 	test_udx();
 	
-	while (1)
-	{
-		std::this_thread::sleep_for(std::chrono::seconds(1));
-	}
+	std::this_thread::sleep_for(std::chrono::seconds(1000));
 	NetCore_TCPXPoll_Stop();
 	NetCore_TCPSelect_StopEx(xhXSelect);
 	NetCore_TCPXCore_DestroyEx(xhXCore);

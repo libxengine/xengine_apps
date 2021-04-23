@@ -19,7 +19,7 @@ using namespace std;
 bool bRun = false;
 void CALLBACK CBDatas_TestStress(XNETHANDLE xhNet, LPCSTR lpszAddr, int nPort, int nClient, int nNumber, ENUM_NETHELP_STRESSTEST_STATUS enStatus, __int64 nTestTime, LPVOID lParam)
 {
-	printf("地址：%s:%d，发送次数：%d，%d\n", lpszAddr, nPort, nNumber, enStatus);
+	printf("地址：%s:%d，索引:%d 发送次数：%d，%d\n", lpszAddr, nPort, nClient, nNumber, enStatus);
 }
 
 int main()

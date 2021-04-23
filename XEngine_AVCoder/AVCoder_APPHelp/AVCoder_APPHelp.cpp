@@ -201,10 +201,11 @@ void Test_AVList()
 
 int main()
 {
+	Test_AVList();
 	Test_MetaInfo();
 	Test_PPS264Info();
 	Test_PPS265Info();
 	Test_AudioInfo();
-	Test_AVList();
+	
 	return 0;
 }

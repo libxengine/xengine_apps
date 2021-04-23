@@ -132,9 +132,9 @@ int Test_Unix()
 int udx_test()
 {
 #ifdef _WINDOWS
-	LPCTSTR lpszFile = _T("H:\\XEngine_Apps\\Debug\\Lib_APPAlgorithm.exe");
+	LPCTSTR lpszFile = _T("H:\\XEngine_Apps\\Debug\\Lib_APPBaselib.exe");
 #else
-	LPCTSTR lpszFile = _T("XClient_APPSSLClient.exe");
+	LPCTSTR lpszFile = _T("Lib_APPBaselib.exe");
 #endif
 	XNETHANDLE xhNet;
 

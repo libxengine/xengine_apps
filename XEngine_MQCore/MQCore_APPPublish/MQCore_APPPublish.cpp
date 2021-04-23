@@ -15,20 +15,26 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_MQCore/MQCore_XDDService/XDDS_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_MQCore/MQCore_XDDService/XDDS_Error.h"
 
-//g++ -std=c++17 -Wall -g MQCore_APPPublish.cpp -o MQCore_APPPublish.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia -lXEngine_BaseLib -lXClient_Socket -lMQCore_XMQService -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_MQCore,--disable-new-dtags
+//g++ -std=c++17 -Wall -g MQCore_APPPublish.cpp -o MQCore_APPPublish.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_MQCore -lXEngine_BaseLib -lMQCore_XDDService -ljsoncpp -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_MQCore,--disable-new-dtags
 
+void CALLBACK DDSProtocol_Notify(int nNotifyEvent, int nDomainId, XENGINE_PROTOCOL_XDDS* pSt_XDDSProtocol, LPVOID lParam)
+{
+	printf("Notify:%d %d", nDomainId, nNotifyEvent);
+}
 int main(int argc, char** argv)
 {
 #ifdef _WINDOWS
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
-#endif
-
 	if (!XDDS_CommApi_Init("192.168.1.10"))
+#else
+	if (!XDDS_CommApi_Init("192.168.1.4"))
+#endif
 	{
 		printf("初始化失败!\n");
 		return -1;
 	}
+	XDDS_CommApi_SetAttr(DDSProtocol_Notify);
 	if (!XDDS_CommApi_DomainCreate(1000))
 	{
 		printf("XDDS_CommApi_DomainCreate 失败!\n");
@@ -46,9 +52,8 @@ int main(int argc, char** argv)
 		printf("XDDS_Publish_Create 失败!\n");
 		return -1;
 	}
-
 	int nTime = 0;
-	while (nTime < 9999)
+	while (nTime < 20)
 	{
 		nTime++;
 		XDDS_Publish_SendMsg(xhPublish, "hello", 5);

@@ -1,6 +1,7 @@
 ﻿#ifdef _WINDOWS
 #include <Windows.h>
 #include <tchar.h>
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVPacket.lib")
 #else
 #include <stdio.h>
@@ -10,6 +11,8 @@
 #include <thread>
 using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVPacket/AVPacket_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVPacket/AVPacket_Error.h"
 
@@ -73,7 +76,7 @@ int AVPacket_Test_FilePacket()
 	XNETHANDLE xhAVFile = 0;
 #ifdef _WINDOWS
 	LPCTSTR lpszVideoFile = "H:\\h264 file\\480p.264";
-	LPCTSTR lpszAudioFile1 = "H:\\h264 file\\1.aac";
+	LPCTSTR lpszAudioFile1 = "H:\\h264 file\\1004523.mp3";
 	LPCTSTR lpszAudioFile2 = "H:\\h264 file\\test.aac";
 	LPCTSTR lpszDstFile = "H:\\h264 file\\480p.mp4";
 #else
@@ -133,26 +136,45 @@ int AVPacket_Test_FilePacket()
 int AVPacket_Test_UNPacket()
 {
 	XNETHANDLE xhAVFile = 0;
-	BOOL bAudio = FALSE;
-	BOOL bVideo = FALSE;
+	int nListCount = 0;
+	AVCODEC_PACKETLIST** ppSt_ListFile;
 
-	LPCTSTR lpszVideoFile = "H:\\h264 file\\480p.264";
-	LPCTSTR lpszAudioFile = "H:\\h264 file\\test.aac";
+#ifdef _WINDOWS
+	LPCTSTR lpszVideoFile = "H:\\h264 file\\480p_1.264";
+	LPCTSTR lpszAudioFile1 = "H:\\h264 file\\test_1.mp3";
+	LPCTSTR lpszAudioFile2 = "H:\\h264 file\\test_1.aac";
 	LPCTSTR lpszSrcFile = "H:\\h264 file\\480p.mp4";
+#else
+	LPCTSTR lpszVideoFile = "480p_1.264";
+	LPCTSTR lpszAudioFile1 = "test_1.mp3";
+	LPCTSTR lpszAudioFile2 = "test_1.aac";
+	LPCTSTR lpszSrcFile = "480p.mp4";
+#endif
 
 	if (!AVPacket_FileUNPack_Init(&xhAVFile, AVPacket_Pack_CBNotify))
 	{
 		printf("AVPacket_FileUNPack_Init:%lX\n", AVPacket_GetLastError());
 		return -1;
 	}
-	double dlAVTime = 0;
-	if (!AVPacket_FileUNPack_Input(xhAVFile, lpszSrcFile, &bVideo, &bAudio, &dlAVTime))
+	if (!AVPacket_FileUNPack_Input(xhAVFile, lpszSrcFile))
 	{
 		printf("AVPacket_FileUNPack_Input:%lX\n", AVPacket_GetLastError());
 		return -1;
 	}
-	printf("AVTime:%lf\n", dlAVTime);
-	if (!AVPacket_FileUNPack_Output(xhAVFile, lpszVideoFile, lpszAudioFile))
+	if (!AVPacket_FileUNPack_GetList(xhAVFile, &ppSt_ListFile, &nListCount))
+	{
+		printf("AVPacket_FileUNPack_GetList:%lX\n", AVPacket_GetLastError());
+		return -1;
+	}
+	for (int i = 0; i < nListCount; i++)
+	{
+		printf("%d %d AVTime:%lf\n", ppSt_ListFile[i]->nAVCodecType, ppSt_ListFile[i]->nAVCodecID, ppSt_ListFile[i]->dlAVTime);
+	}
+	strcpy(ppSt_ListFile[0]->tszFileName, lpszVideoFile);
+	strcpy(ppSt_ListFile[1]->tszFileName, lpszAudioFile1);
+	strcpy(ppSt_ListFile[2]->tszFileName, lpszAudioFile2);
+	
+	if (!AVPacket_FileUNPack_Output(xhAVFile, &ppSt_ListFile, nListCount))
 	{
 		printf("AVPacket_FileUNPack_Output:%lX\n", AVPacket_GetLastError());
 		return -1;
@@ -174,13 +196,14 @@ int AVPacket_Test_UNPacket()
 		}
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
-	return AVPacket_FilePacket_Stop(xhAVFile);
+	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListFile, nListCount);
+	return AVPacket_FileUNPack_Stop(xhAVFile);
 }
 int main()
 {
 	AVPacket_Test_FileConvert();
 	AVPacket_Test_FilePacket();
-	//AVPacket_Test_UNPacket();
+	AVPacket_Test_UNPacket();
 	
 	return 1;
 }

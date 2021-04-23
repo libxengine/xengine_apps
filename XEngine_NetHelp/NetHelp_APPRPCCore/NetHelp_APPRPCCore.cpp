@@ -72,10 +72,8 @@ int main()
 
 	printf("ok\n");
 	bRun = true;
-	while (bRun)
-	{
-		std::this_thread::sleep_for(std::chrono::seconds(1));
-	}
+	
+	std::this_thread::sleep_for(std::chrono::seconds(10));
 	NetHelp_XRPCCore_Destory();
 
 #ifdef _WINDOWS

@@ -195,11 +195,20 @@ int NetXApi_TestSocket()
 
 	NETXAPI_NETPARAM st_NetParam;
 	memset(st_NetParam.tszHostName, '\0', sizeof(st_NetParam.tszHostName));
-	memset(st_NetParam.tszDomainNmae, '\0', sizeof(st_NetParam.tszDomainNmae));
+	memset(st_NetParam.tszDomainName, '\0', sizeof(st_NetParam.tszDomainName));
 
 	NetXApi_Socket_GetNetParam(&st_NetParam);
-	printf("%s %s %d\n", st_NetParam.tszDomainNmae, st_NetParam.tszHostName, st_NetParam.nDNSCount);
+	printf("%s %s %d\n", st_NetParam.tszDomainName, st_NetParam.tszHostName, st_NetParam.nDNSCount);
 	BaseLib_OperatorMemory_Free((XPPPMEM)&st_NetParam.pppszListDns, st_NetParam.nDNSCount);
+
+	int nListCount = 0;
+	CHAR** ppszListAddr;
+	NetXApi_Socket_DomainToAddr("www.baidu.com", &ppszListAddr, &nListCount);
+	for (int i = 0; i < nListCount; i++)
+	{
+		printf("NetXApi_Socket_DomainToAddr:%s\n", ppszListAddr[i]);
+	}
+	BaseLib_OperatorMemory_Free((XPPPMEM)&ppszListAddr, nListCount);
 	return 0;
 }
 int main()
@@ -208,7 +217,7 @@ int main()
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
-	
+
 	Test_IPAddr();
 	Test_NetFlow();
 	Test_NetSniffer();
