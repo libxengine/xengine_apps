@@ -52,7 +52,7 @@ XHTHREAD CALLBACK XClient_UDPSelect_Thread()
 			{
 				memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 				RfcComponents_HttpConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
-				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen);
+				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, TRUE);
 				XClient_UDPSelect_SendMsg(hUDPSocket, tszMsgBuffer, nMsgLen);
 				printf("Recv:%d\n,%s\n", nMsgLen, tszMsgBuffer);
 				//处理后的值是180,表示成功,才可以返回
@@ -67,18 +67,32 @@ XHTHREAD CALLBACK XClient_UDPSelect_Thread()
 					XClient_UDPSelect_SendMsg(hUDPSocket, tszMsgBuffer, nMsgLen);
 				}
 			}
+			else if (0 == _tcsnicmp(st_SIPProtocol.st_Request.tszMethod, XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_ACK, strlen(XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_ACK)))
+			{
+				//呼叫请求响应
+				printf("通话中\n");
+			}
+			else if (0 == _tcsnicmp(st_SIPProtocol.st_Request.tszMethod, XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_BYE, strlen(XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_BYE)))
+			{
+				//呼叫请求响应
+				printf("挂断\n");
+				memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+				RfcComponents_HttpConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
+				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, TRUE);
+				XClient_UDPSelect_SendMsg(hUDPSocket, tszMsgBuffer, nMsgLen);
+			}
 			else if (0 == _tcsnicmp(st_SIPProtocol.st_Request.tszMethod, XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_MESSAGE, strlen(XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_MESSAGE)))
 			{
 				printf("NEW MESSAGE %s:%s\n", st_SIPProtocol.st_From.tszName, st_SIPProtocol.st_Context.tszBodyBuffer);
 				//清理SDP
 				memset(&st_SIPProtocol.st_Context, '\0', sizeof(st_SIPProtocol.st_Context));
-				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen);
+				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, TRUE);
 				RfcComponents_HttpConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
 				XClient_UDPSelect_SendMsg(hUDPSocket, tszMsgBuffer, nMsgLen);
 			}
 			else if (0 == _tcsnicmp(st_SIPProtocol.st_Request.tszMethod, XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_CANCEL, strlen(XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_CANCEL)))
 			{
-				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen);
+				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, TRUE);
 				RfcComponents_HttpConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
 				XClient_UDPSelect_SendMsg(hUDPSocket, tszMsgBuffer, nMsgLen);
 
@@ -94,7 +108,7 @@ XHTHREAD CALLBACK XClient_UDPSelect_Thread()
 			else if (0 == _tcsnicmp(st_SIPProtocol.st_Request.tszMethod, XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_OPTIONS, strlen(XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_OPTIONS)))
 			{
 				printf("NEW OPTION %s\n", st_SIPProtocol.st_From.tszName);
-				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen);
+				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, TRUE);
 				RfcComponents_HttpConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
 				XClient_UDPSelect_SendMsg(hUDPSocket, tszMsgBuffer, nMsgLen);
 			}
@@ -112,7 +126,7 @@ XHTHREAD CALLBACK XClient_UDPSelect_Thread()
 						//对话接受呼叫了,需要发送一个ACK给对面
 						std::this_thread::sleep_for(std::chrono::seconds(1));
 						memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-						RfcComponents_SIPProtocol_PacketRequest(&st_SIPProtocol, tszMsgBuffer, &nMsgLen);
+						RfcComponents_SIPProtocol_PacketRequest(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, TRUE);
 						XClient_UDPSelect_SendMsg(hUDPSocket, tszMsgBuffer, nMsgLen);
 						//通话5秒后挂断
 						std::this_thread::sleep_for(std::chrono::seconds(5));
@@ -138,6 +152,10 @@ XHTHREAD CALLBACK XClient_UDPSelect_Thread()
 						printf("ok ENUM_RFCCOMPONENTS_SIP_EVENTS_REGISTRATION_SUCCESS\n");
 					}
 					else if (ENUM_RFCCOMPONENTS_SIP_EVENTS_BYE_REQUEST == enSIPEvent)
+					{
+						printf("ok ENUM_RFCCOMPONENTS_SIP_EVENTS_BYE_ANSWERED\n");
+					}
+					else if (ENUM_RFCCOMPONENTS_SIP_EVENTS_BYE_ANSWERED == enSIPEvent)
 					{
 						printf("ok ENUM_RFCCOMPONENTS_SIP_EVENTS_BYE_ANSWERED\n");
 					}
@@ -186,13 +204,13 @@ int main(int argc, char* argv[])
 		strcpy(tszToUser, "bob");
 	}
 
-	LPCTSTR lpszCodeFile = _T("H:\\XEngine_Apps\\Debug\\SipCode.types");
+	LPCTSTR lpszCodeFile = _T("SipCode.types");
 	RfcComponents_HttpConfig_InitCode(lpszCodeFile, FALSE);
 
 	SIPPROTOCOL_HDRINFO st_SIPProtocol;
 	memset(&st_SIPProtocol, '\0', sizeof(SIPPROTOCOL_HDRINFO));
 
-	if (!XClient_UDPSelect_Create(&hUDPSocket, "192.168.1.10", 5000))
+	if (!XClient_UDPSelect_Create(&hUDPSocket, "127.0.0.1", 5000))
 	{
 		printf("错误\n");
 		return -1;

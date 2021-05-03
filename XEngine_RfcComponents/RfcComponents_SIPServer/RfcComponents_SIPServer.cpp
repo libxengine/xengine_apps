@@ -124,21 +124,8 @@ void CALLBACK NetCore_CBRecv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpszR
 	}
 	else
 	{
-		/*
-		ENUM_RFCCOMPONENTS_SIP_EVENTS enSIPEvent;
-		RfcComponents_SIPServer_GetStatus(lpszClientAddr, &enSIPEvent);
-		if ((enSIPEvent >= ENUM_RFCCOMPONENTS_SIP_EVENTS_CALL_PROCEEDING) && (ENUM_RFCCOMPONENTS_SIP_EVENTS_CALL_RINGING <= enSIPEvent))
-		{
-			//需要转发
-			if (RfcComponents_SIPServer_FindAddr(st_SIPProtocol.st_From.tszName, tszToAddr))
-			{
-				NetCore_UDPXCore_SendMsgEx(xhToken, tszToAddr, lpszRecvMsg, &nRecvLen);
-				printf("%s\n", lpszRecvMsg);
-			}
-		}
-		*/
 		//需要转发
-		if (RfcComponents_SIPServer_FindAddr(st_SIPProtocol.st_From.tszName, tszToAddr))
+		if (RfcComponents_SIPServer_FindAddr(st_SIPProtocol.st_To.tszName, tszToAddr))
 		{
 			NetCore_UDPXCore_SendMsgEx(xhToken, tszToAddr, lpszRecvMsg, &nRecvLen);
 			printf("%s\n", lpszRecvMsg);
@@ -154,7 +141,7 @@ int main()
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 
-	LPCTSTR lpszCodeFile = _T("H:\\XEngine_Apps\\Debug\\SipCode.types");
+	LPCTSTR lpszCodeFile = _T("SipCode.types");
 	RfcComponents_HttpConfig_InitCode(lpszCodeFile, FALSE);
  	Test_SIPRegister();
 

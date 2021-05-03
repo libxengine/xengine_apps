@@ -57,13 +57,29 @@ void TimeTest()
 }
 void StringTest()
 {
-	LPCTSTR lpszFile = _T("./adadad/file.txt");
+	LPCTSTR lpszFile1 = _T("./adadad/file.txt");
+	LPCTSTR lpszFile2 = _T("D:\\adadad\\file.txt");
+	LPCTSTR lpszFile3 = _T("./file.txt");
+	LPCTSTR lpszFile4 = _T("file.txt");
+
 	TCHAR tszFileDir[MAX_PATH];
 	TCHAR tszFileName[MAX_PATH];
 
 	memset(tszFileDir, '\0', MAX_PATH);
 	memset(tszFileName, '\0', MAX_PATH);
-	BaseLib_OperatorString_GetFileAndPath(lpszFile, tszFileDir, tszFileName);
+	BaseLib_OperatorString_GetFileAndPath(lpszFile1, tszFileDir, tszFileName);
+
+	memset(tszFileDir, '\0', MAX_PATH);
+	memset(tszFileName, '\0', MAX_PATH);
+	BaseLib_OperatorString_GetFileAndPath(lpszFile2, tszFileDir, tszFileName);
+
+	memset(tszFileDir, '\0', MAX_PATH);
+	memset(tszFileName, '\0', MAX_PATH);
+	BaseLib_OperatorString_GetFileAndPath(lpszFile3, tszFileDir, tszFileName);
+
+	memset(tszFileDir, '\0', MAX_PATH);
+	memset(tszFileName, '\0', MAX_PATH);
+	BaseLib_OperatorString_GetFileAndPath(lpszFile4, tszFileDir, tszFileName);
 }
 
 
@@ -229,6 +245,7 @@ int test_TTrigger()
 }
 int main()
 {
+	StringTest();
 	test_TTrigger();
 	test_Memory();
 	test_Mutex();

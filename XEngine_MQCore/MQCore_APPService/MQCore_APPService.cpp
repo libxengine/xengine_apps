@@ -3,7 +3,6 @@
 #include <tchar.h>
 #pragma comment(lib,"Ws2_32.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XClient_Socket.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/MQCore_XMQService.lib")
 #else
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,13 +14,8 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_MQCore/MQCore_XMQService/XMQService_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_MQCore/MQCore_XMQService/XMQService_Error.h"
 
-//g++ -std=c++17 -Wall -g MQCore_APPService.cpp -o MQCore_APPService.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia -lXEngine_BaseLib -lXClient_Socket -lMQCore_XMQService -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_MQCore,--disable-new-dtags
-
-SOCKET m_Socket;
-
+//g++ -std=c++17 -Wall -g MQCore_APPService.cpp -o MQCore_APPService.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -lXEngine_BaseLib -lXClient_Socket -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client,--disable-new-dtags
 
 void MQ_Post(LPCTSTR lpszMsgBuffer, TCHAR* ptszMsgBuffer, int* pInt_Len)
 {
@@ -44,12 +38,12 @@ void MQ_Post(LPCTSTR lpszMsgBuffer, TCHAR* ptszMsgBuffer, int* pInt_Len)
 	st_ProtoXMQ.nKeepTime = 0;
 	strcpy(st_ProtoXMQ.tszMQKey, lpszAddr);
 	//如果不需要包的唯一识别码，可以不要，全部置为0即可
-	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ) + _tcslen(lpszMsgBuffer);
+	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ) + strlen(lpszMsgBuffer);
 
 	*pInt_Len = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
 	memcpy(ptszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
 	memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_ProtoXMQ, sizeof(XENGINE_PROTOCOL_XMQ));
-	memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ), lpszMsgBuffer, _tcslen(lpszMsgBuffer));
+	memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR) + sizeof(XENGINE_PROTOCOL_XMQ), lpszMsgBuffer, strlen(lpszMsgBuffer));
 }
 void MQ_Get(TCHAR* ptszMsgBuffer, int* pInt_Len)
 {
@@ -79,27 +73,19 @@ void MQ_Get(TCHAR* ptszMsgBuffer, int* pInt_Len)
 void MQ_Leave(TCHAR* ptszMsgBuffer, int* pInt_Len)
 {
 	XENGINE_PROTOCOLHDR st_ProtocolHdr;
-	XENGINE_PROTOCOL_XMQ st_ProtoXMQ;
-
 	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-	memset(&st_ProtoXMQ, '\0', sizeof(XENGINE_PROTOCOL_XMQ));
 
 	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
-	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_XMQ;
-	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_MQ_REQDEL;
-	st_ProtocolHdr.byVersion = 1;
+	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_NORMAL;
+	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_LEAVE;
+	st_ProtocolHdr.byVersion = 0;
 	st_ProtocolHdr.wPacketSerial = 0;
-	st_ProtocolHdr.unPacketSize = 1;
+	st_ProtocolHdr.unPacketSize = 0;
 	st_ProtocolHdr.byIsReply = FALSE;
 	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
 
-	strcpy(st_ProtoXMQ.tszMQKey, "XYRYMQ_CODE");
-
-	st_ProtocolHdr.unPacketSize = sizeof(XENGINE_PROTOCOL_XMQ);
-
-	*pInt_Len = sizeof(XENGINE_PROTOCOLHDR) + st_ProtocolHdr.unPacketSize;
+	*pInt_Len = sizeof(XENGINE_PROTOCOLHDR);
 	memcpy(ptszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
-	memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_ProtoXMQ, sizeof(XENGINE_PROTOCOL_XMQ));
 }
 void MQ_Login(TCHAR* ptszMsgBuffer, int* pInt_Len)
 {
@@ -127,13 +113,11 @@ void MQ_Login(TCHAR* ptszMsgBuffer, int* pInt_Len)
 	memcpy(ptszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), &st_ProtocolAuth, sizeof(XENGINE_PROTOCOL_USERAUTH));
 }
 //UDP
-int main2(int argc, char** argv)
+int MQClient_UDPTest()
 {
-	BOOL bSend = FALSE;
-	WSADATA st_WSAData;
-	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
-	LPCTSTR lpszServiceAddr = _T("192.168.1.6");
-	LPCTSTR lpszMsgBuffer = _T("123456789aaa");
+	SOCKET hSocket;
+	LPCTSTR lpszServiceAddr = _T("127.0.0.1");
+	LPCTSTR lpszMsgBuffer = _T("aaadddzxc");
 	int nLen = 0;
 
 	TCHAR tszClientAddr[64];
@@ -141,66 +125,110 @@ int main2(int argc, char** argv)
 
 	memset(tszClientAddr, '\0', sizeof(tszClientAddr));
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	SOCKET hSocket;
 	if (!XClient_UDPSelect_Create(&hSocket, lpszServiceAddr, 5656))
 	{
-		printf("连接失败！\n");
+		printf("UDP创建失败1！\n");
 		return -1;
 	}
-	printf("连接成功！\n");
-	if (bSend)
+	if (!XClient_UDPSelect_Bind(hSocket, 56561))
 	{
-		MQ_Post(lpszMsgBuffer, tszMsgBuffer, &nLen);
-		if (!XClient_UDPSelect_SendMsg(hSocket, tszMsgBuffer, nLen))
-		{
-			printf("发送投递失败！\n");
-			return -1;
-		}
-		Sleep(1000);
-		printf("投递数据包成功！\n");
+		printf("UDP创建失败2！\n");
+		return FALSE;
+	}
+	printf("UDP创建成功！\n");
+
+	MQ_Login(tszMsgBuffer, &nLen);
+	if (!XClient_UDPSelect_SendMsg(hSocket, tszMsgBuffer, nLen))
+	{
+		printf("UDP登录发送失败！\n");
+		return -1;
+	}
+	nLen = 2048;
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	if (!XClient_UDPSelect_RecvMsg(hSocket, tszMsgBuffer, &nLen, tszClientAddr, FALSE))
+	{
+		printf("UDP登录接受失败！\n");
+		return -1;
+	}
+	XENGINE_PROTOCOLHDR st_ProtocolHdr;
+	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
+
+	memcpy(&st_ProtocolHdr, tszMsgBuffer, sizeof(XENGINE_PROTOCOLHDR));
+	if (0 == st_ProtocolHdr.wReserve)
+	{
+		printf("UDP登录成功:%s\n", tszClientAddr);
 	}
 	else
 	{
-		if (!XClient_UDPSelect_Bind(hSocket, 56561))
-		{
-			return FALSE;
-		}
-		MQ_Get(tszMsgBuffer, &nLen);
-		if (!XClient_UDPSelect_SendMsg(hSocket, tszMsgBuffer, nLen))
-		{
-			printf("发送获取失败！\n");
-			return -1;
-		}
-
-		while (TRUE)
-		{
-			nLen = 2048;
-			memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-			if (XClient_UDPSelect_RecvMsg(hSocket, tszMsgBuffer, &nLen, tszClientAddr))
-			{
-				XENGINE_PROTOCOLHDR st_ProtocolHdr;
-				memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-
-				memcpy(&st_ProtocolHdr, tszMsgBuffer, sizeof(XENGINE_PROTOCOLHDR));
-				printf("接受到数据：%d 类型：%X，长度：%d，内容：%s\n", nLen, st_ProtocolHdr.unOperatorCode, st_ProtocolHdr.unPacketSize, tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR));
-				break;
-			}
-			Sleep(1);
-		}
+		printf("UDP登录失败:%s\n", tszClientAddr);
 	}
 
 	nLen = 2048;
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	//MQ_Leave(tszMsgBuffer, &nLen);
-	//XClient_UDPSelect_SendMsg(hSocket, tszMsgBuffer, nLen);
+	MQ_Post(lpszMsgBuffer, tszMsgBuffer, &nLen);
+	if (!XClient_UDPSelect_SendMsg(hSocket, tszMsgBuffer, nLen))
+	{
+		printf("UDP发送投递失败！\n");
+		return -1;
+	}
+	printf("UDP投递数据包成功！\n");
+
+	nLen = 2048;
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	memset(tszClientAddr, '\0', sizeof(tszClientAddr));
+	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
+	if (!XClient_UDPSelect_RecvMsg(hSocket, tszMsgBuffer, &nLen, tszClientAddr, FALSE))
+	{
+		printf("UDP投递接受失败！\n");
+		return -1;
+	}
+	memcpy(&st_ProtocolHdr, tszMsgBuffer, sizeof(XENGINE_PROTOCOLHDR));
+	if (0 == st_ProtocolHdr.wReserve)
+	{
+		printf("UDP投递成功:%s\n", tszClientAddr);
+	}
+	else
+	{
+		printf("UDP投递失败:%s\n", tszClientAddr);
+	}
+
+	nLen = 2048;
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	MQ_Get(tszMsgBuffer, &nLen);
+	if (!XClient_UDPSelect_SendMsg(hSocket, tszMsgBuffer, nLen))
+	{
+		printf("UDP发送获取失败！\n");
+		return -1;
+	}
+
+	while (TRUE)
+	{
+		nLen = 2048;
+		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+		memset(tszClientAddr, '\0', sizeof(tszClientAddr));
+		if (XClient_UDPSelect_RecvMsg(hSocket, tszMsgBuffer, &nLen, tszClientAddr))
+		{
+			memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
+
+			memcpy(&st_ProtocolHdr, tszMsgBuffer, sizeof(XENGINE_PROTOCOLHDR));
+			printf("UDP接受到数据：%d 类型：%X，长度：%d，内容：%s\n", nLen, st_ProtocolHdr.unOperatorCode, st_ProtocolHdr.unPacketSize, tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR));
+			break;
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+
+	nLen = 2048;
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	MQ_Leave(tszMsgBuffer, &nLen);
+	XClient_UDPSelect_SendMsg(hSocket, tszMsgBuffer, nLen);
+
+	XClient_UDPSelect_Close(hSocket);
 	return 0;
 }
 //TCP
-int main(int argc, char** argv)
+int MQClient_TCPTest()
 {
-	BOOL bSend = FALSE;
-	WSADATA st_WSAData;
-	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
+	SOCKET m_Socket;
 	LPCTSTR lpszServiceAddr = _T("127.0.0.1");
 	LPCTSTR lpszMsgBuffer = _T("123456789aaa");
 	int nLen = 0;
@@ -266,7 +294,7 @@ int main(int argc, char** argv)
 	{
 		printf("投递失败！\n");
 	}
-	Sleep(2000);
+	std::this_thread::sleep_for(std::chrono::seconds(2));
 
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	MQ_Get(tszMsgBuffer, &nLen);
@@ -296,8 +324,23 @@ int main(int argc, char** argv)
 			}
 			break;
 		}
-		Sleep(1);
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 	XClient_TCPSelect_Close(m_Socket);
+	return 0;
+}
+int main()
+{
+#ifdef _WINDOWS
+	WSADATA st_WSAData;
+	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
+#endif
+
+	MQClient_UDPTest();
+	MQClient_TCPTest();
+
+#ifdef _WINDOWS
+	WSACleanup();
+#endif
 	return 0;
 }

@@ -38,7 +38,7 @@ BOOL bQueryUser = TRUE;
 SOCKET m_Socket = 0;
 XNETHANDLE xhToken = 0;
 
-LPCTSTR lpszAddr = _T("192.168.1.10");
+LPCTSTR lpszAddr = _T("127.0.0.1");
 LPCTSTR lpszUser = _T("123123aa");
 LPCTSTR lpszPass = _T("123123");
 
@@ -63,15 +63,12 @@ XHTHREAD StorageClient_Thread()
 
 			if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_AUTH_REPLOGIN == st_ProtocolHdr.unOperatorCode)
 			{
+				bLogin = FALSE;
 				xhToken = st_ProtocolHdr.xhToken;
 			}
 			else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_AUTH_REPREGISTER == st_ProtocolHdr.unOperatorCode)
 			{
 				bRegiser = FALSE;
-			}
-			else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_AUTH_REPREGISTER == st_ProtocolHdr.unOperatorCode)
-			{
-				bLogin = FALSE;
 			}
 			else if (XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_STORAGE_REPDIRCREATE == st_ProtocolHdr.unOperatorCode)
 			{
@@ -117,7 +114,7 @@ int StorageClient_Register()
 	TCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
-	XStorageProtocol_Client_REQRegister(tszMsgBuffer, &nMsgLen, lpszUser, lpszPass);
+	XStorageProtocol_Client_REQRegister(tszMsgBuffer, &nMsgLen, lpszUser, lpszPass, "481679@qq.com", 13666666666, 5110232323232323);
 	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nMsgLen))
 	{
 		printf(_T("注册协议发送失败！"));
@@ -139,7 +136,7 @@ int StorageClient_Login()
 	memset(&st_UserAuth, '\0', sizeof(XENGINE_PROTOCOL_USERAUTH));
 
 	strcpy(st_UserAuth.tszUserName, lpszUser);
-	strcpy(st_UserAuth.tszPassword, lpszPass);
+	strcpy(st_UserAuth.tszUserPass, lpszPass);
 	st_UserAuth.enDeviceType = ENUM_PROTOCOL_FOR_DEVICE_TYPE_PC;
 	st_UserAuth.enClientType = ENUM_PROTOCOL_FOR_SERVICE_TYPE_USER;
 
@@ -222,8 +219,13 @@ int StorageClient_UPFile()
 		printf(_T("连接失败!"));
 		return -1;
 	}
-	LPCTSTR lpszFile = _T("G:\\netengineapp\\NetEngine_WINApps\\Debug\\123.exe");
-	XStorageProtocol_Client_REQFile(tszMsgBuffer, &nMsgLen, lpszFile, "aa/", xhToken);
+#ifdef _WINDOWS
+	LPCTSTR lpszFile = _T("H:\\XEngine_Apps\\Debug\\SipCode.types");
+#else
+	LPCTSTR lpszFile = _T("SipCode.types");
+#endif
+
+	XStorageProtocol_Client_REQFile(tszMsgBuffer, &nMsgLen, xhToken, NULL, lpszFile);
 	XClient_TCPSelect_SendMsg(hSocket, tszMsgBuffer, nMsgLen);
 
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
@@ -256,6 +258,7 @@ int StorageClient_UPFile()
 
 	while (bUPFile)
 	{
+		break;
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 	return 0;
@@ -266,7 +269,7 @@ int StorageClient_QueryFile()
 	TCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
-	XStorageProtocol_Client_REQQueryFile(tszMsgBuffer, &nMsgLen, "20190701", "20300101", "TestFor_AuthRegClient.exe");
+	XStorageProtocol_Client_REQQueryFile(tszMsgBuffer, &nMsgLen, "20190701", "20300101", "SipCode.types");
 	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nMsgLen))
 	{
 		printf(_T("查询文件失败！"));
@@ -289,16 +292,27 @@ int StorageClient_DLFile()
 	{
 		printf(_T("连接失败!"));
 		return -1;
-	}
-	LPCTSTR lpszFile = _T("G:\\netengineapp\\NetEngine_WINApps\\Debug\\123.exe");
-	XStorageProtocol_Client_REQFile(tszMsgBuffer, &nMsgLen, "TestFor_AuthRegClient.exe", "aa/", xhToken, FALSE);
+	} 
+#ifdef _WINDOWS
+	LPCTSTR lpszFile = _T("H:\\XEngine_Apps\\Debug\\123.txt");
+#else
+	LPCTSTR lpszFile = _T("123.txt");
+#endif
+
+	XStorageProtocol_Client_REQFile(tszMsgBuffer, &nMsgLen, xhToken, "51291FA0B2B6B081EB1C3F90C955BE16", NULL, NULL, FALSE);
 	XClient_TCPSelect_SendMsg(hSocket, tszMsgBuffer, nMsgLen);
 
+	nMsgLen = sizeof(XENGINE_PROTOCOLHDR);
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	XClient_TCPSelect_RecvMsg(hSocket, tszMsgBuffer, &nMsgLen, FALSE);
 
 	XENGINE_PROTOCOLHDR st_ProtocolHdr;
 	memcpy(&st_ProtocolHdr, tszMsgBuffer, sizeof(XENGINE_PROTOCOLHDR));
+
+	nMsgLen = st_ProtocolHdr.unPacketSize;
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	XClient_TCPSelect_RecvMsg(hSocket, tszMsgBuffer, &nMsgLen, FALSE);
+	printf("%s\n", tszMsgBuffer);
 
 	FILE* pSt_File = fopen(lpszFile, "wb");
 	int nRecvCount = 0;
@@ -314,7 +328,7 @@ int StorageClient_DLFile()
 			int nRet = fwrite(tszMsgBuffer, 1, nMsgLen, pSt_File);
 			nWriteCount += nRet;
 			printf("nRecvCount:%d nWriteCount:%d\n", nRecvCount, nWriteCount);
-			if (nRecvCount >= 233472)
+			if (nRecvCount >= 2048)
 			{
 				break;
 			}
@@ -322,10 +336,7 @@ int StorageClient_DLFile()
 	}
 	XClient_TCPSelect_Close(hSocket);
 	fclose(pSt_File);
-	while (bDLFile)
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	}
+
 	return 0;
 }
 int StorageClient_DeleteFile()
@@ -334,7 +345,7 @@ int StorageClient_DeleteFile()
 	TCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
-	XStorageProtocol_Client_REQDelete(tszMsgBuffer, &nMsgLen, "TestFor_AuthRegClient.exe");
+	XStorageProtocol_Client_REQDelete(tszMsgBuffer, &nMsgLen, "SipCode.types");
 	if (!XClient_TCPSelect_SendMsg(m_Socket, tszMsgBuffer, nMsgLen))
 	{
 		printf(_T("删除文件失败！"));
@@ -381,6 +392,14 @@ int main()
 
 	StorageClient_Register();
 	StorageClient_Login();
+	StorageClient_CreateDir();
+	StorageClient_QueryDir();
+	StorageClient_DeleteDir();
+	StorageClient_UPFile();
+	StorageClient_QueryFile();
+	StorageClient_DLFile();
+	StorageClient_DeleteFile();
+	StorageClient_QueryUser();
 
 	bRun = FALSE;
 	XClient_TCPSelect_Close(m_Socket);

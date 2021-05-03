@@ -18,6 +18,59 @@
 
 //g++ -std=gnu++17 -Wall -g XClient_Socket.cpp -o XClient_Socket.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -lXEngine_BaseLib -lXClient_Socket -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client,--disable-new-dtags
 
+int XClient_ProxyClient()
+{
+	LPCTSTR lpszRequestMsg = _T("CONNECT 42.192.166.120:80 HTTP/1.1\r\n"
+		"Proxy-Connection: Keep-Alive\r\n"
+		"Content-Length: 0\r\n"
+		"Host: 42.192.166.120\r\n"
+		"Proxy-Authorization: Basic MTIzMTIzYWE6MTIzMTIz\r\n"
+		"User-Agent: XClient V7 - HTTP C Client Module.Windows 10 2004\r\n\r\n");
+	int nMsgLen = _tcslen(lpszRequestMsg);
+	TCHAR tszMsgBuffer[10240];
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+
+	SOCKET m_Socket;
+	if (!XClient_TCPSelect_Create(_T("192.168.1.4"), 10081, &m_Socket))
+	{
+		printf(_T("连接失败！\n"));
+		return -1;
+	}
+	
+	if (XClient_TCPSelect_SendMsg(m_Socket, lpszRequestMsg, nMsgLen))
+	{
+		printf("NetClient_TCPSelect_SendMsg:%d\n", nMsgLen);
+	}
+	nMsgLen = 10240;
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	if (XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nMsgLen, FALSE))
+	{
+		printf("XClient_TCPSelect_RecvMsg:%s\n", tszMsgBuffer);
+	}
+
+	LPCTSTR lpszRequestMsg2 = _T("GET / HTTP/1.1\r\n"
+		"Content-Length: 0\r\n"
+		"Host: xyry.org\r\n"
+		"User-Agent: XClient V7 - HTTP C Client Module.Windows 10 2004\r\n\r\n");
+	nMsgLen = _tcslen(lpszRequestMsg2);
+	if (XClient_TCPSelect_SendMsg(m_Socket, lpszRequestMsg2, nMsgLen))
+	{
+		printf("NetClient_TCPSelect_SendMsg:%d\n", nMsgLen);
+	}
+
+	for (size_t i = 0; i < 1; i++)
+	{
+		nMsgLen = 10240;
+		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+		if (XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nMsgLen, FALSE))
+		{
+			printf("%s", tszMsgBuffer);
+		}
+	}
+	printf("%s\n");
+	XClient_TCPSelect_Close(m_Socket);
+	return 1;
+}
 int TCPTest()
 {
 	int nMsgLen = 10240;
@@ -187,12 +240,15 @@ int main()
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
+
+	XClient_ProxyClient();
+	getchar();
 	TCPTest();
 	TCPTestEx();
 	Test_UDPClient();
 	Test_Unix();
 	udx_test();
-	getchar();
+	
 #ifdef _WINDOWS
 	WSACleanup();
 #endif
