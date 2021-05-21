@@ -22,7 +22,7 @@
 //g++ -std=c++17 -Wall -g Auth_APPLocal.cpp -o Auth_APPLocal.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AuthorizeReg -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk -lXEngine_BaseLib -lXEngine_SystemApi -lXEngine_AuthRegCrypt -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AuthorizeReg,--disable-new-dtags
 
 #ifdef _WINDOWS
-LPCTSTR lpszFile = _T("H:\\XEngine_Apps\\Debug\\XEngine_AuthorizeReg.CDKey");
+LPCTSTR lpszFile = _T("D:\\XEngine_Apps\\Debug\\XEngine_AuthorizeReg.CDKey");
 #else
 LPCTSTR lpszFile = _T("XEngine_AuthorizeReg.CDKey");
 #endif
@@ -36,18 +36,23 @@ void AuthTest_SetKey()
 	memset(&st_AuthRegLocal, '\0', sizeof(XENGINE_AUTHREGCRYPT_LOCAL));
 	memset(&st_SDKSerial, '\0', sizeof(SYSTEMAPI_SERIAL_INFOMATION));
 
-	strcpy(st_AuthRegLocal.tszAddr, _T("127.0.0.1"));
-	strcpy(st_AuthRegLocal.tszPort, "1111");
-	strcpy(st_AuthRegLocal.st_AuthAppInfo.tszAppName, "血与荣誉网络通信引擎");
-	strcpy(st_AuthRegLocal.st_AuthAppInfo.tszAppVer, "7.2.0.1001");
-
-	st_AuthRegLocal.st_AuthRegInfo.nRegType = 1;
-	st_AuthRegLocal.st_AuthRegInfo.nHardwareType = 1;
-
 	SystemApi_HardWare_GetSerial(&st_SDKSerial);
+
+	strcpy(st_AuthRegLocal.tszAddr, _T("127.0.0.1"));
+	st_AuthRegLocal.nPort = 5000;
+
+	strcpy(st_AuthRegLocal.st_AuthAppInfo.tszAppName, "XEngine");
+	strcpy(st_AuthRegLocal.st_AuthAppInfo.tszAppVer, "7.11.0.1001");
+
+	st_AuthRegLocal.st_AuthRegInfo.nLeftType = 3;
+	st_AuthRegLocal.st_AuthRegInfo.nRegType = 1;
+	st_AuthRegLocal.st_AuthRegInfo.nHWType = 1;
+	strcpy(st_AuthRegLocal.st_AuthRegInfo.tszHardware, st_SDKSerial.tszCpuSerial);
+
 	AuthRegCrypt_Local_BuildKeyTime(&st_AuthRegLocal, 10);
 
-	strcpy(st_AuthRegLocal.st_AuthRegInfo.tszHardware, st_SDKSerial.tszCpuSerial);
+	strcpy(st_AuthRegLocal.st_AuthUserInfo.tszUserName, "XEngine");
+	strcpy(st_AuthRegLocal.st_AuthUserInfo.tszUserContact, "486179@qq.com");
 
 	if (!AuthRegCrypt_Local_WriteDatFile(lpszFile, &st_AuthRegLocal, "123123"))
 	{
@@ -57,31 +62,41 @@ void AuthTest_SetKey()
 void AuthTest_GetKey()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	__int64 nLeftTime = 0;
+	__int64x nLeftTime = 0;
 	XENGINE_AUTHREGCRYPT_LOCAL st_AuthRegLocal;
 	SYSTEMAPI_SERIAL_INFOMATION st_SDKSerial;
 
 	memset(&st_AuthRegLocal, '\0', sizeof(XENGINE_AUTHREGCRYPT_LOCAL));
 	memset(&st_SDKSerial, '\0', sizeof(SYSTEMAPI_SERIAL_INFOMATION));
 
-	SystemApi_HardWare_GetSerial(&st_SDKSerial);
-
 	if (!AuthRegCrypt_Local_ReadDatFile(lpszFile, &st_AuthRegLocal, "123123"))
 	{
 		return;
 	}
+	SystemApi_HardWare_GetSerial(&st_SDKSerial);
 	if (0 != _tcsncmp(st_SDKSerial.tszCpuSerial, st_AuthRegLocal.st_AuthRegInfo.tszHardware, strlen(st_SDKSerial.tszCpuSerial)))
 	{
 		printf(_T("序列号不匹配"));
 		return;
 	}
-	if (1 != st_AuthRegLocal.st_AuthRegInfo.nHardwareType)
+	if (1 != st_AuthRegLocal.st_AuthRegInfo.nHWType)
 	{
 		printf(_T("注册硬件序列不匹配"));
 		return;
 	}
-	AuthRegCrypt_Local_GetLeftTimer(&nLeftTime, &st_AuthRegLocal, 2);
-	printf("%s = %" PRId64"\n", st_AuthRegLocal.st_AuthRegInfo.tszHardware, nLeftTime);
+	AuthRegCrypt_Local_GetLeftTimer(&nLeftTime, &st_AuthRegLocal);
+	printf("%s = %lld\n", st_AuthRegLocal.st_AuthRegInfo.tszHardware, nLeftTime);
+
+	if (3 == st_AuthRegLocal.st_AuthRegInfo.nLeftType)
+	{
+		__int64x nTime = _ttoi64(st_AuthRegLocal.st_AuthRegInfo.tszLeftTime) - 1;
+		_stprintf(st_AuthRegLocal.st_AuthRegInfo.tszLeftTime, _T("%lld"), nTime);
+		if (!AuthRegCrypt_Local_WriteDatFile(lpszFile, &st_AuthRegLocal, "123123"))
+		{
+			return;
+		}
+	}
+
 	return;
 }
 

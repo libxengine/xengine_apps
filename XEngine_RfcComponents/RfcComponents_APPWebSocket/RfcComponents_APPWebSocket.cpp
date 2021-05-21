@@ -110,7 +110,7 @@ XHTHREAD CALLBACK NetCore_Thread()
 	return 0;
 }
 
-int main()
+int main_1()
 {
 #ifdef _WINDOWS
 	WSADATA st_WSAData;
@@ -135,7 +135,7 @@ int main()
 #endif
 	return 0;
 }
-int test_Client()
+int main()
 {
 #ifdef _WINDOWS
 	WSADATA st_WSAData;
@@ -156,7 +156,7 @@ int test_Client()
 	}
 
 	SOCKET hSocket = 0;
-	if (!XClient_TCPSelect_Create(_T("192.168.1.4"), 5000, &hSocket))
+	if (!XClient_TCPSelect_Create(_T("127.0.0.1"), 5000, &hSocket))
 	{
 		printf("NetClient_TCPSelect_Create:%lX", XClient_GetLastError());
 		return -1;
@@ -186,31 +186,43 @@ int test_Client()
 	{
 		printf("%s\n", tszMsgBuffer + nPos);
 	}
+	int nRVLen = 6;
+	TCHAR tszRecvBuffer[2048];
+
+	memset(tszRecvBuffer, '\0', sizeof(tszRecvBuffer));
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+
+	if (RfcComponents_WSCodec_EncodeMsg("123456", tszMsgBuffer, &nRVLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_TEXT, TRUE))
+	{
+		if (XClient_TCPSelect_SendMsg(hSocket, tszMsgBuffer, nRVLen))
+		{
+			printf("NetClient_TCPSelect_SendMsg:%d\n", nRVLen);
+		}
+	}
+	RfcComponents_WSPacket_Init(10000, FALSE, 4);
+	RfcComponents_WSPacket_Create("ClientToken", 1);
+
+	std::thread pSTDThread(NetCore_Thread);
 	while (1)
 	{
-		int nRVLen = 6;
-		TCHAR tszRecvBuffer[2048];
-		TCHAR tszMsgBuffer[2048];
-
+		nRVLen = 2048;
 		memset(tszRecvBuffer, '\0', sizeof(tszRecvBuffer));
 		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
-		if (RfcComponents_WSCodec_EncodeMsg("123456", tszMsgBuffer, &nRVLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_TEXT, TRUE))
-		{
-			if (XClient_TCPSelect_SendMsg(hSocket, tszMsgBuffer, nRVLen))
-			{
-				printf("NetClient_TCPSelect_SendMsg:%d\n", nRVLen);
-			}
-		}
-
-		nRVLen = 2048;
-		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 		if (XClient_TCPSelect_RecvMsg(hSocket, tszRecvBuffer, &nRVLen, FALSE))
 		{
-			RfcComponents_WSCodec_DecodeMsg(tszRecvBuffer, &nRVLen, tszMsgBuffer);
+			if (!RfcComponents_WSPacket_Post("ClientToken", tszRecvBuffer, nRVLen))
+			{
+				printf("RfcComponents_WSPacket_Post:%lX\n", WSFrame_GetLastError());
+			}
+			//你可以直接解码数据,也可以使用wspacket包管理器来获得高性能和自动包管理
+			//RfcComponents_WSCodec_DecodeMsg(tszRecvBuffer, &nRVLen, tszMsgBuffer);
 			printf("%s\n", tszMsgBuffer);
 		}
 	}
+
+	pSTDThread.join();
+
 #ifdef _WINDOWS
 	WSACleanup();
 #endif

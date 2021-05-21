@@ -151,6 +151,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RfcComponents_APPTunnel", "
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Plugin_APPInfo", "XEngine_Plugin\Plugin_APPInfo\Plugin_APPInfo.vcxproj", "{A7A55FE5-67E5-4ACF-AA53-77FE302940AE}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BTorrent_APPClient", "XEngine_DownLoad\BTorrent_APPClient\BTorrent_APPClient.vcxproj", "{9D874389-841A-40B4-AD59-56A3065C7A53}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -623,6 +625,14 @@ Global
 		{A7A55FE5-67E5-4ACF-AA53-77FE302940AE}.Release|x64.Build.0 = Release|x64
 		{A7A55FE5-67E5-4ACF-AA53-77FE302940AE}.Release|x86.ActiveCfg = Release|Win32
 		{A7A55FE5-67E5-4ACF-AA53-77FE302940AE}.Release|x86.Build.0 = Release|Win32
+		{9D874389-841A-40B4-AD59-56A3065C7A53}.Debug|x64.ActiveCfg = Debug|x64
+		{9D874389-841A-40B4-AD59-56A3065C7A53}.Debug|x64.Build.0 = Debug|x64
+		{9D874389-841A-40B4-AD59-56A3065C7A53}.Debug|x86.ActiveCfg = Debug|Win32
+		{9D874389-841A-40B4-AD59-56A3065C7A53}.Debug|x86.Build.0 = Debug|Win32
+		{9D874389-841A-40B4-AD59-56A3065C7A53}.Release|x64.ActiveCfg = Release|x64
+		{9D874389-841A-40B4-AD59-56A3065C7A53}.Release|x64.Build.0 = Release|x64
+		{9D874389-841A-40B4-AD59-56A3065C7A53}.Release|x86.ActiveCfg = Release|Win32
+		{9D874389-841A-40B4-AD59-56A3065C7A53}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -686,6 +696,7 @@ Global
 		{073CFDBD-73C8-48F7-AAD5-2579347DEEF3} = {0A67FF9E-734D-4889-AF82-2CC5A13E5992}
 		{241F8150-8C36-4775-BCD7-03BAC9070716} = {A11E0BB3-4C3C-432C-B528-3417CAD0D5B1}
 		{A7A55FE5-67E5-4ACF-AA53-77FE302940AE} = {4850263D-E9B0-49E9-B240-A28789D7453A}
+		{9D874389-841A-40B4-AD59-56A3065C7A53} = {CCC61DAD-2360-44CA-9E7C-BF1F9A3F7CB1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7DA25D94-055D-4CEF-BDCD-F7BD3315697C}

@@ -21,18 +21,13 @@ int Test_HttpRequest()
 {
 	LPCTSTR lpszUrl = _T("http://www.baidu.com");
 
-	int nResponse = 0;
-	int nSourceLen = 102400;
+	tstring m_StrSource;
+	tstring m_StrDest;
 
-	TCHAR tszSourceBuffer[102400];
-	TCHAR tszDestBuffer[102400];
-	memset(tszSourceBuffer, '\0', sizeof(tszSourceBuffer));
-	memset(tszDestBuffer, '\0', sizeof(tszDestBuffer));
-
-	APIHelp_HttpRequest_Post(lpszUrl, &nResponse, NULL, tszSourceBuffer, &nSourceLen);
+	APIHelp_HttpRequest_Get(lpszUrl, &m_StrSource);
 	//APIHelp_HttpRequest_Post(lpszUrl, tszSourceBuffer,&nResponse,"Accept-Encoding: gzip, deflate\r\n",NULL,&nSourceLen);
 	//HelpCompress_Algorithm_GZipUnCompress((BYTE *)tszSourceBuffer, nSourceLen, (BYTE *)tszDestBuffer, (DWORD *)&nDestLen);
-	printf("%s\n", tszSourceBuffer);
+	printf("%s\n", m_StrSource.c_str());
 	return 0;
 }
 int Test_NetGetIPAddr()
@@ -71,13 +66,25 @@ int Test_Domain()
 	printf("APIHelp_Domain_GetInfo:%s,%s,%s,%s,%d\n",st_APIDomain.tszDomainName, st_APIDomain.tszMainDomain, st_APIDomain.tszSubDomain, st_APIDomain.tszTopDomain, enAPIDomain);
 	return 0;
 }
+int Test_HttpCustom()
+{
+	XNETHANDLE xhToken = 0;
+	
+	APIHelp_HttpRequest_Create(&xhToken , NetHelp_HttpGet_Chunked);
+	APIHelp_HttpRequest_SetUrl(xhToken, "www.xyry.org", "GET");
+
+	tstring m_Str;
+	APIHelp_HttpRequest_Excute(xhToken, &m_Str);
+	APIHelp_HttpRequest_Close(xhToken);
+	return 0;
+}
 
 int main()
 {
 	Test_Domain();
 	Test_NetGetIPAddr();
 	Test_HttpRequest();
-
+	Test_HttpCustom();
 	return 0;
 }
 

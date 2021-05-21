@@ -191,6 +191,21 @@ int test_Mutex()
 }
 int test_Memory()
 {
+	int** ppIntArray;
+	if (!BaseLib_OperatorMemory_Malloc((void***)&ppIntArray, 3, sizeof(int)))
+	{
+		return -1;
+	}
+	for (int i = 0; i < 3; i++)
+	{
+		*(ppIntArray[i]) = i;
+	}
+	for (int i = 0; i < 3; i++)
+	{
+		printf("%d\n", *(ppIntArray[i]));
+	}
+	BaseLib_OperatorMemory_Free((void***)&ppIntArray, 3);
+
 	CHAR** ppszStr;
 	if (!BaseLib_OperatorMemory_Malloc((void***)&ppszStr, 3, 6))
 	{
