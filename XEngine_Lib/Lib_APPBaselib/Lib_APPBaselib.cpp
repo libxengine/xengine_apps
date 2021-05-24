@@ -80,6 +80,12 @@ void StringTest()
 	memset(tszFileDir, '\0', MAX_PATH);
 	memset(tszFileName, '\0', MAX_PATH);
 	BaseLib_OperatorString_GetFileAndPath(lpszFile4, tszFileDir, tszFileName);
+
+	XENGINE_LIBADDR st_LibAddr;
+	memset(&st_LibAddr, '\0', sizeof(XENGINE_LIBADDR));
+	BaseLib_OperatorString_AddrStruct("192.168.1.5", &st_LibAddr);
+
+	return;
 }
 
 
