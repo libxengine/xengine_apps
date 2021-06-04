@@ -88,7 +88,7 @@ int P2XPClient_Login()
 		return -1;
 	}
 	strcpy(st_UserInfo.tszUserName, lpszUser);
-	strcpy(st_UserInfo.tszPassword, lpszPass);
+	strcpy(st_UserInfo.tszUserPass, lpszPass);
 	st_UserInfo.enClientType = ENUM_PROTOCOL_FOR_SERVICE_TYPE_USER;
 	st_UserInfo.enDeviceType = ENUM_PROTOCOL_FOR_DEVICE_TYPE_PC;
 	if (!P2XPProtocol_UserMsg_RequestLogin(&st_ClientInfo, &st_UserInfo, tszMsgBuffer, &nLen))
