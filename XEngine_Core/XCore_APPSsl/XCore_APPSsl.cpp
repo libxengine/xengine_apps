@@ -22,11 +22,21 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_OPenSsl/OPenSsl_Error.h"
 
 //g++ -std=gnu++17 -Wall -g XCore_APPSsl.cpp -o XCore_APPSsl.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -lXEngine_BaseLib -lXEngine_OPenSsl -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
-
+void hex2string(char* hex, char* ascII, int len, int* newlen)
+{
+	int i = 0;
+	char newchar[100] = { 0 };
+	*newlen = len * 3;
+	for (i = 0; i < len; i++)
+	{
+		sprintf(newchar, "%02X ", hex[i]);
+		strcat(ascII, newchar);
+	}
+}
 void md5cal()
 {
-	UCHAR tszMD5[20];
-	memset(tszMD5, '\0', 20);
+	UCHAR tszMD5[512];
+	memset(tszMD5, '\0', 512);
 	LPCTSTR lpszFile = _T("123123");
 	int nLen = 6;
 
@@ -40,6 +50,20 @@ void md5cal()
 		printf(_T("%X"), tszMD5[i]);
 	}
 	printf(_T("MD5 END\n"));
+
+	nLen = 512;
+	memset(tszMD5, '\0', 512);
+	if (!OPenSsl_Api_Digest("D:\\xengine_apps\\Debug\\XEngine_BaseLib.dll", tszMD5, NULL,TRUE, XENGINE_OPENSSL_API_DIGEST_SHA1))
+	{
+		return;
+	}
+	TCHAR tszHash[256];
+	memset(tszHash, '\0', sizeof(tszHash));
+
+	BaseLib_OperatorString_StrToHex((char*)tszMD5, 20, tszHash);
+	printf("%s\n", tszHash);
+
+	printf(_T("HASH END\n"));
 }
 void Cryptto()
 {
@@ -56,13 +80,13 @@ void Cryptto()
 	memset(tszDeString, '\0', 1024);
 	memset(tszOutString, '\0', 1024);
 
-	if (!OPenSsl_Api_CryptEncodec(tszSourceBuffer, tszOutString, &nLen, lpszKey, NETENGINE_OPENSSL_API_CRYPT_SMCBC))
+	if (!OPenSsl_Api_CryptEncodec(tszSourceBuffer, tszOutString, &nLen, lpszKey, XENGINE_OPENSSL_API_CRYPT_SMCBC))
 	{
 		return;
 	}
 	printf(_T("加密后的数据长度：%d,数据为：%s\n"), nLen, tszOutString);
 
-	if (!OPenSsl_Api_CryptDecodec(tszOutString, tszDeString, &nLen, lpszKey, NETENGINE_OPENSSL_API_CRYPT_SMCBC))
+	if (!OPenSsl_Api_CryptDecodec(tszOutString, tszDeString, &nLen, lpszKey, XENGINE_OPENSSL_API_CRYPT_SMCBC))
 	{
 		return;
 	}
@@ -119,11 +143,11 @@ void SignVer()
 	LPCTSTR lpszPublicKey = _T("test_pub.Key");
 #endif
 
-	if (!OPenSsl_Cert_SignEncoder(lpszPrivateKey, lpszPass, lpszSource, tszSource, &nLen, NETENGINE_OPENSSL_API_DIGEST_MD5))
+	if (!OPenSsl_Cert_SignEncoder(lpszPrivateKey, lpszPass, lpszSource, tszSource, &nLen, XENGINE_OPENSSL_API_DIGEST_MD5))
 	{
 		return;
 	}
-	if (!OPenSsl_Cert_SignVerifly(lpszPublicKey, lpszPass, tszSource, nLen, lpszSource, 11, NETENGINE_OPENSSL_API_DIGEST_MD5))
+	if (!OPenSsl_Cert_SignVerifly(lpszPublicKey, lpszPass, tszSource, nLen, lpszSource, 11, XENGINE_OPENSSL_API_DIGEST_MD5))
 	{
 		return;
 	}

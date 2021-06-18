@@ -128,20 +128,14 @@ int test_udx()
 
 	NetCore_UDXSocket_CBSetEx(xhUDX, TCPOverlapped_Login, TCPOverlapped_Leave);
 
-	int i = 0;
-	while (1)
+	int nMsgLen = 2048;
+	TCHAR tszMsgBuffer[2048];
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	if (NetCore_UDXSocket_RecvEx(xhUDX, tszClientAddr, tszMsgBuffer, &nMsgLen))
 	{
-		int nMsgLen = 2048;
-		TCHAR tszMsgBuffer[2048];
-		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-		if (NetCore_UDXSocket_RecvEx(xhUDX, tszClientAddr, tszMsgBuffer, &nMsgLen))
-		{
-			fwrite(tszMsgBuffer, 1, nMsgLen, pSt_File);
-			//NetCore_UDXSocket_SendEx(xhNet, tszClientAddr, "abc", 3);
-			//printf("%d=%d\n", i, nMsgLen);
-		}
-		i++;
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		fwrite(tszMsgBuffer, 1, nMsgLen, pSt_File);
+		//NetCore_UDXSocket_SendEx(xhNet, tszClientAddr, "abc", 3);
+		//printf("%d=%d\n", i, nMsgLen);
 	}
 	return 0;
 }
@@ -158,7 +152,7 @@ int main()
 	test_unixdomain();
 	test_udx();
 	
-	std::this_thread::sleep_for(std::chrono::seconds(1000));
+	std::this_thread::sleep_for(std::chrono::seconds(50000));
 	NetCore_TCPXPoll_Stop();
 	NetCore_TCPSelect_StopEx(xhXSelect);
 	NetCore_TCPXCore_DestroyEx(xhXCore);
