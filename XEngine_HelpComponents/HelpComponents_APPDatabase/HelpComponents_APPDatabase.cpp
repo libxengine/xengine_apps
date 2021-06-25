@@ -77,9 +77,9 @@ int mysql_test()
 
 	//连接数据库
 	strcpy(st_ConnectInfo.tszDBName, _T("XStorage_FileList"));
-	strcpy(st_ConnectInfo.tszHostAddr, _T("192.168.1.110"));
-	strcpy(st_ConnectInfo.tszName, _T("root"));
-	strcpy(st_ConnectInfo.tszPassWord, _T("11"));
+	strcpy(st_ConnectInfo.tszSQLAddr, _T("192.168.1.110"));
+	strcpy(st_ConnectInfo.tszSQLName, _T("root"));
+	strcpy(st_ConnectInfo.tszSQLPass, _T("11"));
 
 	if (!DataBase_MySQL_Connect(&xhDBDay, &st_ConnectInfo, 5, TRUE, _T("utf8")))
 	{
@@ -112,6 +112,7 @@ int mysql_test()
 int mongodb_test()
 {
 	XNETHANDLE xhToken;
+
 	LPCTSTR lpszConnectName = _T("mongodb://root:11@192.168.1.110/?authSource=admin");
 	if (!DataBase_Mongo_Connect(&xhToken, lpszConnectName))
 	{
@@ -132,8 +133,53 @@ int mongodb_test()
 	DataBase_Mongo_Close(xhToken);
 	return 0;
 }
+
+int postgredb_test()
+{
+	XNETHANDLE xhToken;
+	XNETHANDLE xhTable;
+	DATABASE_MYSQL_CONNECTINFO st_ConnectInfo;
+	memset(&st_ConnectInfo, '\0', sizeof(DATABASE_MYSQL_CONNECTINFO));
+
+	//连接数据库
+	st_ConnectInfo.nPort = 5432;
+	strcpy(st_ConnectInfo.tszDBName, _T("xengine"));
+	strcpy(st_ConnectInfo.tszSQLAddr, _T("192.168.1.9"));
+	strcpy(st_ConnectInfo.tszSQLName, _T("xyry"));
+	strcpy(st_ConnectInfo.tszSQLPass, _T("123123"));
+
+	if (!DataBase_Postgre_ConnectWithStruct(&xhToken, &st_ConnectInfo))
+	{
+		return -1;
+	}
+
+	int nRecordCount = 0;
+	int nFieldCount = 0;
+	
+	if (!DataBase_Postgre_QueryResult(xhToken, &xhTable, _T("SELECT * FROM \"List\""), &nRecordCount, &nFieldCount))
+	{
+		return -2;
+	}
+	int nListCount = 0;
+	DATABASE_POSTGRE_DATAINFO** ppSt_ListData;
+	if (!DataBase_Postgre_GetResult(xhToken, xhTable, &ppSt_ListData, &nListCount, nRecordCount, nFieldCount))
+	{
+		return -3;
+	}
+	for (int i = 0; i < nListCount; i++)
+	{
+		printf("Name:%s Value:%s Len:%d Type:%d\n", ppSt_ListData[i]->ptszName, ppSt_ListData[i]->ptszValue, ppSt_ListData[i]->unLen, ppSt_ListData[i]->unOidType);
+	}
+	DataBase_Postgre_FreeResult(xhToken, xhTable);
+	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListData, nListCount);
+	DataBase_Postgre_Close(xhToken);
+	return 0;
+}
+
+
 int main()
 {
+	postgredb_test();
 	Test_SQLite();
 	mysql_test();
 	mongodb_test();

@@ -87,6 +87,10 @@ void CALLBACK NetCore_CBRecv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpszR
 		//是转发还是本地
 		if ((st_SIPProtocol.st_Session.nForward == 0) || (0 == _tcsnicmp(st_SIPProtocol.st_To.tszAddr, st_SIPProtocol.st_From.tszAddr, _tcslen(st_SIPProtocol.st_To.tszAddr))))
 		{
+			if (_tcslen(st_SIPProtocol.st_From.tszName) > 0)
+			{
+				//在这里处理用户名是否允许使用
+			}
 			RfcComponents_HttpConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
 			RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nRecvLen);
 			NetCore_UDPXCore_SendMsgEx(xhToken, lpszClientAddr, tszMsgBuffer, &nRecvLen);
@@ -140,11 +144,11 @@ int main()
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
+	Test_SIPRegister();
 
 	LPCTSTR lpszCodeFile = _T("SipCode.types");
 	RfcComponents_HttpConfig_InitCode(lpszCodeFile, FALSE);
- 	Test_SIPRegister();
-
+ 	
 	if (!NetCore_UDPXCore_StartEx(&xhToken, 5000, 2))
 	{
 		printf("错误\n");
@@ -153,8 +157,6 @@ int main()
 	NetCore_UDPXCore_RegisterCallBackEx(xhToken, NetCore_CBRecv);
 
 	RfcComponents_SIPServer_Init("xyry.org", TRUE);
-	RfcComponents_SIPServer_UserInsert("bob", "123123");
-	RfcComponents_SIPServer_UserInsert("alice", "123123");
 	printf("启动服务成功\n");
 	while (1)
 	{
