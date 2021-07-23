@@ -2,7 +2,7 @@
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"Ws2_32.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/MQCore_XDDService.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/NetHelp_DDSQueue.lib")
 #else
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,10 +12,10 @@
 using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_MQCore/MQCore_XDDService/XDDS_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_MQCore/MQCore_XDDService/XDDS_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_DDSQueue/XDDS_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_DDSQueue/XDDS_Error.h"
 
-//g++ -std=c++17 -Wall -g MQCore_APPPublish.cpp -o MQCore_APPPublish.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_MQCore -lXEngine_BaseLib -lMQCore_XDDService -ljsoncpp -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_MQCore,--disable-new-dtags
+//g++ -std=c++17 -Wall -g NetHelp_APPPublish.cpp -o NetHelp_APPPublish.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp -lXEngine_BaseLib -lNetHelp_DDSQueue -ljsoncpp -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp,--disable-new-dtags
 
 void CALLBACK DDSProtocol_Notify(int nNotifyEvent, int nDomainId, XENGINE_PROTOCOL_XDDS* pSt_XDDSProtocol, LPVOID lParam)
 {
@@ -64,7 +64,7 @@ int main(int argc, char** argv)
 	XDDS_CommApi_TopicDelete(1000, "aa");
 	XDDS_CommApi_DomainDelete(1000);
 	XDDS_CommApi_Destory();
-	
+
 #ifdef _WINDOWS
 	WSACleanup();
 #endif

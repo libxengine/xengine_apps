@@ -1,36 +1,28 @@
 # XEngine_Apps
 
-#### Description
-XEngine V7版本 使用代码例子
+XEngine V7 Version example
 
-#### Software Architecture
-Software architecture description
+#### Engine Example
+The example code of the engine contains the following examples, and the corresponding component module examples can be found through the following directory structure as needed  
 
-#### Installation
+1. XEngine_AVCoder                  audio and video   
+2. XEngine_Client                   client  
+3. XEngine_Core                     service  
+4. XEngine_DownLoad                 download  
+5. XEngine_HelpComponents           help  
+6. XEngine_Lib                      base library  
+7. XEngine_NetHelp                  nethelp  
+8. XEngine_Plugin                   plugin  
+9. XEngine_RfcComponents            rfc protocol    
+10. XEngine_StreamMedia             stream media  
+11. XEngine_SystemSdk               system  
+12. XEngine_UPDater                 update  
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+#### use
+To use our code example. You may need to make some modifications. WINDOWS can be opened and compiled directly with VS2019, and LINUX can be compiled with commands  
+Due to different environments, the directory structure of each user may be different. Therefore, the header file and the module directory are also different. Before you compile, you need to modify the loaded directory structure in our code according to your own directory structure to be correct Compile and use. Not only the loading directory of WINDOWS, but the compiling command of linux also needs to modify the directory address as needed.
 
-#### Instructions
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### Contribution
-
-1.  Fork the repository
-2.  Create Feat_xxx branch
-3.  Commit your code
-4.  Create Pull Request
-
-
-#### Gitee Feature
-
-1.  You can use Readme\_XXX.md to support different languages, such as Readme\_en.md, Readme\_zh.md
-2.  Gitee blog [blog.gitee.com](https://blog.gitee.com)
-3.  Explore open source project [https://gitee.com/explore](https://gitee.com/explore)
-4.  The most valuable open source project [GVP](https://gitee.com/gvp)
-5.  The manual of Gitee [https://gitee.com/help](https://gitee.com/help)
-6.  The most popular members  [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+## WINDOWS
+To use it under WINDOWS, you need to install VS2019. You can compile and allow it directly, provided that your engine directory is configured, and you need to modify the engine directory of the loaded header file to your own directory.
+## LINUX
+To use under LINUX. You can use the command to compile, gdb debugging. The compiled command is in the code. You can directly copy the commented compilation command, open the terminal, switch to the current directory, and type directly to compile.

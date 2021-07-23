@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Auth_APPSerial.cpp">
+    <ClCompile Include="HelpComponents_APPAuthorize.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

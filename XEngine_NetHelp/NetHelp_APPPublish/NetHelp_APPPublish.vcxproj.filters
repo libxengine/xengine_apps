@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Auth_APPLocal.cpp">
+    <ClCompile Include="NetHelp_APPPublish.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

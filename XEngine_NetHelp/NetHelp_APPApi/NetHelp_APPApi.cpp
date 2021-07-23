@@ -57,12 +57,14 @@ void __stdcall NetHelp_HttpGet_Chunked(LPVOID lpszMsgBuffer, int nMsgLen, LPVOID
 }
 int Test_Domain()
 {
+	TCHAR tszUrlPath[MAX_PATH];
 	APIHELP_DOMAIN st_APIDomain;
 	ENUM_APIHELP_DOMAINTYPE enAPIDomain;
 
+	memset(tszUrlPath, '\0', MAX_PATH);
 	memset(&st_APIDomain, '\0', sizeof(APIHELP_DOMAIN));
 
-	APIHelp_Domain_GetInfo("www.xyry.org", &st_APIDomain, &enAPIDomain);
+	APIHelp_Domain_GetInfo("http://www.xyry.org/Api/Task/Query", &st_APIDomain, &enAPIDomain, tszUrlPath);
 	printf("APIHelp_Domain_GetInfo:%s,%s,%s,%s,%d\n",st_APIDomain.tszDomainName, st_APIDomain.tszMainDomain, st_APIDomain.tszSubDomain, st_APIDomain.tszTopDomain, enAPIDomain);
 	return 0;
 }
