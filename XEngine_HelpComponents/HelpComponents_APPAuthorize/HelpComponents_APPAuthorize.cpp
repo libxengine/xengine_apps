@@ -1,28 +1,29 @@
 ﻿#ifdef _WINDOWS
 #include <Windows.h>
 #include <tchar.h>
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_OPenSsl.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_SystemApi.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/HelpComponents_Authorize.lib")
+#pragma comment(lib,"x86/XEngine_BaseLib/XEngine_BaseLib.lib")
+#pragma comment(lib,"x86/XEngine_Core/XEngine_OPenSsl.lib")
+#pragma comment(lib,"x86/XEngine_SystemSdk/XEngine_SystemApi.lib")
+#pragma comment(lib,"x86/XEngine_HelpComponents/HelpComponents_Authorize.lib")
 #else
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #endif
 #include <inttypes.h>
-#include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_OPenSsl/OPenSsl_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_OPenSsl/OPenSsl_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_SystemSdk/XEngine_ProcSdk/ProcFile_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_SystemSdk/XEngine_SystemApi/SystemApi_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_SystemSdk/XEngine_SystemApi/SystemApi_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_Authorize/Authorize_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_Authorize/Authorize_Error.h"
+#include <XEngine_Include/XEngine_CommHdr.h>
+#include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
+#include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
+#include <XEngine_Include/XEngine_Core/OPenSsl_Define.h>
+#include <XEngine_Include/XEngine_Core/OPenSsl_Error.h>
+#include <XEngine_Include/XEngine_SystemSdk/ProcFile_Define.h>
+#include <XEngine_Include/XEngine_SystemSdk/SystemApi_Define.h>
+#include <XEngine_Include/XEngine_SystemSdk/SystemApi_Error.h>
+#include <XEngine_Include/XEngine_HelpComponents/Authorize_Define.h>
+#include <XEngine_Include/XEngine_HelpComponents/Authorize_Error.h>
 
 //g++ -std=c++17 -Wall -g HelpComponents_APPAuthorize.cpp -o HelpComponents_APPAuthorize.exe -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Core -L /usr/local/lib/XEngine_Release/XEngine_SystemSdk -L /usr/local/lib/XEngine_Release/XEngine_HelpComponents -lXEngine_BaseLib -lXEngine_OPenSsl -lXEngine_SystemApi -lHelpComponents_Authorize
+#define _ENCRYPTO 1
 
 int Authorize_APPSerial()
 {
@@ -71,9 +72,9 @@ int Authorize_APPSerial()
 }
 
 #ifdef _WINDOWS
-LPCTSTR lpszFile = _T("D:\\XEngine_Apps\\Debug\\XEngine_Authorize.CDKey");
+LPCTSTR lpszFile = _T("D:\\XEngine_Apps\\Debug\\XEngine_Authorize.key");
 #else
-LPCTSTR lpszFile = _T("XEngine_Authorize.CDKey");
+LPCTSTR lpszFile = _T("XEngine_Authorize.key");
 #endif
 int Authorize_APPLocal()
 {
@@ -110,32 +111,36 @@ int Authorize_APPLocal()
 		return -1;
 	}
 	//需要加密?
+#ifdef _ENCRYPTO
 	FILE* pSt_File = fopen(lpszFile, "rb");
 	int nRet = fread(tszDeBuffer, 1, sizeof(tszDeBuffer), pSt_File);
 	fclose(pSt_File);
-	if (!OPenSsl_Api_CryptEncodec(tszDeBuffer, tszEnBuffer, &nRet, "123123"))
+	if (!OPenSsl_Api_CryptEncodec(tszDeBuffer, tszEnBuffer, &nRet, "123123", XENGINE_OPENSSL_API_CRYPT_3DES))
 	{
 		return -1;
 	}
 	pSt_File = fopen(lpszFile, "wb");
 	fwrite(tszEnBuffer, 1, nRet, pSt_File);
 	fclose(pSt_File);
+#endif
 	//////////////////////////////////////////////////////////////////////////验证CDKEY
 	memset(tszDeBuffer, '\0', sizeof(tszDeBuffer));
 	memset(tszEnBuffer, '\0', sizeof(tszEnBuffer));
 	memset(&st_AuthLocal, '\0', sizeof(XENGINE_AUTHORIZE_LOCAL));
 	memset(&st_SDKSerial, '\0', sizeof(SYSTEMAPI_SERIAL_INFOMATION));
 	//需要解密?
-	pSt_File = fopen(lpszFile, "rb");
-	nRet = fread(tszEnBuffer, 1, sizeof(tszEnBuffer), pSt_File);
-	fclose(pSt_File);
-	if (!OPenSsl_Api_CryptDecodec(tszEnBuffer, tszDeBuffer, &nRet, "123123"))
+#ifdef _ENCRYPTO
+	FILE* pSt_DeFile = fopen(lpszFile, "rb");
+	int nDeRet = fread(tszEnBuffer, 1, sizeof(tszEnBuffer), pSt_DeFile);
+	fclose(pSt_DeFile);
+	if (!OPenSsl_Api_CryptDecodec(tszEnBuffer, tszDeBuffer, &nDeRet, "123123", XENGINE_OPENSSL_API_CRYPT_3DES))
 	{
 		return -1;
 	}
-	pSt_File = fopen(lpszFile, "wb");
-	fwrite(tszDeBuffer, 1, nRet, pSt_File);
-	fclose(pSt_File);
+	pSt_DeFile = fopen(lpszFile, "wb");
+	fwrite(tszDeBuffer, 1, nDeRet, pSt_DeFile);
+	fclose(pSt_DeFile);
+#endif
 
 	if (!Authorize_Local_ReadKey(lpszFile, &st_AuthLocal))
 	{

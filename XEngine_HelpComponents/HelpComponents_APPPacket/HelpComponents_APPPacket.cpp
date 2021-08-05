@@ -1,6 +1,7 @@
 ﻿#ifdef _WINDOWS
 #include <Windows.h>
 #include <tchar.h>
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/HelpComponents_Packets.lib")
 #else
 #include <stdio.h>
@@ -9,6 +10,8 @@
 #endif
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_Packets/Packets_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_Packets/Packets_Error.h"
 
@@ -129,12 +132,12 @@ int Test_Datas()
 	HelpComponents_Datas_GetRandomEx(xhPacket, tszClientAddr, tszMsgBuffer, &nMsgLen, &st_ProtocolHdr);
 	printf("Test_Datas:%d=%s\n", nMsgLen, tszMsgBuffer);
 
-	nMsgLen = 2048;
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	TCHAR* ptszMsgBuffer = NULL;
 	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
 	HelpComponents_Datas_WaitEventEx(xhPacket);
-	HelpComponents_Datas_GetRandomEx(xhPacket, tszClientAddr, tszMsgBuffer, &nMsgLen, &st_ProtocolHdr);
-	printf("Test_Datas:%d=%s\n", nMsgLen, tszMsgBuffer);
+	HelpComponents_Datas_GetMemoryEx(xhPacket, lpszClientAddr, &ptszMsgBuffer, &nMsgLen, &st_ProtocolHdr);
+	printf("Test_Datas:%d=%s\n", nMsgLen, ptszMsgBuffer);
+	BaseLib_OperatorMemory_FreeCStyle((VOID **)&ptszMsgBuffer);
 
 	HelpComponents_Datas_WaitEventEx(xhPacket, 5000);
 	HelpComponents_Datas_DeleteEx(xhPacket, lpszClientAddr);
@@ -292,8 +295,8 @@ int Test_PacketCustom()
 
 int main()
 {
-	Test_Packets();
 	Test_Datas();
+	Test_Packets();
 	Test_PacketPool();
 	Test_PacketCustom();
 	return 0;

@@ -179,8 +179,8 @@ int postgredb_test()
 
 int main()
 {
-	postgredb_test();
 	Test_SQLite();
+	postgredb_test();
 	mysql_test();
 	mongodb_test();
 
