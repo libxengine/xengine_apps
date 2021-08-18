@@ -3,10 +3,12 @@
 #include <tchar.h>
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #else
+
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#endif
+#include <thread>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
@@ -28,8 +30,8 @@ void EventTest()
 }
 void TimeSpanTest()
 {
-	__int64 nDayTTime = 0;
-	__int64 nHourTTime = 0;
+	__int64x nDayTTime = 0;
+	__int64x nHourTTime = 0;
 	LPCTSTR lpszStartTime = _T("2019-11-01 12:31:10");
 	LPCTSTR lpszEndTime = _T("2020-10-02 12:31:10");
 	XENGINE_LIBTIMER st_LibTimer;
@@ -37,7 +39,7 @@ void TimeSpanTest()
 
 	BaseLib_OperatorTimeSpan_GetForStr(lpszStartTime, lpszEndTime, &nDayTTime, 0);
 	BaseLib_OperatorTimeSpan_GetForStr(lpszStartTime, lpszEndTime, &nHourTTime, 1);
-	printf(_T("\n跨了：%ld天 %ld小时\n"), nDayTTime, nHourTTime);
+	printf(_T("\n跨了：%lld天 %lld小时\n"), nDayTTime, nHourTTime);
 
 	BaseLib_OperatorTimeSpan_CalForStr(lpszStartTime, lpszEndTime, &st_LibTimer, TRUE);
 	printf(_T("%d/%d/%d-%d:%d:%d\n"), st_LibTimer.wYear, st_LibTimer.wMonth, st_LibTimer.wDay, st_LibTimer.wHour, st_LibTimer.wMinute, st_LibTimer.wSecond);
@@ -258,14 +260,36 @@ int test_TTrigger()
 		return -2;
 	}
 
-	__int64 nTTimer = 0;
+	__int64x nTTimer = 0;
 	BaseLib_OperatorTTigger_Get(xhToken, 1, &nTTimer);
 
 	BaseLib_OperatorTTigger_Destory(xhToken);
 	return 0;
 }
+
+void Test_GetTimeofday()
+{
+	XENGINE_VALTIME st_Timeval;
+	XENGINE_LIBTIMER st_LibTime;
+	TCHAR tszMsgTimer[128];
+
+	memset(&st_Timeval, '\0', sizeof(XENGINE_VALTIME));
+	memset(&st_LibTime, '\0', sizeof(XENGINE_LIBTIMER));
+	memset(tszMsgTimer, '\0', sizeof(tszMsgTimer));
+
+	BaseLib_OperatorTime_GetTimeOfday(&st_Timeval);
+	BaseLib_OperatorTime_TTimeToStuTime(st_Timeval.tv_sec, &st_LibTime);
+	BaseLib_OperatorTime_ToStringTimer(tszMsgTimer, &st_LibTime);
+
+#ifdef _WINDOWS
+	printf("%lld %lld %llu %llu  %s\n", time(NULL), st_Timeval.tv_sec, st_Timeval.tv_value, st_Timeval.tv_usec, tszMsgTimer);
+#else
+	printf("%ld %ld %llu %llu  %s\n", time(NULL), st_Timeval.tv_sec, st_Timeval.tv_value, st_Timeval.tv_usec, tszMsgTimer);
+#endif
+}
 int main()
 {
+	Test_GetTimeofday();
 	StringTest();
 	test_TTrigger();
 	test_Memory();
