@@ -133,6 +133,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetHelp_APPSubcribe", "XEng
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SystemApi_APPFile", "XEngine_SystemSdk\SystemApi_APPFile\SystemApi_APPFile.vcxproj", "{18984DDB-15C1-4609-9346-E4B81A1A0095}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RfcComponents_APPSnmp", "XEngine_RfcComponents\RfcComponents_APPSnmp\RfcComponents_APPSnmp.vcxproj", "{90235039-A6DC-4AAE-9B44-DEF9EA60CC92}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -573,6 +575,14 @@ Global
 		{18984DDB-15C1-4609-9346-E4B81A1A0095}.Release|x64.Build.0 = Release|x64
 		{18984DDB-15C1-4609-9346-E4B81A1A0095}.Release|x86.ActiveCfg = Release|Win32
 		{18984DDB-15C1-4609-9346-E4B81A1A0095}.Release|x86.Build.0 = Release|Win32
+		{90235039-A6DC-4AAE-9B44-DEF9EA60CC92}.Debug|x64.ActiveCfg = Debug|x64
+		{90235039-A6DC-4AAE-9B44-DEF9EA60CC92}.Debug|x64.Build.0 = Debug|x64
+		{90235039-A6DC-4AAE-9B44-DEF9EA60CC92}.Debug|x86.ActiveCfg = Debug|Win32
+		{90235039-A6DC-4AAE-9B44-DEF9EA60CC92}.Debug|x86.Build.0 = Debug|Win32
+		{90235039-A6DC-4AAE-9B44-DEF9EA60CC92}.Release|x64.ActiveCfg = Release|x64
+		{90235039-A6DC-4AAE-9B44-DEF9EA60CC92}.Release|x64.Build.0 = Release|x64
+		{90235039-A6DC-4AAE-9B44-DEF9EA60CC92}.Release|x86.ActiveCfg = Release|Win32
+		{90235039-A6DC-4AAE-9B44-DEF9EA60CC92}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -632,6 +642,7 @@ Global
 		{BD643453-3BB5-411B-9CCA-1652836D9754} = {ACD20A6C-A82B-4F2B-9257-E36421D9C78C}
 		{578F1A4B-FA69-435A-B895-9F3F9747D603} = {ACD20A6C-A82B-4F2B-9257-E36421D9C78C}
 		{18984DDB-15C1-4609-9346-E4B81A1A0095} = {469C4B62-5651-4885-B82F-18D661B25115}
+		{90235039-A6DC-4AAE-9B44-DEF9EA60CC92} = {A11E0BB3-4C3C-432C-B528-3417CAD0D5B1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7DA25D94-055D-4CEF-BDCD-F7BD3315697C}
