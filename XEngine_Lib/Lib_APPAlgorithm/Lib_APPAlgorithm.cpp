@@ -28,19 +28,19 @@ int main()
 		Algorithm_Calculation_SetTime(xhToken);
 	}
 	std::this_thread::sleep_for(std::chrono::seconds(2));
-	double dlTime = 0;
-	Algorithm_Calculation_GetTime(xhToken, &dlTime);
-	printf("%fl\n", dlTime);
+	__int64u nTime = 0;
+	Algorithm_Calculation_GetTime(xhToken, &nTime);
+	printf("%llu\n", nTime);
 
 	Algorithm_Calculation_ResetTime(xhToken);
-	double dlFlow = 0;
+	__int64u nFlow = 0;
 	Algorithm_Calculation_ADDRVFlow(xhToken, 1000);
 	Algorithm_Calculation_ADDRVFlow(xhToken, 1000);
 	std::this_thread::sleep_for(std::chrono::seconds(2));
-	Algorithm_Calculation_GetRVFlow(xhToken, &dlFlow);
-	printf("%lf\n", dlFlow);
-	Algorithm_Calculation_GetRVFlow(xhToken, &dlFlow, TRUE);
-	printf("%lf\n", dlFlow);
+	Algorithm_Calculation_GetRVFlow(xhToken, &nFlow);
+	printf("%llu\n", nFlow);
+	Algorithm_Calculation_GetRVFlow(xhToken, &nFlow, TRUE);
+	printf("%llu\n", nFlow);
 	Algorithm_Calculation_Close(xhToken);
 
 	int nPos = 0;
