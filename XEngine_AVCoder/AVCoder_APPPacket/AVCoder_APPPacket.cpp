@@ -28,8 +28,8 @@ int AVPacket_Test_FileConvert()
 	XNETHANDLE xhAVFile = 0;
 	double nTotalAVTime = 0;
 #ifdef _WINDOWS
-	LPCTSTR lpszSrcFile = "H:\\h264 file\\480p.264";
-	LPCTSTR lpszDstFile = "H:\\h264 file\\480p.flv";
+	LPCTSTR lpszSrcFile = "D:\\h264 file\\480p.flv";
+	LPCTSTR lpszDstFile = "D:\\h264 file\\480p.mp4";
 #else
 	LPCTSTR lpszSrcFile = "480p.264";
 	LPCTSTR lpszDstFile = "480p.flv";
@@ -75,10 +75,10 @@ int AVPacket_Test_FilePacket()
 {
 	XNETHANDLE xhAVFile = 0;
 #ifdef _WINDOWS
-	LPCTSTR lpszVideoFile = "H:\\h264 file\\480p.264";
-	LPCTSTR lpszAudioFile1 = "H:\\h264 file\\1004523.mp3";
-	LPCTSTR lpszAudioFile2 = "H:\\h264 file\\test.aac";
-	LPCTSTR lpszDstFile = "H:\\h264 file\\480p.mp4";
+	LPCTSTR lpszVideoFile = "D:\\h264 file\\480p.264";
+	LPCTSTR lpszAudioFile1 = "D:\\h264 file\\1.aac";
+	LPCTSTR lpszAudioFile2 = "D:\\h264 file\\test.aac";
+	LPCTSTR lpszDstFile = "D:\\h264 file\\480p.mp4";
 #else
 	LPCTSTR lpszVideoFile = "480p.264";
 	LPCTSTR lpszAudioFile1 = "1.aac";

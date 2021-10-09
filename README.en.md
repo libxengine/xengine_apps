@@ -12,11 +12,9 @@ The example code of the engine contains the following examples, and the correspo
 5. XEngine_HelpComponents           help  
 6. XEngine_Lib                      base library  
 7. XEngine_NetHelp                  nethelp  
-8. XEngine_Plugin                   plugin  
 9. XEngine_RfcComponents            rfc protocol    
 10. XEngine_StreamMedia             stream media  
 11. XEngine_SystemSdk               system  
-12. XEngine_UPDater                 update  
 
 #### use
 To use our code example. You may need to make some modifications. WINDOWS can be opened and compiled directly with VS2019, and LINUX can be compiled with commands  

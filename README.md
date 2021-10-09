@@ -12,11 +12,9 @@ xengine 例子代码
 5. XEngine_HelpComponents           帮助组件  
 6. XEngine_Lib                      基础组件  
 7. XEngine_NetHelp                  网络组件  
-8. XEngine_Plugin                   插件组件  
 9. XEngine_RfcComponents            协议标准组件  
 10. XEngine_StreamMedia             流媒体组件  
 11. XEngine_SystemSdk               系统组件  
-12. XEngine_UPDater                 更新组件  
 
 # 使用说明
 要使用我们的代码例子.你可能需要做一部分修改.WINDOWS可以直接用VS2019打开并且编译,LINUX可以使用命令编译  

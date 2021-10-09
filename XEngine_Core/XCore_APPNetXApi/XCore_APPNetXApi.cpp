@@ -31,10 +31,6 @@ static void WINAPI NetXApi_Sniffer_Callback(XNETHANDLE xhNet, NETXAPI_PROTOCOLIN
 	}
 	printf("\n\n");
 }
-static void WINAPI NetXApi_Enum_Callback(XNETHANDLE xhNet, LPCTSTR lpszIPAddr, LPCTSTR lpszMacAddr, LPVOID lParam)
-{
-	printf("NetXApi_Enum_Callback:%llu %s %s\n", xhNet, lpszIPAddr, lpszMacAddr);
-}
 int Test_IPAddr()
 {
 	///*IP¿â
@@ -98,39 +94,14 @@ int Test_NetFlow()
 int Test_NetSniffer()
 {
 	//ÍøÂ·ÐáÌ½
-	int nListCount = 0;
-	NETXAPI_SNIFFERIF ** ppSst_IFSniffer;
-	NetXApi_Sniffer_GetIFAll(&ppSst_IFSniffer, &nListCount);
-
-	for (int i = 0; i < nListCount; i++)
-	{
-		printf("NetXApi_Sniffer_GetIFAll:%s:%s\n", ppSst_IFSniffer[i]->tszIFName, ppSst_IFSniffer[i]->tszIFDes);
-	}
-	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSst_IFSniffer, nListCount);
 	XNETHANDLE xhNet;
 #ifdef _WINDOWS
-	NetXApi_Sniffer_Start(&xhNet, _T("rpcap://\\Device\\NPF_{0C8FC841-D27B-4DA5-B063-662EB0DA2FB8}"), NetXApi_Sniffer_Callback);
+	NetXApi_Sniffer_Start(&xhNet, _T("192.168.1.7"), NetXApi_Sniffer_Callback);
 #else
 	NetXApi_Sniffer_Start(&xhNet, _T("any"), NetXApi_Sniffer_Callback);
 #endif
-	std::this_thread::sleep_for(std::chrono::seconds(3));
+	std::this_thread::sleep_for(std::chrono::seconds(1000));
 	NetXApi_Sniffer_Stop(xhNet);
-	return 0;
-}
-int Test_NetEnum()
-{
-	XNETHANDLE xhNet;
-	LPCTSTR lpszStartAddr = _T("192.168.1.1");
-	LPCTSTR lpszEndAddr = _T("192.168.1.10");
-
-#ifdef _WINDOWS
-	NetXApi_LANEnum_Start(&xhNet, _T("rpcap://\\Device\\NPF_{0C8FC841-D27B-4DA5-B063-662EB0DA2FB8}"), lpszStartAddr, lpszEndAddr, NetXApi_Enum_Callback);
-#else
-	NetXApi_LANEnum_Start(&xhNet, _T("ens33"), lpszStartAddr, lpszEndAddr, NetXApi_Enum_Callback);
-#endif
-	
-	std::this_thread::sleep_for(std::chrono::seconds(5));
-	NetXApi_LANEnum_Close(xhNet);
 	return 0;
 }
 int Test_CtrlFlow()
@@ -218,10 +189,9 @@ int main()
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 
+	Test_NetSniffer();
 	Test_IPAddr();
 	Test_NetFlow();
-	Test_NetSniffer();
-	Test_NetEnum();
 	NetXApi_TestSocket();
 	//Test_CtrlFlow();
 #ifdef _WINDOWS
