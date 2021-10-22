@@ -5,11 +5,10 @@
 #pragma comment(lib,"x86/XEngine_Core/XEngine_OPenSsl.lib")
 #pragma comment(lib,"x86/XEngine_SystemSdk/XEngine_SystemApi.lib")
 #pragma comment(lib,"x86/XEngine_HelpComponents/HelpComponents_Authorize.lib")
-#else
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#endif
 #include <inttypes.h>
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
@@ -66,6 +65,17 @@ int Authorize_APPSerial()
 
 		Authorize_Serial_GetType(pptszSerial[i], &enSerialType, &st_LibTimer);
 		printf("%s:Time:%04d-%02d-%02d %02d:%02d:%02d\n", pptszSerial[i], st_LibTimer.wYear, st_LibTimer.wMonth, st_LibTimer.wDay, st_LibTimer.wHour, st_LibTimer.wMinute, st_LibTimer.wSecond);
+	}
+	BaseLib_OperatorMemory_Free((XPPPMEM)&pptszSerial, nCardCount);
+
+	if (!Authorize_Serial_Create(&pptszSerial, "XAUTH", nCardCount, 15))
+	{
+		printf("error\n");
+		return -1;
+	}
+	for (int i = 0; i < nCardCount; i++)
+	{
+		printf("%s\n", pptszSerial[i]);
 	}
 	BaseLib_OperatorMemory_Free((XPPPMEM)&pptszSerial, nCardCount);
 	return 0;

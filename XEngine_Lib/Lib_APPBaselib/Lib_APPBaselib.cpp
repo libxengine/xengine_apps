@@ -66,14 +66,20 @@ void StringTest()
 
 	TCHAR tszFileDir[MAX_PATH];
 	TCHAR tszFileName[MAX_PATH];
+	TCHAR tszFileDrive[MAX_PATH];
+	TCHAR tszFileExt[MAX_PATH];
 
 	memset(tszFileDir, '\0', MAX_PATH);
 	memset(tszFileName, '\0', MAX_PATH);
-	BaseLib_OperatorString_GetFileAndPath(lpszFile1, tszFileDir, tszFileName);
+	memset(tszFileDrive, '\0', MAX_PATH);
+	memset(tszFileExt, '\0', MAX_PATH);
+	BaseLib_OperatorString_GetFileAndPath(lpszFile1, tszFileDir, tszFileName, tszFileDrive, tszFileExt);
 
 	memset(tszFileDir, '\0', MAX_PATH);
 	memset(tszFileName, '\0', MAX_PATH);
-	BaseLib_OperatorString_GetFileAndPath(lpszFile2, tszFileDir, tszFileName);
+	memset(tszFileDrive, '\0', MAX_PATH);
+	memset(tszFileExt, '\0', MAX_PATH);
+	BaseLib_OperatorString_GetFileAndPath(lpszFile2, tszFileDir, tszFileName, tszFileDrive, tszFileExt);
 
 	memset(tszFileDir, '\0', MAX_PATH);
 	memset(tszFileName, '\0', MAX_PATH);
@@ -85,7 +91,7 @@ void StringTest()
 
 	XENGINE_LIBADDR st_LibAddr;
 	memset(&st_LibAddr, '\0', sizeof(XENGINE_LIBADDR));
-	BaseLib_OperatorString_AddrStruct("192.168.1.5", &st_LibAddr);
+	BaseLib_OperatorIPAddr_AddrStruct("192.168.1.5", &st_LibAddr);
 
 	return;
 }
@@ -159,8 +165,8 @@ int TestAddrLib()
 	memset(&st_LibAddr, '\0', sizeof(XENGINE_LIBADDR));
 	memset(&st_LibAddrV6, '\0', sizeof(XENGINE_LIBADDR));
 
-	BaseLib_OperatorString_AddrStruct(lpszIPV4Convert, &st_LibAddr, TRUE);
-	BaseLib_OperatorString_AddrStruct(lpszIPV6Convert, &st_LibAddrV6, TRUE);
+	BaseLib_OperatorIPAddr_AddrStruct(lpszIPV4Convert, &st_LibAddr, TRUE);
+	BaseLib_OperatorIPAddr_AddrStruct(lpszIPV6Convert, &st_LibAddrV6, TRUE);
 	return 1;
 }
 int Test_GetLunarCalendar()
@@ -289,8 +295,8 @@ void Test_GetTimeofday()
 }
 int main()
 {
-	Test_GetTimeofday();
 	StringTest();
+	Test_GetTimeofday();
 	test_TTrigger();
 	test_Memory();
 	test_Mutex();

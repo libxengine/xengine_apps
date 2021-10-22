@@ -3,11 +3,11 @@
 #include <tchar.h>
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/NetHelp_APIHelp.lib")
-#else
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#endif
+#include <stdint.h>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
@@ -20,14 +20,13 @@
 int Test_HttpRequest()
 {
 	LPCTSTR lpszUrl = _T("http://www.baidu.com");
+	CHAR* ptszMsgBuffer = NULL;
 
-	tstring m_StrSource;
-	tstring m_StrDest;
-
-	APIHelp_HttpRequest_Get(lpszUrl, &m_StrSource);
+	APIHelp_HttpRequest_Get(lpszUrl, &ptszMsgBuffer);
 	//APIHelp_HttpRequest_Post(lpszUrl, tszSourceBuffer,&nResponse,"Accept-Encoding: gzip, deflate\r\n",NULL,&nSourceLen);
 	//HelpCompress_Algorithm_GZipUnCompress((BYTE *)tszSourceBuffer, nSourceLen, (BYTE *)tszDestBuffer, (DWORD *)&nDestLen);
-	printf("%s\n", m_StrSource.c_str());
+	printf("%s\n", ptszMsgBuffer);
+	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 	return 0;
 }
 int Test_NetGetIPAddr()
@@ -71,18 +70,27 @@ int Test_Domain()
 int Test_HttpCustom()
 {
 	XNETHANDLE xhToken = 0;
-	
+	CHAR* ptszMsgBuffer = NULL;
+
 	APIHelp_HttpRequest_Create(&xhToken , NetHelp_HttpGet_Chunked);
 	APIHelp_HttpRequest_SetUrl(xhToken, "www.xyry.org", "GET");
 
-	tstring m_Str;
-	APIHelp_HttpRequest_Excute(xhToken, &m_Str);
+	APIHelp_HttpRequest_Excute(xhToken, &ptszMsgBuffer);
 	APIHelp_HttpRequest_Close(xhToken);
+	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+	return 0;
+}
+
+
+int Test_qianghao()
+{
+	
 	return 0;
 }
 
 int main()
 {
+	Test_qianghao();
 	Test_Domain();
 	Test_NetGetIPAddr();
 	Test_HttpRequest();
