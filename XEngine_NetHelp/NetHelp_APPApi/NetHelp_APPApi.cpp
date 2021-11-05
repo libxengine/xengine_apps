@@ -81,16 +81,8 @@ int Test_HttpCustom()
 	return 0;
 }
 
-
-int Test_qianghao()
-{
-	
-	return 0;
-}
-
 int main()
 {
-	Test_qianghao();
 	Test_Domain();
 	Test_NetGetIPAddr();
 	Test_HttpRequest();

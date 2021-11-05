@@ -6,11 +6,12 @@
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XClient_Socket.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XClient_OPenSsl.lib")
 #else
+#include <unistd.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#endif
+#include <string>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Define.h"
@@ -26,17 +27,18 @@ int main()
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
-	XNETHANDLE xhNet;
+	XHANDLE xhNet;
 	SOCKET m_Socket;
 	XCLIENT_SSLCERT_SRVINFO st_SrvInfo;
 	memset(&st_SrvInfo, '\0', sizeof(XCLIENT_SSLCERT_SRVINFO));
 
-	if (!XClient_OPenSsl_InitEx(&xhNet, ENUM_XCLIENT_SSL_TYPE_SSL_VERSION))
+	xhNet = XClient_OPenSsl_InitEx(ENUM_XCLIENT_SSL_TYPE_SSL_VERSION);
+	if (NULL == xhNet)
 	{
 		printf("NetClient_OpenSsl_Init:%lX\n", XClientSsl_GetLastError());
 		return -1;
 	}
-	if (!XClient_TCPSelect_Create("14.215.177.39", 443, &m_Socket))
+	if (!XClient_TCPSelect_Create(&m_Socket, "14.215.177.39", 443))
 	{
 		printf("NetClient_TCPSelect_Create:%lX\n", XClient_GetLastError());
 		return -1;

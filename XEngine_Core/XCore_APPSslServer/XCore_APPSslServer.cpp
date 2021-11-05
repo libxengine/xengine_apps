@@ -8,11 +8,11 @@
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_Core.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_OPenSsl.lib")
 #else
+#include <sys/socket.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/socket.h>
-#endif
 #include <thread>
 using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
@@ -27,6 +27,7 @@ using namespace std;
 
 //g++ -std=gnu++17 -Wall -g XCore_APPSsl.cpp -o XCore_APPSsl.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -lXEngine_BaseLib -lXEngine_Core -lXEngine_OPenSsl -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
 
+XHANDLE xhSSL = NULL;
 BOOL CALLBACK TCPSelect_CBLogin(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
 {
 	printf("recv_Login:%s\n", lpszClientAddr);
@@ -38,7 +39,7 @@ BOOL CALLBACK TCPSelect_CBLogin(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lP
 	memset(tszIssus, '\0', sizeof(tszIssus));
 	memset(tszAlg, '\0', sizeof(tszAlg));
 
-	OPenSsl_Server_Accept(hSocket, lpszClientAddr, tszSubject, tszIssus, tszAlg);
+	OPenSsl_Server_AcceptEx(xhSSL, hSocket, lpszClientAddr, tszSubject, tszIssus, tszAlg);
 	printf("TCPSelect_CBLogin:%s %s %s\n", tszSubject, tszIssus, tszAlg);
 	return TRUE;
 }
@@ -47,7 +48,7 @@ void CALLBACK TCPSelect_CBRecv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lps
 	int nLen = 2048;
 	TCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (OPenSsl_Server_Recv(lpszClientAddr, tszMsgBuffer, &nLen))
+	if (OPenSsl_Server_RecvEx(xhSSL, lpszClientAddr, tszMsgBuffer, &nLen, lpszRecvMsg, nMsgLen))
 	{
 		printf("TCPSelect_CBRecv:%s\n", tszMsgBuffer);
 	}
@@ -65,7 +66,8 @@ int main()
 	LPCTSTR lpszSrvFile = _T("H:\\XEngine_Apps\\Debug\\server.crt");
 	LPCTSTR lpszKeyFile = _T("H:\\XEngine_Apps\\Debug\\server.key");
 
-	if (!OPenSsl_Server_Init(lpszCAFile, lpszSrvFile, lpszKeyFile))
+	xhSSL = OPenSsl_Server_InitEx(lpszCAFile, lpszSrvFile, lpszKeyFile, TRUE, FALSE);
+	if (NULL == xhSSL)
 	{
 		printf("OPenSsl_Server_Init %lX\n", OPenSsl_GetLastError());
 		return -1;

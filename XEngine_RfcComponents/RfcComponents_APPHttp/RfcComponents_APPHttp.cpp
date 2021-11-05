@@ -4,6 +4,7 @@
 #pragma comment(lib,"Ws2_32.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_Core.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_OPenSsl.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_HttpServer.lib")
 #else
 #include <stdio.h>
@@ -18,31 +19,60 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_Core/NetCore_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_Core/NetCore_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_OPenSsl/OPenSsl_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_OPenSsl/OPenSsl_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_HttpServer/HttpServer_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_HttpServer/HttpServer_Error.h"
 
-//g++ -std=c++17 -Wall -g RfcComponents_APPHttp.cpp -o RfcComponents_APPHttp.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lRfcComponents_HttpServer -lpthread -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
+//g++ -std=c++17 -Wall -g RfcComponents_APPHttp.cpp -o RfcComponents_APPHttp.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lXEngine_OPenSsl -lRfcComponents_HttpServer -lpthread -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
 
-
+BOOL bSSL = TRUE;
 BOOL bIsRun = FALSE;
+XHANDLE xhSsl = NULL;
 XNETHANDLE xhToken;
-int nRVMode = 1;
+int nRVMode = 0;
 XHANDLE xhHttp = NULL;
 FILE* pSt_File = NULL;
 
 BOOL CALLBACK NetCore_CB_Login(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
 {
+	if (bSSL)
+	{
+		TCHAR tszSubject[MAX_PATH];
+		TCHAR tszIssuer[MAX_PATH];
+		TCHAR tszAlgorithm[MAX_PATH];
+
+		memset(tszSubject, '\0', MAX_PATH);
+		memset(tszIssuer, '\0', MAX_PATH);
+		memset(tszAlgorithm, '\0', MAX_PATH);
+
+		OPenSsl_Server_AcceptEx(xhSsl, hSocket, lpszClientAddr, tszSubject, tszIssuer, tszAlgorithm);
+	}
 	printf("NetCore_CB_Login:%s\n", lpszClientAddr);
-	RfcComponents_HttpServer_CreateClientEx(xhHttp, lpszClientAddr);
+	RfcComponents_HttpServer_CreateClientEx(xhHttp, lpszClientAddr, 0);
 	RfcComponents_HttpServer_SetRecvModeEx(xhHttp, lpszClientAddr, nRVMode);
 	return TRUE;
 }
 void CALLBACK NetCore_CB_Recv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpszRecvMsg, int nMsgLen, LPVOID lParam)
 {
 	printf("NetCore_CB_Recv:%s-%d\n", lpszClientAddr, nMsgLen);
-	if (!RfcComponents_HttpServer_InserQueueEx(xhHttp, lpszClientAddr, lpszRecvMsg, nMsgLen))
+	if (bSSL)
 	{
-		printf("RfcComponents_WSPacket_Post:%lX\n", HttpServer_GetLastError());
+		int nRVLen = 2048;
+		TCHAR tszMsgBuffer[2048];
+		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+		OPenSsl_Server_RecvMsgEx(xhSsl, lpszClientAddr, tszMsgBuffer, &nRVLen, lpszRecvMsg, nMsgLen);
+		if (!RfcComponents_HttpServer_InserQueueEx(xhHttp, lpszClientAddr, tszMsgBuffer, nRVLen))
+		{
+			printf("RfcComponents_WSPacket_Post:%lX\n", HttpServer_GetLastError());
+		}
+	}
+	else
+	{
+		if (!RfcComponents_HttpServer_InserQueueEx(xhHttp, lpszClientAddr, lpszRecvMsg, nMsgLen))
+		{
+			printf("RfcComponents_WSPacket_Post:%lX\n", HttpServer_GetLastError());
+		}
 	}
 }
 void CALLBACK NetCore_CB_Close(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
@@ -86,7 +116,7 @@ XHTHREAD CALLBACK NetCore_Thread()
 						st_HdrParam.bIsClose = TRUE;
 						st_HdrParam.nHttpCode = 200;
 						nMsgLen = 2048;
-						RfcComponents_HttpServer_SendMsg(tszMsgBuffer, &nMsgLen, &st_HdrParam);
+						RfcComponents_HttpServer_SendMsgEx(xhHttp, tszMsgBuffer, &nMsgLen, &st_HdrParam);
 						NetCore_TCPXCore_SendEx(xhToken, tszClientAddr, tszMsgBuffer, nMsgLen);
 
 						fclose(pSt_File);
@@ -102,8 +132,20 @@ XHTHREAD CALLBACK NetCore_Thread()
 					st_HdrParam.bIsClose = TRUE;
 					st_HdrParam.nHttpCode = 200;
 					nMsgLen = 2048;
-					RfcComponents_HttpServer_SendMsg(tszMsgBuffer, &nMsgLen, &st_HdrParam);
-					NetCore_TCPXCore_SendEx(xhToken, tszClientAddr, tszMsgBuffer, nMsgLen);
+					RfcComponents_HttpServer_SendMsgEx(xhHttp, tszMsgBuffer, &nMsgLen, &st_HdrParam, "123456789", 9);
+					if (bSSL)
+					{
+						int nSSLLen = 2048;
+						TCHAR tszSSLBuffer[2048];
+						memset(tszSSLBuffer, '\0', sizeof(tszSSLBuffer));
+
+						OPenSsl_Server_SendMsgEx(xhSsl, tszClientAddr, tszMsgBuffer, nMsgLen, tszSSLBuffer, &nSSLLen);
+						NetCore_TCPXCore_SendEx(xhToken, tszClientAddr, tszSSLBuffer, nSSLLen);
+					}
+					else
+					{
+						NetCore_TCPXCore_SendEx(xhToken, tszClientAddr, tszMsgBuffer, nMsgLen);
+					}
 				}
 				BaseLib_OperatorMemory_Free((XPPPMEM)&ppszListHdr, nListCount);
 			}
@@ -143,16 +185,34 @@ int main()
 		printf("%lX\n", HttpServer_GetLastError());
 		return 0;
 	}
-	if (!NetCore_TCPXCore_StartEx(&xhToken))
+	if (bSSL)
+	{
+#ifdef _WINDOWS
+		LPCTSTR lpszCertChain = _T("D:\\xengine_apps\\Debug\\1_www.xyry.org_bundle.crt");
+		LPCTSTR lpszCertKey = _T("D:\\xengine_apps\\Debug\\2_www.xyry.org.key");
+#else
+		LPCTSTR lpszCertChain = _T("1_www.xyry.org_bundle.crt");
+		LPCTSTR lpszCertKey = _T("2_www.xyry.org.key");
+#endif
+		xhSsl = OPenSsl_Server_InitEx(lpszCertChain, NULL, lpszCertKey, FALSE, FALSE);
+		if (NULL == xhSsl)
+		{
+			printf("%lX\n", OPenSsl_GetLastError());
+			return 0;
+		}
+	}
+
+	if (!NetCore_TCPXCore_StartEx(&xhToken,443))
 	{
 		printf("%lX\n", NetCore_GetLastError());
 		return 0;
 	}
 
+	
 	NetCore_TCPXCore_RegisterCallBackEx(xhToken, NetCore_CB_Login, NetCore_CB_Recv, NetCore_CB_Close);
 	std::thread pSTDThread(NetCore_Thread);
 
-	Sleep(5000);
+	std::this_thread::sleep_for(std::chrono::seconds(2000));
 	bIsRun = FALSE;
 	RfcComponents_HttpServer_DestroyEx(xhHttp);
 	pSTDThread.join();
