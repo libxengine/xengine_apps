@@ -26,12 +26,6 @@ To use it under WINDOWS, you need to install VS2019. You can compile and allow i
 ## LINUX
 To use under LINUX. You can use the command to compile, gdb debugging. The compiled command is in the code. You can directly copy the commented compilation command, open the terminal, switch to the current directory, and type directly to compile.
 
-# 安装示例
-在使用我们例子,你需要先按照引擎的README说明安装.    
-如果你是VC编译,你需要在项目属性里面vc++ 目录中添加包含目录和库目录.  
-然后修改代码,比如
-头文件:#include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h" 修改为: #include <XEngine_Include/XEngine_CommHdr.h>  
-库文件:#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib") 修改为 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib") 
 # Installation example
 Before using our example, you need to install it first according to the engine's README instructions.
 If you are compiling with VC, you need to add the include directory and library directory to the vc++ directory in the project properties.
