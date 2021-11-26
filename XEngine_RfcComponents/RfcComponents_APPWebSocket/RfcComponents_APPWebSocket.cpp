@@ -27,23 +27,24 @@ using namespace std;
 //g++ -std=c++17 -Wall -g RfcComponents_APPWebSocket.cpp -o RfcComponents_APPWebSocket.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lXClient_Socket -lRfcComponents_WSProtocol -lpthread -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
 
 XNETHANDLE xhToken;
+XHANDLE xhWBPacket;
 TCHAR tszClientAddr[64];
 
 BOOL CALLBACK NetCore_CB_Login(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
 {
 	strcpy(tszClientAddr, lpszClientAddr);
 	printf("NetCore_CB_Login:%s\n", lpszClientAddr);
-	RfcComponents_WSPacket_Create(lpszClientAddr, 1);
+	RfcComponents_WSPacket_CreateEx(xhWBPacket, lpszClientAddr, 1);
 	return TRUE;
 }
 void CALLBACK NetCore_CB_Recv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpszRecvMsg, int nMsgLen, LPVOID lParam)
 {
 	printf("NetCore_CB_Recv:%s-%d\n", lpszClientAddr, nMsgLen);
 	BOOL bLogin = FALSE;
-	RfcComponents_WSPacket_GetLogin(lpszClientAddr, &bLogin);
+	RfcComponents_WSPacket_GetLoginEx(xhWBPacket, lpszClientAddr, &bLogin);
 	if (bLogin)
 	{
-		if (!RfcComponents_WSPacket_Post(lpszClientAddr, lpszRecvMsg, nMsgLen))
+		if (!RfcComponents_WSPacket_PostEx(xhWBPacket, lpszClientAddr, lpszRecvMsg, nMsgLen))
 		{
 			printf("RfcComponents_WSPacket_Post:%lX\n", WSFrame_GetLastError());
 		}
@@ -56,13 +57,13 @@ void CALLBACK NetCore_CB_Recv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpsz
 
 		RfcComponents_WSConnector_HandShake(lpszRecvMsg, &nSDLen, tszHandsBuffer);
 		NetCore_TCPXCore_SendEx(xhToken, lpszClientAddr, tszHandsBuffer, nSDLen);
-		RfcComponents_WSPacket_SetLogin(lpszClientAddr);
+		RfcComponents_WSPacket_SetLoginEx(xhWBPacket, lpszClientAddr);
 	}
 }
 void CALLBACK NetCore_CB_Close(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
 {
 	printf("NetCore_CB_Close:%s\n", lpszClientAddr);
-	RfcComponents_WSPacket_Delete(lpszClientAddr);
+	RfcComponents_WSPacket_DeleteEx(xhWBPacket, lpszClientAddr);
 }
 
 XHTHREAD CALLBACK NetCore_Thread()
@@ -70,7 +71,7 @@ XHTHREAD CALLBACK NetCore_Thread()
 	int i = 0;
 	while (TRUE)
 	{
-		if (RfcComponents_WSPacket_WaitEvent(1))
+		if (RfcComponents_WSPacket_WaitEventEx(xhWBPacket, 1))
 		{
 			int nMsgLen = 20480;
 			int nListCount = 0;
@@ -80,12 +81,12 @@ XHTHREAD CALLBACK NetCore_Thread()
 
 			memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
-			RfcComponents_WSPacket_GetPool(1, &ppSt_ListClient, &nListCount);
+			RfcComponents_WSPacket_GetPoolEx(xhWBPacket, 1, &ppSt_ListClient, &nListCount);
 			for (int i = 0; i < nListCount; i++)
 			{
 				for (int j = 0; j < ppSt_ListClient[i]->nPktCount; j++)
 				{
-					if (RfcComponents_WSPacket_Get(ppSt_ListClient[i]->tszClientAddr, tszMsgBuffer, &nMsgLen, &enOPCode))
+					if (RfcComponents_WSPacket_GetEx(xhWBPacket, ppSt_ListClient[i]->tszClientAddr, tszMsgBuffer, &nMsgLen, &enOPCode))
 					{
 						printf("%s %d:%s\n", ppSt_ListClient[i]->tszClientAddr, nMsgLen, tszMsgBuffer);
 
@@ -110,7 +111,7 @@ XHTHREAD CALLBACK NetCore_Thread()
 	return 0;
 }
 
-int main_1()
+int main()
 {
 #ifdef _WINDOWS
 	WSADATA st_WSAData;
@@ -125,7 +126,7 @@ int main_1()
 		return 0;
 	}
 	NetCore_TCPXCore_RegisterCallBackEx(xhToken, NetCore_CB_Login, NetCore_CB_Recv, NetCore_CB_Close);
-	RfcComponents_WSPacket_Init(10000, FALSE, 4);
+	xhWBPacket = RfcComponents_WSPacket_InitEx(10000, FALSE, 4);
 
 	std::thread pSTDThread(NetCore_Thread);
 	pSTDThread.join();
@@ -135,7 +136,7 @@ int main_1()
 #endif
 	return 0;
 }
-int main()
+int main_client()
 {
 #ifdef _WINDOWS
 	WSADATA st_WSAData;
@@ -156,7 +157,7 @@ int main()
 	}
 
 	SOCKET hSocket = 0;
-	if (!XClient_TCPSelect_Create(_T("127.0.0.1"), 5000, &hSocket))
+	if (!XClient_TCPSelect_Create(&hSocket, _T("127.0.0.1"), 5000))
 	{
 		printf("NetClient_TCPSelect_Create:%lX", XClient_GetLastError());
 		return -1;
@@ -199,8 +200,8 @@ int main()
 			printf("NetClient_TCPSelect_SendMsg:%d\n", nRVLen);
 		}
 	}
-	RfcComponents_WSPacket_Init(10000, FALSE, 4);
-	RfcComponents_WSPacket_Create("ClientToken", 1);
+	xhWBPacket = RfcComponents_WSPacket_InitEx(10000, FALSE, 4);
+	RfcComponents_WSPacket_CreateEx(xhWBPacket, "ClientToken", 1);
 
 	std::thread pSTDThread(NetCore_Thread);
 	while (1)
@@ -211,7 +212,7 @@ int main()
 
 		if (XClient_TCPSelect_RecvMsg(hSocket, tszRecvBuffer, &nRVLen, FALSE))
 		{
-			if (!RfcComponents_WSPacket_Post("ClientToken", tszRecvBuffer, nRVLen))
+			if (!RfcComponents_WSPacket_PostEx(xhWBPacket,"ClientToken", tszRecvBuffer, nRVLen))
 			{
 				printf("RfcComponents_WSPacket_Post:%lX\n", WSFrame_GetLastError());
 			}
@@ -220,7 +221,6 @@ int main()
 			printf("%s\n", tszMsgBuffer);
 		}
 	}
-
 	pSTDThread.join();
 
 #ifdef _WINDOWS

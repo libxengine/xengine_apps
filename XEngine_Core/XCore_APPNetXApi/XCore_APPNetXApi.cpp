@@ -7,11 +7,11 @@
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_NetXApi.lib")
 #else
+#include <sys/socket.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/socket.h>
-#endif
 #include <thread>
 using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
@@ -138,10 +138,13 @@ int NetXApi_TestSocket()
 	st_NetState.dwProtocol = XENGINE_NETXAPI_SOCKET_NETSTATE_PROTOCOL_TCP;
 	NetXApi_Socket_GetPortState(5001, &st_NetState);
 
-	DWORD dwType = 0;
-	NetXApi_Socket_GetNetConnectType(&dwType);
-	printf("Net Type:%lX\n", dwType);
+	ENUM_XENGINE_NETXAPI_SOCKET_CONNECTTYPE enType;
+	NetXApi_Socket_GetNetConnectType(&enType);
 
+	if (enType & ENUM_XENGINE_NETXAPI_SOCKET_CONNECTTYPE_IPV4_INTERNET)
+	{
+		printf("Net Type: IPV4 \n");
+	}
 	NETXAPI_IPSTATICS st_IPInfo;
 	NETXAPI_TCPSTATICS st_TCPInfo;
 	NETXAPI_UDPSTATICS st_UDPInfo;
@@ -182,13 +185,13 @@ int NetXApi_TestSocket()
 	BaseLib_OperatorMemory_Free((XPPPMEM)&ppszListAddr, nListCount);
 	return 0;
 }
+
 int main()
 {
 #ifdef _WINDOWS
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
-
 	Test_NetSniffer();
 	Test_IPAddr();
 	Test_NetFlow();

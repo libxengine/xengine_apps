@@ -3,14 +3,18 @@
 #include <tchar.h>
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
-#else
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#endif
+#include <stdint.h>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVCollect/AVCollect_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVCollect/AVCollect_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_VideoCoder/VideoCoder_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_VideoCoder/VideoCoder_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVHelp/AVHelp_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVHelp/AVHelp_Error.h"
 
@@ -50,7 +54,7 @@ void Test_MetaInfo()
 void Test_PPS264Info()
 {
 #ifdef _WINDOWS
-	LPCTSTR lpszSrcFile = "H:\\h264 file\\480p.264";
+	LPCTSTR lpszSrcFile = "D:\\h264 file\\480p.264";
 #else
 	LPCTSTR lpszSrcFile = "480p.264";
 #endif
@@ -60,7 +64,7 @@ void Test_PPS264Info()
 	int nSEILen = 0;
 	UCHAR uszSPSBuffer[64];
 	UCHAR uszPPSBuffer[64];
-	UCHAR uszSEIBuffer[64];
+	UCHAR uszSEIBuffer[1024];
 	UCHAR uszIDLeave[64];
 	TCHAR uszFileBuffer[2048];
 
@@ -72,7 +76,7 @@ void Test_PPS264Info()
 	FILE* pSt_File = fopen(lpszSrcFile, "rb");
 	int nRet = fread(uszFileBuffer, 1, sizeof(uszFileBuffer), pSt_File);
 
-	if (!AVHelp_MetaInfo_Get264Hdr(uszFileBuffer, nRet, uszSPSBuffer, uszPPSBuffer, uszSEIBuffer, uszIDLeave, &nSPSLen, &nPPSLen, &nSEILen))
+	if (!AVHelp_Parse_264Hdr(uszFileBuffer, nRet, uszSPSBuffer, uszPPSBuffer, uszSEIBuffer, uszIDLeave, &nSPSLen, &nPPSLen, &nSEILen))
 	{
 		return;
 	}
@@ -95,32 +99,32 @@ void Test_PPS264Info()
 void Test_PPS265Info()
 {
 #ifdef _WINDOWS
-	LPCTSTR lpszSrcFile = "H:\\h264 file\\2.hevc";
+	LPCTSTR lpszSrcFile = "D:\\h264 file\\2.hevc";
 #else
 	LPCTSTR lpszSrcFile = "2.hevc";
 #endif
-
 	int nSPSLen = 0;
 	int nPPSLen = 0;
 	int nVPSLen = 0;
-	UCHAR uszSPSBuffer[64];
-	UCHAR uszPPSBuffer[64];
-	UCHAR uszVPSBuffer[64];
-	TCHAR uszFileBuffer[2048];
+	UCHAR uszSPSBuffer[128];
+	UCHAR uszPPSBuffer[128];
+	UCHAR uszVPSBuffer[128];
+	TCHAR *puszFileBuffer = (TCHAR *)malloc(1024 * 1024 * 10);
 
 	memset(uszSPSBuffer, '\0', sizeof(uszSPSBuffer));
 	memset(uszPPSBuffer, '\0', sizeof(uszPPSBuffer));
 	memset(uszVPSBuffer, '\0', sizeof(uszVPSBuffer));
-	memset(uszFileBuffer, '\0', sizeof(uszFileBuffer));
+	memset(puszFileBuffer, '\0', 1024 * 1024 * 10);
 	FILE* pSt_File = fopen(lpszSrcFile, "rb");
-	int nRet = fread(uszFileBuffer, 1, sizeof(uszFileBuffer), pSt_File);
+	int nRet = fread(puszFileBuffer, 1, 1024 * 1024 * 10, pSt_File);
 
-	if (!AVHelp_MetaInfo_Get265Hdr(uszFileBuffer, nRet, uszVPSBuffer, uszSPSBuffer, uszPPSBuffer, &nVPSLen, &nSPSLen, &nPPSLen))
+	if (!AVHelp_Parse_265Hdr(puszFileBuffer, nRet, uszVPSBuffer, uszSPSBuffer, uszPPSBuffer, &nVPSLen, &nSPSLen, &nPPSLen))
 	{
 		return;
 	}
+	free(puszFileBuffer);
 
-	printf("VPS-%d:", nVPSLen);
+	printf("\nVPS-%d:", nVPSLen);
 	for (int i = 0; i < nVPSLen; i++)
 	{
 		printf("%02X ", uszVPSBuffer[i]);
@@ -143,13 +147,13 @@ void Test_PPS265Info()
 
 	TCHAR tszICStr[1024];
 	memset(tszICStr, '\0', sizeof(tszICStr));
-	AVHelp_MetaInfo_Get265Paraset(uszVPSBuffer, nVPSLen, &nProspace, &nProID, &nFlags, &nLevelID, tszICStr);
+	AVHelp_Parse_265Paraset(uszVPSBuffer, nVPSLen, &nProspace, &nProID, &nFlags, &nLevelID, tszICStr);
 	printf("\n%d %d %d %d %s\n", nProspace, nProID, nFlags, nLevelID, tszICStr);
 }
 void Test_AudioInfo()
 {
 #ifdef _WINDOWS
-	LPCTSTR lpszSrcFile = "H:\\h264 file\\test.aac";
+	LPCTSTR lpszSrcFile = "D:\\h264 file\\test.aac";
 #else
 	LPCTSTR lpszSrcFile = "test.aac";
 #endif
@@ -162,7 +166,7 @@ void Test_AudioInfo()
 	FILE* pSt_File = fopen(lpszSrcFile, "rb");
 
 	int nRet = fread(uszFileBuffer, 1, sizeof(uszFileBuffer), pSt_File);
-	if (!AVHelp_MetaInfo_GetAACInfo(uszFileBuffer, nRet, &nChannel, &nSample, &nProfile, &nConfig))
+	if (!AVHelp_Parse_AACInfo(uszFileBuffer, nRet, &nChannel, &nSample, &nProfile, &nConfig))
 	{
 		return;
 	}
@@ -201,11 +205,11 @@ void Test_AVList()
 
 int main()
 {
-	Test_AVList();
-	Test_MetaInfo();
 	Test_PPS264Info();
 	Test_PPS265Info();
 	Test_AudioInfo();
-	
+	Test_AVList();
+	Test_MetaInfo();
+
 	return 0;
 }

@@ -284,10 +284,98 @@ int Test_PacketCustom()
 	HelpComponents_PKTCustom_GetListEx(xhPacket, &ppSt_ListAddr, &nListCount, 4, 4);
 	for (int i = 0; i < nListCount; i++)
 	{
-		HelpComponents_PKTCustom_GetEx(xhPacket, ppSt_ListAddr[i]->hSocket, tszMsgBuffer, &nMsgLen, &st_ProtocolHdr, &st_ProtocolTail);
+		TCHAR* ptszMsgBuffer;
+		int nHDRLen = 0;
+		HelpComponents_PKTCustom_GetMemoryEx(xhPacket, ppSt_ListAddr[i]->hSocket, &ptszMsgBuffer, &nMsgLen, &st_ProtocolHdr, &nHDRLen, &st_ProtocolTail);
 		printf("Test_PacketCustom:%d=%s\n", nMsgLen, tszMsgBuffer);
+		BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 	}
 	HelpComponents_PKTCustom_WaitEventEx(xhPacket, 1, 5000);
+	HelpComponents_PKTCustom_DeleteEx(xhPacket, hSocket);
+	HelpComponents_PKTCustom_Destory(xhPacket);
+	return 0;
+}
+typedef struct
+{
+	BYTE byFlags[4];
+
+	BYTE byCC : 4;
+	BYTE byX : 1;
+	BYTE byP : 1;
+	BYTE byV : 2;
+
+	BYTE byPT : 7;
+	BYTE byM : 1;
+
+	WORD wSerial;
+	BYTE bySIMNumber[6];
+	BYTE byChannel;
+
+	BYTE byPacket : 4;
+	BYTE byType : 4;
+
+	BYTE byTime[8];
+	WORD wLen;
+}XENGINE_RTPPACKETHDR;
+int Test_PacketCustom2()
+{
+	SOCKET hSocket = 1000;
+	XHANDLE xhPacket = HelpComponents_PKTCustom_Init();
+	if (NULL == xhPacket)
+	{
+		printf("HelpComponents_PKTCustom_Init:%lX\n", Packets_GetLastError());
+		return -1;
+	}
+	HelpComponents_PKTCustom_SetHdrEx(xhPacket, 24, 26, sizeof(XENGINE_RTPPACKETHDR));
+	
+	HelpComponents_PKTCustom_SetConditionsEx(xhPacket, 15, 4, 4, -8, TRUE, TRUE);
+	HelpComponents_PKTCustom_SetConditionsEx(xhPacket, 15, 4, 0, 4, TRUE, TRUE);
+	HelpComponents_PKTCustom_SetConditionsEx(xhPacket, 15, 4, 1, 4, TRUE, TRUE);
+	HelpComponents_PKTCustom_SetConditionsEx(xhPacket, 15, 4, 2, 4, TRUE, TRUE);
+
+	if (!HelpComponents_PKTCustom_CreateEx(xhPacket, hSocket))
+	{
+		printf("HelpComponents_PKTCustom_CreateEx:%lX\n", Packets_GetLastError());
+		return -1;
+	}
+
+#ifdef _WINDOWS
+	LPCTSTR lpszFile = _T("D:\\XEngine_JT1078\\XEngine_APPClient\\Debug\\1.rtp");
+#else
+	LPCTSTR lpszFile = _T("1.rtp");
+#endif
+	FILE* pSt_File = _tfopen(lpszFile, _T("rb"));
+	while (TRUE)
+	{
+		TCHAR tszMsgBuffer[2048];
+		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+		int nRet = fread(tszMsgBuffer, 1, sizeof(tszMsgBuffer), pSt_File);
+		if (nRet <= 0)
+		{
+			break;
+		}
+		HelpComponents_PKTCustom_PostEx(xhPacket, hSocket, tszMsgBuffer, nRet);
+
+		while (TRUE)
+		{
+			int nHDRLen = 0;
+			int nMsgLen = 0;
+			TCHAR* ptszMsgBuffer;
+			TCHAR tszHDRBuffer[MAX_PATH];
+			XENGINE_RTPPACKETHDR st_RTPPacket;
+
+			memset(&st_RTPPacket, '\0', sizeof(XENGINE_RTPPACKETHDR));
+			memset(tszHDRBuffer, '\0', MAX_PATH);
+
+			if (!HelpComponents_PKTCustom_GetMemoryEx(xhPacket, hSocket, &ptszMsgBuffer, &nMsgLen, tszHDRBuffer, &nHDRLen))
+			{
+				break;
+			}
+			memcpy(&st_RTPPacket, tszHDRBuffer, sizeof(XENGINE_RTPPACKETHDR));
+			printf("Test_PacketCustom:%d T:%d P:%d %d\n", nMsgLen, st_RTPPacket.byType, st_RTPPacket.byPacket, nHDRLen);
+			BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+		}
+	}
 	HelpComponents_PKTCustom_DeleteEx(xhPacket, hSocket);
 	HelpComponents_PKTCustom_Destory(xhPacket);
 	return 0;
@@ -362,10 +450,12 @@ int Test_DataChunk()
 
 int main()
 {
+	Test_PacketCustom2();
+	Test_PacketCustom();
+	
 	Test_DataChunk();
 	Test_Datas();
 	Test_Packets();
 	Test_PacketPool();
-	Test_PacketCustom();
 	return 0;
 }

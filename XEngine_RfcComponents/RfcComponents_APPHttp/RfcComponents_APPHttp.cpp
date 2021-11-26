@@ -200,14 +200,20 @@ int main()
 			printf("%lX\n", OPenSsl_GetLastError());
 			return 0;
 		}
+		if (!NetCore_TCPXCore_StartEx(&xhToken, 443))
+		{
+			printf("%lX\n", NetCore_GetLastError());
+			return 0;
+		}
 	}
-
-	if (!NetCore_TCPXCore_StartEx(&xhToken,443))
+	else
 	{
-		printf("%lX\n", NetCore_GetLastError());
-		return 0;
+		if (!NetCore_TCPXCore_StartEx(&xhToken, 80))
+		{
+			printf("%lX\n", NetCore_GetLastError());
+			return 0;
+		}
 	}
-
 	
 	NetCore_TCPXCore_RegisterCallBackEx(xhToken, NetCore_CB_Login, NetCore_CB_Recv, NetCore_CB_Close);
 	std::thread pSTDThread(NetCore_Thread);

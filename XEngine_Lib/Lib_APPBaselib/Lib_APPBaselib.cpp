@@ -293,8 +293,63 @@ void Test_GetTimeofday()
 	printf("%ld %ld %llu %llu  %s\n", time(NULL), st_Timeval.tv_sec, st_Timeval.tv_value, st_Timeval.tv_usec, tszMsgTimer);
 #endif
 }
+int profiletest()
+{
+#ifdef _WINDOWS
+	LPCTSTR lpszFile = _T("D:\\xengine_apps\\Debug\\1.txt");
+#else
+	LPCTSTR lpszFile = _T("./1.txt");
+#endif
+
+	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test", "a", "1");
+	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test", "b", "2");
+	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test", "c", "3");
+
+	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test2", "1", "a");
+	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test2", "2", "b");
+	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test2", "3", "c");
+
+	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test", "c", "c3");
+	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test", "d", "4");
+	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test", "b", "b2");
+	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test2", "2", "2b");
+
+	TCHAR tszValue[64];
+	memset(tszValue, '\0', sizeof(tszValue));
+
+	BaseLib_OperatorFile_ReadProfileFromFile(lpszFile, "test", "a", tszValue);
+	printf("%s\n", tszValue);
+	memset(tszValue, '\0', sizeof(tszValue));
+
+	BaseLib_OperatorFile_ReadProfileFromFile(lpszFile, "test", "b", tszValue);
+	printf("%s\n", tszValue);
+	memset(tszValue, '\0', sizeof(tszValue));
+
+	BaseLib_OperatorFile_ReadProfileFromFile(lpszFile, "test", "c", tszValue);
+	printf("%s\n", tszValue);
+	memset(tszValue, '\0', sizeof(tszValue));
+
+	BaseLib_OperatorFile_ReadProfileFromFile(lpszFile, "test", "d", tszValue);
+	printf("%s\n", tszValue);
+	memset(tszValue, '\0', sizeof(tszValue));
+
+	BaseLib_OperatorFile_ReadProfileFromFile(lpszFile, "test2", "1", tszValue);
+	printf("%s\n", tszValue);
+	memset(tszValue, '\0', sizeof(tszValue));
+
+	BaseLib_OperatorFile_ReadProfileFromFile(lpszFile, "test2", "2", tszValue);
+	printf("%s\n", tszValue);
+	memset(tszValue, '\0', sizeof(tszValue));
+
+	BaseLib_OperatorFile_ReadProfileFromFile(lpszFile, "test2", "3", tszValue);
+	printf("%s\n", tszValue);
+	memset(tszValue, '\0', sizeof(tszValue));
+	return 0;
+}
+
 int main()
 {
+	profiletest();
 	StringTest();
 	Test_GetTimeofday();
 	test_TTrigger();

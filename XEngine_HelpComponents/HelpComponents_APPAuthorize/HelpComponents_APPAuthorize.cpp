@@ -81,13 +81,13 @@ int Authorize_APPSerial()
 	return 0;
 }
 
-#ifdef _WINDOWS
-LPCTSTR lpszFile = _T("D:\\XEngine_Apps\\Debug\\XEngine_Authorize.key");
-#else
-LPCTSTR lpszFile = _T("XEngine_Authorize.key");
-#endif
 int Authorize_APPLocal()
 {
+#ifdef _WINDOWS
+	LPCTSTR lpszFile = _T("D:\\XEngine_Apps\\Debug\\XEngine_Authorize.key");
+#else
+	LPCTSTR lpszFile = _T("XEngine_Authorize.key");
+#endif
 	//////////////////////////////////////////////////////////////////////////生成CDKEY
 	__int64x nLeftTime = 0;
 	UCHAR tszEnBuffer[2048];
@@ -181,11 +181,56 @@ int Authorize_APPLocal()
 	}
 	return 0;
 }
+int Authorize_APPMemory()
+{
+#ifdef _WINDOWS
+	LPCTSTR lpszFile = _T("D:\\XEngine_Apps\\Debug\\XEngine_Authorize.txt");
+#else
+	LPCTSTR lpszFile = _T("XEngine_Authorize.txt");
+#endif
+	//////////////////////////////////////////////////////////////////////////生成CDKEY
+	int nMsgLen = 2048;
+	TCHAR tszMsgBuffer[2048];
+	XENGINE_AUTHORIZE_LOCAL st_AuthLocal;
 
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	memset(&st_AuthLocal, '\0', sizeof(XENGINE_AUTHORIZE_LOCAL));
 
+	strcpy(st_AuthLocal.tszAddr, _T("127.0.0.1"));
+	st_AuthLocal.nPort = 5000;
+
+	strcpy(st_AuthLocal.st_AuthAppInfo.tszAppName, "XEngine");
+	strcpy(st_AuthLocal.st_AuthAppInfo.tszAppVer, "7.24.0.1001");
+
+	st_AuthLocal.st_AuthRegInfo.enSerialType = ENUM_HELPCOMPONENTS_AUTHORIZE_SERIAL_TYPE_TIME;
+	st_AuthLocal.st_AuthRegInfo.enRegType = ENUM_HELPCOMPONENTS_AUTHORIZE_REG_TYPE_TRY;
+	st_AuthLocal.st_AuthRegInfo.enHWType = ENUM_HELPCOMPONENTS_AUTHORIZE_HW_TYPE_CPU;
+
+	strcpy(st_AuthLocal.st_AuthRegInfo.tszHardware, "CPUID12345");
+
+	strcpy(st_AuthLocal.st_AuthUserInfo.tszUserName, "XEngine");
+	strcpy(st_AuthLocal.st_AuthUserInfo.tszUserContact, "486179@qq.com");
+
+	if (!Authorize_Local_WriteMemory(tszMsgBuffer, &nMsgLen, &st_AuthLocal))
+	{
+		return -1;
+	}
+	FILE* pSt_File = _tfopen(lpszFile, _T("wb"));
+	fwrite(tszMsgBuffer, 1, nMsgLen, pSt_File);
+	fclose(pSt_File);
+	//////////////////////////////////////////////////////////////////////////验证CDKEY
+	memset(&st_AuthLocal, '\0', sizeof(XENGINE_AUTHORIZE_LOCAL));
+
+	if (!Authorize_Local_ReadMemory(tszMsgBuffer, nMsgLen, &st_AuthLocal))
+	{
+		return -1;
+	}
+	return 0;
+}
 int main()
 {
 	Authorize_APPSerial();
+	Authorize_APPMemory();
 	Authorize_APPLocal();
 	return 0;
 }

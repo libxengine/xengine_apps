@@ -3,11 +3,10 @@
 #include <tchar.h>
 #pragma comment(lib,"Ws2_32.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/StreamMedia_XClient.lib")
-#else
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#endif
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVCollect/AVCollect_Define.h"

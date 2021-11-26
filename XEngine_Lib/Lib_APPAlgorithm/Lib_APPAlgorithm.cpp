@@ -58,11 +58,12 @@ int main()
 		printf("%d = %d\n", nSwapA, nSwapB);
 	}
 
-	__int64 nArrayKey = 123456;
-	__int64 nArrayValue[6];
-	if (Algorithm_Math_GetValue(nArrayKey, nArrayValue))
+	int nCount = 0;
+	__int64 nArrayKey = 1230456;
+	__int64 nArrayValue[10];
+	if (Algorithm_Math_GetValue(nArrayKey, nArrayValue, &nCount));
 	{
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < nCount; i++)
 		{
 			printf("%lld\n", nArrayValue[i]);
 		}
