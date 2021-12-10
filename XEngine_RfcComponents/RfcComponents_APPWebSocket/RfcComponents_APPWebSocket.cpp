@@ -58,6 +58,7 @@ void CALLBACK NetCore_CB_Recv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpsz
 		RfcComponents_WSConnector_HandShake(lpszRecvMsg, &nSDLen, tszHandsBuffer);
 		NetCore_TCPXCore_SendEx(xhToken, lpszClientAddr, tszHandsBuffer, nSDLen);
 		RfcComponents_WSPacket_SetLoginEx(xhWBPacket, lpszClientAddr);
+		printf("login:%s-%d\n", lpszClientAddr, nMsgLen);
 	}
 }
 void CALLBACK NetCore_CB_Close(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
@@ -73,22 +74,22 @@ XHTHREAD CALLBACK NetCore_Thread()
 	{
 		if (RfcComponents_WSPacket_WaitEventEx(xhWBPacket, 1))
 		{
-			int nMsgLen = 20480;
 			int nListCount = 0;
-			TCHAR tszMsgBuffer[20480];
 			RFCCOMPONENTS_WSPKT_CLIENT** ppSt_ListClient;
-			ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE enOPCode;
-
-			memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 			RfcComponents_WSPacket_GetPoolEx(xhWBPacket, 1, &ppSt_ListClient, &nListCount);
 			for (int i = 0; i < nListCount; i++)
 			{
 				for (int j = 0; j < ppSt_ListClient[i]->nPktCount; j++)
 				{
+					int nMsgLen = 8192;
+					TCHAR tszMsgBuffer[8192];
+					ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE enOPCode;
+
+					memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 					if (RfcComponents_WSPacket_GetEx(xhWBPacket, ppSt_ListClient[i]->tszClientAddr, tszMsgBuffer, &nMsgLen, &enOPCode))
 					{
-						printf("%s %d:%s\n", ppSt_ListClient[i]->tszClientAddr, nMsgLen, tszMsgBuffer);
+						printf("RfcComponents_WSPacket_GetEx:%s %d:%s\n", ppSt_ListClient[i]->tszClientAddr, nMsgLen, tszMsgBuffer);
 
 						int nSDLen = 0;
 						TCHAR tszSendBuffer[2048];
@@ -103,10 +104,6 @@ XHTHREAD CALLBACK NetCore_Thread()
 			BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListClient, nListCount);
 			i++;
 		}
-		if (i > 3)
-		{
-			break;
-		}
 	}
 	return 0;
 }
@@ -120,7 +117,7 @@ int main()
 
 	memset(tszClientAddr, '\0', sizeof(tszClientAddr));
 
-	if (!NetCore_TCPXCore_StartEx(&xhToken, 5000, 100, 2))
+	if (!NetCore_TCPXCore_StartEx(&xhToken, 5000, 100, 2,FALSE,TRUE))
 	{
 		printf("%lX\n", NetCore_GetLastError());
 		return 0;
@@ -136,6 +133,7 @@ int main()
 #endif
 	return 0;
 }
+
 int main_client()
 {
 #ifdef _WINDOWS

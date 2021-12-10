@@ -119,7 +119,8 @@ int Test_Datas()
 
 	HelpComponents_Datas_PostEx(xhPacket, lpszClientAddr, tszMsgBuffer, 10);
 	HelpComponents_Datas_PostEx(xhPacket, lpszClientAddr, tszMsgBuffer + 10, 15);
-	HelpComponents_Datas_PostEx(xhPacket, lpszClientAddr, tszMsgBuffer + 25, 10);
+	HelpComponents_Datas_PostEx(xhPacket, lpszClientAddr, tszMsgBuffer + 25, 7);
+	HelpComponents_Datas_PostEx(xhPacket, lpszClientAddr, tszMsgBuffer + 32, 3);
 
 	HelpComponents_Datas_PostEx(xhPacket, lpszClientAddr, tszMsgBuffer, 35);
 	nMsgLen = 2048;

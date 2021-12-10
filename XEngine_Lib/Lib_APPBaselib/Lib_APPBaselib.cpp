@@ -59,6 +59,21 @@ void TimeTest()
 }
 void StringTest()
 {
+	int nHdrLen = 0;
+	int nBodyLen = 0;
+	TCHAR tszKey[64];
+	TCHAR tszValue[64];
+	TCHAR tszMsgBuffer[1024];
+
+	memset(tszKey, '\0', sizeof(tszKey));
+	memset(tszValue, '\0', sizeof(tszValue));
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+
+	_stprintf(tszMsgBuffer, _T("123456789 :  abcd"));
+	BaseLib_OperatorString_DelSub(tszMsgBuffer, _T("9"));
+
+	BaseLib_OperatorString_GetKeyValue(tszMsgBuffer, ":", tszKey, tszValue, TRUE, &nHdrLen, &nBodyLen);
+
 	LPCTSTR lpszFile1 = _T("./adadad/file.txt");
 	LPCTSTR lpszFile2 = _T("D:\\adadad\\file.txt");
 	LPCTSTR lpszFile3 = _T("./file.txt");
@@ -134,27 +149,6 @@ void GMTTimeTest()
 
 	printf("%s\n", tszGMTTime);
 }
-void FromCharGetKeyValue()
-{
-	LPCTSTR lpszStrSource = _T("123: 321");
-	TCHAR tszKey[32];
-	TCHAR tszValue[32];
-
-	memset(tszKey, '\0', sizeof(tszKey));
-	memset(tszValue, '\0', sizeof(tszValue));
-
-	BaseLib_OperatorString_FromCharGetKeyValue(lpszStrSource, ':', tszKey, tszValue);
-	printf("%s = %s\n", tszKey, tszValue);
-
-
-	LPCTSTR lpszStrDest = _T("asd=zxc");
-	memset(tszKey, '\0', sizeof(tszKey));
-	memset(tszValue, '\0', sizeof(tszValue));
-
-	BaseLib_OperatorString_FromCharGetKeyValue(lpszStrDest, '=', tszKey, tszValue);
-	printf("%s = %s\n", tszKey, tszValue);
-}
-
 int TestAddrLib()
 {
 	LPCTSTR lpszIPV4Convert = _T("192.0.*.10");
@@ -349,7 +343,6 @@ int profiletest()
 
 int main()
 {
-	profiletest();
 	StringTest();
 	Test_GetTimeofday();
 	test_TTrigger();
@@ -359,7 +352,7 @@ int main()
 	Test_GetLunarCalendar();
 	TimeTest();
 	GMTTimeTest();
-	FromCharGetKeyValue();
 	TestAddrLib();
+	profiletest();
 	return 0;
 }
