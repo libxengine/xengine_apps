@@ -21,7 +21,8 @@ using namespace std;
 //g++ -std=gnu++17 -Wall -g XCore_APPService.cpp -o XCore_APPService.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_ManagePool -lXEngine_Core -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
 
 XNETHANDLE xhXSelect = 0;
-XNETHANDLE xhXCore = 0;
+XNETHANDLE xhTCPCore = 0;
+XNETHANDLE xhUDPCore = 0;
 XNETHANDLE xhUDX = 0;
 TCHAR tszClientAddr[64];
 
@@ -34,10 +35,16 @@ BOOL CALLBACK TCPOverlapped_Login(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID 
 void CALLBACK TCPOverlapped_Recv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpszRecvMsg, int nMsgLen, LPVOID lParam)
 {
 	printf("TCPOverlapped_Recv:%s = %s = %d\n", lpszClientAddr, lpszRecvMsg, nMsgLen);
+	_tcscpy(tszClientAddr, lpszClientAddr);
 }
 void CALLBACK TCPOverlapped_Leave(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
 {
 	printf("TCPOverlapped_Leave:%s\n", lpszClientAddr);
+}
+void CALLBACK Callback_UDPRecv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpszRecvMsg, int nMsgLen, LPVOID lParam)
+{
+	printf("TCPOverlapped_Recv:%s = %s = %d\n", lpszClientAddr, lpszRecvMsg, nMsgLen);
+	NetCore_UDPXCore_SendMsgEx(xhUDPCore, lpszClientAddr, lpszRecvMsg, &nMsgLen);
 }
 
 int test_tcpselectserver()
@@ -68,7 +75,7 @@ int test_tcpxpoll()
 }
 int test_tcpxcore()
 {
-	if (NetCore_TCPXCore_StartEx(&xhXCore,5002))
+	if (NetCore_TCPXCore_StartEx(&xhTCPCore,5002))
 	{
 		printf(_T("NetCore_TCPXCore_StartEx Start Is Ok!\n"));
 	}
@@ -76,7 +83,22 @@ int test_tcpxcore()
 	{
 		printf(_T("NetCore_TCPXCore_StartEx Start Is Failed!\n"));
 	}
-	NetCore_TCPXCore_RegisterCallBackEx(xhXCore,TCPOverlapped_Login, TCPOverlapped_Recv, TCPOverlapped_Leave);
+	NetCore_TCPXCore_RegisterCallBackEx(xhTCPCore,TCPOverlapped_Login, TCPOverlapped_Recv, TCPOverlapped_Leave);
+	Sleep(10000);
+	NetCore_TCPXCore_CloseForClientEx(xhTCPCore, tszClientAddr);
+	return 0;
+}
+int test_udpxcore()
+{
+	if (NetCore_UDPXCore_StartEx(&xhUDPCore, 5002))
+	{
+		printf(_T("NetCore_UDPXCore_StartEx Start Is Ok!\n"));
+	}
+	else
+	{
+		printf(_T("NetCore_UDPXCore_StartEx Start Is Failed!\n"));
+	}
+	NetCore_UDPXCore_RegisterCallBackEx(xhUDPCore, Callback_UDPRecv);
 	return 0;
 }
 int test_unixdomain()
@@ -146,16 +168,18 @@ int main()
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
-	test_tcpselectserver();
-	test_tcpxpoll();
+	//test_tcpselectserver();
+	//test_tcpxpoll();
 	test_tcpxcore();
-	test_unixdomain();
-	test_udx();
+	//test_udpxcore();
+	//test_unixdomain();
+	//test_udx();
 	
 	std::this_thread::sleep_for(std::chrono::seconds(50000));
 	NetCore_TCPXPoll_Stop();
 	NetCore_TCPSelect_StopEx(xhXSelect);
-	NetCore_TCPXCore_DestroyEx(xhXCore);
+	NetCore_TCPXCore_DestroyEx(xhTCPCore);
+	NetCore_UDPXCore_DestroyEx(xhUDPCore);
 	NetCore_UnixDomain_Stop();
 	NetCore_UDXSocket_DestroyEx(xhUDX);
 #ifdef _WINDOWS

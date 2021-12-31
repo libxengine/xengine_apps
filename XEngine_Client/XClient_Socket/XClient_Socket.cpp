@@ -31,7 +31,7 @@ int XClient_ProxyClient()
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	SOCKET m_Socket;
-	if (!XClient_TCPSelect_Create(_T("192.168.1.4"), 10081, &m_Socket))
+	if (!XClient_TCPSelect_Create(&m_Socket, _T("192.168.1.4"), 10081))
 	{
 		printf(_T("连接失败！\n"));
 		return -1;
@@ -67,7 +67,7 @@ int XClient_ProxyClient()
 			printf("%s", tszMsgBuffer);
 		}
 	}
-	printf("%s\n");
+	printf("\n");
 	XClient_TCPSelect_Close(m_Socket);
 	return 1;
 }
@@ -80,7 +80,7 @@ int TCPTest()
 	memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
 
 	SOCKET m_Socket;
-	if (!XClient_TCPSelect_Create(_T("127.0.0.1"), 5000, &m_Socket))
+	if (!XClient_TCPSelect_Create(&m_Socket, _T("127.0.0.1"), 5000))
 	{
 		printf(_T("连接失败！\n"));
 		return -1;
@@ -144,16 +144,22 @@ int TCPTestEx()
 int Test_UDPClient()
 {
 	SOCKET hSocket;
+	int nMsgLen = 1024;
 	TCHAR tszMsgBuffer[1024];
-	XClient_UDPSelect_Create(&hSocket, "127.0.0.1", 5000);
+	TCHAR tszIPAddr[128];
 
-	for (int i = 0; i < 1024; i++)
-	{
-		tszMsgBuffer[i] = i;
-	}
-	if (!XClient_UDPSelect_SendMsg(hSocket, tszMsgBuffer, 1024))
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	memset(tszIPAddr, '\0', sizeof(tszIPAddr));
+
+	XClient_UDPSelect_Create(&hSocket, "127.0.0.1", 5002);
+	if (!XClient_UDPSelect_SendMsg(hSocket, "hello", 5))
 	{
 		printf("errno!\n");
+	}
+	
+	if (XClient_UDPSelect_RecvMsg(hSocket, tszMsgBuffer, &nMsgLen, tszIPAddr))
+	{
+		printf("%d:%s:%s\n", nMsgLen, tszIPAddr, tszMsgBuffer);
 	}
 	XClient_UDPSelect_Close(hSocket);
 	return 0;
@@ -241,13 +247,12 @@ int main()
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 
-	XClient_ProxyClient();
-	getchar();
-	TCPTest();
-	TCPTestEx();
+	//XClient_ProxyClient();
+	//TCPTest();
+	//TCPTestEx();
 	Test_UDPClient();
-	Test_Unix();
-	udx_test();
+	//Test_Unix();
+	//udx_test();
 	
 #ifdef _WINDOWS
 	WSACleanup();
