@@ -1,0 +1,5 @@
+LIBRARY
+
+EXPORTS
+	FPCall_HttpExe_Process
+	FPCall_HttpExe_GetError

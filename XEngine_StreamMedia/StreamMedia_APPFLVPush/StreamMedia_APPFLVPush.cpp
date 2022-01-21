@@ -3,10 +3,12 @@
 #include <tchar.h>
 #pragma comment(lib,"Ws2_32.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/StreamMedia_XClient.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVCollect.lib")
 #endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVCollect/AVCollect_Define.h"
@@ -18,8 +20,8 @@
 
 FILE* pSt_VFile;
 FILE* pSt_AFile;
-LPCTSTR lpszVFile = _T("H:\\h264 file\\480p.264");
-LPCTSTR lpszAFile = _T("H:\\h264 file\\test.aac");
+LPCTSTR lpszVFile = _T("D:\\h264 file\\480p.264");
+LPCTSTR lpszAFile = _T("D:\\h264 file\\test.aac");
 
 int fread_video(LPVOID lParam, uint8_t* puszMsgBuffer, int nSize)
 {
@@ -51,8 +53,8 @@ int fread_audio(LPVOID lParam, uint8_t* puszMsgBuffer, int nSize)
 int Test_RTMPPush()
 {
 	XNETHANDLE xhStream = 0;
-	LPCTSTR lpszUrl = _T("rtmp://stream.xyry.org/flv/qyt");
-	BOOL bMemory = TRUE;
+	LPCTSTR lpszUrl = _T("rtmp://stream.xyry.org/live/qyt");
+	BOOL bMemory = FALSE;
 
 	if (bMemory)
 	{
@@ -74,7 +76,7 @@ int Test_RTMPPush()
 			printf("XClient_FilePush_Push:%lX\n", XClient_GetLastError());
 			return -1;
 		}
-		if (!XClient_FilePush_Input(xhStream, NULL, NULL, fread_video, fread_audio, NULL, NULL))
+		if (!XClient_FilePush_Input(xhStream, NULL, NULL, fread_video, NULL, NULL, NULL))
 		{
 			printf("XClient_FilePush_Input:%lX\n", XClient_GetLastError());
 			//return -1;
@@ -97,7 +99,7 @@ int Test_RTMPPush()
 			printf("XClient_FilePush_Push:%lX\n", XClient_GetLastError());
 			return -1;
 		}
-		if (!XClient_FilePush_Input(xhStream, lpszVFile, lpszAFile))
+		if (!XClient_FilePush_Input(xhStream, lpszVFile, NULL))
 		{
 			printf("XClient_FilePush_Input:%lX\n", XClient_GetLastError());
 			return -1;
@@ -118,7 +120,6 @@ int Test_RTMPPush()
 	while (bIsPush)
 	{
 		XClient_FilePush_GetStatus(xhStream, &bIsPush);
-		
 	}
 	XClient_FilePush_Close(xhStream);
 	return 1;
@@ -163,12 +164,10 @@ int Test_RTMPPull()
 int Test_LivePush()
 {
 	XNETHANDLE xhStream = 0;
-	LPCTSTR lpszUrl = _T("rtmp://stream.xyry.org:1935/live/qyt");
-	LPCTSTR lpszVFile = _T("./480p.264");
-	LPCTSTR lpszAFile = _T("./test.aac");
+	LPCTSTR lpszUrl = _T("rtmp://stream.xyry.org/live/qyt");
 
-	XENGINE_AVPROTOCOL st_MediaStream;
-	memset(&st_MediaStream, '\0', sizeof(XENGINE_AVPROTOCOL));
+	XENGINE_PROTOCOL_AVINFO st_MediaStream;
+	memset(&st_MediaStream, '\0', sizeof(XENGINE_PROTOCOL_AVINFO));
 
 	st_MediaStream.st_PushVideo.bEnable = TRUE;
 	st_MediaStream.st_PushVideo.nBitRate = 64000;
@@ -239,14 +238,55 @@ int Test_LivePush()
 	return 0;
 }
 
+XNETHANDLE xhStream;
+void __stdcall XEngine_AVCollect_CBScreen(uint8_t* punStringY, int nYLen, uint8_t* punStringU, int nULen, uint8_t* punStringV, int nVLen, LPVOID lParam)
+{
+	XClient_StreamPush_PushVideo(xhStream, punStringY, nYLen, punStringU, nULen, punStringV, nVLen);
+}
+void test_Screen()
+{
+	XNETHANDLE xhScreen;
+	XENGINE_PROTOCOL_AVINFO st_AVProtocol;
+
+	memset(&st_AVProtocol, '\0', sizeof(XENGINE_PROTOCOL_AVINFO));
+
+	if (!AVCollect_Screen_Init(&xhScreen, XEngine_AVCollect_CBScreen, NULL, "1920x1080", 0, 0, 24))
+	{
+		return;
+	}
+	int nWidth = 0;
+	int nHeight = 0;
+	int64_t nBitRate = 0;
+
+	AVCollect_Screen_GetInfo(xhScreen, &nWidth, &nHeight, &nBitRate);
+
+	st_AVProtocol.st_PushVideo.bEnable = TRUE;
+	st_AVProtocol.st_PushVideo.enAvCodec = 27;
+	st_AVProtocol.st_PushVideo.nBitRate = nBitRate;
+	st_AVProtocol.st_PushVideo.nFrameRate = 24;
+	st_AVProtocol.st_PushVideo.nHeight = nHeight;
+	st_AVProtocol.st_PushVideo.nWidth = nWidth;
+
+	if (!XClient_StreamPush_Init(&xhStream, "rtmp://stream.xyry.org/live/qyt", &st_AVProtocol, "flv"))
+	{
+		return;
+	}
+	AVCollect_Screen_Start(xhScreen);
+
+	while (1)
+	{
+		Sleep(1000);
+	}
+}
 int main()
 {
 #ifdef _WINDOWS
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
-
-	Test_RTMPPush();
+	test_Screen();
+	//Test_LivePush();
+	//Test_RTMPPush();
 	//Test_RTMPPull();
 	
 #ifdef _WINDOWS

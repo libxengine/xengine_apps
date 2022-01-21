@@ -26,7 +26,7 @@ using namespace std;
 
 //g++ -std=c++17 -Wall -g RfcComponents_APPHttp.cpp -o RfcComponents_APPHttp.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lXEngine_OPenSsl -lRfcComponents_HttpServer -lpthread -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
 
-BOOL bSSL = TRUE;
+BOOL bSSL = FALSE;
 BOOL bIsRun = FALSE;
 XHANDLE xhSsl = NULL;
 XNETHANDLE xhToken;
@@ -100,54 +100,82 @@ XHTHREAD CALLBACK NetCore_Thread()
 
 			if (RfcComponents_HttpServer_GetRandomEx(xhHttp, tszClientAddr, tszMsgBuffer, &nMsgLen, &st_ReqParam, &ppszListHdr, &nListCount))
 			{
-				int nRVMode = 0;
-				int nRVCount = 0;
-				int nHDSize = 0;
-				RfcComponents_HttpServer_GetRecvModeEx(xhHttp, tszClientAddr, &nRVMode, &nRVCount, &nHDSize);
-				if (1 == nRVMode)
+				int nHTTPCode = 0;
+				int nExecLen = 0;
+				TCHAR tszMINIBuffer[64];
+				TCHAR tszExecBuffer[MAX_PATH];
+
+				memset(tszMINIBuffer, '\0', sizeof(tszMINIBuffer));
+				memset(tszExecBuffer, '\0', sizeof(tszExecBuffer));
+				
+				if (RfcComponents_HttpExec_HandleProcess(tszClientAddr, &st_ReqParam, &ppszListHdr, nListCount, tszMsgBuffer, nMsgLen, &nHTTPCode, tszMINIBuffer, tszExecBuffer, &nExecLen))
 				{
-					printf("count:%d,recv:%d\n", nRVCount, nHDSize);
-					fwrite(tszMsgBuffer, 1, nMsgLen, pSt_File);
-					if (nHDSize >= nRVCount)
+					//api类型交给小程序执行,不是api交给上层用户处理
+					int nSDLen = 0;
+					TCHAR tszSDBuffer[2048];
+					RFCCOMPONENTS_HTTP_HDRPARAM st_HdrParam;
+
+					memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
+					memset(&st_HdrParam, '\0', sizeof(RFCCOMPONENTS_HTTP_HDRPARAM));
+					//教给微处理器
+					st_HdrParam.bIsClose = TRUE;
+					st_HdrParam.nHttpCode = nHTTPCode;
+					strcpy(st_HdrParam.tszMimeType, tszMINIBuffer);
+					RfcComponents_HttpServer_SendMsgEx(xhHttp, tszSDBuffer, &nSDLen, &st_HdrParam, tszExecBuffer, nExecLen);
+					NetCore_TCPXCore_SendEx(xhToken, tszClientAddr, tszSDBuffer, nSDLen);
+				}
+				else
+				{
+					//我们自己处理
+					int nRVMode = 0;
+					int nRVCount = 0;
+					int nHDSize = 0;
+					RfcComponents_HttpServer_GetRecvModeEx(xhHttp, tszClientAddr, &nRVMode, &nRVCount, &nHDSize);
+					if (1 == nRVMode)
 					{
+						printf("count:%d,recv:%d\n", nRVCount, nHDSize);
+						fwrite(tszMsgBuffer, 1, nMsgLen, pSt_File);
+						if (nHDSize >= nRVCount)
+						{
+							RFCCOMPONENTS_HTTP_HDRPARAM st_HdrParam;
+							memset(&st_HdrParam, '\0', sizeof(RFCCOMPONENTS_HTTP_HDRPARAM));
+
+							st_HdrParam.bIsClose = TRUE;
+							st_HdrParam.nHttpCode = 200;
+							nMsgLen = 2048;
+							RfcComponents_HttpServer_SendMsgEx(xhHttp, tszMsgBuffer, &nMsgLen, &st_HdrParam);
+							NetCore_TCPXCore_SendEx(xhToken, tszClientAddr, tszMsgBuffer, nMsgLen);
+
+							fclose(pSt_File);
+							break;
+						}
+					}
+					else
+					{
+						printf("%s %d:%s\n", tszClientAddr, nMsgLen, tszMsgBuffer);
 						RFCCOMPONENTS_HTTP_HDRPARAM st_HdrParam;
 						memset(&st_HdrParam, '\0', sizeof(RFCCOMPONENTS_HTTP_HDRPARAM));
 
 						st_HdrParam.bIsClose = TRUE;
 						st_HdrParam.nHttpCode = 200;
 						nMsgLen = 2048;
-						RfcComponents_HttpServer_SendMsgEx(xhHttp, tszMsgBuffer, &nMsgLen, &st_HdrParam);
-						NetCore_TCPXCore_SendEx(xhToken, tszClientAddr, tszMsgBuffer, nMsgLen);
+						RfcComponents_HttpServer_SendMsgEx(xhHttp, tszMsgBuffer, &nMsgLen, &st_HdrParam, "123456789", 9);
+						if (bSSL)
+						{
+							int nSSLLen = 2048;
+							TCHAR tszSSLBuffer[2048];
+							memset(tszSSLBuffer, '\0', sizeof(tszSSLBuffer));
 
-						fclose(pSt_File);
-						break;
+							OPenSsl_Server_SendMsgEx(xhSsl, tszClientAddr, tszMsgBuffer, nMsgLen, tszSSLBuffer, &nSSLLen);
+							NetCore_TCPXCore_SendEx(xhToken, tszClientAddr, tszSSLBuffer, nSSLLen);
+						}
+						else
+						{
+							NetCore_TCPXCore_SendEx(xhToken, tszClientAddr, tszMsgBuffer, nMsgLen);
+						}
 					}
+					BaseLib_OperatorMemory_Free((XPPPMEM)&ppszListHdr, nListCount);
 				}
-				else
-				{
-					printf("%s %d:%s\n", tszClientAddr, nMsgLen, tszMsgBuffer);
-					RFCCOMPONENTS_HTTP_HDRPARAM st_HdrParam;
-					memset(&st_HdrParam, '\0', sizeof(RFCCOMPONENTS_HTTP_HDRPARAM));
-
-					st_HdrParam.bIsClose = TRUE;
-					st_HdrParam.nHttpCode = 200;
-					nMsgLen = 2048;
-					RfcComponents_HttpServer_SendMsgEx(xhHttp, tszMsgBuffer, &nMsgLen, &st_HdrParam, "123456789", 9);
-					if (bSSL)
-					{
-						int nSSLLen = 2048;
-						TCHAR tszSSLBuffer[2048];
-						memset(tszSSLBuffer, '\0', sizeof(tszSSLBuffer));
-
-						OPenSsl_Server_SendMsgEx(xhSsl, tszClientAddr, tszMsgBuffer, nMsgLen, tszSSLBuffer, &nSSLLen);
-						NetCore_TCPXCore_SendEx(xhToken, tszClientAddr, tszSSLBuffer, nSSLLen);
-					}
-					else
-					{
-						NetCore_TCPXCore_SendEx(xhToken, tszClientAddr, tszMsgBuffer, nMsgLen);
-					}
-				}
-				BaseLib_OperatorMemory_Free((XPPPMEM)&ppszListHdr, nListCount);
 			}
 		}
 	}
@@ -169,6 +197,17 @@ int main()
 	LPCTSTR lpszMiniFile = _T("HttpMime.types");
 	LPCTSTR lpszCodeFile = _T("HttpCode.types");
 #endif
+	LPCTSTR lpszUrl = _T("http://bbs.xyry.org/forum.php?mod=viewthread&tid=2&extra=page%3D1");
+	int nListCount = 0;
+	TCHAR** pptszListParam;
+	TCHAR tszUrlAddr[MAX_PATH];
+	RfcComponents_HttpHelp_GetParament(lpszUrl, &pptszListParam, &nListCount, tszUrlAddr);
+	for (int i = 0; i < nListCount; i++)
+	{
+		printf("%s\n", pptszListParam[i]);
+	}
+	BaseLib_OperatorMemory_Free((XPPPMEM)&pptszListParam, nListCount);
+
 	bIsRun = TRUE;
 	if (1 == nRVMode)
 	{
@@ -182,7 +221,7 @@ int main()
 	xhHttp = RfcComponents_HttpServer_InitEx(lpszCodeFile, lpszMiniFile, 1);
 	if (NULL == xhHttp)
 	{
-		printf("%lX\n", HttpServer_GetLastError());
+		printf("RfcComponents_HttpServer_InitEx:%lX\n", HttpServer_GetLastError());
 		return 0;
 	}
 	if (bSSL)
@@ -197,12 +236,12 @@ int main()
 		xhSsl = OPenSsl_Server_InitEx(lpszCertChain, NULL, lpszCertKey, FALSE, FALSE);
 		if (NULL == xhSsl)
 		{
-			printf("%lX\n", OPenSsl_GetLastError());
+			printf("OPenSsl_Server_InitEx:%lX\n", OPenSsl_GetLastError());
 			return 0;
 		}
 		if (!NetCore_TCPXCore_StartEx(&xhToken, 443))
 		{
-			printf("%lX\n", NetCore_GetLastError());
+			printf("NetCore_TCPXCore_StartEx:%lX\n", NetCore_GetLastError());
 			return 0;
 		}
 	}
@@ -210,11 +249,26 @@ int main()
 	{
 		if (!NetCore_TCPXCore_StartEx(&xhToken, 80))
 		{
-			printf("%lX\n", NetCore_GetLastError());
+			printf("NetCore_TCPXCore_StartEx:%lX\n", NetCore_GetLastError());
 			return 0;
 		}
 	}
 	
+	RFCCOMPONENTS_HTTP_REGPROCESS st_Process;
+	memset(&st_Process, '\0', sizeof(RFCCOMPONENTS_HTTP_REGPROCESS));
+
+	st_Process.bAddr = TRUE;
+	st_Process.bBody = TRUE;
+	st_Process.bHdr = TRUE;
+	st_Process.bMethod = TRUE;
+	st_Process.bUrl = TRUE;
+	//注册名称api的内容到程序中
+#ifdef _WINDOWS
+	RfcComponents_HttpExec_RegisterProcess(_T("api"), _T("D:\\xengine_apps\\Debug\\RfcComponents_APPHttpModule.dll"), &st_Process, TRUE);
+#else
+	RfcComponents_HttpExec_RegisterProcess(_T("api"), _T("../RfcComponents_APPHttpExec/RfcComponents_APPHttpExec.exe"), &st_Process, FALSE);
+#endif
+
 	NetCore_TCPXCore_RegisterCallBackEx(xhToken, NetCore_CB_Login, NetCore_CB_Recv, NetCore_CB_Close);
 	std::thread pSTDThread(NetCore_Thread);
 

@@ -100,7 +100,7 @@ int Test_NetSniffer()
 #else
 	NetXApi_Sniffer_Start(&xhNet, _T("any"), NetXApi_Sniffer_Callback);
 #endif
-	std::this_thread::sleep_for(std::chrono::seconds(1000));
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 	NetXApi_Sniffer_Stop(xhNet);
 	return 0;
 }
@@ -124,6 +124,15 @@ int Test_CtrlFlow()
 
 int NetXApi_TestSocket()
 {
+	int nListCount = 0;
+	NETXAPI_CARDINFO** ppSt_ListIFInfo;
+	NetXApi_Socket_GetCardInfo(&ppSt_ListIFInfo, &nListCount);
+	for (int i = 0; i < nListCount; i++)
+	{
+		printf("name:%s ip:%s board:%s dns:%s mac:%s type:%d\n", ppSt_ListIFInfo[i]->tszIFName, ppSt_ListIFInfo[i]->tszIPAddr, ppSt_ListIFInfo[i]->tszBroadAddr, ppSt_ListIFInfo[i]->tszDnsAddr, ppSt_ListIFInfo[i]->tszMacAddr, ppSt_ListIFInfo[i]->enCardType);
+	}
+	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListIFInfo, nListCount);
+
 	if (NetXApi_Socket_IsPortOccupation(5001, XENGINE_NETXAPI_SOCKET_NETSTATE_PROTOCOL_TCP))
 	{
 		printf("’º”√\n");
@@ -167,15 +176,7 @@ int NetXApi_TestSocket()
 	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListTCPProcess, nTCPCount);
 	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListUDPProcess, nUDPCount);
 
-	NETXAPI_NETPARAM st_NetParam;
-	memset(st_NetParam.tszHostName, '\0', sizeof(st_NetParam.tszHostName));
-	memset(st_NetParam.tszDomainName, '\0', sizeof(st_NetParam.tszDomainName));
-
-	NetXApi_Socket_GetNetParam(&st_NetParam);
-	printf("%s %s %d\n", st_NetParam.tszDomainName, st_NetParam.tszHostName, st_NetParam.nDNSCount);
-	BaseLib_OperatorMemory_Free((XPPPMEM)&st_NetParam.pppszListDns, st_NetParam.nDNSCount);
-
-	int nListCount = 0;
+	nListCount = 0;
 	CHAR** ppszListAddr;
 	NetXApi_Socket_DomainToAddr("www.baidu.com", &ppszListAddr, &nListCount);
 	for (int i = 0; i < nListCount; i++)

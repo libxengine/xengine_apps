@@ -31,21 +31,13 @@ int Test_HttpRequest()
 }
 int Test_NetGetIPAddr()
 {
-	int nListCount = 0;
-	APIHELP_NETCARD** ppSt_NetCard;
-
 	TCHAR tszRemoteBuffer[1024];
 	memset(tszRemoteBuffer, '\0', sizeof(tszRemoteBuffer));
 
-	if (!APIHelp_NetWork_GetIPAddr(&ppSt_NetCard, &nListCount, FALSE, tszRemoteBuffer))
+	if (!APIHelp_NetWork_GetIPNet(tszRemoteBuffer))
 	{
-		printf("APIHelp_NetWork_GetIPAddr:%lX", APIHelp_GetLastError());
+		printf("APIHelp_NetWork_GetIPNet:%lX", APIHelp_GetLastError());
 	}
-	for (int i = 0; i < nListCount; i++)
-	{
-		printf("%s %s %s %s %s\n", ppSt_NetCard[i]->tszIFName, ppSt_NetCard[i]->tszIPAddr, ppSt_NetCard[i]->tszBroadAddr, ppSt_NetCard[i]->tszMaskAddr, ppSt_NetCard[i]->tszMacAddr);
-	}
-	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_NetCard, nListCount);
 	printf("%s\n", tszRemoteBuffer);
 	return 0;
 }

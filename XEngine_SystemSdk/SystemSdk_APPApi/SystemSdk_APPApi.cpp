@@ -51,13 +51,13 @@ int Test_SerialInfo()
 #endif
 
 #ifndef _WINDOWS
-	strcpy(st_SDKSerial.tszDiskSerial, "/dev/sda1");
+	strcpy(st_SDKSerial.tszDiskSerial, "sda");
 #endif
 	if (!SystemApi_HardWare_GetSerial(&st_SDKSerial))
 	{
 		return -1;
 	}
-	printf("Test_SerialInfo:%s %s %s %s\n", st_SDKSerial.tszBaseBoardSerial, st_SDKSerial.tszBiosSerail, st_SDKSerial.tszCpuSerial, st_SDKSerial.tszDiskSerial);
+	printf("Test_SerialInfo:%s %s %s %s\n", st_SDKSerial.tszBoardSerial, st_SDKSerial.tszSystemSerail, st_SDKSerial.tszCpuSerial, st_SDKSerial.tszDiskSerial);
 	return 0;
 }
 int Test_DiskInfo()
@@ -136,7 +136,6 @@ int main()
 	Test_CPUInfo();
 	Test_ProcessInfo();
 	Test_SystemInfo();
-
 #ifdef _WINDOWS
 	SystemApi_File_EnumFile("G:\\ffmpeg", NULL, NULL, EnumFile);
 #else
