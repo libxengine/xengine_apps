@@ -39,6 +39,15 @@ int Test_NetGetIPAddr()
 		printf("APIHelp_NetWork_GetIPNet:%lX", APIHelp_GetLastError());
 	}
 	printf("%s\n", tszRemoteBuffer);
+
+	APIHELP_IPADDRINFO st_IPAddrInfo;
+	memset(&st_IPAddrInfo, '\0', sizeof(APIHELP_IPADDRINFO));
+
+	if (!APIHelp_NetWork_GetIPInfo(tszRemoteBuffer, &st_IPAddrInfo))
+	{
+		return -1;
+	}
+	printf("%s,%s,%s,%s\n", st_IPAddrInfo.tszIPAddr, st_IPAddrInfo.tszIPCountry, st_IPAddrInfo.tszIPCity, st_IPAddrInfo.tszIPCounty, st_IPAddrInfo.tszIPISP);
 	return 0;
 }
 

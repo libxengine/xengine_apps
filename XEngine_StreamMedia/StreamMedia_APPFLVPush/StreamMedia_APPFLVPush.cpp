@@ -12,6 +12,7 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVCollect/AVCollect_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_VideoCoder/VideoCoder_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AudioCoder/AudioCoder_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_XClient/XClient_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_XClient/XClient_Error.h"
@@ -73,22 +74,22 @@ int Test_RTMPPush()
 
 		if (!XClient_FilePush_Init(&xhStream))
 		{
-			printf("XClient_FilePush_Push:%lX\n", XClient_GetLastError());
+			printf("XClient_FilePush_Push:%lX\n", StreamClient_GetLastError());
 			return -1;
 		}
 		if (!XClient_FilePush_Input(xhStream, NULL, NULL, fread_video, NULL, NULL, NULL))
 		{
-			printf("XClient_FilePush_Input:%lX\n", XClient_GetLastError());
+			printf("XClient_FilePush_Input:%lX\n", StreamClient_GetLastError());
 			//return -1;
 		}
 		if (!XClient_FilePush_Output(xhStream, lpszUrl))
 		{
-			printf("XClient_FilePush_Output:%lX\n", XClient_GetLastError());
+			printf("XClient_FilePush_Output:%lX\n", StreamClient_GetLastError());
 			return -1;
 		}
 		if (!XClient_FilePush_Start(xhStream))
 		{
-			printf("XClient_FilePush_Output:%lX\n", XClient_GetLastError());
+			printf("XClient_FilePush_Output:%lX\n", StreamClient_GetLastError());
 			return -1;
 		}
 	}
@@ -96,22 +97,22 @@ int Test_RTMPPush()
 	{
 		if (!XClient_FilePush_Init(&xhStream))
 		{
-			printf("XClient_FilePush_Push:%lX\n", XClient_GetLastError());
+			printf("XClient_FilePush_Push:%lX\n", StreamClient_GetLastError());
 			return -1;
 		}
 		if (!XClient_FilePush_Input(xhStream, lpszVFile, NULL))
 		{
-			printf("XClient_FilePush_Input:%lX\n", XClient_GetLastError());
+			printf("XClient_FilePush_Input:%lX\n", StreamClient_GetLastError());
 			return -1;
 		}
 		if (!XClient_FilePush_Output(xhStream, lpszUrl))
 		{
-			printf("XClient_FilePush_Output:%lX\n", XClient_GetLastError());
+			printf("XClient_FilePush_Output:%lX\n", StreamClient_GetLastError());
 			return -1;
 		}
 		if (!XClient_FilePush_Start(xhStream))
 		{
-			printf("XClient_FilePush_Output:%lX\n", XClient_GetLastError());
+			printf("XClient_FilePush_Output:%lX\n", StreamClient_GetLastError());
 			return -1;
 		}
 	}
@@ -148,7 +149,7 @@ int Test_RTMPPull()
 
 	if (!XClient_StreamPull_Init(&xhStream, lpszUrl, CBStream_Pull, pSt_File))
 	{
-		printf("XClient_FilePush_Push:%lX\n", XClient_GetLastError());
+		printf("XClient_FilePush_Push:%lX\n", StreamClient_GetLastError());
 		return -1;
 	}
 	BOOL bPull = FALSE;
@@ -243,9 +244,14 @@ void __stdcall XEngine_AVCollect_CBScreen(uint8_t* punStringY, int nYLen, uint8_
 {
 	XClient_StreamPush_PushVideo(xhStream, punStringY, nYLen, punStringU, nULen, punStringV, nVLen);
 }
+void __stdcall XEngine_AVCollect_CBAudio(uint8_t* punStringAudio, int nVLen, LPVOID lParam)
+{
+
+}
 void test_Screen()
 {
 	XNETHANDLE xhScreen;
+	XNETHANDLE xhAudio;
 	XENGINE_PROTOCOL_AVINFO st_AVProtocol;
 
 	memset(&st_AVProtocol, '\0', sizeof(XENGINE_PROTOCOL_AVINFO));
@@ -254,18 +260,34 @@ void test_Screen()
 	{
 		return;
 	}
+	LPCTSTR lpszAudioStr = _T("virtual-audio-capturer");
+	if (!AVCollect_Audio_Init(&xhAudio, lpszAudioStr, XEngine_AVCollect_CBAudio))
+	{
+		return;
+	}
 	int nWidth = 0;
 	int nHeight = 0;
-	int64_t nBitRate = 0;
-
-	AVCollect_Screen_GetInfo(xhScreen, &nWidth, &nHeight, &nBitRate);
+	int64_t nVideoBit = 0;
+	int64_t nAudioBit = 0;
+	int nSampleRate = 0;
+	int nChannel = 0;
+	ENUM_AVCOLLECT_AUDIOSAMPLEFORMAT enAudioFmt;
+	AVCollect_Screen_GetInfo(xhScreen, &nWidth, &nHeight, &nVideoBit);
+	AVCollect_Audio_GetInfo(xhAudio, &enAudioFmt, &nAudioBit, &nSampleRate, &nChannel);
 
 	st_AVProtocol.st_PushVideo.bEnable = TRUE;
-	st_AVProtocol.st_PushVideo.enAvCodec = 27;
-	st_AVProtocol.st_PushVideo.nBitRate = nBitRate;
+	st_AVProtocol.st_PushVideo.enAvCodec = ENUM_ENTENGINE_AVCODEC_VEDIO_TYPE_H264;
+	st_AVProtocol.st_PushVideo.nBitRate = nVideoBit;
 	st_AVProtocol.st_PushVideo.nFrameRate = 24;
 	st_AVProtocol.st_PushVideo.nHeight = nHeight;
 	st_AVProtocol.st_PushVideo.nWidth = nWidth;
+
+	st_AVProtocol.st_PushAudio.bEnable = TRUE;
+	st_AVProtocol.st_PushAudio.enAvCodec = ENUM_AVCODEC_AUDIO_TYPE_MP3;
+	st_AVProtocol.st_PushAudio.nBitRate = nAudioBit;
+	st_AVProtocol.st_PushAudio.nChannel = nChannel;
+	st_AVProtocol.st_PushAudio.nSampleFmt = enAudioFmt;
+	st_AVProtocol.st_PushAudio.nSampleRate = nSampleRate;
 
 	if (!XClient_StreamPush_Init(&xhStream, "rtmp://stream.xyry.org/live/qyt", &st_AVProtocol, "flv"))
 	{

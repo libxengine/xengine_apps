@@ -1,4 +1,4 @@
-#ifdef _WINDOWS
+ï»¿#ifdef _WINDOWS
 #include <stdio.h>
 #include <Windows.h>
 #include <tchar.h>
@@ -33,7 +33,7 @@ static void WINAPI NetXApi_Sniffer_Callback(XNETHANDLE xhNet, NETXAPI_PROTOCOLIN
 }
 int Test_IPAddr()
 {
-	///*IP¿â
+	///*IPåº“
 	TCHAR tszLocal[256];
 	TCHAR tszArea[256];
 #ifdef _WINDOWS
@@ -72,7 +72,7 @@ int Test_IPAddr()
 }
 int Test_NetFlow()
 {
-	//ÍøÂçÁ÷Á¿
+	//ç½‘ç»œæµé‡
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -93,7 +93,7 @@ int Test_NetFlow()
 }
 int Test_NetSniffer()
 {
-	//ÍøÂ·ĞáÌ½
+	//ç½‘è·¯å—…æ¢
 	XNETHANDLE xhNet;
 #ifdef _WINDOWS
 	NetXApi_Sniffer_Start(&xhNet, _T("192.168.1.7"), NetXApi_Sniffer_Callback);
@@ -135,11 +135,11 @@ int NetXApi_TestSocket()
 
 	if (NetXApi_Socket_IsPortOccupation(5001, XENGINE_NETXAPI_SOCKET_NETSTATE_PROTOCOL_TCP))
 	{
-		printf("Õ¼ÓÃ\n");
+		printf("å ç”¨\n");
 	}
 	else
 	{
-		printf("Î´Õ¼ÓÃ\n");
+		printf("æœªå ç”¨\n");
 	}
 	NETXAPI_NETSTATE st_NetState;
 	memset(&st_NetState, '\0', sizeof(NETXAPI_NETSTATE));

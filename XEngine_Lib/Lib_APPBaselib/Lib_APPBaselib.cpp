@@ -1,4 +1,4 @@
-#ifdef _WINDOWS
+Ôªø#ifdef _WINDOWS
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
@@ -39,7 +39,7 @@ void TimeSpanTest()
 
 	BaseLib_OperatorTimeSpan_GetForStr(lpszStartTime, lpszEndTime, &nDayTTime, 0);
 	BaseLib_OperatorTimeSpan_GetForStr(lpszStartTime, lpszEndTime, &nHourTTime, 1);
-	printf(_T("\nøÁ¡À£∫%lldÃÏ %lld–° ±\n"), nDayTTime, nHourTTime);
+	printf(_T("\nË∑®‰∫ÜÔºö%lldÂ§© %lldÂ∞èÊó∂\n"), nDayTTime, nHourTTime);
 
 	BaseLib_OperatorTimeSpan_CalForStr(lpszStartTime, lpszEndTime, &st_LibTimer, TRUE);
 	printf(_T("%d/%d/%d-%d:%d:%d\n"), st_LibTimer.wYear, st_LibTimer.wMonth, st_LibTimer.wDay, st_LibTimer.wHour, st_LibTimer.wMinute, st_LibTimer.wSecond);
@@ -182,17 +182,17 @@ int test_Mutex()
 	XNETEVENT xhEvent = BaseLib_OperatorSemaphore_Create(lpszName);
 	if (NULL == xhEvent)
 	{
-		printf(" ß∞‹\n");
+		printf("Â§±Ë¥•\n");
 		return 0;
 	}
 
 	if (BaseLib_OperatorSemaphore_IsExist(lpszName))
 	{
-		printf("¥Ê‘⁄\n");
+		printf("Â≠òÂú®\n");
 	}
 	else
 	{
-		printf("≤ª¥Ê‘⁄\n");
+		printf("‰∏çÂ≠òÂú®\n");
 	}
 	BaseLib_OperatorSemaphore_Delete(xhEvent);
 	return 0;

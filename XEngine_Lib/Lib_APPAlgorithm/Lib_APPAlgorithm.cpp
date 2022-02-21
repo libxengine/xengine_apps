@@ -1,4 +1,4 @@
-#ifdef _WINDOWS
+﻿#ifdef _WINDOWS
 #include <Windows.h>
 #include <tchar.h>
 #include <time.h>
