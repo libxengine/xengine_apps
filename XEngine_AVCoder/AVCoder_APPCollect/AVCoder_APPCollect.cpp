@@ -18,34 +18,48 @@ using namespace std;
 FILE* pSt_File;
 int nWidth;
 int nHeight;
-void __stdcall XEngine_AVCollect_Callback(uint8_t* punStringY, int nYLen, uint8_t* punStringU, int nULen, uint8_t* punStringV, int nVLen, LPVOID lParam)
+void __stdcall XEngine_AVCollect_CBVideo(uint8_t* punStringY, int nYLen, uint8_t* punStringU, int nULen, uint8_t* punStringV, int nVLen, LPVOID lParam)
 {
 	fwrite(punStringY, 1, nWidth * nHeight, pSt_File);
 	fwrite(punStringU, 1, nWidth * nHeight / 4, pSt_File);
 	fwrite(punStringV, 1, nWidth * nHeight / 4, pSt_File);
 	printf("1\n");
 }
+void __stdcall XEngine_AVCollect_CBAudio(uint8_t* punStringAudio, int nVLen, LPVOID lParam)
+{
 
+}
 int main()
 {
 	XNETHANDLE xhVideo;
+	XNETHANDLE xhAudio;
 	int64_t nBitRate;
-
-
 #ifdef _WINDOWS
 	pSt_File = fopen("H:\\h264 file\\ds.yuv", "wb");
 #else
 	pSt_File = fopen("ds.yuv", "wb");
 #endif
 
-	if (!AVCollect_Screen_Init(&xhVideo, XEngine_AVCollect_Callback))
+	if (!AVCollect_Screen_Init(&xhVideo, XEngine_AVCollect_CBVideo))
+	{
+		printf(_T("初始化失败"));
+		return -1;
+	}
+	if (!AVCollect_Audio_Init(&xhAudio,_T("耳机 (Redmi AirDots 3 Pro Hands-Free AG Audio)"), XEngine_AVCollect_CBAudio))
 	{
 		printf(_T("初始化失败"));
 		return -1;
 	}
 
 	AVCollect_Screen_GetInfo(xhVideo, &nWidth, &nHeight, &nBitRate);
-	printf("AVCollect_Screen_GetInfo:%d %d %ld\n", nWidth, nHeight, nBitRate);
+	printf("AVCollect_Screen_GetInfo:%d %d %lld\n", nWidth, nHeight, nBitRate);
+
+	ENUM_AVCOLLECT_AUDIOSAMPLEFORMAT enAVSampleFmt;
+	__int64x nARate = 0;
+	int nSampleRate = 0;
+	int nChannels = 0;
+	AVCollect_Audio_GetInfo(xhAudio, &enAVSampleFmt, &nARate, &nSampleRate, &nChannels);
+	printf("AVCollect_Audio_GetInfo:%d %lld %d %ld\n", enAVSampleFmt, nARate, nSampleRate, nChannels);
 
 	AVCollect_Screen_Start(xhVideo);
 

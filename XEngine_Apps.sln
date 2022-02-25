@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31129.286
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XCore_APPService", "XEngine_Core\XCore_APPService\XCore_APPService.vcxproj", "{BBAC24D4-3BBB-4A82-8FC1-405C23EDA032}"
 EndProject
@@ -120,6 +120,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RfcComponents_APPHttpExec", "XEngine_RfcComponents\RfcComponents_APPHttpExec\RfcComponents_APPHttpExec.vcxproj", "{567676BB-67B7-4A35-A1AC-4815C138830B}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RfcComponents_APPHttpModule", "XEngine_RfcComponents\RfcComponents_APPHttpModule\RfcComponents_APPHttpModule.vcxproj", "{A0941C7B-5B2D-48A5-9C30-E6CEC5448B04}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StreamMedia_APPPull", "XEngine_StreamMedia\StreamMedia_APPPull\StreamMedia_APPPull.vcxproj", "{19033A65-6942-4737-A522-26A1B9874056}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -521,6 +523,14 @@ Global
 		{A0941C7B-5B2D-48A5-9C30-E6CEC5448B04}.Release|x64.Build.0 = Release|x64
 		{A0941C7B-5B2D-48A5-9C30-E6CEC5448B04}.Release|x86.ActiveCfg = Release|Win32
 		{A0941C7B-5B2D-48A5-9C30-E6CEC5448B04}.Release|x86.Build.0 = Release|Win32
+		{19033A65-6942-4737-A522-26A1B9874056}.Debug|x64.ActiveCfg = Debug|x64
+		{19033A65-6942-4737-A522-26A1B9874056}.Debug|x64.Build.0 = Debug|x64
+		{19033A65-6942-4737-A522-26A1B9874056}.Debug|x86.ActiveCfg = Debug|Win32
+		{19033A65-6942-4737-A522-26A1B9874056}.Debug|x86.Build.0 = Debug|Win32
+		{19033A65-6942-4737-A522-26A1B9874056}.Release|x64.ActiveCfg = Release|x64
+		{19033A65-6942-4737-A522-26A1B9874056}.Release|x64.Build.0 = Release|x64
+		{19033A65-6942-4737-A522-26A1B9874056}.Release|x86.ActiveCfg = Release|Win32
+		{19033A65-6942-4737-A522-26A1B9874056}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -575,6 +585,7 @@ Global
 		{37A0E0C7-7BF9-4394-A97E-E45B6610FDF8} = {A11E0BB3-4C3C-432C-B528-3417CAD0D5B1}
 		{567676BB-67B7-4A35-A1AC-4815C138830B} = {A11E0BB3-4C3C-432C-B528-3417CAD0D5B1}
 		{A0941C7B-5B2D-48A5-9C30-E6CEC5448B04} = {A11E0BB3-4C3C-432C-B528-3417CAD0D5B1}
+		{19033A65-6942-4737-A522-26A1B9874056} = {54FEE2BB-EBE2-4F7B-9A24-BF6D3CD2FD79}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7DA25D94-055D-4CEF-BDCD-F7BD3315697C}

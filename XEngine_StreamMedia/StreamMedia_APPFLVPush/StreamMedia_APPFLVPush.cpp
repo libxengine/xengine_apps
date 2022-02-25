@@ -126,42 +126,6 @@ int Test_RTMPPush()
 	return 1;
 }
 
-int CBStream_Pull(LPVOID lParam, uint8_t* puszMsgBuffer, int nSize)
-{
-	FILE* pSt_File = (FILE*)lParam;
-	printf("%d\n", nSize);
-	int nRet = fwrite(puszMsgBuffer, 1, nSize, pSt_File);
-
-	return nRet;
-}
-int Test_RTMPPull()
-{
-	XNETHANDLE xhStream = 0;
-	LPCTSTR lpszUrl = _T("http://stream.xyry.org:8800/flv?app=flv&stream=qyt");
-	LPCTSTR lpszFile = _T("stream.flv");
-
-	FILE* pSt_File = fopen(lpszFile, _T("wb"));
-	if (NULL == pSt_File)
-	{
-		printf("file:%d\n", errno);
-		return -1;
-	}
-
-	if (!XClient_StreamPull_Init(&xhStream, lpszUrl, CBStream_Pull, pSt_File))
-	{
-		printf("XClient_FilePush_Push:%lX\n", StreamClient_GetLastError());
-		return -1;
-	}
-	BOOL bPull = FALSE;
-	XClient_StreamPull_GetStatus(xhStream, &bPull);
-
-	while (bPull)
-	{
-	}
-	XClient_StreamPull_Close(xhStream);
-
-	return 1;
-}
 int Test_LivePush()
 {
 	XNETHANDLE xhStream = 0;
@@ -309,7 +273,6 @@ int main()
 	test_Screen();
 	//Test_LivePush();
 	//Test_RTMPPush();
-	//Test_RTMPPull();
 	
 #ifdef _WINDOWS
 	WSACleanup();
