@@ -4,6 +4,7 @@
 #pragma comment(lib,"Ws2_32.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/StreamMedia_XClient.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVCollect.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,6 +15,8 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVCollect/AVCollect_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_VideoCoder/VideoCoder_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AudioCoder/AudioCoder_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVHelp/AVHelp_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVHelp/AVHelp_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_XClient/XClient_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_XClient/XClient_Error.h"
 
@@ -54,7 +57,7 @@ int fread_audio(LPVOID lParam, uint8_t* puszMsgBuffer, int nSize)
 int Test_RTMPPush()
 {
 	XNETHANDLE xhStream = 0;
-	LPCTSTR lpszUrl = _T("rtmp://stream.xyry.org/live/qyt");
+	LPCTSTR lpszUrl = _T("rtmp://app.xyry.org/live/qyt");
 	BOOL bMemory = FALSE;
 
 	if (bMemory)
@@ -100,7 +103,7 @@ int Test_RTMPPush()
 			printf("XClient_FilePush_Push:%lX\n", StreamClient_GetLastError());
 			return -1;
 		}
-		if (!XClient_FilePush_Input(xhStream, lpszVFile, NULL))
+		if (!XClient_FilePush_Input(xhStream, NULL, lpszAFile))
 		{
 			printf("XClient_FilePush_Input:%lX\n", StreamClient_GetLastError());
 			return -1;
@@ -129,9 +132,22 @@ int Test_RTMPPush()
 int Test_LivePush()
 {
 	XNETHANDLE xhStream = 0;
-	LPCTSTR lpszUrl = _T("rtmp://stream.xyry.org/live/qyt");
+	FILE* pSt_VFile = NULL;
+	FILE* pSt_AFile = NULL;
+	LPCTSTR lpszUrl = _T("rtmp://app.xyry.org/live/qyt");
 
+	int nLen = 0;
+	int nPos = 0;
+	TCHAR tszVBuffer[8096];
+	TCHAR tszABuffer[8096];
+	UCHAR tszSPSBuffer[MAX_PATH];
+	UCHAR tszPPSBuffer[MAX_PATH];
 	XENGINE_PROTOCOL_AVINFO st_MediaStream;
+
+	memset(tszVBuffer, '\0', sizeof(tszVBuffer));
+	memset(tszABuffer, '\0', sizeof(tszABuffer));
+	memset(tszSPSBuffer, '\0', MAX_PATH);
+	memset(tszPPSBuffer, '\0', MAX_PATH);
 	memset(&st_MediaStream, '\0', sizeof(XENGINE_PROTOCOL_AVINFO));
 
 	st_MediaStream.st_PushVideo.bEnable = TRUE;
@@ -140,6 +156,20 @@ int Test_LivePush()
 	st_MediaStream.st_PushVideo.nWidth = 720;
 	st_MediaStream.st_PushVideo.nHeight = 480;
 	st_MediaStream.st_PushVideo.enAvCodec = 27;
+	if (st_MediaStream.st_PushVideo.bEnable)
+	{
+		pSt_VFile = fopen(lpszVFile, "rb");
+		if (NULL == pSt_VFile)
+		{
+			printf("fopen:%d\n", errno);
+			return -1;
+		}
+		nLen = fread(tszVBuffer, 1, sizeof(tszVBuffer), pSt_VFile);
+		AVHelp_Parse_264Hdr(tszVBuffer, nLen, tszSPSBuffer, tszPPSBuffer, NULL, NULL, NULL, NULL, NULL, &nPos);
+
+		st_MediaStream.st_PushVideo.nVLen = nPos;
+		memcpy(st_MediaStream.st_PushVideo.tszVInfo, tszVBuffer, nPos);
+	}
 
 	st_MediaStream.st_PushAudio.bEnable = FALSE;
 	st_MediaStream.st_PushAudio.nChannel = 2;
@@ -147,57 +177,48 @@ int Test_LivePush()
 	st_MediaStream.st_PushAudio.nSampleRate = 44100;
 	st_MediaStream.st_PushAudio.nSampleFmt = ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP;
 	st_MediaStream.st_PushAudio.enAvCodec = ENUM_AVCODEC_AUDIO_TYPE_AAC;
-	XClient_CodecPush_Init(&xhStream, lpszUrl, &st_MediaStream, "flv", TRUE);
-	//XClient_CodecPush_WriteHdr(xhStream);// 如果你有视频并且写入了SPSPPS信息到初始化,那么可以优先调用,否则必须写入后才可调用
-	FILE* pSt_VFile = fopen(lpszVFile, "rb");
-	if (NULL == pSt_VFile)
+	if (st_MediaStream.st_PushAudio.bEnable)
 	{
-		printf("fopen:%d\n", errno);
-		return -1;
+		pSt_AFile = fopen(lpszAFile, "rb");
+		if (NULL == pSt_AFile)
+		{
+			printf("fopen:%d\n", errno);
+			return -1;
+		}
+		nLen = fread(tszABuffer, 1, sizeof(tszABuffer), pSt_AFile);
+		int nProfile = 0;
+		int nConfig = 0;
+		AVHelp_Parse_AACInfo((const UCHAR*)tszABuffer, nLen, &st_MediaStream.st_PushAudio.nChannel, &st_MediaStream.st_PushAudio.nChannel, &nProfile, &nConfig);
 	}
-	FILE* pSt_AFile = fopen(lpszAFile, "rb");
-	if (NULL == pSt_AFile)
-	{
-		printf("fopen:%d\n", errno);
-		return -1;
-	}
+
+	XClient_CodecPush_Init(&xhStream, lpszUrl, &st_MediaStream, "flv");
+	XClient_CodecPush_WriteHdr(xhStream);
 
 	BOOL bInit = FALSE;
 	while (TRUE)
 	{
-		TCHAR tszVBuffer[8096];
-		memset(tszVBuffer, '\0', sizeof(tszVBuffer));
-		int nLen = fread(tszVBuffer, 1, sizeof(tszVBuffer), pSt_VFile);
-		if (nLen <= 0)
+		if (st_MediaStream.st_PushVideo.bEnable)
 		{
-			fseek(pSt_VFile, 0, SEEK_SET);
-			continue;
-		}
-		while (1)
-		{
-			if (XClient_CodecPush_PushVideo(xhStream, tszVBuffer, nLen))
+			XClient_CodecPush_PushVideo(xhStream, tszVBuffer, nLen);
+			memset(tszVBuffer, '\0', sizeof(tszVBuffer));
+			nLen = fread(tszVBuffer, 1, sizeof(tszVBuffer), pSt_VFile);
+			if (nLen <= 0)
 			{
-				break;
+				fseek(pSt_VFile, 0, SEEK_SET);
+				continue;
 			}
 		}
-
-		if (!bInit)
+		if (st_MediaStream.st_PushAudio.bEnable)
 		{
-			XClient_CodecPush_WriteHdr(xhStream);
-			bInit = TRUE;
+			XClient_CodecPush_PushAudio(xhStream, tszABuffer, nLen);
+			memset(tszABuffer, '\0', sizeof(tszABuffer));
+			nLen = fread(tszABuffer, 1, sizeof(tszABuffer), pSt_AFile);
+			if (nLen <= 0)
+			{
+				fseek(pSt_AFile, 0, SEEK_SET);
+				continue;
+			}
 		}
-		/*
-		TCHAR tszABuffer[2048];
-		memset(tszABuffer, '\0', sizeof(tszABuffer));
-
-		int nRet = fread(tszABuffer, 1, sizeof(tszABuffer), pSt_AFile);
-		if (nRet <= 0)
-		{
-			fseek(pSt_AFile, 0, SEEK_SET);
-			continue;
-		}
-		XClient_CodecPush_PushAudio(xhStream, tszABuffer, nRet);
-		*/
 	}
 	XClient_CodecPush_Close(xhStream);
 	return 0;
@@ -210,20 +231,16 @@ void __stdcall XEngine_AVCollect_CBScreen(uint8_t* punStringY, int nYLen, uint8_
 }
 void __stdcall XEngine_AVCollect_CBAudio(uint8_t* punStringAudio, int nVLen, LPVOID lParam)
 {
-
+	XClient_StreamPush_PushAudio(xhStream, punStringAudio, nVLen);
 }
 void test_Screen()
 {
-	XNETHANDLE xhScreen;
 	XNETHANDLE xhAudio;
 	XENGINE_PROTOCOL_AVINFO st_AVProtocol;
 
 	memset(&st_AVProtocol, '\0', sizeof(XENGINE_PROTOCOL_AVINFO));
 
-	if (!AVCollect_Screen_Init(&xhScreen, XEngine_AVCollect_CBScreen, NULL, "1920x1080", 0, 0, 24))
-	{
-		return;
-	}
+	//AVCollect_Screen_Init(&xhScreen, XEngine_AVCollect_CBScreen, NULL, "1920x1080", 0, 0, 24)
 	LPCTSTR lpszAudioStr = _T("virtual-audio-capturer");
 	if (!AVCollect_Audio_Init(&xhAudio, lpszAudioStr, XEngine_AVCollect_CBAudio))
 	{
@@ -236,10 +253,10 @@ void test_Screen()
 	int nSampleRate = 0;
 	int nChannel = 0;
 	ENUM_AVCOLLECT_AUDIOSAMPLEFORMAT enAudioFmt;
-	AVCollect_Screen_GetInfo(xhScreen, &nWidth, &nHeight, &nVideoBit);
+	//AVCollect_Screen_GetInfo(xhScreen, &nWidth, &nHeight, &nVideoBit);
 	AVCollect_Audio_GetInfo(xhAudio, &enAudioFmt, &nAudioBit, &nSampleRate, &nChannel);
 
-	st_AVProtocol.st_PushVideo.bEnable = TRUE;
+	st_AVProtocol.st_PushVideo.bEnable = FALSE;
 	st_AVProtocol.st_PushVideo.enAvCodec = ENUM_ENTENGINE_AVCODEC_VEDIO_TYPE_H264;
 	st_AVProtocol.st_PushVideo.nBitRate = nVideoBit;
 	st_AVProtocol.st_PushVideo.nFrameRate = 24;
@@ -247,31 +264,32 @@ void test_Screen()
 	st_AVProtocol.st_PushVideo.nWidth = nWidth;
 
 	st_AVProtocol.st_PushAudio.bEnable = TRUE;
-	st_AVProtocol.st_PushAudio.enAvCodec = ENUM_AVCODEC_AUDIO_TYPE_MP3;
+	st_AVProtocol.st_PushAudio.enAvCodec = ENUM_AVCODEC_AUDIO_TYPE_AAC;
 	st_AVProtocol.st_PushAudio.nBitRate = nAudioBit;
 	st_AVProtocol.st_PushAudio.nChannel = nChannel;
 	st_AVProtocol.st_PushAudio.nSampleFmt = enAudioFmt;
 	st_AVProtocol.st_PushAudio.nSampleRate = nSampleRate;
 
-	if (!XClient_StreamPush_Init(&xhStream, "rtmp://stream.xyry.org/live/qyt", &st_AVProtocol, "flv"))
+	if (!XClient_StreamPush_Init(&xhStream, "rtmp://app.xyry.org/live/qyt", &st_AVProtocol, "flv"))
 	{
 		return;
 	}
-	AVCollect_Screen_Start(xhScreen);
+	AVCollect_Audio_Start(xhAudio);
 
 	while (1)
 	{
 		Sleep(1000);
 	}
 }
+
 int main()
 {
 #ifdef _WINDOWS
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
-	test_Screen();
-	//Test_LivePush();
+	//test_Screen();
+	Test_LivePush();
 	//Test_RTMPPush();
 	
 #ifdef _WINDOWS

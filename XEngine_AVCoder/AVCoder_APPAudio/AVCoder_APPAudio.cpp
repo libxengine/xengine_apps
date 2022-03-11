@@ -4,15 +4,16 @@
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AudioCoder.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
-#else
+#endif
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
-#endif
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVCollect/AVCollect_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_VideoCoder/VideoCoder_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVHelp/AVHelp_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVHelp/AVHelp_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AudioCoder/AudioCoder_Define.h"
@@ -63,8 +64,8 @@ void Audio_Encode()
 		return;
 	}
 #ifdef _WINDOWS
-	FILE* pSt_File = fopen("H:\\audio\\44.1k_2_16.pcm", "rb");
-	FILE* pSt_FileAac = fopen("H:\\audio\\44.1k_2_16.aac", "wb");
+	FILE* pSt_File = fopen("d:\\audio\\44.1k_2_16.pcm", "rb");
+	FILE* pSt_FileAac = fopen("d:\\audio\\44.1k_2_16.aac", "wb");
 #else
 	FILE* pSt_File = fopen("44.1k_2_16.pcm", "rb");
 	FILE* pSt_FileAac = fopen("44.1k_2_16.aac", "wb");
@@ -78,7 +79,7 @@ void Audio_Encode()
 		memset(tszEnBuffer, '\0', sizeof(tszEnBuffer));
 		memset(tszPCMBuffer, '\0', sizeof(tszPCMBuffer));
 
-		int nRet = fread(tszPCMBuffer, 1, nLen, pSt_File);
+		int nRet = fread(tszPCMBuffer, 1, 1000, pSt_File);
 		if (nRet <= 0)
 		{
 			break;
@@ -90,7 +91,7 @@ void Audio_Encode()
 			for (int i = 0; i < nListCount; i++)
 			{
 				BYTE byAACHdr[8];
-				AVHelp_MetaInfo_AACPacket(byAACHdr, 44100, 2, ppSt_ListAudio[i]->nMsgLen);
+				AVHelp_Packet_AACHdr(byAACHdr, 44100, 2, ppSt_ListAudio[i]->nMsgLen);
 
 				fwrite(byAACHdr, 1, 7, pSt_FileAac);
 				fwrite(ppSt_ListAudio[i]->pbyMsgBuffer, 1, ppSt_ListAudio[i]->nMsgLen, pSt_FileAac);

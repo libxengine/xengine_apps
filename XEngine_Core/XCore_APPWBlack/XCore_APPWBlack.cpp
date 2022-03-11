@@ -44,7 +44,7 @@ int Test_IPV4BlackList()
 	WBlackList_IPV4Addr_Add(xhNet, "192.168.1.1", "192.168.2.255", TRUE);
 	WBlackList_IPV4Addr_Add(xhNet, "1.1.1.1", "195.222.2.255", FALSE);
 	WBlackList_IPV4Addr_Add(xhNet, "200.1.2.2", "200.1.10.255", TRUE);
-	WBlackList_IPV4Addr_Add(xhNet, "200.1.*.2");
+	WBlackList_IPV4Addr_Add(xhNet, "200.1.-1.2");
 
 	int nBlackCount = 0;
 	BLACKLIST_IPV4ADDR **ppSt_ListBlack;
@@ -132,7 +132,7 @@ int Test_IPV6BlackList()
 	LPCTSTR lpszStartAddr1 = _T("FF01:0:0:0:1:0:0:1");
 	LPCTSTR lpszStartAddr2 = _T("FF01:0:0:0:0:0:2:1");
 	LPCTSTR lpszEndAddr2 = _T("FF01:0:0:0:0:0:2:222");
-	LPCTSTR lpszExist1 = _T("FF01:0:0:0:0:0:*:1");
+	LPCTSTR lpszExist1 = _T("FF01:0:0:0:0:0:-1:1");
 	LPCTSTR lpszExist2 = _T("FF01:0:0:0:0:0:3:1101");
 
 	if (!WBlackList_IPV6Addr_Init(&xhNet))

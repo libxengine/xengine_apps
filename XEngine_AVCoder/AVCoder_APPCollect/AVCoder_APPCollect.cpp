@@ -39,8 +39,13 @@ int main()
 #else
 	pSt_File = fopen("ds.yuv", "wb");
 #endif
+	AVCOLLECT_SCREENINFO st_AVScreen;
+	memset(&st_AVScreen, '\0', sizeof(AVCOLLECT_SCREENINFO));
 
-	if (!AVCollect_Screen_Init(&xhVideo, XEngine_AVCollect_CBVideo))
+	st_AVScreen.nFrameRate = 24;
+	_tcscpy(st_AVScreen.tszVideoSize, _T("1920x1080"));
+
+	if (!AVCollect_Video_Init(&xhVideo, &st_AVScreen, XEngine_AVCollect_CBVideo))
 	{
 		printf(_T("初始化失败"));
 		return -1;
@@ -51,7 +56,7 @@ int main()
 		return -1;
 	}
 
-	AVCollect_Screen_GetInfo(xhVideo, &nWidth, &nHeight, &nBitRate);
+	AVCollect_Video_GetInfo(xhVideo, &nWidth, &nHeight, &nBitRate);
 	printf("AVCollect_Screen_GetInfo:%d %d %lld\n", nWidth, nHeight, nBitRate);
 
 	ENUM_AVCOLLECT_AUDIOSAMPLEFORMAT enAVSampleFmt;
@@ -61,9 +66,9 @@ int main()
 	AVCollect_Audio_GetInfo(xhAudio, &enAVSampleFmt, &nARate, &nSampleRate, &nChannels);
 	printf("AVCollect_Audio_GetInfo:%d %lld %d %ld\n", enAVSampleFmt, nARate, nSampleRate, nChannels);
 
-	AVCollect_Screen_Start(xhVideo);
+	AVCollect_Video_Start(xhVideo);
 
 	std::this_thread::sleep_for(std::chrono::seconds(15));
-	AVCollect_Screen_Destory(xhVideo);
+	AVCollect_Video_Destory(xhVideo);
 	return 0;
 }

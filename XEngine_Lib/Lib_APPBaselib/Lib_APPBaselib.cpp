@@ -103,12 +103,6 @@ void StringTest()
 	memset(tszFileDir, '\0', MAX_PATH);
 	memset(tszFileName, '\0', MAX_PATH);
 	BaseLib_OperatorString_GetFileAndPath(lpszFile4, tszFileDir, tszFileName);
-
-	XENGINE_LIBADDR st_LibAddr;
-	memset(&st_LibAddr, '\0', sizeof(XENGINE_LIBADDR));
-	BaseLib_OperatorIPAddr_AddrStruct("192.168.1.5", &st_LibAddr);
-
-	return;
 }
 
 
@@ -149,18 +143,52 @@ void GMTTimeTest()
 
 	printf("%s\n", tszGMTTime);
 }
+
 int TestAddrLib()
 {
-	LPCTSTR lpszIPV4Convert = _T("192.0.*.10");
-	LPCTSTR lpszIPV6Convert = _T("ACC::1101");
+	int nPort = 0;
+	LPCTSTR lpszIPV4Convert = _T("192.168.*.10");
+	
+	LPCTSTR lpszIPV61 = _T("2031:0010:1F1F:0200:*:0100:11A0:ADDF");
+	LPCTSTR lpszIPV62 = _T("1254:1800:200C::417A:AC11");
+	LPCTSTR lpszIPV63 = _T("1080::8:800:200C:417A");
+	LPCTSTR lpszIPV64 = _T("ACC::1101");
+	LPCTSTR lpszIPV65 = _T("::1");
+	LPCTSTR lpszIPV66 = _T("::192:168:1:54");
+	TCHAR tszIPV6Addr[] = _T("1080:0:0:0:8:800:200C:5000");
 
+	ENUM_XENGINE_BASELIB_IPADDR_TYPE enIPType;
 	XENGINE_LIBADDR st_LibAddr;
-	XENGINE_LIBADDR st_LibAddrV6;
 	memset(&st_LibAddr, '\0', sizeof(XENGINE_LIBADDR));
-	memset(&st_LibAddrV6, '\0', sizeof(XENGINE_LIBADDR));
 
-	BaseLib_OperatorIPAddr_AddrStruct(lpszIPV4Convert, &st_LibAddr, TRUE);
-	BaseLib_OperatorIPAddr_AddrStruct(lpszIPV6Convert, &st_LibAddrV6, TRUE);
+	BaseLib_OperatorIPAddr_IsIPV4Addr(lpszIPV4Convert, &st_LibAddr);
+	BaseLib_OperatorIPAddr_GetIPV4Type(&st_LibAddr, &enIPType);
+
+	memset(&st_LibAddr, '\0', sizeof(XENGINE_LIBADDR));
+	BaseLib_OperatorIPAddr_IsIPV6Addr(lpszIPV61, &st_LibAddr);
+
+	memset(&st_LibAddr, '\0', sizeof(XENGINE_LIBADDR));
+	BaseLib_OperatorIPAddr_IsIPV6Addr(lpszIPV62, &st_LibAddr);
+
+	memset(&st_LibAddr, '\0', sizeof(XENGINE_LIBADDR));
+	BaseLib_OperatorIPAddr_IsIPV6Addr(lpszIPV63, &st_LibAddr);
+
+	memset(&st_LibAddr, '\0', sizeof(XENGINE_LIBADDR));
+	BaseLib_OperatorIPAddr_IsIPV6Addr(lpszIPV64, &st_LibAddr);
+
+	TCHAR tszIPAddr[128];
+	memset(tszIPAddr, '\0', sizeof(tszIPAddr));
+	BaseLib_OperatorIPAddr_ExpIPV6Addr(&st_LibAddr, tszIPAddr);
+	memset(tszIPAddr, '\0', sizeof(tszIPAddr));
+	BaseLib_OperatorIPAddr_ComIPV6Addr(&st_LibAddr, tszIPAddr);
+
+	memset(&st_LibAddr, '\0', sizeof(XENGINE_LIBADDR));
+	BaseLib_OperatorIPAddr_IsIPV6Addr(lpszIPV65, &st_LibAddr);
+
+	memset(&st_LibAddr, '\0', sizeof(XENGINE_LIBADDR));
+	BaseLib_OperatorIPAddr_IsIPV6Addr(lpszIPV66, &st_LibAddr);
+
+	BaseLib_OperatorIPAddr_SegAddr(tszIPV6Addr, &nPort);
 	return 1;
 }
 int Test_GetLunarCalendar()
@@ -343,6 +371,7 @@ int profiletest()
 
 int main()
 {
+	TestAddrLib();
 	StringTest();
 	Test_GetTimeofday();
 	test_TTrigger();
@@ -352,7 +381,6 @@ int main()
 	Test_GetLunarCalendar();
 	TimeTest();
 	GMTTimeTest();
-	TestAddrLib();
 	profiletest();
 	return 0;
 }
