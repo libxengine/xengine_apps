@@ -58,7 +58,7 @@ int Test_RTMPPush()
 {
 	XNETHANDLE xhStream = 0;
 	LPCTSTR lpszUrl = _T("rtmp://app.xyry.org/live/qyt");
-	BOOL bMemory = FALSE;
+	BOOL bMemory = TRUE;
 
 	if (bMemory)
 	{
@@ -289,8 +289,8 @@ int main()
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 	//test_Screen();
-	Test_LivePush();
-	//Test_RTMPPush();
+	//Test_LivePush();
+	Test_RTMPPush();
 	
 #ifdef _WINDOWS
 	WSACleanup();

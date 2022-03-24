@@ -201,7 +201,6 @@ int Test_GetLunarCalendar()
 
 	BaseLib_OperatorTime_GetSysTime(&st_LibTime);
 	BaseLib_OperatorTime_GetLunarCalendar(&st_LibTime, &st_CLTime);
-
 	return 1;
 }
 int test_Mutex()
@@ -307,7 +306,7 @@ void Test_GetTimeofday()
 
 	BaseLib_OperatorTime_GetTimeOfday(&st_Timeval);
 	BaseLib_OperatorTime_TTimeToStuTime(st_Timeval.tv_sec, &st_LibTime);
-	BaseLib_OperatorTime_ToStringTimer(tszMsgTimer, &st_LibTime);
+	BaseLib_OperatorTime_TimeToStr(tszMsgTimer, NULL, NULL, &st_LibTime);
 
 #ifdef _WINDOWS
 	printf("%lld %lld %llu %llu  %s\n", time(NULL), st_Timeval.tv_sec, st_Timeval.tv_value, st_Timeval.tv_usec, tszMsgTimer);
