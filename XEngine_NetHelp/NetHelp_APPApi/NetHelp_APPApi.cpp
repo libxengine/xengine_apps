@@ -16,15 +16,29 @@
 
 //g++ -std=c++17 -Wall -g NetHelp_APPApi.cpp -o NetHelp_APPApi.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp -lXEngine_BaseLib -lNetHelp_APIHelp -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp,--disable-new-dtags
 
+int Test_Http2Request()
+{
+	LPCTSTR lpszUrl = _T("http://test.xyry.org/");
+	LPCTSTR lpszMsgBuffer = _T("12345");
+	CHAR* ptszMsgBuffer = NULL;
+	int nCode = 0;
+	int nLen = 0;
+	APIHELP_HTTPPARAMENT st_HTTPParam;
+	memset(&st_HTTPParam, '\0', sizeof(APIHELP_HTTPPARAMENT));
 
+	st_HTTPParam.bHTTP2Enable = TRUE;
+
+	APIHelp_HttpRequest_Get(lpszUrl,&ptszMsgBuffer, &nLen, NULL, NULL, NULL, &st_HTTPParam);
+	printf("%s\n", ptszMsgBuffer);
+	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+	return 0;
+}
 int Test_HttpRequest()
 {
 	LPCTSTR lpszUrl = _T("http://www.baidu.com");
 	CHAR* ptszMsgBuffer = NULL;
 
 	APIHelp_HttpRequest_Get(lpszUrl, &ptszMsgBuffer);
-	//APIHelp_HttpRequest_Post(lpszUrl, tszSourceBuffer,&nResponse,"Accept-Encoding: gzip, deflate\r\n",NULL,&nSourceLen);
-	//HelpCompress_Algorithm_GZipUnCompress((BYTE *)tszSourceBuffer, nSourceLen, (BYTE *)tszDestBuffer, (DWORD *)&nDestLen);
 	printf("%s\n", ptszMsgBuffer);
 	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 	return 0;
@@ -39,15 +53,6 @@ int Test_NetGetIPAddr()
 		printf("APIHelp_NetWork_GetIPNet:%lX", APIHelp_GetLastError());
 	}
 	printf("%s\n", tszRemoteBuffer);
-
-	APIHELP_IPADDRINFO st_IPAddrInfo;
-	memset(&st_IPAddrInfo, '\0', sizeof(APIHELP_IPADDRINFO));
-
-	if (!APIHelp_NetWork_GetIPInfo(tszRemoteBuffer, &st_IPAddrInfo))
-	{
-		return -1;
-	}
-	printf("%s,%s,%s,%s\n", st_IPAddrInfo.tszIPAddr, st_IPAddrInfo.tszIPCountry, st_IPAddrInfo.tszIPCity, st_IPAddrInfo.tszIPCounty, st_IPAddrInfo.tszIPISP);
 	return 0;
 }
 
@@ -84,6 +89,7 @@ int Test_HttpCustom()
 
 int main()
 {
+	Test_Http2Request();
 	Test_Domain();
 	Test_NetGetIPAddr();
 	Test_HttpRequest();

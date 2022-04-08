@@ -31,7 +31,7 @@ XHTHREAD CALLBACK ManagePool_ThreadPool(LPVOID lParam)
 void ThreadPool_Test()
 {
 	XNETHANDLE xhPool = 0;
-	if (!ManagePool_Thread_Create(&xhPool, 2))
+	if (!ManagePool_Thread_DTCreate(&xhPool, 2))
 	{
 		return;
 	}
@@ -39,10 +39,20 @@ void ThreadPool_Test()
 	{
 		int* pInt = (int*)malloc(sizeof(int));
 		*pInt = i;
-		ManagePool_Thread_PostTask(xhPool, ManagePool_ThreadPool, pInt);
+		ManagePool_Thread_DTPostTask(xhPool, ManagePool_ThreadPool, pInt);
 	}
-	std::this_thread::sleep_for(std::chrono::seconds(5));
-	ManagePool_Thread_Destroy(xhPool);
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+	ManagePool_Thread_DTDestroy(xhPool);
+
+	ManagePool_Thread_CTCreate(2);
+	for (int i = 0; i < 100; i++)
+	{
+		int* pInt = (int*)malloc(sizeof(int));
+		*pInt = i;
+		ManagePool_Thread_CTPostTask(ManagePool_ThreadPool, pInt);
+	}
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+	ManagePool_Thread_CTDestroy();
 }
 
 void SocketPool_Test()
