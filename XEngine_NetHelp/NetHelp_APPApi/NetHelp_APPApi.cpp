@@ -18,7 +18,7 @@
 
 int Test_Http2Request()
 {
-	LPCTSTR lpszUrl = _T("http://test.xyry.org/");
+	LPCTSTR lpszUrl = _T("http://test.xyry.org:5002");
 	LPCTSTR lpszMsgBuffer = _T("12345");
 	CHAR* ptszMsgBuffer = NULL;
 	int nCode = 0;
@@ -28,7 +28,8 @@ int Test_Http2Request()
 
 	st_HTTPParam.bHTTP2Enable = TRUE;
 
-	APIHelp_HttpRequest_Get(lpszUrl,&ptszMsgBuffer, &nLen, NULL, NULL, NULL, &st_HTTPParam);
+	APIHelp_HttpRequest_Get(lpszUrl, &ptszMsgBuffer, &nLen, NULL, NULL, NULL, &st_HTTPParam);
+	//APIHelp_HttpRequest_Post(lpszUrl, lpszMsgBuffer, NULL, &ptszMsgBuffer, &nLen, NULL, NULL, &st_HTTPParam);
 	printf("%s\n", ptszMsgBuffer);
 	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 	return 0;

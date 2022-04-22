@@ -18,6 +18,12 @@ using namespace std;
 
 int main()
 {
+	int nIntA = 0;
+	int nIntB = 0;
+	LPCTSTR lpszIntBuffer = _T("123456798");
+	Algorithm_String_GetMemoryInt(lpszIntBuffer, 3, 4, &nIntA);
+	Algorithm_String_GetMemoryInt(lpszIntBuffer, 4, 6, &nIntB);
+
 	XHANDLE xhToken = Algorithm_Calculation_Create(3);
 	if (NULL == xhToken)
 	{
@@ -61,7 +67,7 @@ int main()
 	int nCount = 0;
 	__int64 nArrayKey = 1230456;
 	__int64 nArrayValue[10];
-	if (Algorithm_Math_GetValue(nArrayKey, nArrayValue, &nCount));
+	if (Algorithm_Math_GetValue(nArrayKey, nArrayValue, &nCount))
 	{
 		for (int i = 0; i < nCount; i++)
 		{

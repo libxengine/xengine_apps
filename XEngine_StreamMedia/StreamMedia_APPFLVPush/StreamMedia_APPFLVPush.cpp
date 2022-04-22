@@ -150,13 +150,13 @@ int Test_LivePush()
 	memset(tszPPSBuffer, '\0', MAX_PATH);
 	memset(&st_MediaStream, '\0', sizeof(XENGINE_PROTOCOL_AVINFO));
 
-	st_MediaStream.st_PushVideo.bEnable = TRUE;
-	st_MediaStream.st_PushVideo.nBitRate = 64000;
-	st_MediaStream.st_PushVideo.nFrameRate = 24;
-	st_MediaStream.st_PushVideo.nWidth = 720;
-	st_MediaStream.st_PushVideo.nHeight = 480;
-	st_MediaStream.st_PushVideo.enAvCodec = 27;
-	if (st_MediaStream.st_PushVideo.bEnable)
+	st_MediaStream.st_VideoInfo.bEnable = TRUE;
+	st_MediaStream.st_VideoInfo.nBitRate = 64000;
+	st_MediaStream.st_VideoInfo.nFrameRate = 24;
+	st_MediaStream.st_VideoInfo.nWidth = 720;
+	st_MediaStream.st_VideoInfo.nHeight = 480;
+	st_MediaStream.st_VideoInfo.enAVCodec = 27;
+	if (st_MediaStream.st_VideoInfo.bEnable)
 	{
 		pSt_VFile = fopen(lpszVFile, "rb");
 		if (NULL == pSt_VFile)
@@ -167,17 +167,17 @@ int Test_LivePush()
 		nLen = fread(tszVBuffer, 1, sizeof(tszVBuffer), pSt_VFile);
 		AVHelp_Parse_264Hdr(tszVBuffer, nLen, tszSPSBuffer, tszPPSBuffer, NULL, NULL, NULL, NULL, NULL, &nPos);
 
-		st_MediaStream.st_PushVideo.nVLen = nPos;
-		memcpy(st_MediaStream.st_PushVideo.tszVInfo, tszVBuffer, nPos);
+		st_MediaStream.st_VideoInfo.nVLen = nPos;
+		memcpy(st_MediaStream.st_VideoInfo.tszVInfo, tszVBuffer, nPos);
 	}
 
-	st_MediaStream.st_PushAudio.bEnable = FALSE;
-	st_MediaStream.st_PushAudio.nChannel = 2;
-	st_MediaStream.st_PushAudio.nBitRate = 64000;
-	st_MediaStream.st_PushAudio.nSampleRate = 44100;
-	st_MediaStream.st_PushAudio.nSampleFmt = ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP;
-	st_MediaStream.st_PushAudio.enAvCodec = ENUM_AVCODEC_AUDIO_TYPE_AAC;
-	if (st_MediaStream.st_PushAudio.bEnable)
+	st_MediaStream.st_AudioInfo.bEnable = FALSE;
+	st_MediaStream.st_AudioInfo.nChannel = 2;
+	st_MediaStream.st_AudioInfo.nBitRate = 64000;
+	st_MediaStream.st_AudioInfo.nSampleRate = 44100;
+	st_MediaStream.st_AudioInfo.nSampleFmt = ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP;
+	st_MediaStream.st_AudioInfo.enAVCodec = ENUM_AVCODEC_AUDIO_TYPE_AAC;
+	if (st_MediaStream.st_AudioInfo.bEnable)
 	{
 		pSt_AFile = fopen(lpszAFile, "rb");
 		if (NULL == pSt_AFile)
@@ -188,7 +188,7 @@ int Test_LivePush()
 		nLen = fread(tszABuffer, 1, sizeof(tszABuffer), pSt_AFile);
 		int nProfile = 0;
 		int nConfig = 0;
-		AVHelp_Parse_AACInfo((const UCHAR*)tszABuffer, nLen, &st_MediaStream.st_PushAudio.nChannel, &st_MediaStream.st_PushAudio.nChannel, &nProfile, &nConfig);
+		AVHelp_Parse_AACInfo((const UCHAR*)tszABuffer, nLen, &st_MediaStream.st_AudioInfo.nChannel, &st_MediaStream.st_AudioInfo.nChannel, &nProfile, &nConfig);
 	}
 
 	XClient_CodecPush_Init(&xhStream, lpszUrl, &st_MediaStream, "flv");
@@ -197,7 +197,7 @@ int Test_LivePush()
 	BOOL bInit = FALSE;
 	while (TRUE)
 	{
-		if (st_MediaStream.st_PushVideo.bEnable)
+		if (st_MediaStream.st_VideoInfo.bEnable)
 		{
 			XClient_CodecPush_PushVideo(xhStream, tszVBuffer, nLen);
 			memset(tszVBuffer, '\0', sizeof(tszVBuffer));
@@ -208,7 +208,7 @@ int Test_LivePush()
 				continue;
 			}
 		}
-		if (st_MediaStream.st_PushAudio.bEnable)
+		if (st_MediaStream.st_AudioInfo.bEnable)
 		{
 			XClient_CodecPush_PushAudio(xhStream, tszABuffer, nLen);
 			memset(tszABuffer, '\0', sizeof(tszABuffer));
@@ -256,19 +256,19 @@ void test_Screen()
 	//AVCollect_Screen_GetInfo(xhScreen, &nWidth, &nHeight, &nVideoBit);
 	AVCollect_Audio_GetInfo(xhAudio, &enAudioFmt, &nAudioBit, &nSampleRate, &nChannel);
 
-	st_AVProtocol.st_PushVideo.bEnable = FALSE;
-	st_AVProtocol.st_PushVideo.enAvCodec = ENUM_ENTENGINE_AVCODEC_VEDIO_TYPE_H264;
-	st_AVProtocol.st_PushVideo.nBitRate = nVideoBit;
-	st_AVProtocol.st_PushVideo.nFrameRate = 24;
-	st_AVProtocol.st_PushVideo.nHeight = nHeight;
-	st_AVProtocol.st_PushVideo.nWidth = nWidth;
+	st_AVProtocol.st_VideoInfo.bEnable = FALSE;
+	st_AVProtocol.st_VideoInfo.enAVCodec = ENUM_ENTENGINE_AVCODEC_VEDIO_TYPE_H264;
+	st_AVProtocol.st_VideoInfo.nBitRate = nVideoBit;
+	st_AVProtocol.st_VideoInfo.nFrameRate = 24;
+	st_AVProtocol.st_VideoInfo.nHeight = nHeight;
+	st_AVProtocol.st_VideoInfo.nWidth = nWidth;
 
-	st_AVProtocol.st_PushAudio.bEnable = TRUE;
-	st_AVProtocol.st_PushAudio.enAvCodec = ENUM_AVCODEC_AUDIO_TYPE_AAC;
-	st_AVProtocol.st_PushAudio.nBitRate = nAudioBit;
-	st_AVProtocol.st_PushAudio.nChannel = nChannel;
-	st_AVProtocol.st_PushAudio.nSampleFmt = enAudioFmt;
-	st_AVProtocol.st_PushAudio.nSampleRate = nSampleRate;
+	st_AVProtocol.st_AudioInfo.bEnable = TRUE;
+	st_AVProtocol.st_AudioInfo.enAVCodec = ENUM_AVCODEC_AUDIO_TYPE_AAC;
+	st_AVProtocol.st_AudioInfo.nBitRate = nAudioBit;
+	st_AVProtocol.st_AudioInfo.nChannel = nChannel;
+	st_AVProtocol.st_AudioInfo.nSampleFmt = enAudioFmt;
+	st_AVProtocol.st_AudioInfo.nSampleRate = nSampleRate;
 
 	if (!XClient_StreamPush_Init(&xhStream, "rtmp://app.xyry.org/live/qyt", &st_AVProtocol, "flv"))
 	{
@@ -288,9 +288,9 @@ int main()
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
-	//test_Screen();
+	test_Screen();
 	//Test_LivePush();
-	Test_RTMPPush();
+	//Test_RTMPPush();
 	
 #ifdef _WINDOWS
 	WSACleanup();

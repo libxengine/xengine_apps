@@ -53,35 +53,24 @@ BOOL CALLBACK NetCore_CB_Login(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lPa
 }
 void CALLBACK NetCore_CB_Recv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpszRecvMsg, int nMsgLen, LPVOID lParam)
 {
-	BOOL bUPGrade = FALSE;
 	int nRVLen = 2048;
 	TCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
-	RfcComponents_Http2Server_GetStatusEx(xhHttp, lpszClientAddr, &bUPGrade);
-	if (bUPGrade)
+	if (bSsl)
 	{
-		if (bSsl)
+		OPenSsl_Server_RecvMsgEx(xhSsl, lpszClientAddr, tszMsgBuffer, &nRVLen, lpszRecvMsg, nMsgLen);
+		if (!RfcComponents_Http2Server_InsertQueueEx(xhHttp, lpszClientAddr, tszMsgBuffer, nRVLen))
 		{
-			OPenSsl_Server_RecvMsgEx(xhSsl, lpszClientAddr, tszMsgBuffer, &nRVLen, lpszRecvMsg, nMsgLen);
-			if (!RfcComponents_Http2Server_InsertQueueEx(xhHttp, lpszClientAddr, tszMsgBuffer, nRVLen))
-			{
-				printf("RfcComponents_Http2Server_InserQueueEx:%lX\n", HttpServer_GetLastError());
-			}
-		}
-		else
-		{
-			if (!RfcComponents_Http2Server_InsertQueueEx(xhHttp, lpszClientAddr, lpszRecvMsg, nMsgLen))
-			{
-				printf("RfcComponents_Http2Server_InserQueueEx:%lX\n", HttpServer_GetLastError());
-			}
+			printf("RfcComponents_Http2Server_InserQueueEx:%lX\n", HttpServer_GetLastError());
 		}
 	}
 	else
 	{
-		RfcComponents_Http2Server_PKTUPGradeEx(xhHttp, tszMsgBuffer, &nRVLen, 100, 10240000, 8196);
-		RfcComponents_Http2Server_SetStatusEx(xhHttp, lpszClientAddr, TRUE);
-		NetCore_TCPXCore_SendEx(xhToken, lpszClientAddr, tszMsgBuffer, nRVLen);
+		if (!RfcComponents_Http2Server_InsertQueueEx(xhHttp, lpszClientAddr, lpszRecvMsg, nMsgLen))
+		{
+			printf("RfcComponents_Http2Server_InserQueueEx:%lX\n", HttpServer_GetLastError());
+		}
 	}
 }
 void CALLBACK NetCore_CB_Close(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
@@ -109,9 +98,9 @@ XHTHREAD NetCore_Thread()
 					int nStreamCount = 0;
 					RFCCOMPONENTS_HTTP2_PKTSTREAM** ppSt_PKTStream;
 					RfcComponents_Http2Server_GetStreamEx(xhHttp, ppSt_ListClient[i]->tszClientAddr, &ppSt_PKTStream, &nStreamCount);
-					for (int j = 0; j < ppSt_ListClient[i]->nPktCount; j++)
+					for (int j = 0; j < nStreamCount; j++)
 					{
-						for (int k = 0; k < ppSt_PKTStream[j]->nStreamCount; k++)
+						for (int k = 0; k < ppSt_PKTStream[j]->nPktCount; k++)
 						{
 							int nMsgLen = 4096;
 							int nHdrCount = 0;
@@ -120,29 +109,77 @@ XHTHREAD NetCore_Thread()
 							RFCCOMPONENTS_HTTP2_HPACK** ppSt_ListHdr;
 							if (RfcComponents_Http2Server_GetClientEx(xhHttp, ppSt_ListClient[i]->tszClientAddr, ppSt_PKTStream[j]->nStreamID, &enFrameType, &ptszMsgBuffer, &nMsgLen, &ppSt_ListHdr, &nHdrCount))
 							{
-								printf("%s\n", ptszMsgBuffer);
-								BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
-								BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListHdr, nHdrCount);
+								if (XENGINE_RFCCOMPONENTS_HTTP2_FRAME_TYPE_HEADERS == enFrameType)
+								{
+									//header 如果是POST,都跟上数据,get可能不带数据
+									RFCCOMPONENTS_HTTP_REQPARAM st_HTTPRequest;
+									memset(&st_HTTPRequest, '\0', sizeof(RFCCOMPONENTS_HTTP_REQPARAM));
 
+									RfcComponents_HttpHelp_HTTP2HdrConvert(&st_HTTPRequest, &ppSt_ListHdr, nHdrCount);
+									if (0 == _tcsnicmp("POST", st_HTTPRequest.tszHttpMethod, 4))
+									{
+										//只有POST才有后续数据
+										RfcComponents_Http2Server_GetClientEx(xhHttp, ppSt_ListClient[i]->tszClientAddr, ppSt_PKTStream[j]->nStreamID, &enFrameType, &ptszMsgBuffer, &nMsgLen);
+										ppSt_PKTStream[j]->nPktCount--;
+									}
+								}
 								int nSSLLen = 2048;
 								int nSDLen = 2048;
 								TCHAR tszSSLBuffer[2048];
 								TCHAR tszSDBuffer[2048];
-								RFCCOMPONENTS_HTTP_HDRPARAM st_HdrParam;
+								RFCCOMPONENTS_HTTP_HDRPARAM st_HDRParam;
 
 								memset(tszSSLBuffer, '\0', sizeof(tszSSLBuffer));
 								memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
-								memset(&st_HdrParam, '\0', sizeof(RFCCOMPONENTS_HTTP_HDRPARAM));
+								memset(&st_HDRParam, '\0', sizeof(RFCCOMPONENTS_HTTP_HDRPARAM));
 
-								st_HdrParam.bIsClose = TRUE;
-								st_HdrParam.nHttpCode = 200;
-								nMsgLen = 2048;
-								RfcComponents_HttpServer_SendMsgEx(xhHttp, tszSDBuffer, &nSDLen, &st_HdrParam, "123456789", 9);
+								if (1)
+								{
+									//第一次必须打包setting,否则无法继续通信.后面不用在发送
+									RfcComponents_Http2Server_PKTSettingEx(xhHttp, tszSDBuffer, &nSDLen, 100, 1024000, 1024000, 8196);
+									if (bSsl)
+									{
+										OPenSsl_Server_SendMsgEx(xhSsl, ppSt_ListClient[i]->tszClientAddr, tszSDBuffer, nSDLen, tszSSLBuffer, &nSSLLen);
+										NetCore_TCPXCore_SendEx(xhToken, ppSt_ListClient[i]->tszClientAddr, tszSSLBuffer, nSSLLen);
+									}
+									else
+									{
+										NetCore_TCPXCore_SendEx(xhToken, ppSt_ListClient[i]->tszClientAddr, tszSDBuffer, nSDLen);
+									}
+								}
+								st_HDRParam.nHttpCode = 200;
+								st_HDRParam.nStreamID = ppSt_PKTStream[j]->nStreamID;
+
+								RfcComponents_Http2Server_PKTHeaderEx(xhHttp, tszSDBuffer, &nSDLen, &st_HDRParam, 6);
 								if (bSsl)
 								{
 									OPenSsl_Server_SendMsgEx(xhSsl, ppSt_ListClient[i]->tszClientAddr, tszSDBuffer, nSDLen, tszSSLBuffer, &nSSLLen);
+									NetCore_TCPXCore_SendEx(xhToken, ppSt_ListClient[i]->tszClientAddr, tszSSLBuffer, nSSLLen);
 								}
-								NetCore_TCPXCore_SendEx(xhToken, ppSt_ListClient[i]->tszClientAddr, tszSSLBuffer, nSSLLen);
+								else
+								{
+									NetCore_TCPXCore_SendEx(xhToken, ppSt_ListClient[i]->tszClientAddr, tszSDBuffer, nSDLen);
+								}
+								
+								RfcComponents_Http2Server_PKTDataEx(xhHttp, tszSDBuffer, &nSDLen, st_HDRParam.nStreamID, "123456", 6);
+								if (bSsl)
+								{
+									OPenSsl_Server_SendMsgEx(xhSsl, ppSt_ListClient[i]->tszClientAddr, tszSDBuffer, nSDLen, tszSSLBuffer, &nSSLLen);
+									NetCore_TCPXCore_SendEx(xhToken, ppSt_ListClient[i]->tszClientAddr, tszSSLBuffer, nSSLLen);
+								}
+								else
+								{
+									NetCore_TCPXCore_SendEx(xhToken, ppSt_ListClient[i]->tszClientAddr, tszSDBuffer, nSDLen);
+								}
+							}
+							if (nMsgLen > 0)
+							{
+								printf("%s\n", ptszMsgBuffer);
+								BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+							}
+							if (nHdrCount > 0)
+							{
+								BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListHdr, nHdrCount);
 							}
 						}
 					}
@@ -162,18 +199,16 @@ int main()
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 
-	int a = 0x102030;
-	int b = (a & 0xff) << 16;
-	int c = (a & 0xff00);
-	int d = a >> 16;
-	a = b | c | d;
-	LPCTSTR lpszPackFile = _T("D:\\xengine_apps\\Debug\\Http2Pack.types");
+	LPCTSTR lpszCodeFile = _T("D:\\xengine_apps\\Debug\\HttpCode.types");
+	LPCTSTR lpszMimeFile = _T("D:\\xengine_apps\\Debug\\HttpMime.types");
 #else
-	LPCTSTR lpszPackFile = _T("Http2Pack.types");
+	LPCTSTR lpszCodeFile = _T("HttpCode.types");
+	LPCTSTR lpszMimeFile = _T("HttpMime.types");
 #endif
 	bIsRun = TRUE;
 
-	RfcComponents_HttpConfig_InitPack(lpszPackFile);
+	RfcComponents_HttpConfig_InitCode(lpszCodeFile);
+	RfcComponents_HttpConfig_InitMime(lpszMimeFile, FALSE, FALSE);
 	xhHttp = RfcComponents_Http2Server_InitEx(1);
 	if (NULL == xhHttp)
 	{

@@ -191,18 +191,6 @@ int TestAddrLib()
 	BaseLib_OperatorIPAddr_SegAddr(tszIPV6Addr, &nPort);
 	return 1;
 }
-int Test_GetLunarCalendar()
-{
-	XENGINE_LIBTIMER st_LibTime;
-	XENGINE_LIBTIMER st_CLTime;
-
-	memset(&st_LibTime, '\0', sizeof(XENGINE_LIBTIMER));
-	memset(&st_CLTime, '\0', sizeof(XENGINE_LIBTIMER));
-
-	BaseLib_OperatorTime_GetSysTime(&st_LibTime);
-	BaseLib_OperatorTime_GetLunarCalendar(&st_LibTime, &st_CLTime);
-	return 1;
-}
 int test_Mutex()
 {
 	LPCTSTR lpszName = _T("xyry");
@@ -377,7 +365,6 @@ int main()
 	test_Memory();
 	test_Mutex();
 	TimeSpanTest();
-	Test_GetLunarCalendar();
 	TimeTest();
 	GMTTimeTest();
 	profiletest();
