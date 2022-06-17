@@ -1,28 +1,25 @@
 ﻿#ifdef _WINDOWS
 #include <Windows.h>
 #include <tchar.h>
-#pragma comment(lib,"x86/XEngine_BaseLib/XEngine_BaseLib.lib")
-#pragma comment(lib,"x86/XEngine_Core/XEngine_OPenSsl.lib")
-#pragma comment(lib,"x86/XEngine_SystemSdk/XEngine_SystemApi.lib")
-#pragma comment(lib,"x86/XEngine_HelpComponents/HelpComponents_Authorize.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_OPenSsl.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/HelpComponents_Authorize.lib")
 #endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
-#include <XEngine_Include/XEngine_CommHdr.h>
-#include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
-#include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
-#include <XEngine_Include/XEngine_Core/OPenSsl_Define.h>
-#include <XEngine_Include/XEngine_Core/OPenSsl_Error.h>
-#include <XEngine_Include/XEngine_SystemSdk/ProcFile_Define.h>
-#include <XEngine_Include/XEngine_SystemSdk/SystemApi_Define.h>
-#include <XEngine_Include/XEngine_SystemSdk/SystemApi_Error.h>
-#include <XEngine_Include/XEngine_HelpComponents/Authorize_Define.h>
-#include <XEngine_Include/XEngine_HelpComponents/Authorize_Error.h>
+#include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_OPenSsl/OPenSsl_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_OPenSsl/OPenSsl_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_Authorize/Authorize_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_Authorize/Authorize_Error.h"
 
 //g++ -std=c++17 -Wall -g HelpComponents_APPAuthorize.cpp -o HelpComponents_APPAuthorize.exe -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Core -L /usr/local/lib/XEngine_Release/XEngine_SystemSdk -L /usr/local/lib/XEngine_Release/XEngine_HelpComponents -lXEngine_BaseLib -lXEngine_OPenSsl -lXEngine_SystemApi -lHelpComponents_Authorize
-#define _ENCRYPTO 1
+//#define _ENCRYPTO 1
 
 int Authorize_APPSerial()
 {
@@ -89,16 +86,13 @@ int Authorize_APPLocal()
 	LPCTSTR lpszFile = _T("XEngine_Authorize.key");
 #endif
 	//////////////////////////////////////////////////////////////////////////生成CDKEY
-	__int64x nLeftTime = 0;
 	UCHAR tszEnBuffer[2048];
 	TCHAR tszDeBuffer[2048];
 	XENGINE_AUTHORIZE_LOCAL st_AuthLocal;
-	SYSTEMAPI_SERIAL_INFOMATION st_SDKSerial;
 
 	memset(tszDeBuffer, '\0', sizeof(tszDeBuffer));
 	memset(tszEnBuffer, '\0', sizeof(tszEnBuffer));
 	memset(&st_AuthLocal, '\0', sizeof(XENGINE_AUTHORIZE_LOCAL));
-	memset(&st_SDKSerial, '\0', sizeof(SYSTEMAPI_SERIAL_INFOMATION));
 
 	strcpy(st_AuthLocal.tszAddr, _T("127.0.0.1"));
 	st_AuthLocal.nPort = 5000;
@@ -106,11 +100,12 @@ int Authorize_APPLocal()
 	strcpy(st_AuthLocal.st_AuthAppInfo.tszAppName, "XEngine");
 	strcpy(st_AuthLocal.st_AuthAppInfo.tszAppVer, "7.17.0.1001");
 
-	st_AuthLocal.st_AuthRegInfo.enSerialType = ENUM_HELPCOMPONENTS_AUTHORIZE_SERIAL_TYPE_TIME;
+	st_AuthLocal.st_AuthRegInfo.enSerialType = ENUM_HELPCOMPONENTS_AUTHORIZE_SERIAL_TYPE_MINUTE;
 	st_AuthLocal.st_AuthRegInfo.enRegType = ENUM_HELPCOMPONENTS_AUTHORIZE_REG_TYPE_TRY;
 	st_AuthLocal.st_AuthRegInfo.enHWType = ENUM_HELPCOMPONENTS_AUTHORIZE_HW_TYPE_CPU;
-	SystemApi_HardWare_GetSerial(&st_SDKSerial);
-	strcpy(st_AuthLocal.st_AuthRegInfo.tszHardware, st_SDKSerial.tszCpuSerial);
+	st_AuthLocal.st_AuthRegInfo.enVModeType = ENUM_HELPCOMPONENTS_AUTHORIZE_VERMODE_TYPE_LOCAL;
+
+	strcpy(st_AuthLocal.st_AuthRegInfo.tszHardware, "CPUSERIAL001");
 
 	strcpy(st_AuthLocal.st_AuthUserInfo.tszUserName, "XEngine");
 	strcpy(st_AuthLocal.st_AuthUserInfo.tszUserContact, "486179@qq.com");
@@ -120,6 +115,13 @@ int Authorize_APPLocal()
 	{
 		return -1;
 	}
+	Authorize_Local_WriteTime(lpszFile);
+	Authorize_Local_WriteTime(lpszFile);
+	Authorize_Local_WriteTime(lpszFile);
+	Authorize_Local_WriteTime(lpszFile, 10);
+	Authorize_Local_WriteTime(lpszFile, 10);
+	Authorize_Local_WriteTime(lpszFile, 10);
+	Authorize_Local_WriteTime(lpszFile, 10);
 	//需要加密?
 #ifdef _ENCRYPTO
 	FILE* pSt_File = fopen(lpszFile, "rb");
@@ -137,7 +139,6 @@ int Authorize_APPLocal()
 	memset(tszDeBuffer, '\0', sizeof(tszDeBuffer));
 	memset(tszEnBuffer, '\0', sizeof(tszEnBuffer));
 	memset(&st_AuthLocal, '\0', sizeof(XENGINE_AUTHORIZE_LOCAL));
-	memset(&st_SDKSerial, '\0', sizeof(SYSTEMAPI_SERIAL_INFOMATION));
 	//需要解密?
 #ifdef _ENCRYPTO
 	FILE* pSt_DeFile = fopen(lpszFile, "rb");
@@ -156,8 +157,7 @@ int Authorize_APPLocal()
 	{
 		return -1;
 	}
-	SystemApi_HardWare_GetSerial(&st_SDKSerial);
-	if (0 != strncmp(st_SDKSerial.tszCpuSerial, st_AuthLocal.st_AuthRegInfo.tszHardware, strlen(st_SDKSerial.tszCpuSerial)))
+	if (0 != strncmp("CPUSERIAL001", st_AuthLocal.st_AuthRegInfo.tszHardware, strlen(st_AuthLocal.st_AuthRegInfo.tszHardware)))
 	{
 		printf(_T("序列号不匹配"));
 		return -1;
@@ -167,17 +167,21 @@ int Authorize_APPLocal()
 		printf(_T("注册硬件序列不匹配"));
 		return -1;
 	}
-	Authorize_Local_GetLeftTimer(&nLeftTime, &st_AuthLocal);
-	printf("%s = %lld\n", st_AuthLocal.st_AuthRegInfo.tszHardware, nLeftTime);
+	Authorize_Local_GetLeftTimer(&st_AuthLocal);
+	printf("%s = %lld\n", st_AuthLocal.st_AuthRegInfo.tszHardware, st_AuthLocal.st_AuthRegInfo.nHasTime);
 
-	if (ENUM_HELPCOMPONENTS_AUTHORIZE_SERIAL_TYPE_TIME == st_AuthLocal.st_AuthRegInfo.enSerialType)
+	int nListCount = 0;
+	TCHAR** pptszTimeList;
+	Authorize_Local_ReadTime(lpszFile, &pptszTimeList, &nListCount);
+	for (int i = 0; i < nListCount; i++)
 	{
-		__int64x nTime = atoll(st_AuthLocal.st_AuthRegInfo.tszLeftTime) - 1;
-		sprintf(st_AuthLocal.st_AuthRegInfo.tszLeftTime, _T("%lld"), nTime);
-		if (!Authorize_Local_WriteKey(lpszFile, &st_AuthLocal))
-		{
-			return -1;
-		}
+		printf("Time;%s\n", pptszTimeList[i]);
+	}
+	BaseLib_OperatorMemory_Free((XPPPMEM)&pptszTimeList, nListCount);
+	//写入用于更新
+	if (!Authorize_Local_WriteKey(lpszFile, &st_AuthLocal))
+	{
+		return -1;
 	}
 	return 0;
 }
@@ -230,7 +234,7 @@ int Authorize_APPMemory()
 int main()
 {
 	Authorize_APPSerial();
-	Authorize_APPMemory();
 	Authorize_APPLocal();
+	Authorize_APPMemory();
 	return 0;
 }

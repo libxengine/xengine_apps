@@ -17,18 +17,7 @@
 
 //g++ -std=c++17 -Wall -g SystemSdk_APPApi.cpp -o SystemSdk_APPApi.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk -lXEngine_BaseLib -lXEngine_SystemApi -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
 
-BOOL __stdcall EnumFile(LPCSTR lpFileOrPath, BOOL bFindPath, LPVOID lParam)
-{
-	if (bFindPath)
-	{
-		printf(_T("Path %s\r\n"), lpFileOrPath);
-	}
-	else
-	{
-		printf(_T("File %s\r\n"), lpFileOrPath);
-	}
-	return TRUE;
-}
+
 
 int Test_SerialInfo()
 {
@@ -136,10 +125,5 @@ int main()
 	Test_CPUInfo();
 	Test_ProcessInfo();
 	Test_SystemInfo();
-#ifdef _WINDOWS
-	SystemApi_File_EnumFile("G:\\ffmpeg", NULL, NULL, EnumFile);
-#else
-	SystemApi_File_EnumFile("/tmp", NULL, NULL, EnumFile);
-#endif
 	return 0;
 }

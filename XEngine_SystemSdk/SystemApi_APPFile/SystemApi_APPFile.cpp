@@ -12,15 +12,33 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_SystemSdk/XEngine_ProcSdk/ProcFile_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_SystemSdk/XEngine_ProcFile/ProcFile_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_SystemSdk/XEngine_SystemApi/SystemApi_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_SystemSdk/XEngine_SystemApi/SystemApi_Error.h"
 
 //g++ -std=c++17 -Wall -g SystemApi_APPFile.cpp -o SystemApi_APPFile.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk -lXEngine_BaseLib -lXEngine_SystemApi -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
 
+BOOL __stdcall EnumFile(LPCSTR lpFileOrPath, BOOL bFindPath, LPVOID lParam)
+{
+	if (bFindPath)
+	{
+		printf(_T("Path %s\r\n"), lpFileOrPath);
+	}
+	else
+	{
+		printf(_T("File %s\r\n"), lpFileOrPath);
+	}
+	return TRUE;
+	}
 
 int main()
 {
+#ifdef _WINDOWS
+	SystemApi_File_EnumFile("D:\\XEngine\\XEngine_SourceCode\\Debug\\*", NULL, NULL, EnumFile);
+#else
+	SystemApi_File_EnumFile("/tmp", NULL, NULL, EnumFile);
+#endif
+
 #ifdef _WINDOWS
 	LPCTSTR lpszFile = _T("D:\\xengine_apps\\Debug\\1.txt");
 #else

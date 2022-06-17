@@ -15,7 +15,8 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_Core/NetCore_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_Core/NetCore_Error.h"
 
-//g++ -std=gnu++17 -Wall -g XCore_PIPClient.cpp -o XCore_PIPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_ManagePool -lXEngine_Core -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
+//Linux::g++ -std=gnu++17 -Wall -g XCore_PIPClient.cpp -o XCore_PIPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_ManagePool -lXEngine_Core -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
+//Macos::g++ -std=gnu++17 -Wall -g XCore_PIPClient.cpp -o XCore_PIPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_ManagePool -lXEngine_Core 
 
 int Test_PIPNamed()
 {
@@ -43,6 +44,7 @@ int Test_PIPMailSlot()
 	LPCTSTR lpszPIPName = _T("/MyMailSlot");
 #endif
 	
+#ifndef __APPLE__
 	LPCTSTR lpszMsgBuffer = _T("hello");
 	if (!NetCore_PIPMailSlot_OPen(lpszPIPName))
 	{
@@ -51,7 +53,8 @@ int Test_PIPMailSlot()
 	}
 	NetCore_PIPMailSlot_Write(lpszPIPName, lpszMsgBuffer, _tcslen(lpszMsgBuffer));
 
-	NetCore_PIPNamed_Close(lpszPIPName);
+	NetCore_PIPMailSlot_Close(lpszPIPName);
+#endif
 	return 0;
 }
 

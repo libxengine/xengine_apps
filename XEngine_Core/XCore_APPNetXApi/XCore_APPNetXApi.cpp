@@ -20,7 +20,8 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_NetXApi/NetXApi_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_NetXApi/NetXApi_Error.h"
 
-//g++ -std=gnu++17 -Wall -g XCore_APPNetXApi.cpp -o XCore_APPNetXApi.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -lXEngine_BaseLib -lXEngine_NetXApi -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
+//Linux:g++ -std=gnu++17 -Wall -g XCore_APPNetXApi.cpp -o XCore_APPNetXApi.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -lXEngine_BaseLib -lXEngine_NetXApi -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
+//Macos:g++ -std=gnu++17 -Wall -g XCore_APPNetXApi.cpp -o XCore_APPNetXApi.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -lXEngine_BaseLib -lXEngine_NetXApi
 
 static void WINAPI NetXApi_Sniffer_Callback(XNETHANDLE xhNet, NETXAPI_PROTOCOLINFO* pSt_ProtoInfo, LPCTSTR lpszMsgBuffer, LPVOID lParam)
 {
@@ -30,45 +31,6 @@ static void WINAPI NetXApi_Sniffer_Callback(XNETHANDLE xhNet, NETXAPI_PROTOCOLIN
 		printf("%02X ", (UCHAR)lpszMsgBuffer[pSt_ProtoInfo->nHdrLen + i]);
 	}
 	printf("\n\n");
-}
-int Test_IPAddr()
-{
-	///*IP库
-	TCHAR tszLocal[256];
-	TCHAR tszArea[256];
-#ifdef _WINDOWS
-	if (!NetXApi_Address_OpenQQWry(_T("H:\\XEngine_Apps\\Debug\\qqwry.dat")))
-#else
-	if (!NetXApi_Address_OpenQQWry(_T("qqwry.dat")))
-#endif
-	{
-		return -1;
-	}
-	if (!NetXApi_Address_IPtoAddr(_T("222.209.29.131"), tszLocal, tszArea))
-	{
-		return -2;
-	}
-	CHAR tszASLocal[2048];
-	CHAR tszASArea[2048];
-
-	int nLen = strlen(tszLocal);
-	BaseLib_OperatorString_UTFToAnsi(tszLocal, tszASLocal, &nLen);
-	nLen = strlen(tszArea);
-	BaseLib_OperatorString_UTFToAnsi(tszArea, tszASArea, &nLen);
-#ifdef _WINDOWS
-	printf(_T("%s,%s\n"), tszASLocal, tszASArea);
-#else
-	printf(_T("%s,%s\n"), tszLocal, tszArea);
-#endif
-
-	if (!NetXApi_Address_IPtoAddr(_T("8.8.8.8"), tszLocal, tszArea))
-	{
-		return -2;
-	}
-	printf(_T("%s,%s\n"), tszLocal, tszArea);
-	NetXApi_Address_CloseQQWry();
-
-	return 0;
 }
 int Test_NetFlow()
 {
@@ -194,7 +156,6 @@ int main()
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 	Test_NetSniffer();
-	Test_IPAddr();
 	Test_NetFlow();
 	NetXApi_TestSocket();
 	//Test_CtrlFlow();

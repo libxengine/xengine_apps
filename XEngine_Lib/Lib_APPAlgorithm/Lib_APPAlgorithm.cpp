@@ -14,7 +14,8 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_Algorithm/Algorithm_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_Algorithm/Algorithm_Error.h"
 
-//g++ -std=gnu++11 -Wall -g Lib_APPAlgorithm.cpp -o Lib_APPAlgorithm.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -lXEngine_Algorithm -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib
+//Linux:g++ -std=gnu++11 -Wall -g Lib_APPAlgorithm.cpp -o Lib_APPAlgorithm.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -lXEngine_Algorithm -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib
+//Macos:g++ -std=gnu++11 -Wall -g Lib_APPAlgorithm.cpp -o Lib_APPAlgorithm.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -lXEngine_Algorithm 
 
 int main()
 {
@@ -65,8 +66,8 @@ int main()
 	}
 
 	int nCount = 0;
-	__int64 nArrayKey = 1230456;
-	__int64 nArrayValue[10];
+	__int64x nArrayKey = 1230456;
+	__int64x nArrayValue[10];
 	if (Algorithm_Math_GetValue(nArrayKey, nArrayValue, &nCount))
 	{
 		for (int i = 0; i < nCount; i++)

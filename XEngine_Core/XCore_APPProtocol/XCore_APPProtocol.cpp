@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <stdio.h>
 #include <tchar.h>
 #include <WinSock2.h>
@@ -23,7 +23,8 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_Protocol/Protocol_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_Protocol/Protocol_Error.h"
 
-//g++ -std=gnu++17 -Wall -g XCore_APPProtocol.cpp -o XCore_APPProtocol.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -lXEngine_BaseLib -lXEngine_Protocol -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
+//linux:g++ -std=gnu++17 -Wall -g XCore_APPProtocol.cpp -o XCore_APPProtocol.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -lXEngine_BaseLib -lXEngine_Protocol -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
+//macos:g++ -std=gnu++17 -Wall -g XCore_APPProtocol.cpp -o XCore_APPProtocol.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -lXEngine_BaseLib -lXEngine_Protocol
 
 BOOL CALLBACK XEngine_Protocol_Callback_Trace(LPCTSTR lpszSource, LPCTSTR lpszDestAddr, LPCTSTR lpszRecvAddr, int nTTL, XENGINE_VALTIME st_VALTime, LPVOID lParam)
 {
@@ -32,8 +33,8 @@ BOOL CALLBACK XEngine_Protocol_Callback_Trace(LPCTSTR lpszSource, LPCTSTR lpszDe
 }
 int Protocol_TestPing()
 {
-	LPCTSTR lpszSourceAddr = _T("192.168.1.7");
-	LPCTSTR lpszDestAddr = _T("192.168.1.12");
+	LPCTSTR lpszSourceAddr = _T("192.168.74.128");
+	LPCTSTR lpszDestAddr = _T("192.168.1.8");
 	XENGINE_VALTIME st_VALTime;
 
 	memset(&st_VALTime, '\0', sizeof(XENGINE_VALTIME));
@@ -67,7 +68,7 @@ int Protocol_TestTCPRaw()
 {
 	SOCKET hSDSocket;
 	SOCKET hRVSocket;
-	LPCTSTR lpszSourceAddr = "192.168.1.12";
+	LPCTSTR lpszSourceAddr = "192.168.1.8";
 
 	if (!Protocol_TCPRaw_Init(&hSDSocket, &hRVSocket))
 	{
