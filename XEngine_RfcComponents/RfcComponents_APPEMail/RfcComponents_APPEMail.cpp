@@ -2,17 +2,17 @@
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_EmailClient.lib")
-#else
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#endif
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_EmailClient/EmailClient_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_EmailClient/EmailClient_Error.h"
 
-//g++ -std=c++17 -Wall -g RfcComponents_APPEMail.cpp -o RfcComponents_APPEMail.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lRfcComponents_EmailClient -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents,--disable-new-dtags
-
+//Linux::g++ -std=c++17 -Wall -g RfcComponents_APPEMail.cpp -o RfcComponents_APPEMail.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lRfcComponents_EmailClient -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents,--disable-new-dtags
+//Macos::g++ -std=c++17 -Wall -g RfcComponents_APPEMail.cpp -o RfcComponents_APPEMail.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_RfcComponents -lXEngine_BaseLib -lRfcComponents_EmailClient
 
 void CALLBACK Pop3_Callback(XNETHANDLE xhNet, BOOL bRet, LPCSTR lpszBuffer, int nLen, LPVOID lParam)
 {
@@ -29,10 +29,11 @@ int main()
 	RFCCOMPONENTS_EMAILSMTP st_RfcSmtp;
 	memset(&st_RfcSmtp, '\0', sizeof(RFCCOMPONENTS_EMAILSMTP));
 
-	st_RfcSmtp.lpszServiceAddr = _T("smtps://smtp.163.com");
-	st_RfcSmtp.lpszUserName = _T("ggqytgodlove");
-	st_RfcSmtp.lpszPassWord = _T("11");
-	st_RfcSmtp.lpszFromAddr = _T("ggqytgodlove@163.com");
+	_tcscpy(st_RfcSmtp.tszServiceAddr, _T("smtps://smtp.exmail.qq.com:465"));
+	_tcscpy(st_RfcSmtp.tszUserName, _T("qyt@xyry.org"));
+	_tcscpy(st_RfcSmtp.tszPassWord, _T("11"));
+	_tcscpy(st_RfcSmtp.tszFromAddr, _T("qyt@xyry.org"));
+
 	st_RfcSmtp.bIsCall = FALSE;
 	if (!RfcComponents_EMailClient_SmtpInit(&xhSmtp, &st_RfcSmtp))
 	{
@@ -49,9 +50,11 @@ int main()
 
 	RFCCOMPONENTS_EMAILPOP3 st_EmailPop;
 	memset(&st_EmailPop, '\0', sizeof(st_EmailPop));
-	st_EmailPop.lpszServiceAddr = _T("pop3://pop.163.com"); 
-	st_EmailPop.lpszUserName = _T("ggqytgodlove:11");
+
 	st_EmailPop.nIndex = 2;
+	_tcscpy(st_EmailPop.tszUserName, _T("qyt@xyry.org:11"));
+	_tcscpy(st_EmailPop.tszServiceAddr, _T("pop3://pop.exmail.qq.com"));
+
 	RfcComponents_EMailClient_POP3SetCallBack(Pop3_Callback);
 	if (!RfcComponents_EMailClient_POP3Init(&xhPop3, &st_EmailPop))
 	{

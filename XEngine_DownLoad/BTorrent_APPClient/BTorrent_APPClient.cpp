@@ -14,7 +14,8 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_DownLoad/XEngine_BTorrent/BTDload_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_DownLoad/XEngine_BTorrent/BTDload_Error.h"
 
-//g++ -std=c++17 -Wall -g BTorrent_APPClient.cpp -o BTorrent_APPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_DownLoad -lXEngine_BaseLib -lXEngine_BTorrent -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_DownLoad,--disable-new-dtags
+//Linux::g++ -std=c++17 -Wall -g BTorrent_APPClient.cpp -o BTorrent_APPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_DownLoad -lXEngine_BaseLib -lXEngine_BTorrent -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_DownLoad,--disable-new-dtags
+//MacOS::g++ -std=c++17 -Wall -g BTorrent_APPClient.cpp -o BTorrent_APPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_DownLoad -lXEngine_BaseLib -lXEngine_BTorrent
 
 int BTorrent_Parse(LPCTSTR lpszFile)
 {

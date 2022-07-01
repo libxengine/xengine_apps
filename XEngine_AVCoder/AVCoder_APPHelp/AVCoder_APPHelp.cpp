@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <time.h>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
@@ -18,7 +19,8 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVHelp/AVHelp_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVHelp/AVHelp_Error.h"
 
-//g++ -std=c++17 -Wall -g AVCoder_APPHelp.cpp -o AVCoder_APPHelp.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder -lXEngine_BaseLib -lXEngine_AVHelp -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder,--disable-new-dtags
+//Linux::g++ -std=c++17 -Wall -g AVCoder_APPHelp.cpp -o AVCoder_APPHelp.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder -lXEngine_BaseLib -lXEngine_AVHelp -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder,--disable-new-dtags
+//Macos::g++ -std=c++17 -Wall -g AVCoder_APPHelp.cpp -o AVCoder_APPHelp.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCoder -lXEngine_BaseLib -lXEngine_AVHelp
 
 void Test_MetaInfo()
 {
@@ -44,7 +46,7 @@ void Test_MetaInfo()
 		memset(tszAStr, '\0', sizeof(tszAStr));
 		int nLen = strlen(ppSt_MetaList[i]->tszValue);
 
-		BaseLib_OperatorString_UTFToAnsi(ppSt_MetaList[i]->tszValue, tszAStr, &nLen);
+		BaseLib_OperatorCharset_UTFToAnsi(ppSt_MetaList[i]->tszValue, tszAStr, &nLen);
 		printf("%s %s\n", ppSt_MetaList[i]->tszKey, tszAStr);
 #else
 		printf("%s %s\n", ppSt_MetaList[i]->tszKey, ppSt_MetaList[i]->tszValue);

@@ -16,6 +16,7 @@
 #include <thread>
 using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
@@ -24,7 +25,9 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Error.h"
 
-//g++ -std=gnu++17 -Wall -g XClient_PoolConnect.cpp -o XClient_PoolConnect.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -lXEngine_BaseLib -lXClient_Pool -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client,--disable-new-dtags
+//Linux::g++ -std=gnu++17 -Wall -g XClient_PoolConnect.cpp -o XClient_PoolConnect.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -lXEngine_BaseLib -lXEngine_ManagePool -lXClient_Socket -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_ManagePool:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client,--disable-new-dtags
+//Macos::g++ -std=gnu++17 -Wall -g XClient_PoolConnect.cpp -o XClient_PoolConnect.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Client -lXEngine_BaseLib -lXEngine_ManagePool -lXClient_Socket
+
 
 typedef struct
 {
@@ -197,20 +200,23 @@ BOOL XClient_PoolConnect_Close(XCLIENT_POOLCONNECT* pSt_PoolConnect)
 
 int main()
 {
-    WSADATA st_WSAData;
-    WSAStartup(MAKEWORD(2, 2), &st_WSAData);
-    XCLIENT_POOLCONNECT* pSt_PoolConnect = XClient_PoolConnect_OPen("192.168.1.12", 5103, 10, TRUE, 2);
+#ifdef _MSC_BUILD
+	WSADATA st_WSAData;
+	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
+#endif
+
+    XCLIENT_POOLCONNECT* pSt_PoolConnect = XClient_PoolConnect_OPen("192.168.1.8", 5401, 10, TRUE, 2);
 	if (NULL == pSt_PoolConnect)
 	{
-		printf("XClient_PoolConnect_OPen:%X\n", XClient_GetLastError());
+		printf("XClient_PoolConnect_OPen:%lX\n", XClient_GetLastError());
 		return -1;
 	}
 
-	while (1)
-	{
-		Sleep(1000);
-	}
+    std::this_thread::sleep_for(std::chrono::seconds(10));
 	XClient_PoolConnect_Close(pSt_PoolConnect);
+
+#ifdef _MSC_BUILD
     WSACleanup();
+#endif
 	return 0;
 }

@@ -13,7 +13,8 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVPlayer/AVPlayer_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVPlayer/AVPlayer_Error.h"
 
-//g++ -std=c++17 -Wall -g AVCoder_APPPlayer.cpp -o AVCoder_APPPlayer.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder -lXEngine_BaseLib -lXEngine_AVPlayer -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder,--disable-new-dtags
+//Linux::g++ -std=c++17 -Wall -g AVCoder_APPPlayer.cpp -o AVCoder_APPPlayer.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder -lXEngine_BaseLib -lXEngine_AVPlayer -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder,--disable-new-dtags
+//Macos::g++ -std=c++17 -Wall -g AVCoder_APPPlayer.cpp -o AVCoder_APPPlayer.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCoder -lXEngine_BaseLib -lXEngine_AVPlayer
 
 int Player_Video()
 {
@@ -23,7 +24,11 @@ int Player_Video()
 	{
 		return -1;
 	}
+#ifdef _MSC_BUILD
 	LPCTSTR lpszFile = _T("H:\\h264 file\\ds.yuv");
+#else
+	LPCTSTR lpszFile = _T("./ds.yuv");
+#endif
 	int nSize = 1920 * 1080 * 3 / 2;
 	TCHAR* ptszBuffer = new TCHAR[nSize];
 	FILE* pSt_File = fopen(lpszFile, "rb");

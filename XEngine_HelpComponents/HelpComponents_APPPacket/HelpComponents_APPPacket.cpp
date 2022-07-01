@@ -7,14 +7,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_Packets/Packets_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_Packets/Packets_Error.h"
 
-//g++ -std=gnu++17 -Wall -g HelpComponents_APPPacket.cpp -o HelpComponents_APPPacket.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents -lXEngine_BaseLib -lHelpComponents_Packets -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents,--disable-new-dtags
+//Linux::g++ -std=gnu++17 -Wall -g HelpComponents_APPPacket.cpp -o HelpComponents_APPPacket.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents -lXEngine_BaseLib -lHelpComponents_Packets -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents,--disable-new-dtags
+//Macos::g++ -std=gnu++17 -Wall -g HelpComponents_APPPacket.cpp -o HelpComponents_APPPacket.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_HelpComponents -lXEngine_BaseLib -lHelpComponents_Packets
 
 int Test_Packets()
 {
@@ -148,7 +151,7 @@ int Test_Datas()
 int Test_PacketPool()
 {
 	LPCTSTR lpszClientAddr = _T("127.0.0.1");
-	XHANDLE xhPacket = HelpComponents_Datas_Init(10000, 0, 4);
+	XHANDLE xhPacket = HelpComponents_Datas_Init(10000, 4);
 	if (NULL == xhPacket)
 	{
 		printf("HelpComponents_Datas_Init:%lX\n", Packets_GetLastError());
@@ -346,6 +349,10 @@ int Test_PacketCustom2()
 	LPCTSTR lpszFile = _T("1.rtp");
 #endif
 	FILE* pSt_File = _tfopen(lpszFile, _T("rb"));
+	if (NULL == pSt_File)
+	{
+		return -1;
+	}
 	while (TRUE)
 	{
 		TCHAR tszMsgBuffer[2048];

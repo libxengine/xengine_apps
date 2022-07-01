@@ -3,21 +3,22 @@
 #include <tchar.h>
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/HelpComponents_Compress.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_SystemApi.lib")
-#else
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#endif
+#include <time.h>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_SystemSdk/XEngine_ProcSdk/ProcFile_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_SystemSdk/XEngine_ProcFile/ProcFile_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_SystemSdk/XEngine_SystemApi/SystemApi_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_SystemSdk/XEngine_SystemApi/SystemApi_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_Compress/HelpCompress_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_Compress/HelpCompress_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_Compress/HelpCompress_Error.h"
 
-//g++ -std=gnu++17 -Wall -g HelpComponents_APPCompress.cpp -o HelpComponents_APPCompress.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents -lXEngine_BaseLib -lXEngine_SystemApi -lHelpComponents_Compress -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents,--disable-new-dtags
+//linux::g++ -std=gnu++17 -Wall -g HelpComponents_APPCompress.cpp -o HelpComponents_APPCompress.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents -lXEngine_BaseLib -lXEngine_SystemApi -lHelpComponents_Compress -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents,--disable-new-dtags
+//Macos::g++ -std=gnu++17 -Wall -g HelpComponents_APPCompress.cpp -o HelpComponents_APPCompress.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_SystemSdk -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_HelpComponents -lXEngine_BaseLib -lXEngine_SystemApi -lHelpComponents_Compress
 
 void CompressBuffer_Test()
 {
@@ -47,16 +48,28 @@ void CompressBuffer_Test()
 }
 void CompressFile_Test()
 {
+#ifdef _MSC_BUILD
 	XZIP xhFile = HelpCompress_File_Create(_T("H:\\XEngine_Apps\\Debug\\1.zip"));
 	HelpCompress_File_Add(xhFile, "XClient_Socket.dll", _T("H:\\XEngine_Apps\\Debug\\XClient_Socket.dll"));
 	HelpCompress_File_Add(xhFile, "zlibwapi.dll", _T("H:\\XEngine_Apps\\Debug\\zlibwapi.dll"));
 	HelpCompress_File_Add(xhFile, "123\\XEngine_WBlackList.dll", _T("H:\\XEngine_Apps\\Debug\\XEngine_WBlackList.dll"));
 	HelpCompress_File_Add(xhFile, "123\\XClient_OPenSsl.dll", _T("H:\\XEngine_Apps\\Debug\\XClient_OPenSsl.dll"));
 	HelpCompress_File_Close(xhFile);
+#else
+	XZIP xhFile = HelpCompress_File_Create(_T("./1.zip"));
+	HelpCompress_File_Add(xhFile, "1.png", _T("./1.png"));
+	HelpCompress_File_Add(xhFile, "2.png", _T("./1.png"));
+	HelpCompress_File_Add(xhFile, "123\\3.png", _T("./3.png"));
+	HelpCompress_File_Close(xhFile);
+#endif
 }
 void UNCompressTest()
 {
+#ifdef _MSC_BUILD
 	XZIP xhFile = HelpCompress_File_OPen(_T("H:\\XEngine_Apps\\Debug\\1.zip"));
+#else
+	XZIP xhFile = HelpCompress_File_OPen(_T("./1.zip"));
+#endif
 	if (NULL == xhFile)
 	{
 		return;
@@ -76,12 +89,20 @@ void UNCompressTest()
 
 		if (st_ZLibInfo.bIsFile)
 		{
+#ifdef _MSC_BUILD
 			sprintf(tszExtDir, _T("H:\\XEngine_Apps\\Debug\\%s"), st_ZLibInfo.tszFileName);
+#else
+			sprintf(tszExtDir, _T("./dezip/%s"), st_ZLibInfo.tszFileName);
+#endif
 			HelpCompress_File_WriteFile(xhFile, tszExtDir);
 		}
 		else
 		{
+#ifdef _MSC_BUILD
 			sprintf(tszExtDir, _T("H:\\XEngine_Apps\\Debug\\%s"), st_ZLibInfo.tszFileName);
+#else
+			sprintf(tszExtDir, _T("./dezip/%s"), st_ZLibInfo.tszFileName);
+#endif
 			SystemApi_File_CreateMutilFolder(tszExtDir);
 		}
 		bRet = HelpCompress_File_GoNextFile(xhFile);

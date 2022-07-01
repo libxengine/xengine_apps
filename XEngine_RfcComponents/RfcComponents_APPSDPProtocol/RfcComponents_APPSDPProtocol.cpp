@@ -3,19 +3,21 @@
 #include <tchar.h>
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_SDPProtocol.lib")
-#else
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#endif
+#include <time.h>
 #include <inttypes.h>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_SDPProtocol/SDPProtocol_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_SDPProtocol/SDPProtocol_Error.h"
 
-//g++ -std=c++17 -Wall -g RfcComponents_APPSDPProtocol.cpp -o RfcComponents_APPSDPProtocol.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lRfcComponents_SDPProtocol -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents,--disable-new-dtags
+//Linux::g++ -std=c++17 -Wall -g RfcComponents_APPSDPProtocol.cpp -o RfcComponents_APPSDPProtocol.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lRfcComponents_SDPProtocol -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents,--disable-new-dtags
+//Macos::g++ -std=c++17 -Wall -g RfcComponents_APPSDPProtocol.cpp -o RfcComponents_APPSDPProtocol.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_RfcComponents -lXEngine_BaseLib -lRfcComponents_SDPProtocol
 
 void CreateSDP(TCHAR* ptszMsgBuffer, int* pInt_Len)
 {
@@ -127,8 +129,8 @@ void ParseSDP(LPCTSTR lpszMsgBuffer, int nLen)
 	RfcComponents_SDPParse_GetVersion(xhToken, &nVersion);
 
 	printf("nVersion:%d\n", nVersion);
-	__int64 nSessionID = 0;
-	__int64 nSessionVer = 0;
+	__int64x nSessionID = 0;
+	__int64x nSessionVer = 0;
 	int nIPVer = 0;
 	TCHAR tszUserName[64];
 	TCHAR tszIPVer[64];
@@ -153,8 +155,8 @@ void ParseSDP(LPCTSTR lpszMsgBuffer, int nLen)
 	memset(tszSessionName, '\0', sizeof(tszSessionName));
 	RfcComponents_SDPParse_GetSession(xhToken, tszSessionValue, tszSessionName, &bVideo);
 
-	__int64 nTimeStart = 0;
-	__int64 nTimeEnd = 0;
+	__int64x nTimeStart = 0;
+	__int64x nTimeEnd = 0;
 	RfcComponents_SDPParse_GetTime(xhToken, &nTimeStart, &nTimeEnd);
 
 	int nACount = 0;

@@ -16,7 +16,8 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVPacket/AVPacket_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVPacket/AVPacket_Error.h"
 
-//g++ -std=c++17 -Wall -g AVCoder_APPPacket.cpp -o AVCoder_APPPacket.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder -lXEngine_BaseLib -lXEngine_AVPacket -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder,--disable-new-dtags
+//Linux::g++ -std=c++17 -Wall -g AVCoder_APPPacket.cpp -o AVCoder_APPPacket.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder -lXEngine_BaseLib -lXEngine_AVPacket -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder,--disable-new-dtags
+//MacOS::g++ -std=c++17 -Wall -g AVCoder_APPPacket.cpp -o AVCoder_APPPacket.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCoder -lXEngine_BaseLib -lXEngine_AVPacket
 
 void __stdcall AVPacket_Pack_CBNotify(XNETHANDLE xhNet, int nCvtType, int nCvtFrame, double dlTime, LPVOID lParam)
 {
@@ -31,8 +32,8 @@ int AVPacket_Test_FileConvert()
 	LPCTSTR lpszSrcFile = "D:\\h264 file\\480p.flv";
 	LPCTSTR lpszDstFile = "D:\\h264 file\\480p.mp4";
 #else
-	LPCTSTR lpszSrcFile = "480p.264";
-	LPCTSTR lpszDstFile = "480p.flv";
+	LPCTSTR lpszSrcFile = "480p.flv";
+	LPCTSTR lpszDstFile = "conv.mp4";
 #endif
 
 	if (!AVPacket_FileConvert_Init(&xhAVFile, AVPacket_Pack_CBNotify))
@@ -141,13 +142,13 @@ int AVPacket_Test_UNPacket()
 
 #ifdef _WINDOWS
 	LPCTSTR lpszVideoFile = "H:\\h264 file\\480p_1.264";
-	LPCTSTR lpszAudioFile1 = "H:\\h264 file\\test_1.mp3";
-	LPCTSTR lpszAudioFile2 = "H:\\h264 file\\test_1.aac";
+	LPCTSTR lpszAudioFile1 = "H:\\h264 file\\test_1.aac";
+	LPCTSTR lpszAudioFile2 = "H:\\h264 file\\test_2.aac";
 	LPCTSTR lpszSrcFile = "H:\\h264 file\\480p.mp4";
 #else
 	LPCTSTR lpszVideoFile = "480p_1.264";
-	LPCTSTR lpszAudioFile1 = "test_1.mp3";
-	LPCTSTR lpszAudioFile2 = "test_1.aac";
+	LPCTSTR lpszAudioFile1 = "test_1.aac";
+	LPCTSTR lpszAudioFile2 = "test_2.aac";
 	LPCTSTR lpszSrcFile = "480p.mp4";
 #endif
 

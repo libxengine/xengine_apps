@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
@@ -15,9 +16,8 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_SystemSdk/XEngine_SystemApi/SystemApi_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_SystemSdk/XEngine_SystemApi/SystemApi_Error.h"
 
-//g++ -std=c++17 -Wall -g SystemSdk_APPApi.cpp -o SystemSdk_APPApi.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk -lXEngine_BaseLib -lXEngine_SystemApi -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
-
-
+//Linux::g++ -std=c++17 -Wall -g SystemSdk_APPApi.cpp -o SystemSdk_APPApi.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk -lXEngine_BaseLib -lXEngine_SystemApi -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
+//Macos::g++ -std=c++17 -Wall -g SystemSdk_APPApi.cpp -o SystemSdk_APPApi.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_SystemSdk -lXEngine_BaseLib -lXEngine_SystemApi
 
 int Test_SerialInfo()
 {
@@ -30,17 +30,14 @@ int Test_SerialInfo()
 	TCHAR tszOSBuffer[MAX_PATH];
 	memset(tszOSBuffer, '\0', MAX_PATH);
 	SystemApi_System_GetSystemVer(tszOSBuffer, &dwOSVersion, &dwOSBuild, &dwOSProcessor);
+	printf("%s %lu %lu %lu\n", tszOSBuffer, dwOSVersion, dwOSBuild, dwOSProcessor);
 
-	int nVerHigh = 0;
-	int nVerLow = 0;
-#ifdef _WINDOWS
-	printf("%s %d %d %d\n", tszOSBuffer, dwOSVersion, dwOSBuild, dwOSProcessor);
-#else
-	printf("%s %d.%d %ld %ld\n", tszOSBuffer, nVerHigh, nVerLow, dwOSBuild, dwOSProcessor);
-#endif
-
-#ifndef _WINDOWS
+#ifndef _MSC_BUILD
+#ifdef __linux__
 	strcpy(st_SDKSerial.tszDiskSerial, "sda");
+#else
+	strcpy(st_SDKSerial.tszDiskSerial, "macos");
+#endif
 #endif
 	if (!SystemApi_HardWare_GetSerial(&st_SDKSerial))
 	{

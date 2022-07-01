@@ -12,18 +12,20 @@
 #endif
 #include <thread>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Error.h"
 
-//g++ -std=gnu++17 -Wall -g XClient_Socket.cpp -o XClient_Socket.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -lXEngine_BaseLib -lXClient_Socket -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client,--disable-new-dtags
+//Linux:g++ -std=gnu++17 -Wall -g XClient_Socket.cpp -o XClient_Socket.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -lXEngine_BaseLib -lXClient_Socket -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client,--disable-new-dtags
+//Macos:g++ -std=gnu++17 -Wall -g XClient_Socket.cpp -o XClient_Socket.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Client -lXEngine_BaseLib -lXClient_Socket
 
 int XClient_ProxyClient()
 {
-	LPCTSTR lpszRequestMsg = _T("CONNECT 42.192.166.120:80 HTTP/1.1\r\n"
+	LPCTSTR lpszRequestMsg = _T("CONNECT 159.75.200.173:80 HTTP/1.1\r\n"
 		"Proxy-Connection: Keep-Alive\r\n"
 		"Content-Length: 0\r\n"
-		"Host: 42.192.166.120\r\n"
+		"Host: 159.75.200.173\r\n"
 		"Proxy-Authorization: Basic MTIzMTIzYWE6MTIzMTIz\r\n"
 		"User-Agent: XClient V7 - HTTP C Client Module.Windows 10 2004\r\n\r\n");
 	int nMsgLen = _tcslen(lpszRequestMsg);
@@ -31,7 +33,7 @@ int XClient_ProxyClient()
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	SOCKET m_Socket;
-	if (!XClient_TCPSelect_Create(&m_Socket, _T("192.168.1.4"), 10081))
+	if (!XClient_TCPSelect_Create(&m_Socket, _T("192.168.1.8"), 5401))
 	{
 		printf(_T("连接失败！\n"));
 		return -1;
@@ -195,8 +197,6 @@ int udx_test()
 #else
 	LPCTSTR lpszFile = _T("Lib_APPBaselib.exe");
 #endif
-	XNETHANDLE xhNet;
-
 	FILE* pSt_File = fopen(lpszFile, "rb");
 	if (NULL == pSt_File)
 	{
@@ -211,7 +211,8 @@ int udx_test()
 	st_UDXConfig.bEnableRryTime = TRUE;
 	st_UDXConfig.nWindowSize = 1000;
 
-	if (!XClient_UDXSocket_InitEx(&xhNet, &st_UDXConfig, "127.0.0.1", 11339))
+	XHANDLE xhNet = XClient_UDXSocket_InitEx(&st_UDXConfig, "127.0.0.1", 11339);
+	if (NULL == xhNet)
 	{
 		printf(_T("初始化失败,启动错误:%lX\n"), XClient_GetLastError());
 		return -1;
@@ -247,10 +248,10 @@ int main()
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 
-	//XClient_ProxyClient();
+	XClient_ProxyClient();
 	//TCPTest();
 	//TCPTestEx();
-	Test_UDPClient();
+	//Test_UDPClient();
 	//Test_Unix();
 	//udx_test();
 	

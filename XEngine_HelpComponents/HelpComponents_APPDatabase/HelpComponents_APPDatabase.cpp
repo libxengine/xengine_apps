@@ -3,18 +3,19 @@
 #include <tchar.h>
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/HelpComponents_DataBase.lib")
-#else
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#endif
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_DataBase/DataBase_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_DataBase/DataBase_Error.h"
 
-//g++ -std=gnu++17 -Wall -g HelpComponents_APPDatabase.cpp -o HelpComponents_APPDatabase.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents -lXEngine_BaseLib -lHelpComponents_DataBase -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents,--disable-new-dtags
+//Linux::g++ -std=gnu++17 -Wall -g HelpComponents_APPDatabase.cpp -o HelpComponents_APPDatabase.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents -lXEngine_BaseLib -lHelpComponents_DataBase -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents,--disable-new-dtags
+//Macos::clang++ -std=gnu++17 -Wall -g HelpComponents_APPDatabase.cpp -o HelpComponents_APPDatabase.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_HelpComponents -lXEngine_BaseLib -lHelpComponents_DataBase 
 
 int Test_SQLite()
 {
@@ -76,26 +77,26 @@ int mysql_test()
 	memset(&st_ConnectInfo, '\0', sizeof(DATABASE_MYSQL_CONNECTINFO));
 
 	//连接数据库
-	strcpy(st_ConnectInfo.tszDBName, _T("XStorage_FileList"));
-	strcpy(st_ConnectInfo.tszSQLAddr, _T("192.168.1.110"));
-	strcpy(st_ConnectInfo.tszSQLName, _T("root"));
-	strcpy(st_ConnectInfo.tszSQLPass, _T("11"));
+	strcpy(st_ConnectInfo.tszDBName, _T("XEngine_ListInfo"));
+	strcpy(st_ConnectInfo.tszSQLAddr, _T("192.168.1.12"));
+	strcpy(st_ConnectInfo.tszSQLName, _T("ruiyue"));
+	strcpy(st_ConnectInfo.tszSQLPass, _T("123123Ruiyue"));
 
 	if (!DataBase_MySQL_Connect(&xhDBDay, &st_ConnectInfo, 5, TRUE, _T("utf8")))
 	{
 		return FALSE;
 	}
 
-	DWORD64 dwLine = 0;
-	DWORD64 dwField = 0;
+	__int64u dwLine = 0;
+	__int64u dwField = 0;
 	XNETHANDLE xhTableResult;
 	TCHAR tszSQLQuery[2048];
 
 	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
-	sprintf(tszSQLQuery, _T("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='XStorage_FileList' AND TABLE_TYPE='BASE TABLE'"));
+	sprintf(tszSQLQuery, _T("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='XEngine_ListInfo' AND TABLE_TYPE='BASE TABLE'"));
 	if (DataBase_MySQL_ExecuteQuery(xhDBDay, &xhTableResult, tszSQLQuery, &dwLine, &dwField))
 	{
-		for (DWORD64 i = 0; i < dwLine; i++)
+		for (__int64u i = 0; i < dwLine; i++)
 		{
 			TCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBDay, xhTableResult);
 			if (NULL == pptszResult[0])
@@ -180,9 +181,9 @@ int postgredb_test()
 int main()
 {
 	Test_SQLite();
-	postgredb_test();
+	//postgredb_test();
 	mysql_test();
-	mongodb_test();
+	//mongodb_test();
 
 	return TRUE;
 }
