@@ -4,7 +4,7 @@ xengine 例子代码
 
 # 引擎例子
 引擎的例子代码包含下面的例子,可以根据需要通过下面的目录结构找到相应的组件模块例子.  
-请使用vs2019打开,并且使用 x86和debug模式
+请使用vs2022打开,并且使用 x86和debug模式
 
 1. XEngine_AVCoder                  音视频组件  
 2. XEngine_Client                   客户端组件  
@@ -16,7 +16,6 @@ xengine 例子代码
 9. XEngine_RfcComponents            协议标准组件  
 10. XEngine_StreamMedia             流媒体组件  
 11. XEngine_SystemSdk               系统组件  
-12. XEngine_Img                     图形图像组件
 
 # 使用说明
 要使用我们的代码例子.你可能需要做一部分修改.WINDOWS可以直接用VS打开并且编译,LINUX可以使用命令编译  

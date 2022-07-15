@@ -4,7 +4,7 @@ XEngine V7 Version example
 
 #### Engine Example
 The example code of the engine contains the following examples, and the corresponding component module examples can be found through the following directory structure as needed  
-please use vs2019 open it,and use x86 and debug mode.  
+please use vs2022 open it,and use x86 and debug mode.  
 
 1. XEngine_AVCoder                  audio and video   
 2. XEngine_Client                   client  
@@ -16,7 +16,6 @@ please use vs2019 open it,and use x86 and debug mode.
 9. XEngine_RfcComponents            rfc protocol    
 10. XEngine_StreamMedia             stream media  
 11. XEngine_SystemSdk               system  
-12. XEngine_Img                     Img 
 
 #### use
 To use our code example. You may need to make some modifications. WINDOWS can be opened and compiled directly with VS, and LINUX can be compiled with commands  

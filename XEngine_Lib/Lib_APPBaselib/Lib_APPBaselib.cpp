@@ -63,6 +63,7 @@ void StringTest()
 {
 	int nHdrLen = 0;
 	int nBodyLen = 0;
+	int nDelLen = 0;
 	TCHAR tszKey[64];
 	TCHAR tszValue[64];
 	TCHAR tszMsgBuffer[1024];
@@ -74,8 +75,10 @@ void StringTest()
 	_stprintf(tszMsgBuffer, _T("123456789 :  abcd"));
 	BaseLib_OperatorString_DelSub(tszMsgBuffer, _T("9"));
 
+	BaseLib_OperatorString_DelChar(tszMsgBuffer, ' ', &nDelLen);
 	BaseLib_OperatorString_GetKeyValue(tszMsgBuffer, ":", tszKey, tszValue, TRUE, &nHdrLen, &nBodyLen);
-
+	BaseLib_OperatorString_DelLastForChar(tszMsgBuffer, ':', FALSE);
+	//BaseLib_OperatorString_DelFirstForChar(tszMsgBuffer, ':', TRUE);
 	LPCTSTR lpszFile1 = _T("./adadad/file.txt");
 	LPCTSTR lpszFile2 = _T("D:\\adadad\\file.txt");
 	LPCTSTR lpszFile3 = _T("./file.txt");

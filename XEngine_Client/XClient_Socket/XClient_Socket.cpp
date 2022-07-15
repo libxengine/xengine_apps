@@ -113,36 +113,42 @@ int TCPTest()
 	XClient_TCPSelect_Close(m_Socket);
 	return 1;
 }
+
+void CALLBACK XClient_TCPCallback_Recv(XNETHANDLE xhNet, ENUM_NETCLIENT_TCPEVENTS enTCPClientEvents, LPCSTR lpszMsgBuffer, int nLen, LPVOID lParam)
+{
+	if (ENUM_XENGINE_XCLIENT_SOCKET_TCP_EVENT_RECV == enTCPClientEvents)
+	{
+		printf("Recv:%lld-%d = %d\n", xhNet, enTCPClientEvents, nLen);
+	}
+	else if (ENUM_XENGINE_XCLIENT_SOCKET_TCP_EVENT_CLOSE == enTCPClientEvents)
+	{
+		printf("Close:%lld-%d\n", xhNet, enTCPClientEvents);
+	}
+	else if (ENUM_XENGINE_XCLIENT_SOCKET_TCP_EVENT_CONNECT == enTCPClientEvents)
+	{
+		printf("connect:%lld-%d\n", xhNet, enTCPClientEvents);
+	}
+}
 int TCPTestEx()
 {
-	int nMsgLen = 10240;
-	TCHAR tszSDBuffer[10000];
-	TCHAR tszMsgBuffer[10240];
+	XNETHANDLE xhToken[4];
 
-	memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
+	for (int i = 0; i < 4; i++)
+	{
+		XClient_TCPSelect_StartEx(&xhToken[i], _T("192.168.1.12"), 5600, 0, XClient_TCPCallback_Recv, NULL, TRUE);
+		XClient_TCPSelect_HBStartEx(xhToken[i], 2);
+	}
 
-	XNETHANDLE xhToken;
-	if (!XClient_TCPSelect_StartEx(&xhToken, _T("127.0.0.1"), 5000))
+	std::this_thread::sleep_for(std::chrono::seconds(100));
+
+	for (int i = 0; i < 4; i++)
 	{
-		printf(_T("连接失败！\n"));
-		return -1;
+		XClient_TCPSelect_StopEx(xhToken[i]);
 	}
-	for (int i = 0; i < 3; i++)
-	{
-		int nLen = 6;
-		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-		if (XClient_TCPSelect_SendEx(xhToken, "123456", &nLen))
-		{
-			printf("NetClient_TCPSelect_SendEx:%d\n", nMsgLen);
-		}
-		if (XClient_TCPSelect_RecvEx(xhToken, tszMsgBuffer, &nMsgLen, 10))
-		{
-			printf("NetClient_TCPSelect_RecvEx:%d = %s\n", nMsgLen, tszMsgBuffer);
-		}
-	}
-	XClient_TCPSelect_StopEx(xhToken);
+ 	
 	return 1;
 }
+
 int Test_UDPClient()
 {
 	SOCKET hSocket;
@@ -153,7 +159,7 @@ int Test_UDPClient()
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	memset(tszIPAddr, '\0', sizeof(tszIPAddr));
 
-	XClient_UDPSelect_Create(&hSocket, "127.0.0.1", 5002);
+	XClient_UDPSelect_Create(&hSocket, 5002);
 	if (!XClient_UDPSelect_SendMsg(hSocket, "hello", 5))
 	{
 		printf("errno!\n");
@@ -248,9 +254,9 @@ int main()
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 
-	XClient_ProxyClient();
+	//XClient_ProxyClient();
 	//TCPTest();
-	//TCPTestEx();
+	TCPTestEx();
 	//Test_UDPClient();
 	//Test_Unix();
 	//udx_test();
