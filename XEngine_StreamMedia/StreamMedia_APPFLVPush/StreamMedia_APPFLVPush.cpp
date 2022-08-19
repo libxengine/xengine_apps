@@ -36,8 +36,8 @@ LPCTSTR lpszAFile = _T("test.aac");
 
 int fread_video(LPVOID lParam, uint8_t* puszMsgBuffer, int nSize)
 {
-	//printf("%d\n", nSize);
-	int nRet = fread(puszMsgBuffer, 1, 1024, pSt_VFile);
+	printf("%d\n", nSize);
+	int nRet = fread(puszMsgBuffer, 1, nSize, pSt_VFile);
 	if (nRet <= 0)
 	{
 		fclose(pSt_VFile);
@@ -50,7 +50,7 @@ int fread_video(LPVOID lParam, uint8_t* puszMsgBuffer, int nSize)
 int fread_audio(LPVOID lParam, uint8_t* puszMsgBuffer, int nSize)
 {
 	printf("%d\n", nSize);
-	int nRet = fread(puszMsgBuffer, 1, 1024, pSt_AFile);
+	int nRet = fread(puszMsgBuffer, 1, nSize, pSt_AFile);
 	if (nRet <= 0)
 	{
 		fclose(pSt_AFile);
@@ -64,7 +64,7 @@ int fread_audio(LPVOID lParam, uint8_t* puszMsgBuffer, int nSize)
 int Test_RTMPPush()
 {
 	XNETHANDLE xhStream = 0;
-	LPCTSTR lpszUrl = _T("rtmp://app.xyry.org/live/qyt");
+	LPCTSTR lpszUrl = _T("rtmp://app.xyry.org/live/10001001_1_1");
 	BOOL bMemory = TRUE;
 
 	if (bMemory)
@@ -110,7 +110,7 @@ int Test_RTMPPush()
 			printf("XClient_FilePush_Push:%lX\n", StreamClient_GetLastError());
 			return -1;
 		}
-		if (!XClient_FilePush_Input(xhStream, NULL, lpszAFile))
+		if (!XClient_FilePush_Input(xhStream, lpszVFile))
 		{
 			printf("XClient_FilePush_Input:%lX\n", StreamClient_GetLastError());
 			return -1;

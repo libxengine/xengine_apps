@@ -57,6 +57,13 @@ void TimeTest()
 
 	BaseLib_OperatorTime_GetSysTime(&st_LibTimer);
 	BaseLib_OperatorTime_TTimeToStuTime(nTime, &st_LibTimer);
+
+	__int64x nTTime = 0;
+	char tszTimeStr[128] = {0};
+	LPCTSTR lpszTimeStr = _T("2022-08-01 10:22:01");
+	BaseLib_OperatorTime_StrToInt(lpszTimeStr, &nTTime);
+	BaseLib_OperatorTime_IntToStr(nTTime, tszTimeStr);
+
 	return;
 }
 void StringTest()

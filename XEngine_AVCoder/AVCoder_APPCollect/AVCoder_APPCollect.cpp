@@ -35,7 +35,7 @@ int main()
 	XNETHANDLE xhAudio;
 	int64_t nBitRate;
 #ifdef _WINDOWS
-	pSt_File = fopen("H:\\h264 file\\ds.yuv", "wb");
+	pSt_File = fopen("D:\\xengine_apps\\Debug\\ds.yuv", "wb");
 #else
 	pSt_File = fopen("./ds.yuv", "wb");
 #endif
@@ -43,8 +43,8 @@ int main()
 	memset(&st_AVScreen, '\0', sizeof(AVCOLLECT_SCREENINFO));
 
 	st_AVScreen.nFrameRate = 24;
-	strcpy(st_AVScreen.tszVideoDev, "0");
-	strcpy(st_AVScreen.tszVideoSize, _T("800x600"));
+	strcpy(st_AVScreen.tszVideoDev, "video=screen-capture-recorder");
+	//strcpy(st_AVScreen.tszVideoSize, _T("800x600"));
 
 	if (!AVCollect_Video_Init(&xhVideo, &st_AVScreen, XEngine_AVCollect_CBVideo))
 	{

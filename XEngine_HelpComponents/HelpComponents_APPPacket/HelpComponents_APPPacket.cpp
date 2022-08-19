@@ -19,6 +19,36 @@
 //Linux::g++ -std=gnu++17 -Wall -g HelpComponents_APPPacket.cpp -o HelpComponents_APPPacket.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents -lXEngine_BaseLib -lHelpComponents_Packets -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents,--disable-new-dtags
 //Macos::g++ -std=gnu++17 -Wall -g HelpComponents_APPPacket.cpp -o HelpComponents_APPPacket.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_HelpComponents -lXEngine_BaseLib -lHelpComponents_Packets
 
+
+int Test_Cache()
+{
+	SOCKET hSocket = 100;
+	XHANDLE xhPacket = HelpComponents_Cache_InitEx();
+	if (NULL == xhPacket)
+	{
+		printf("HelpComponents_Packets_Init:%lX\n", Packets_GetLastError());
+		return -1;
+	}
+	LPCTSTR lpszMsgBuffer = _T("hello");
+	int nLen = strlen(lpszMsgBuffer);
+
+	HelpComponents_Cache_PostEx(xhPacket, lpszMsgBuffer, nLen);
+	HelpComponents_Cache_PostEx(xhPacket, lpszMsgBuffer, nLen);
+	printf("count:%llu\n", HelpComponents_Cache_GetCountEx(xhPacket));
+
+	HelpComponents_Cache_WaitEventEx(xhPacket);
+
+	int nMsgLen = 0;
+	TCHAR* ptszMsgBuffer = NULL;
+	HelpComponents_Cache_GetMemoryEx(xhPacket, &ptszMsgBuffer, &nMsgLen);
+	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+	HelpComponents_Cache_GetMemoryEx(xhPacket, &ptszMsgBuffer, &nMsgLen);
+	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+
+	HelpComponents_Cache_WaitEventEx(xhPacket, 2000);
+	HelpComponents_Cache_DestoryEx(xhPacket);
+	return 0;
+}
 int Test_Packets()
 {
 	SOCKET hSocket = 100;
@@ -83,14 +113,14 @@ int Test_Packets()
 int Test_Datas()
 {
 	LPCTSTR lpszClientAddr = _T("127.0.0.1");
-	XHANDLE xhPacket = HelpComponents_Datas_Init();
+	XHANDLE xhPacket = HelpComponents_Datas_Init(10000, 4);
 	
 	if (NULL == xhPacket)
 	{
 		printf("HelpComponents_Datas_Init:%lX\n", Packets_GetLastError());
 		return -1;
 	}
-	if (!HelpComponents_Datas_CreateEx(xhPacket, lpszClientAddr))
+	if (!HelpComponents_Datas_CreateEx(xhPacket, lpszClientAddr, 1))
 	{
 		printf("HelpComponents_Datas_CreateEx:%lX\n", Packets_GetLastError());
 		return -1;
@@ -126,24 +156,30 @@ int Test_Datas()
 	HelpComponents_Datas_PostEx(xhPacket, lpszClientAddr, tszMsgBuffer + 32, 3);
 
 	HelpComponents_Datas_PostEx(xhPacket, lpszClientAddr, tszMsgBuffer, 35);
-	nMsgLen = 2048;
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
 
-	TCHAR tszClientAddr[64];
-	memset(tszClientAddr, '\0', sizeof(tszClientAddr));
-	HelpComponents_Datas_WaitEventEx(xhPacket);
-	HelpComponents_Datas_GetRandomEx(xhPacket, tszClientAddr, tszMsgBuffer, &nMsgLen, &st_ProtocolHdr);
-	printf("Test_Datas:%d=%s\n", nMsgLen, tszMsgBuffer);
-
-	TCHAR* ptszMsgBuffer = NULL;
-	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
-	HelpComponents_Datas_WaitEventEx(xhPacket);
-	HelpComponents_Datas_GetMemoryEx(xhPacket, lpszClientAddr, &ptszMsgBuffer, &nMsgLen, &st_ProtocolHdr);
-	printf("Test_Datas:%d=%s\n", nMsgLen, ptszMsgBuffer);
-	BaseLib_OperatorMemory_FreeCStyle((VOID **)&ptszMsgBuffer);
-
-	HelpComponents_Datas_WaitEventEx(xhPacket, 5000);
+	HelpComponents_Datas_WaitEventEx(xhPacket, 1);
+	int nListCount = 0;
+	HELPCOMPONENT_PACKET_CLIENT** ppSst_ListAddr;
+	HelpComponents_Datas_GetPoolEx(xhPacket, 1, &ppSst_ListAddr, &nListCount);
+	for (int i = 0; i < nListCount; i++)
+	{
+		//再循环客户端拥有的任务个数
+		for (int j = 0; j < ppSst_ListAddr[i]->nPktCount; j++)
+		{
+			int nMsgLen = 0;                             //客户端发送的数据大小,不包括头
+			TCHAR* ptszMsgBuffer = NULL;                 //客户端发送的数据
+			XENGINE_PROTOCOLHDR st_ProtocolHdr;          //客户端发送的数据的协议头
+			//得到一个指定客户端的完整数据包
+			if (HelpComponents_Datas_GetMemoryEx(xhPacket, ppSst_ListAddr[i]->tszClientAddr, &ptszMsgBuffer, &nMsgLen, &st_ProtocolHdr))
+			{
+				printf("Test_Datas:%d=%s\n", nMsgLen, ptszMsgBuffer);
+				//释放内存
+				BaseLib_OperatorMemory_FreeCStyle((VOID**)&ptszMsgBuffer);
+			}
+		}
+	}
+	HelpComponents_Datas_WaitEventEx(xhPacket, 1);
+	HelpComponents_Datas_WaitEventEx(xhPacket, 1, 5000);
 	HelpComponents_Datas_DeleteEx(xhPacket, lpszClientAddr);
 	HelpComponents_Datas_Destory(xhPacket);
 	return 0;
@@ -458,11 +494,13 @@ int Test_DataChunk()
 
 int main()
 {
+	Test_Cache();
+	Test_Datas();
+	Test_DataChunk();
+
 	Test_PacketCustom2();
 	Test_PacketCustom();
-	
-	Test_DataChunk();
-	Test_Datas();
+
 	Test_Packets();
 	Test_PacketPool();
 	return 0;
