@@ -367,9 +367,20 @@ int profiletest()
 	memset(tszValue, '\0', sizeof(tszValue));
 	return 0;
 }
+int test_handle()
+{
+	for (int i = 0; i < 10; i++)
+	{
+		XNETHANDLE xhToken = 0;
+		BaseLib_OperatorHandle_Create(&xhToken);
+		printf("%lld\n", xhToken);
+	}
+	return 0;
+}
 
 int main()
 {
+	test_handle();
 	TestAddrLib();
 	StringTest();
 	Test_GetTimeofday();

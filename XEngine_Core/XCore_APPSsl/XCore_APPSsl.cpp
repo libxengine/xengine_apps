@@ -238,7 +238,7 @@ int XCrypto_Test()
 	memset(tszEncoder, '\0', sizeof(tszEncoder));
 	memset(tszDecoder, '\0', sizeof(tszDecoder));
 
-	if (!OPenSsl_XCrypto_Encoder(lpszFile, &nLen, tszEncoder, "123"))
+	if (!OPenSsl_XCrypto_Encoder(lpszFile, &nLen, tszEncoder, "123123"))
 	{
 		return -1;
 	}
@@ -248,13 +248,14 @@ int XCrypto_Test()
 	}
 	printf("\r\n%s\n", tszEncoder);
 		
-	OPenSsl_XCrypto_Decoder((LPCSTR)tszEncoder, &nLen, tszDecoder, "123");
+	OPenSsl_XCrypto_Decoder((LPCSTR)tszEncoder, &nLen, tszDecoder, "123123");
 	printf("%s\n", tszDecoder);
 	return 0;
 }
 
 int main()
 {
+	XCrypto_Test();
 	md5cal();
 	Cryptto();
 	RsaSSL();
@@ -262,6 +263,6 @@ int main()
 	VerSign();
 	CertVer();
 	GetCert();
-	XCrypto_Test();
+	
 	return 0;
 }
