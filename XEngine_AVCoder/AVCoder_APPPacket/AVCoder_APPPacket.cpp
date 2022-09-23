@@ -24,6 +24,61 @@ void __stdcall AVPacket_Pack_CBNotify(XNETHANDLE xhNet, int nCvtType, int nCvtFr
 	printf("AVPacket_Pack_CBConvert:%d %d %lf\n", nCvtType, nCvtFrame, dlTime);
 }
 
+int AVPacket_Test_FileLink()
+{
+	XNETHANDLE xhAVFile = 0;
+	double nTotalAVTime = 0;
+#ifdef _WINDOWS
+	LPCTSTR lpszSrcFile1 = "D:\\h264 file\\480p.flv";
+	LPCTSTR lpszSrcFile2 = "D:\\h264 file\\480p1.flv";
+	LPCTSTR lpszDstFile = "D:\\h264 file\\480p.mp4";
+#else
+	LPCTSTR lpszSrcFile1 = "480p.flv";
+	LPCTSTR lpszSrcFile2 = "480p1.flv";
+	LPCTSTR lpszDstFile = "480p.mp4";
+#endif
+
+	if (!AVPacket_FileLink_Init(&xhAVFile, AVPacket_Pack_CBNotify))
+	{
+		printf("AVPacket_FileConvert_Init:%lX\n", AVPacket_GetLastError());
+		return -1;
+	}
+	if (!AVPacket_FileLink_Input(xhAVFile, lpszSrcFile1))
+	{
+		printf("AVPacket_FileConvert_Input:%lX\n", AVPacket_GetLastError());
+		return -1;
+	}
+	if (!AVPacket_FileLink_Input(xhAVFile, lpszSrcFile2))
+	{
+		printf("AVPacket_FileConvert_Input:%lX\n", AVPacket_GetLastError());
+		return -1;
+	}
+
+	if (!AVPacket_FileLink_Output(xhAVFile, lpszDstFile))
+	{
+		printf("AVPacket_FileConvert_Output:%lX\n", AVPacket_GetLastError());
+		return -1;
+	}
+	if (!AVPacket_FileLink_Start(xhAVFile))
+	{
+		printf("AVPacket_FileConvert_Start:%lX\n", AVPacket_GetLastError());
+		return -1;
+	}
+	while (1)
+	{
+		BOOL bIsRun = FALSE;
+		if (AVPacket_FileLink_GetStatus(xhAVFile, &bIsRun))
+		{
+			if (!bIsRun)
+			{
+				break;
+			}
+		}
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+	}
+	return AVPacket_FileLink_Stop(xhAVFile);
+}
+
 int AVPacket_Test_FileConvert()
 {
 	XNETHANDLE xhAVFile = 0;
@@ -202,9 +257,10 @@ int AVPacket_Test_UNPacket()
 }
 int main()
 {
+	//AVPacket_Test_FileLink();
 	AVPacket_Test_FileConvert();
-	AVPacket_Test_FilePacket();
-	AVPacket_Test_UNPacket();
+	//AVPacket_Test_FilePacket();
+	//AVPacket_Test_UNPacket();
 	
 	return 1;
 }

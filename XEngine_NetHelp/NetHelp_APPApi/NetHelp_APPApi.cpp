@@ -30,7 +30,7 @@ int Test_Http2Request()
 
 	st_HTTPParam.bHTTP2Enable = TRUE;
 
-	APIHelp_HttpRequest_Get(lpszUrl, &ptszMsgBuffer, &nLen, NULL, NULL, NULL, &st_HTTPParam);
+	APIHelp_HttpRequest_Custom(_T("GET"), lpszUrl, NULL, NULL, &ptszMsgBuffer, &nLen, NULL, NULL, &st_HTTPParam);
 	//APIHelp_HttpRequest_Post(lpszUrl, lpszMsgBuffer, NULL, &ptszMsgBuffer, &nLen, NULL, NULL, &st_HTTPParam);
 	printf("%s\n", ptszMsgBuffer);
 	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
@@ -41,7 +41,7 @@ int Test_HttpRequest()
 	LPCTSTR lpszUrl = _T("http://www.baidu.com");
 	CHAR* ptszMsgBuffer = NULL;
 
-	APIHelp_HttpRequest_Get(lpszUrl, &ptszMsgBuffer);
+	APIHelp_HttpRequest_Custom(_T("GET"), lpszUrl, NULL, NULL, &ptszMsgBuffer);
 	printf("%s\n", ptszMsgBuffer);
 	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 	return 0;
@@ -76,7 +76,7 @@ int Test_Domain()
 	printf("APIHelp_Domain_GetInfo:%s,%s,%s,%s,%d\n",st_APIDomain.tszDomainName, st_APIDomain.tszMainDomain, st_APIDomain.tszSubDomain, st_APIDomain.tszTopDomain, enAPIDomain);
 	return 0;
 }
-int Test_HttpCustom()
+int Test_HttpCreate()
 {
 	XNETHANDLE xhToken = 0;
 	CHAR* ptszMsgBuffer = NULL;
@@ -89,14 +89,32 @@ int Test_HttpCustom()
 	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 	return 0;
 }
+int Test_HttpCustom()
+{
+	//获取本地外网IP地址
+	int nBLen = 0;
+	TCHAR* ptszBody = NULL;
+	LPCTSTR lpszUrl = _T("http://members.3322.org/dyndns/getip");
+	LPCTSTR lpszHdrBuffer = _T("Connection: close\r\nDNT: 1\r\nUpgrade-Insecure-Requests: 1\r\nUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36 Edg/97.0.1072.55\r\nAccept: text/html\r\nAccept-Language: zh-CN,zh\r\nAccept-Encoding: deflate\r\n");
+
+	if (!APIHelp_HttpRequest_Custom(_T("GET"), lpszUrl, NULL, NULL, &ptszBody, &nBLen, lpszHdrBuffer))
+	{
+		return FALSE;
+	}
+	printf("%s\n", ptszBody);
+	BaseLib_OperatorMemory_FreeCStyle((VOID**)&ptszBody);
+	return 0;
+}
 
 int main()
 {
 	//Test_Http2Request();
+	Test_HttpCustom();
 	Test_Domain();
 	Test_NetGetIPAddr();
 	Test_HttpRequest();
-	Test_HttpCustom();
+	Test_HttpCreate();
+	
 	return 0;
 }
 
