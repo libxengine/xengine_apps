@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_EmailClient/EmailClient_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_EmailClient/EmailClient_Error.h"
 

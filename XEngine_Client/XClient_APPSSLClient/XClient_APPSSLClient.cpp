@@ -13,7 +13,6 @@
 #include <string.h>
 #include <string>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Error.h"
@@ -63,7 +62,7 @@ int main()
 	while (1)
 	{
 		int nLen = 2048;
-		TCHAR tszMsgBuffer[2048];
+		char tszMsgBuffer[2048];
 		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 		if (!XClient_OPenSsl_RecvMsgEx(xhNet, tszMsgBuffer, &nLen))

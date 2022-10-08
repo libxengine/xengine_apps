@@ -10,10 +10,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_NatClient/NatClient_Define.h"

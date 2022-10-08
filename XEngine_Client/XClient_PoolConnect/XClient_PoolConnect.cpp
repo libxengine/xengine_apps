@@ -16,12 +16,11 @@
 #include <thread>
 using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_ManagePool/ManagePool_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_ManagePool/ManagePool_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_ManagePool/ManagePool_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_ManagePool/ManagePool_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Error.h"
 
@@ -31,7 +30,7 @@ using namespace std;
 
 typedef struct
 {
-	TCHAR tszServiceAddr[64];
+	char tszServiceAddr[64];
 	SOCKET hSocket;
 	int nPort;
 	int nIndex;
@@ -48,8 +47,8 @@ XHTHREAD CALLBACK XClient_PoolConnect_Thread(LPVOID lParam)
 {
 	XCLIENT_CONNECTINFO* pSt_ConnectInfo = (XCLIENT_CONNECTINFO*)lParam;
 
-	TCHAR tszMsgBuffer[8096];
-	TCHAR tszClientAddr[128];
+    char tszMsgBuffer[8096];
+    char tszClientAddr[128];
 	while (pSt_ConnectInfo->bRun)
 	{
 		int nMsgLen = 8096;
@@ -108,12 +107,13 @@ XCLIENT_POOLCONNECT* XClient_PoolConnect_OPen(LPCTSTR lpszServiceAddr, int nPort
         }
         else
         {
-            if (!XClient_UDPSelect_Create(&pSt_ConnectInfo->hSocket, lpszServiceAddr, nPort, nIPVer))
+            if (!XClient_UDPSelect_Create(&pSt_ConnectInfo->hSocket, nIPVer))
             {
                 delete pSt_ConnectInfo;
                 pSt_ConnectInfo = NULL;
                 return FALSE;
             }
+            XClient_UDPSelect_Connect(pSt_ConnectInfo->hSocket, lpszServiceAddr, nPort);
         }
         //赋值属性
         pSt_ConnectInfo->nIndex = i;

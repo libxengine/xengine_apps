@@ -10,9 +10,8 @@
 #include <time.h>
 #include <inttypes.h>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_SDPProtocol/SDPProtocol_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_SDPProtocol/SDPProtocol_Error.h"
 
