@@ -11,20 +11,15 @@
 #include <thread>
 using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_Algorithm/Algorithm_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_Algorithm/Algorithm_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_Algorithm/Algorithm_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_Algorithm/Algorithm_Error.h"
 
 //Linux:g++ -std=gnu++11 -Wall -g Lib_APPAlgorithm.cpp -o Lib_APPAlgorithm.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -lXEngine_Algorithm -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib
 //Macos:g++ -std=gnu++11 -Wall -g Lib_APPAlgorithm.cpp -o Lib_APPAlgorithm.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -lXEngine_Algorithm 
 
-int main()
-{
-	int nIntA = 0;
-	int nIntB = 0;
-	LPCTSTR lpszIntBuffer = _T("123456798");
-	Algorithm_String_GetMemoryInt(lpszIntBuffer, 3, 4, &nIntA);
-	Algorithm_String_GetMemoryInt(lpszIntBuffer, 4, 6, &nIntB);
 
+int Test_Calulation()
+{
 	XHANDLE xhToken = Algorithm_Calculation_Create(3);
 	if (NULL == xhToken)
 	{
@@ -40,15 +35,30 @@ int main()
 	printf("%llu\n", nTime);
 
 	Algorithm_Calculation_ResetTime(xhToken);
-	__int64u nFlow = 0;
-	Algorithm_Calculation_ADDRVFlow(xhToken, 1000);
-	Algorithm_Calculation_ADDRVFlow(xhToken, 1000);
-	std::this_thread::sleep_for(std::chrono::seconds(2));
-	Algorithm_Calculation_GetRVFlow(xhToken, &nFlow);
-	printf("%llu\n", nFlow);
-	Algorithm_Calculation_GetRVFlow(xhToken, &nFlow, TRUE);
-	printf("%llu\n", nFlow);
+
+	for (int i = 0; i < 10; i++)
+	{
+		__int64u nFlow = 0;
+		Algorithm_Calculation_ADDRVFlow(xhToken, rand());
+		Algorithm_Calculation_ADDRVFlow(xhToken, rand());
+		std::this_thread::sleep_for(std::chrono::seconds(2));
+		Algorithm_Calculation_GetRVFlow(xhToken, &nFlow);
+		printf("%llu\n", nFlow);
+		Algorithm_Calculation_GetRVFlow(xhToken, &nFlow, TRUE);
+		printf("%llu\n", nFlow);
+	}
 	Algorithm_Calculation_Close(xhToken);
+	return 0;
+}
+
+int main()
+{
+	Test_Calulation();
+	int nIntA = 0;
+	int nIntB = 0;
+	LPCTSTR lpszIntBuffer = _T("123456798");
+	Algorithm_String_GetMemoryInt(lpszIntBuffer, 3, 4, &nIntA);
+	Algorithm_String_GetMemoryInt(lpszIntBuffer, 4, 6, &nIntB);
 
 	int nPos = 0;
 	LPCTSTR lpszSourceStr = _T("123hel54124hello666");

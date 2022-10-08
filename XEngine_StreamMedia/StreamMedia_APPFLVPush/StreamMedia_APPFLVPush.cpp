@@ -3,7 +3,6 @@
 #include <tchar.h>
 #pragma comment(lib,"Ws2_32.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/StreamMedia_XClient.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVCollect.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
 #endif
 #include <stdio.h>
@@ -35,36 +34,58 @@ LPCTSTR lpszVFile = _T("480p.264");
 LPCTSTR lpszAFile = _T("test.aac");
 #endif
 
-int fread_video(LPVOID lParam, uint8_t* puszMsgBuffer, int nSize)
+void fread_video(XNETHANDLE xhToken)
 {
-	int nRet = fread(puszMsgBuffer, 1, nSize, pSt_VFile);
-	if (nRet <= 0)
+	while (1)
 	{
-		fclose(pSt_VFile);
-		pSt_VFile = fopen(lpszVFile, "rb");
-		nRet = fread(puszMsgBuffer, 1, nSize, pSt_VFile);
-		return nRet;
+		TCHAR tszMsgBuffer[40960];
+		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+
+		int nRet = fread(tszMsgBuffer, 1, sizeof(tszMsgBuffer), pSt_VFile);
+		if (nRet <= 0)
+		{
+			fclose(pSt_VFile);
+			pSt_VFile = fopen(lpszVFile, "rb");
+			nRet = fread(tszMsgBuffer, 1, sizeof(tszMsgBuffer), pSt_VFile);
+		}
+		while (1)
+		{
+			if (XClient_FilePush_Push(xhToken, tszMsgBuffer, nRet, 0))
+			{
+				break;
+			}
+		}
 	}
-	return nRet;
 }
-int fread_audio(LPVOID lParam, uint8_t* puszMsgBuffer, int nSize)
+void fread_audio(XNETHANDLE xhToken)
 {
-	int nRet = fread(puszMsgBuffer, 1, nSize, pSt_AFile);
-	if (nRet <= 0)
+	while (1)
 	{
-		fclose(pSt_AFile);
-		pSt_AFile = fopen(lpszAFile, "rb");
-		nRet = fread(puszMsgBuffer, 1, nSize, pSt_AFile);
-		return nRet;
+		TCHAR tszMsgBuffer[4096];
+		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+
+		int nRet = fread(tszMsgBuffer, 1, sizeof(tszMsgBuffer), pSt_AFile);
+		if (nRet <= 0)
+		{
+			fclose(pSt_AFile);
+			pSt_AFile = fopen(lpszAFile, "rb");
+			nRet = fread(tszMsgBuffer, 1, sizeof(tszMsgBuffer), pSt_AFile);
+		}
+		while (1)
+		{
+			if (XClient_FilePush_Push(xhToken, tszMsgBuffer, nRet, 1))
+			{
+				break;
+			}
+		}
 	}
-	return nRet;
 }
 
 int Test_RTMPPush()
 {
 	XNETHANDLE xhStream = 0;
 	LPCTSTR lpszUrl = _T("rtmp://app.xyry.org/live/qyt");
-	BOOL bMemory = FALSE;
+	BOOL bMemory = TRUE;
 
 	if (bMemory)
 	{
@@ -75,7 +96,7 @@ int Test_RTMPPush()
 			return -1;
 		}
 		pSt_AFile = fopen(lpszAFile, "rb");
-		if (NULL == pSt_VFile)
+		if (NULL == pSt_AFile)
 		{
 			printf("fopen2:%d\n", errno);
 			return -1;
@@ -86,7 +107,12 @@ int Test_RTMPPush()
 			printf("XClient_FilePush_Push:%lX\n", StreamClient_GetLastError());
 			return -1;
 		}
-		if (!XClient_FilePush_Input(xhStream, NULL, NULL, fread_video, fread_audio, NULL, NULL))
+		std::thread m_ThreadVideo(fread_video, xhStream);
+		std::thread m_ThreadAudio(fread_audio, xhStream);
+
+		m_ThreadVideo.detach();
+		m_ThreadAudio.detach();
+		if (!XClient_FilePush_Input(xhStream))
 		{
 			printf("XClient_FilePush_Input:%lX\n", StreamClient_GetLastError());
 			//return -1;
@@ -250,8 +276,8 @@ int main()
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
-	Test_LivePush();
-	//Test_RTMPPush();
+	//Test_LivePush();
+	Test_RTMPPush();
 	
 #ifdef _WINDOWS
 	WSACleanup();

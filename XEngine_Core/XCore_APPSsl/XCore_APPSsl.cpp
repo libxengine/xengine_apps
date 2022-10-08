@@ -24,17 +24,6 @@ using namespace std;
 //Linux::g++ -std=gnu++17 -Wall -g XCore_APPSsl.cpp -o XCore_APPSsl.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -lXEngine_BaseLib -lXEngine_OPenSsl -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
 //Macos::g++ -std=gnu++17 -Wall -g XCore_APPSsl.cpp -o XCore_APPSsl.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -lXEngine_BaseLib -lXEngine_OPenSsl
 
-void hex2string(char* hex, char* ascII, int len, int* newlen)
-{
-	int i = 0;
-	char newchar[100] = { 0 };
-	*newlen = len * 3;
-	for (i = 0; i < len; i++)
-	{
-		sprintf(newchar, "%02X ", hex[i]);
-		strcat(ascII, newchar);
-	}
-}
 void md5cal()
 {
 	UCHAR tszMD5[512];
