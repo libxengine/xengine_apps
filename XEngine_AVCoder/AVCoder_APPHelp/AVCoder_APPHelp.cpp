@@ -10,12 +10,11 @@
 #include <stdint.h>
 #include <time.h>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVCollect/AVCollect_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVCollect/AVCollect_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_VideoCoder/VideoCoder_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_VideoCoder/VideoCoder_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AudioCoder/AudioCoder_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVHelp/AVHelp_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVHelp/AVHelp_Error.h"
 
@@ -53,6 +52,35 @@ void Test_MetaInfo()
 #endif
 	}
 }
+
+void Test_Parse()
+{
+	XNETHANDLE xhToken = 0;
+	FILE* pSt_File = fopen("D:\\h264 file\\480p.264","rb");
+
+	AVHelp_Parse_FrameInit(&xhToken, ENUM_ENTENGINE_AVCODEC_VEDIO_TYPE_H264);
+	
+	while (TRUE)
+	{
+		TCHAR tszMsgBuffer[2048];
+		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+		int nRet = fread(tszMsgBuffer, 1, sizeof(tszMsgBuffer), pSt_File);
+		if (nRet <= 0)
+		{
+			break;
+		}
+		int nListCount = 0;
+		AVHELP_FRAMEDATA** ppSt_Frame;
+		AVHelp_Parse_FrameGet(xhToken, tszMsgBuffer, nRet, &ppSt_Frame, &nListCount);
+		for (int i = 0; i < nListCount; i++)
+		{
+			XENGINE_AVCODER_VIDEOFRAMETYPE enVideoFrame;
+			AVHelp_Parse_H264NaluType(ppSt_Frame[i]->ptszMsgBuffer, &enVideoFrame);
+		}
+	}
+	AVHelp_Parse_FrameClose(xhToken);
+}
+
 void Test_PPS264Info()
 {
 #ifdef _WINDOWS
@@ -207,6 +235,7 @@ void Test_AVList()
 
 int main()
 {
+	Test_Parse();
 	Test_PPS264Info();
 	Test_PPS265Info();
 	Test_AudioInfo();

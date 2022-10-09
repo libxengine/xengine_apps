@@ -34,7 +34,7 @@ LPCTSTR lpszVFile = _T("480p.264");
 LPCTSTR lpszAFile = _T("test.aac");
 #endif
 
-void fread_video(XNETHANDLE xhToken)
+void fread_video(XHANDLE xhToken)
 {
 	while (1)
 	{
@@ -57,7 +57,7 @@ void fread_video(XNETHANDLE xhToken)
 		}
 	}
 }
-void fread_audio(XNETHANDLE xhToken)
+void fread_audio(XHANDLE xhToken)
 {
 	while (1)
 	{
@@ -83,7 +83,7 @@ void fread_audio(XNETHANDLE xhToken)
 
 int Test_RTMPPush()
 {
-	XNETHANDLE xhStream = 0;
+	XHANDLE xhStream = NULL;
 	LPCTSTR lpszUrl = _T("rtmp://app.xyry.org/live/qyt");
 	BOOL bMemory = TRUE;
 
@@ -102,7 +102,8 @@ int Test_RTMPPush()
 			return -1;
 		}
 
-		if (!XClient_FilePush_Init(&xhStream))
+		xhStream = XClient_FilePush_Init();
+		if (NULL == xhStream)
 		{
 			printf("XClient_FilePush_Push:%lX\n", StreamClient_GetLastError());
 			return -1;
@@ -130,7 +131,8 @@ int Test_RTMPPush()
 	}
 	else
 	{
-		if (!XClient_FilePush_Init(&xhStream))
+		xhStream = XClient_FilePush_Init();
+		if (NULL == xhStream)
 		{
 			printf("XClient_FilePush_Push:%lX\n", StreamClient_GetLastError());
 			return -1;
@@ -163,7 +165,7 @@ int Test_RTMPPush()
 
 int Test_LivePush()
 {
-	XNETHANDLE xhStream = 0;
+	XHANDLE xhStream = NULL;
 	FILE* pSt_VFile = NULL;
 	FILE* pSt_AFile = NULL;
 	LPCTSTR lpszUrl = _T("rtmp://app.xyry.org/live/qyt");
@@ -183,12 +185,12 @@ int Test_LivePush()
 	memset(tszPPSBuffer, '\0', MAX_PATH);
 	memset(&st_MediaStream, '\0', sizeof(XENGINE_PROTOCOL_AVINFO));
 
-	st_MediaStream.st_VideoInfo.bEnable = FALSE;
+	st_MediaStream.st_VideoInfo.bEnable = TRUE;
 	st_MediaStream.st_VideoInfo.nBitRate = 64000;
 	st_MediaStream.st_VideoInfo.nFrameRate = 24;
 	st_MediaStream.st_VideoInfo.nWidth = 720;
 	st_MediaStream.st_VideoInfo.nHeight = 480;
-	st_MediaStream.st_VideoInfo.enAVCodec = 27;
+	st_MediaStream.st_VideoInfo.enAVCodec = ENUM_ENTENGINE_AVCODEC_VEDIO_TYPE_H264;
 	if (st_MediaStream.st_VideoInfo.bEnable)
 	{
 		pSt_VFile = fopen(lpszVFile, "rb");
@@ -225,19 +227,24 @@ int Test_LivePush()
 		AVHelp_Parse_AACInfo((const UCHAR*)tszABuffer, nALen, &st_MediaStream.st_AudioInfo.nChannel, &st_MediaStream.st_AudioInfo.nSampleRate, &nProfile, &nConfig);
 	}
 
-	XClient_CodecPush_Init(&xhStream, lpszUrl, &st_MediaStream, "flv", TRUE, TRUE);
+	XNETHANDLE xhAParse = 0;
+	XNETHANDLE xhVParse = 0;
+	AVHelp_Parse_FrameInit(&xhAParse, ENUM_AVCODEC_AUDIO_TYPE_AAC);
+	AVHelp_Parse_FrameInit(&xhVParse, ENUM_ENTENGINE_AVCODEC_VEDIO_TYPE_H264);
+
+	xhStream = XClient_CodecPush_Init(lpszUrl, &st_MediaStream, "flv");
 	XClient_CodecPush_WriteHdr(xhStream);
 
 	while (TRUE)
 	{
 		if (st_MediaStream.st_VideoInfo.bEnable)
 		{
-			while (TRUE)
+			int nListCount = 0;
+			AVHELP_FRAMEDATA** ppSt_Frame;
+			AVHelp_Parse_FrameGet(xhVParse, tszVBuffer, nVLen, &ppSt_Frame, &nListCount);
+			for (int i = 0; i < nListCount; i++)
 			{
-				if (XClient_CodecPush_PushVideo(xhStream, tszVBuffer, nVLen))
-				{
-					break;
-				}
+				XClient_CodecPush_PushVideo(xhStream, ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen);
 			}
 			memset(tszVBuffer, '\0', sizeof(tszVBuffer));
 			nVLen = fread(tszVBuffer, 1, sizeof(tszVBuffer), pSt_VFile);
@@ -249,12 +256,13 @@ int Test_LivePush()
 		}
 		if (st_MediaStream.st_AudioInfo.bEnable)
 		{
-			while (TRUE)
+			int nListCount = 0;
+			AVHELP_FRAMEDATA** ppSt_Frame;
+			AVHelp_Parse_FrameGet(xhAParse, tszABuffer, nALen, &ppSt_Frame, &nListCount);
+			for (int i = 0; i < nListCount; i++)
 			{
-				if (XClient_CodecPush_PushAudio(xhStream, tszABuffer, nALen))
-				{
-					break;
-				}
+				//不需要AAC头
+				XClient_CodecPush_PushAudio(xhStream, ppSt_Frame[i]->ptszMsgBuffer + 7, ppSt_Frame[i]->nMsgLen - 7);
 			}
 			memset(tszABuffer, '\0', sizeof(tszABuffer));
 			nALen = fread(tszABuffer, 1, sizeof(tszABuffer), pSt_AFile);
@@ -264,8 +272,10 @@ int Test_LivePush()
 				continue;
 			}
 		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(30));
+		std::this_thread::sleep_for(std::chrono::milliseconds(40));
 	}
+	AVHelp_Parse_FrameClose(xhVParse);
+	AVHelp_Parse_FrameClose(xhAParse);
 	XClient_CodecPush_Close(xhStream);
 	return 0;
 }
@@ -276,8 +286,8 @@ int main()
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
-	//Test_LivePush();
-	Test_RTMPPush();
+	Test_LivePush();
+	//Test_RTMPPush();
 	
 #ifdef _WINDOWS
 	WSACleanup();
