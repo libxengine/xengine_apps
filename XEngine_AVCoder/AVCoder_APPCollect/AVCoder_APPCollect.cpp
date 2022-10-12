@@ -27,7 +27,6 @@ void __stdcall XEngine_AVCollect_CBVideo(uint8_t* punStringY, int nYLen, uint8_t
 }
 void __stdcall XEngine_AVCollect_CBAudio(uint8_t* punStringAudio, int nVLen, LPVOID lParam)
 {
-
 }
 int main()
 {
@@ -51,11 +50,11 @@ int main()
 		printf(_T("初始化失败"));
 		return -1;
 	}
-// 	if (!AVCollect_Audio_Init(&xhAudio,_T("耳机 (Redmi AirDots 3 Pro Hands-Free AG Audio)"), XEngine_AVCollect_CBAudio))
-// 	{
-// 		printf(_T("初始化失败"));
-// 		return -1;
-// 	}
+	if (!AVCollect_Audio_Init(&xhAudio,_T("耳机 (Redmi AirDots 3 Pro Hands-Free AG Audio)"), XEngine_AVCollect_CBAudio))
+	{
+		printf(_T("初始化失败"));
+		return -1;
+	}
 
 	AVCollect_Video_GetInfo(xhVideo, &nWidth, &nHeight, &nBitRate);
 	printf("AVCollect_Screen_GetInfo:%d %d %lld\n", nWidth, nHeight, nBitRate);
@@ -64,11 +63,11 @@ int main()
 	__int64x nARate = 0;
 	int nSampleRate = 0;
 	int nChannels = 0;
-	//AVCollect_Audio_GetInfo(xhAudio, &enAVSampleFmt, &nARate, &nSampleRate, &nChannels);
-	//printf("AVCollect_Audio_GetInfo:%d %lld %d %ld\n", enAVSampleFmt, nARate, nSampleRate, nChannels);
+	AVCollect_Audio_GetInfo(xhAudio, &enAVSampleFmt, &nARate, &nSampleRate, &nChannels);
+	printf("AVCollect_Audio_GetInfo:%d %lld %d %ld\n", enAVSampleFmt, nARate, nSampleRate, nChannels);
 
 	AVCollect_Video_Start(xhVideo);
-
+	AVCollect_Audio_Start(xhAudio);
 	while (1)
 	{
 		std::this_thread::sleep_for(std::chrono::seconds(15));
