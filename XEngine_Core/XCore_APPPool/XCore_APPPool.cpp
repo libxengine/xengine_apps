@@ -14,8 +14,8 @@
 #include <thread>
 using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_ManagePool/ManagePool_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_ManagePool/ManagePool_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_ManagePool/ManagePool_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_ManagePool/ManagePool_Error.h"
 
 //linux:g++ -std=gnu++17 -Wall -g XCore_APPPool.cpp -o XCore_APPPool.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_ManagePool -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
 //macos:g++ -std=gnu++17 -Wall -g XCore_APPPool.cpp -o XCore_APPPool.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_ManagePool
@@ -31,8 +31,8 @@ XHTHREAD CALLBACK ManagePool_ThreadPool(LPVOID lParam)
 }
 void ThreadPool_Test()
 {
-	XNETHANDLE xhPool = 0;
-	if (!ManagePool_Thread_DTCreate(&xhPool, 2))
+	XHANDLE xhPool = ManagePool_Thread_DTCreate(2);
+	if (NULL == xhPool)
 	{
 		return;
 	}
@@ -94,12 +94,9 @@ void __stdcall fun(void* p)
 }
 int MemoryPool_Test()
 {
-	XMPOOL xmPool;
-	MANAGEPOOL_MEMORY_CLEANUP st_Cleanup;
-
 	CHAR* p1, * p2, * p3, * p4;
 
-	xmPool = ManagePool_Memory_Create();
+	XHANDLE xmPool = ManagePool_Memory_Create();
 	p1 = (CHAR*)ManagePool_Memory_Alloc(xmPool, 416); /*分配内存，在可分配内*/
 	memcpy(p1, "p1", 2);
 	printf("%s\n", p1);
@@ -132,8 +129,7 @@ int MemoryPool_Test()
 	memcpy(p7, "p7", 2);
 	printf("%s,%s,%s\n", p7, p4, p5);
 
-	st_Cleanup.fpCall_Cleanup = &fun;
-	ManagePool_Memory_CleanupAdd(xmPool, &st_Cleanup);/*注册销毁回调函数*/
+	ManagePool_Memory_CleanupAdd(xmPool, fun);/*注册销毁回调函数*/
 
 	ManagePool_Memory_Destory(xmPool);/*pool池注销*/
 	printf("\n");

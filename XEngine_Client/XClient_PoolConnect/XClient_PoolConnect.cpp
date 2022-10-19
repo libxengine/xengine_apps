@@ -39,7 +39,7 @@ typedef struct
 }XCLIENT_CONNECTINFO;
 typedef struct
 {
-	XNETHANDLE xhPool;
+	XHANDLE xhPool;
 	list<XCLIENT_CONNECTINFO*> stl_ConnectInfo;
 }XCLIENT_POOLCONNECT;
 
@@ -126,7 +126,8 @@ XCLIENT_POOLCONNECT* XClient_PoolConnect_OPen(LPCTSTR lpszServiceAddr, int nPort
         pSt_PoolConnect->stl_ConnectInfo.push_back(pSt_ConnectInfo);
     }
 
-    if (!ManagePool_Thread_NQCreate(&pSt_PoolConnect->xhPool, &ppSt_ThreadPool, nCount))
+    pSt_PoolConnect->xhPool = ManagePool_Thread_NQCreate(&ppSt_ThreadPool, nCount);
+    if (NULL == pSt_PoolConnect->xhPool)
     {
         return FALSE;
     }

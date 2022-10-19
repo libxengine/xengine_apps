@@ -18,9 +18,10 @@ using namespace std;
 
 int Player_Video()
 {
-	XNETHANDLE xhPlayer;
 	LPCTSTR lpszName = _T("test");
-	if (!AVPlayer_Video_Create(&xhPlayer, NULL, lpszName, 1920, 1080))
+
+	XHANDLE xhPlayer = AVPlayer_Video_Create(NULL, lpszName, 1920, 1080);
+	if (NULL == xhPlayer)
 	{
 		return -1;
 	}

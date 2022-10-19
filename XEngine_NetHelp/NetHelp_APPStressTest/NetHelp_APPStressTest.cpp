@@ -17,9 +17,9 @@ using namespace std;
 //Linux::g++ -std=c++17 -Wall -g NetHelp_APPStressTest.cpp -o NetHelp_APPStressTest.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp -lXEngine_BaseLib -lXClient_Socket -lNetHelp_StressTest -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp,--disable-new-dtags
 //Macos::g++ -std=c++17 -Wall -g NetHelp_APPStressTest.cpp -o NetHelp_APPStressTest.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_NetHelp -lXEngine_BaseLib -lXClient_Socket -lNetHelp_StressTest -Wl,-rpath,@executable_path/../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -Wl,-rpath,@executable_path/../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Client -Wl,-rpath,@executable_path/../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_NetHelp
 
-void CALLBACK CBDatas_TestStress(XNETHANDLE xhNet, LPCSTR lpszAddr, int nPort, int nClient, int nNumber, int nMsgLen, LPVOID lParam)
+void CALLBACK CBDatas_TestStress(SOCKET hSocket, LPCSTR lpszAddr, int nPort, int nClient, int nNumber, int nMsgLen, LPVOID lParam)
 {
-	printf("Token:%lld,地址：%s:%d，索引:%d 发送次数：%d\n", xhNet, lpszAddr, nPort, nClient, nNumber);
+	printf("Token:%d,地址：%s:%d，索引:%d 发送次数：%d\n", hSocket, lpszAddr, nPort, nClient, nNumber);
 }
 
 int main()
@@ -28,7 +28,6 @@ int main()
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
-	XNETHANDLE xhToken;
 	LPCTSTR lpszAddr = _T("192.168.1.8");
 	//TCP连接测试
 	NETHELP_STRESSTEST_RECONNECT st_TCPConnect;
@@ -40,7 +39,8 @@ int main()
 	st_TCPConnect.nConnectTest = 100;
 	strcpy(st_TCPConnect.tszAddr, lpszAddr);
 
-	if (!StressTest_TCPSocket_StartConnect(&xhToken, &st_TCPConnect, CBDatas_TestStress))
+	XHANDLE xhToken = StressTest_TCPSocket_StartConnect(&st_TCPConnect, CBDatas_TestStress);
+	if (NULL == xhToken)
 	{
 		printf(_T("StressTest_TCPSocket_StartConnect启动失败\n"));
 		return -1;
@@ -63,7 +63,8 @@ int main()
 	strcpy(st_TCPDatas.tszAddr, lpszAddr);
 	strcpy(st_TCPDatas.ptszMsgBuffer, "hello");
 
-	if (!StressTest_TCPSocket_StartDatas(&xhToken, 2, &st_TCPDatas, CBDatas_TestStress))
+	xhToken = StressTest_TCPSocket_StartDatas(2, &st_TCPDatas, CBDatas_TestStress);
+	if (NULL == xhToken)
 	{
 		printf(_T("StressTest_TCPSocket_StartDatas启动失败\n"));
 		return -1;
@@ -75,7 +76,8 @@ int main()
 	}
 	StressTest_TCPSocket_StopDatas(xhToken);
 	//UDP数据报测试
-	if (!StressTest_UDPSocket_StartDatas(&xhToken, 2, &st_TCPDatas, CBDatas_TestStress))
+	xhToken = StressTest_UDPSocket_StartDatas(2, &st_TCPDatas, CBDatas_TestStress);
+	if (NULL == xhToken)
 	{
 		printf(_T("StressTest_UDPSocket_StartDatas启动失败\n"));
 		return -1;

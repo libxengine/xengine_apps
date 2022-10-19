@@ -15,15 +15,15 @@
 #include <thread>
 using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_NetXApi/NetXApi_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_NetXApi/NetXApi_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_NetXApi/NetXApi_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_NetXApi/NetXApi_Error.h"
 
 //Linux:g++ -std=gnu++17 -Wall -g XCore_APPNetXApi.cpp -o XCore_APPNetXApi.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -lXEngine_BaseLib -lXEngine_NetXApi -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
 //Macos:g++ -std=gnu++17 -Wall -g XCore_APPNetXApi.cpp -o XCore_APPNetXApi.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -lXEngine_BaseLib -lXEngine_NetXApi
 
-static void WINAPI NetXApi_Sniffer_Callback(XNETHANDLE xhNet, NETXAPI_PROTOCOLINFO* pSt_ProtoInfo, LPCTSTR lpszMsgBuffer, LPVOID lParam)
+static void WINAPI NetXApi_Sniffer_Callback(SOCKET xhNet, NETXAPI_PROTOCOLINFO* pSt_ProtoInfo, LPCTSTR lpszMsgBuffer, LPVOID lParam)
 {
 	printf("NetXApi_Sniffer_Callback:Source:%s Dest:%s nHdrLen:%d nMsgLen:%d\n", pSt_ProtoInfo->tszSourceAddr, pSt_ProtoInfo->tszDestAddr, pSt_ProtoInfo->nHdrLen, pSt_ProtoInfo->nMsgLen);
 	for (int i = 0; i < pSt_ProtoInfo->nMsgLen; i++)
@@ -56,11 +56,10 @@ int Test_NetFlow()
 int Test_NetSniffer()
 {
 	//网路嗅探
-	XNETHANDLE xhNet;
 #ifdef _WINDOWS
-	NetXApi_Sniffer_Start(&xhNet, _T("192.168.1.7"), NetXApi_Sniffer_Callback);
+	XHANDLE xhNet = NetXApi_Sniffer_Start(_T("192.168.1.7"), NetXApi_Sniffer_Callback);
 #else
-	NetXApi_Sniffer_Start(&xhNet, _T("any"), NetXApi_Sniffer_Callback);
+	XHANDLE xhNet = NetXApi_Sniffer_Start(_T("any"), NetXApi_Sniffer_Callback);
 #endif
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 	NetXApi_Sniffer_Stop(xhNet);

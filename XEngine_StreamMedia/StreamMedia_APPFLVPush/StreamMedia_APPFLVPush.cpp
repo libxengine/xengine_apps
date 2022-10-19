@@ -36,7 +36,7 @@ LPCTSTR lpszAFile = _T("test.aac");
 
 void fread_video(XHANDLE xhToken)
 {
-	while (1)
+	for (int i = 0; i < 20; i++)
 	{
 		TCHAR tszMsgBuffer[40960];
 		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
@@ -109,14 +109,15 @@ int Test_RTMPPush()
 			return -1;
 		}
 		std::thread m_ThreadVideo(fread_video, xhStream);
-		std::thread m_ThreadAudio(fread_audio, xhStream);
+		//std::thread m_ThreadAudio(fread_audio, xhStream);
 
 		m_ThreadVideo.detach();
-		m_ThreadAudio.detach();
+		//m_ThreadAudio.detach();
+		Sleep(3000);
 		if (!XClient_FilePush_Input(xhStream))
 		{
 			printf("XClient_FilePush_Input:%lX\n", StreamClient_GetLastError());
-			//return -1;
+			return -1;
 		}
 		if (!XClient_FilePush_Output(xhStream, lpszUrl))
 		{
@@ -286,8 +287,8 @@ int main()
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
-	Test_LivePush();
-	//Test_RTMPPush();
+	//Test_LivePush();
+	Test_RTMPPush();
 	
 #ifdef _WINDOWS
 	WSACleanup();

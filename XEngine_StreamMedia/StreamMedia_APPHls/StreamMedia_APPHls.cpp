@@ -28,9 +28,11 @@ void __stdcall HLSProtocol_CBNotify(LPCTSTR lpszFileName, double dlTime, int nIn
 
 int main()
 {
-	XNETHANDLE xhToken = 0;
-
+#ifdef _MSC_BUILD
+	LPCTSTR lpszVideoFile = _T("D:\\h264 file\\480p.264");
+#else
 	LPCTSTR lpszVideoFile = _T("480p.264");
+#endif
 	LPCTSTR lpszDstFile = _T("./live/normal/480p-");
 
 	LPCTSTR lpszRootFile = _T("./live/live.m3u8");
@@ -60,7 +62,8 @@ int main()
 		return -1;
 	}
 
-	if (!HLSProtocol_Section_Init(&xhToken, 12, HLSProtocol_CBNotify))
+	XHANDLE xhToken = HLSProtocol_Section_Init(12, HLSProtocol_CBNotify);
+	if (NULL == xhToken)
 	{
 		printf("HLSProtocol_Section_Init:%lX\n", HLSProtocol_GetLastError());
 		return -1;

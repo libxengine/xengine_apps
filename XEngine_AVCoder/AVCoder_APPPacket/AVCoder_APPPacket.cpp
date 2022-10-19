@@ -11,22 +11,21 @@
 #include <thread>
 using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVPacket/AVPacket_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVPacket/AVPacket_Error.h"
 
 //Linux::g++ -std=c++17 -Wall -g AVCoder_APPPacket.cpp -o AVCoder_APPPacket.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder -lXEngine_BaseLib -lXEngine_AVPacket -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder,--disable-new-dtags
 //MacOS::g++ -std=c++17 -Wall -g AVCoder_APPPacket.cpp -o AVCoder_APPPacket.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCoder -lXEngine_BaseLib -lXEngine_AVPacket
 
-void __stdcall AVPacket_Pack_CBNotify(XNETHANDLE xhNet, int nCvtType, int nCvtFrame, double dlTime, LPVOID lParam)
+void __stdcall AVPacket_Pack_CBNotify(XHANDLE xhNet, int nCvtType, int nCvtFrame, double dlTime, LPVOID lParam)
 {
 	printf("AVPacket_Pack_CBConvert:%d %d %lf\n", nCvtType, nCvtFrame, dlTime);
 }
 
 int AVPacket_Test_FileLink()
 {
-	XNETHANDLE xhAVFile = 0;
 	double nTotalAVTime = 0;
 #ifdef _WINDOWS
 	LPCTSTR lpszSrcFile1 = "D:\\h264 file\\480p.flv";
@@ -38,7 +37,8 @@ int AVPacket_Test_FileLink()
 	LPCTSTR lpszDstFile = "480p.mp4";
 #endif
 
-	if (!AVPacket_FileLink_Init(&xhAVFile, AVPacket_Pack_CBNotify))
+	XHANDLE xhAVFile = AVPacket_FileLink_Init(AVPacket_Pack_CBNotify);
+	if (NULL == xhAVFile)
 	{
 		printf("AVPacket_FileConvert_Init:%lX\n", AVPacket_GetLastError());
 		return -1;
@@ -81,7 +81,6 @@ int AVPacket_Test_FileLink()
 
 int AVPacket_Test_FileConvert()
 {
-	XNETHANDLE xhAVFile = 0;
 	double nTotalAVTime = 0;
 #ifdef _WINDOWS
 	LPCTSTR lpszSrcFile = "D:\\h264 file\\480p.flv";
@@ -91,7 +90,8 @@ int AVPacket_Test_FileConvert()
 	LPCTSTR lpszDstFile = "conv.mp4";
 #endif
 
-	if (!AVPacket_FileConvert_Init(&xhAVFile, AVPacket_Pack_CBNotify))
+	XHANDLE xhAVFile = AVPacket_FileConvert_Init(AVPacket_Pack_CBNotify);
+	if (NULL == xhAVFile)
 	{
 		printf("AVPacket_FileConvert_Init:%lX\n", AVPacket_GetLastError());
 		return -1;
@@ -129,7 +129,6 @@ int AVPacket_Test_FileConvert()
 
 int AVPacket_Test_FilePacket()
 {
-	XNETHANDLE xhAVFile = 0;
 #ifdef _WINDOWS
 	LPCTSTR lpszVideoFile = "D:\\h264 file\\480p.264";
 	LPCTSTR lpszAudioFile1 = "D:\\h264 file\\1.aac";
@@ -142,7 +141,8 @@ int AVPacket_Test_FilePacket()
 	LPCTSTR lpszDstFile = "480p.mp4";
 #endif
 
-	if (!AVPacket_FilePacket_Init(&xhAVFile, AVPacket_Pack_CBNotify))
+	XHANDLE xhAVFile = AVPacket_FilePacket_Init(AVPacket_Pack_CBNotify);
+	if (NULL == xhAVFile)
 	{
 		printf("AVPacket_FileUNPack_Init:%lX\n", AVPacket_GetLastError());
 		return -1;
@@ -191,7 +191,6 @@ int AVPacket_Test_FilePacket()
 
 int AVPacket_Test_UNPacket()
 {
-	XNETHANDLE xhAVFile = 0;
 	int nListCount = 0;
 	AVCODEC_PACKETLIST** ppSt_ListFile;
 
@@ -207,7 +206,8 @@ int AVPacket_Test_UNPacket()
 	LPCTSTR lpszSrcFile = "480p.mp4";
 #endif
 
-	if (!AVPacket_FileUNPack_Init(&xhAVFile, AVPacket_Pack_CBNotify))
+	XHANDLE xhAVFile = AVPacket_FileUNPack_Init(AVPacket_Pack_CBNotify);
+	if (NULL == xhAVFile)
 	{
 		printf("AVPacket_FileUNPack_Init:%lX\n", AVPacket_GetLastError());
 		return -1;

@@ -30,8 +30,8 @@ void __stdcall XEngine_AVCollect_CBAudio(uint8_t* punStringAudio, int nVLen, LPV
 }
 int main()
 {
-	XNETHANDLE xhVideo;
-	XNETHANDLE xhAudio;
+	XHANDLE xhVideo;
+	XHANDLE xhAudio;
 	int64_t nBitRate;
 #ifdef _WINDOWS
 	pSt_File = fopen("D:\\xengine_apps\\Debug\\ds.yuv", "wb");
@@ -43,14 +43,16 @@ int main()
 
 	st_AVScreen.nFrameRate = 24;
 	strcpy(st_AVScreen.tszVideoDev, "video=screen-capture-recorder");
-	//strcpy(st_AVScreen.tszVideoSize, _T("800x600"));
+	//strcpy(st_AVScreen.tszVideoSize, _T("800x600"));DSHOW不支持
 
-	if (!AVCollect_Video_Init(&xhVideo, &st_AVScreen, XEngine_AVCollect_CBVideo))
+	xhVideo = AVCollect_Video_Init(&st_AVScreen, XEngine_AVCollect_CBVideo);
+	if (NULL == xhVideo)
 	{
 		printf(_T("初始化失败"));
 		return -1;
 	}
-	if (!AVCollect_Audio_Init(&xhAudio,_T("耳机 (Redmi AirDots 3 Pro Hands-Free AG Audio)"), XEngine_AVCollect_CBAudio))
+	xhAudio = AVCollect_Audio_Init(_T("耳机 (Redmi AirDots 3 Pro Hands-Free AG Audio)"), XEngine_AVCollect_CBAudio);
+	if (NULL == xhAudio)
 	{
 		printf(_T("初始化失败"));
 		return -1;

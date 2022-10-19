@@ -113,28 +113,28 @@ int TCPTest()
 	return 1;
 }
 
-void CALLBACK XClient_TCPCallback_Recv(XNETHANDLE xhNet, ENUM_NETCLIENT_TCPEVENTS enTCPClientEvents, LPCSTR lpszMsgBuffer, int nLen, LPVOID lParam)
+void CALLBACK XClient_TCPCallback_Recv(SOCKET xhNet, ENUM_NETCLIENT_TCPEVENTS enTCPClientEvents, LPCSTR lpszMsgBuffer, int nLen, LPVOID lParam)
 {
 	if (ENUM_XENGINE_XCLIENT_SOCKET_TCP_EVENT_RECV == enTCPClientEvents)
 	{
-		printf("Recv:%lld-%d = %d\n", xhNet, enTCPClientEvents, nLen);
+		printf("Recv:%d-%d = %d\n", xhNet, enTCPClientEvents, nLen);
 	}
 	else if (ENUM_XENGINE_XCLIENT_SOCKET_TCP_EVENT_CLOSE == enTCPClientEvents)
 	{
-		printf("Close:%lld-%d\n", xhNet, enTCPClientEvents);
+		printf("Close:%d-%d\n", xhNet, enTCPClientEvents);
 	}
 	else if (ENUM_XENGINE_XCLIENT_SOCKET_TCP_EVENT_CONNECT == enTCPClientEvents)
 	{
-		printf("connect:%lld-%d\n", xhNet, enTCPClientEvents);
+		printf("connect:%d-%d\n", xhNet, enTCPClientEvents);
 	}
 }
 int TCPTestEx()
 {
-	XNETHANDLE xhToken[4];
+	XHANDLE xhToken[4];
 
 	for (int i = 0; i < 4; i++)
 	{
-		XClient_TCPSelect_StartEx(&xhToken[i], _T("192.168.1.12"), 5600, 0, XClient_TCPCallback_Recv, NULL, TRUE);
+		xhToken[i] = XClient_TCPSelect_StartEx(_T("192.168.1.12"), 5600, 0, XClient_TCPCallback_Recv, NULL, TRUE);
 		XClient_TCPSelect_HBStartEx(xhToken[i], 2);
 	}
 
