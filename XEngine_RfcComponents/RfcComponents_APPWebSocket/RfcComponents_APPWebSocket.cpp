@@ -16,10 +16,10 @@
 using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_Core/NetCore_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_Core/NetCore_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_WSProtocol/WSProtocol_Define.h"
@@ -28,8 +28,8 @@ using namespace std;
 //Linux::g++ -std=c++17 -Wall -g RfcComponents_APPWebSocket.cpp -o RfcComponents_APPWebSocket.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lXClient_Socket -lRfcComponents_WSProtocol -lpthread -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
 //Macos::g++ -std=c++17 -Wall -g RfcComponents_APPWebSocket.cpp -o RfcComponents_APPWebSocket.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lXClient_Socket -lRfcComponents_WSProtocol -lpthread
 
-XNETHANDLE xhToken;
-XHANDLE xhWBPacket;
+XHANDLE xhToken = NULL;
+XHANDLE xhWBPacket = NULL;
 TCHAR tszClientAddr[64];
 
 BOOL CALLBACK NetCore_CB_Login(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
@@ -119,7 +119,8 @@ int main()
 
 	memset(tszClientAddr, '\0', sizeof(tszClientAddr));
 
-	if (!NetCore_TCPXCore_StartEx(&xhToken, 5000, 100, 2,FALSE,TRUE))
+	xhToken = NetCore_TCPXCore_StartEx(5000, 100, 2, FALSE, TRUE);
+	if (NULL == xhToken)
 	{
 		printf("%lX\n", NetCore_GetLastError());
 		return 0;

@@ -10,8 +10,8 @@
 #include <time.h>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_Packets/Packets_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_Packets/Packets_Error.h"
 
@@ -277,7 +277,7 @@ int Test_PacketCustom()
 	HelpComponents_PKTCustom_SetHdrEx(xhPacket, 2, 4, sizeof(HELPCOMONENTS_CUSTOMHDR), FALSE);
 	HelpComponents_PKTCustom_SetTailEx(xhPacket, sizeof(HELPCOMONENTS_CUSTOMTAIL));
 
-	if (!HelpComponents_PKTCustom_CreateEx(xhPacket, hSocket))
+	if (!HelpComponents_PKTCustom_CreateEx(xhPacket, hSocket, 1))
 	{
 		printf("HelpComponents_PKTCustom_CreateEx:%lX\n", Packets_GetLastError());
 		return -1;
@@ -320,7 +320,7 @@ int Test_PacketCustom()
 
 	int nListCount = 0;
 	HELPCOMPONENT_PACKET_CLIENT** ppSt_ListAddr;
-	HelpComponents_PKTCustom_GetListEx(xhPacket, &ppSt_ListAddr, &nListCount, 4, 4);
+	HelpComponents_PKTCustom_GetPoolEx(xhPacket, 1, &ppSt_ListAddr, &nListCount);
 	for (int i = 0; i < nListCount; i++)
 	{
 		TCHAR* ptszMsgBuffer;

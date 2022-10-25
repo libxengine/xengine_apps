@@ -20,8 +20,8 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_OPenSsl/OPenSsl_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_OPenSsl/OPenSsl_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_OPenSsl/OPenSsl_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_OPenSsl/OPenSsl_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_HttpServer/HttpServer_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_HttpServer/HttpServer_Error.h"
 
@@ -30,7 +30,7 @@ using namespace std;
 
 BOOL bSsl = FALSE;
 BOOL bIsRun = FALSE;
-XNETHANDLE xhToken;
+XHANDLE xhToken = NULL;
 XHANDLE xhHttp = NULL;
 XHANDLE xhSsl = NULL;
 FILE* pSt_File = NULL;
@@ -217,8 +217,8 @@ int main()
 		printf("%lX\n", HttpServer_GetLastError());
 		return 0;
 	}
-
-	if (!NetCore_TCPXCore_StartEx(&xhToken, 80))
+	xhToken = NetCore_TCPXCore_StartEx(80);
+	if (NULL == xhToken)
 	{
 		printf("%lX\n", NetCore_GetLastError());
 		return 0;

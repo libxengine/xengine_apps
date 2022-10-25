@@ -17,9 +17,9 @@ using namespace std;
 //Linux::g++ -std=c++17 -Wall -g NetHelp_APPStressTest.cpp -o NetHelp_APPStressTest.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp -lXEngine_BaseLib -lXClient_Socket -lNetHelp_StressTest -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp,--disable-new-dtags
 //Macos::g++ -std=c++17 -Wall -g NetHelp_APPStressTest.cpp -o NetHelp_APPStressTest.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_NetHelp -lXEngine_BaseLib -lXClient_Socket -lNetHelp_StressTest -Wl,-rpath,@executable_path/../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -Wl,-rpath,@executable_path/../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Client -Wl,-rpath,@executable_path/../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_NetHelp
 
-void CALLBACK CBDatas_TestStress(SOCKET hSocket, LPCSTR lpszAddr, int nPort, int nClient, int nNumber, int nMsgLen, LPVOID lParam)
+void CALLBACK CBDatas_TestStress(XHANDLE xhToken, LPCSTR lpszAddr, int nPort, int nClient, int nNumber, int nMsgLen, LPVOID lParam)
 {
-	printf("Token:%d,地址：%s:%d，索引:%d 发送次数：%d\n", hSocket, lpszAddr, nPort, nClient, nNumber);
+	printf("地址：%s:%d，索引:%d 发送次数：%d\n", lpszAddr, nPort, nClient, nNumber);
 }
 
 int main()

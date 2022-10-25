@@ -20,7 +20,7 @@ XNETHANDLE xhLow;
 XNETHANDLE xhNormal;
 XNETHANDLE xhHigh;
 
-void __stdcall HLSProtocol_CBNotify(LPCTSTR lpszFileName, double dlTime, int nIndex, LPVOID lParam)
+void __stdcall HLSProtocol_CBNotify(XHANDLE xhToken, LPCSTR lpszFileName, double dlTime, int nIndex, LPVOID lParam)
 {
 	printf("File:%s,Index:%d,Time:%lf\n", lpszFileName, nIndex, dlTime);
 	HLSProtocol_M3u8File_AddFile(xhRoot, xhNormal, lpszFileName, dlTime, FALSE);

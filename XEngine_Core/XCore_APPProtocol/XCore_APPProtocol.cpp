@@ -87,7 +87,11 @@ int Protocol_TestTCPRaw()
 		st_RAWSocket.usTTL = 10;
 		st_RAWSocket.nSPort = 1080;
 		st_RAWSocket.nDPort = 1080;
+#ifdef _MSC_BUILD
+		st_RAWSocket.nIDProfile = GetCurrentProcessId();
+#else
 		st_RAWSocket.nIDProfile = getpid();
+#endif
 
 		strcpy(st_RAWSocket.tszSrcAddr, lpszSourceAddr);
 		sprintf(st_RAWSocket.tszDstAddr, "192.168.1.%d", i);

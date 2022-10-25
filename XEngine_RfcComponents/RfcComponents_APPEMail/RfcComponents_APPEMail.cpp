@@ -13,9 +13,9 @@
 //Linux::g++ -std=c++17 -Wall -g RfcComponents_APPEMail.cpp -o RfcComponents_APPEMail.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lRfcComponents_EmailClient -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents,--disable-new-dtags
 //Macos::g++ -std=c++17 -Wall -g RfcComponents_APPEMail.cpp -o RfcComponents_APPEMail.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_RfcComponents -lXEngine_BaseLib -lRfcComponents_EmailClient
 
-void CALLBACK Pop3_Callback(XNETHANDLE xhNet, BOOL bRet, LPCSTR lpszBuffer, int nLen, LPVOID lParam)
+void CALLBACK Pop3_Callback(XHANDLE xhNet, BOOL bRet, LPCSTR lpszBuffer, int nLen, LPVOID lParam)
 {
-	printf("%lld-%d-   %s       -%d\n", xhNet, bRet, lpszBuffer, nLen);
+	printf("%p-%d-   %s       -%d\n", xhNet, bRet, lpszBuffer, nLen);
 	if (-1 == nLen)
 	{
 		printf(_T("接受完毕！\n"));
@@ -23,8 +23,6 @@ void CALLBACK Pop3_Callback(XNETHANDLE xhNet, BOOL bRet, LPCSTR lpszBuffer, int 
 }
 int main()
 {
-	XNETHANDLE xhSmtp = 0;
-	XNETHANDLE xhPop3 = 0;
 	RFCCOMPONENTS_EMAILSMTP st_RfcSmtp;
 	memset(&st_RfcSmtp, '\0', sizeof(RFCCOMPONENTS_EMAILSMTP));
 
@@ -34,7 +32,8 @@ int main()
 	_tcscpy(st_RfcSmtp.tszFromAddr, _T("qyt@xyry.org"));
 
 	st_RfcSmtp.bIsCall = FALSE;
-	if (!RfcComponents_EMailClient_SmtpInit(&xhSmtp, &st_RfcSmtp))
+	XHANDLE xhSmtp = RfcComponents_EMailClient_SmtpInit(&st_RfcSmtp);
+	if (NULL == xhSmtp)
 	{
 		printf(_T("初始化失败！\r\n"));
 		return -1;
@@ -53,12 +52,12 @@ int main()
 	st_EmailPop.nIndex = 2;
 	_tcscpy(st_EmailPop.tszUserName, _T("qyt@xyry.org:11"));
 	_tcscpy(st_EmailPop.tszServiceAddr, _T("pop3://pop.exmail.qq.com"));
-
-	RfcComponents_EMailClient_POP3SetCallBack(Pop3_Callback);
-	if (!RfcComponents_EMailClient_POP3Init(&xhPop3, &st_EmailPop))
+	XHANDLE xhPop3 = RfcComponents_EMailClient_POP3Init(&st_EmailPop);
+	if (NULL == xhPop3)
 	{
 		printf(_T("初始化失败！\r\n"));
 	}
+	RfcComponents_EMailClient_POP3SetCallBack(xhPop3, Pop3_Callback);
 	if (!RfcComponents_EMailClient_POP3Recv(xhPop3))
 	{
 		printf(_T("接受邮件失败！\r\n"));

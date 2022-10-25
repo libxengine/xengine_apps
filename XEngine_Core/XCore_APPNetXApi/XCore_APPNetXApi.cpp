@@ -23,7 +23,7 @@ using namespace std;
 //Linux:g++ -std=gnu++17 -Wall -g XCore_APPNetXApi.cpp -o XCore_APPNetXApi.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -lXEngine_BaseLib -lXEngine_NetXApi -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
 //Macos:g++ -std=gnu++17 -Wall -g XCore_APPNetXApi.cpp -o XCore_APPNetXApi.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -lXEngine_BaseLib -lXEngine_NetXApi
 
-static void WINAPI NetXApi_Sniffer_Callback(SOCKET xhNet, NETXAPI_PROTOCOLINFO* pSt_ProtoInfo, LPCTSTR lpszMsgBuffer, LPVOID lParam)
+static void WINAPI NetXApi_Sniffer_Callback(XHANDLE xhToken, NETXAPI_PROTOCOLINFO* pSt_ProtoInfo, LPCSTR lpszMsgBuffer, LPVOID lParam)
 {
 	printf("NetXApi_Sniffer_Callback:Source:%s Dest:%s nHdrLen:%d nMsgLen:%d\n", pSt_ProtoInfo->tszSourceAddr, pSt_ProtoInfo->tszDestAddr, pSt_ProtoInfo->nHdrLen, pSt_ProtoInfo->nMsgLen);
 	for (int i = 0; i < pSt_ProtoInfo->nMsgLen; i++)

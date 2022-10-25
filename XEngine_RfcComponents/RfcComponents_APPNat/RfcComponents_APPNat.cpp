@@ -38,12 +38,12 @@ int main()
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	memset(&nToken, '\0', sizeof(nToken));
 
-	if (!XClient_UDPSelect_Create(&m_Socket, "159.75.200.173", 3478))
+	if (!XClient_UDPSelect_Create(&m_Socket))
 	{
 		printf("创建套接字失败!,错误:%lX\n", NatClient_GetLastError());
 		return -1;
 	}
-	XClient_UDPSelect_Bind(m_Socket, 3478);
+	XClient_UDPSelect_Bind(m_Socket, 3478, "159.75.200.173");
 
 	if (!RfcComponents_StunNat_Request(tszMsgBuffer, &nMsgLen, nToken, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_CLASS_REQUEST, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_ATTR_MAPPED_ADDRESS))
 	{

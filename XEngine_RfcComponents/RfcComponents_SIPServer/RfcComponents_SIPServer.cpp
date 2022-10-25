@@ -18,8 +18,8 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_Core/NetCore_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine/XEngine_Core/NetCore_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_HttpServer/HttpServer_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_HttpServer/HttpServer_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_SIPPorotocol/SIPProtocol_Define.h"
@@ -30,7 +30,7 @@ using namespace std;
 //Macos::g++ -std=c++17 -Wall -g RfcComponents_SIPServer.cpp -o RfcComponents_SIPServer.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lRfcComponents_HttpServer -lRfcComponents_SIPPorotocol -lpthread 
 
 
-XNETHANDLE xhToken = 0;
+XHANDLE xhToken = NULL;
 int Test_SIPRegister()
 {
 	TCHAR tszMsgBuffer[2048];
@@ -150,7 +150,8 @@ int main()
 	LPCTSTR lpszCodeFile = _T("SIPCode.types");
 	RfcComponents_HttpConfig_InitCode(lpszCodeFile, FALSE);
  	
-	if (!NetCore_UDPXCore_StartEx(&xhToken, 5000, 2))
+	xhToken = NetCore_UDPXCore_StartEx(5000, 2);
+	if (NULL == xhToken)
 	{
 		printf("错误\n");
 		return -1;

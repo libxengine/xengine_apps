@@ -24,13 +24,13 @@ void CBStream_Pull(uint8_t* puszMsgBuffer, int nSize, int nAVType, double dlTime
 }
 int Test_RTMPPull()
 {
-	XNETHANDLE xhStream = 0;
 	LPCTSTR lpszPullUrl = _T("rtsp://admin:sihan123@192.168.8.152:554/cam/realmonitor?channel=1?subtype=0");
 	LPCTSTR lpszPushUrl = _T("rtmp://app.xyry.org:1935/live/123");
 	int nStreamCount = 0;
 	STREAMMEDIA_PULLSTREAM** ppSt_PullStream;
 
-	if (!XClient_StreamPull_Init(&xhStream, lpszPullUrl, &ppSt_PullStream, &nStreamCount, CBStream_Pull))
+	XHANDLE xhStream = XClient_StreamPull_Init(lpszPullUrl, &ppSt_PullStream, &nStreamCount, CBStream_Pull);
+	if (NULL == xhStream)
 	{
 		printf("XClient_FilePush_Push:%lX\n", StreamClient_GetLastError());
 		return -1;

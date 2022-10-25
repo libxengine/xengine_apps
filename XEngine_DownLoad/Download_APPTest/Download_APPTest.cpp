@@ -9,8 +9,8 @@
 #include <string.h>
 #include <time.h>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Lib/XEngine_BaseLib/BaseLib_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_DownLoad/XEngine_DownLoad/DownLoad_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_DownLoad/XEngine_DownLoad/DownLoad_Error.h"
 
@@ -18,9 +18,9 @@
 //Macos::g++ -std=c++17 -Wall -g Download_APPTest.cpp -o Download_APPTest.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_DownLoad -lXEngine_BaseLib -lXEngine_DownLoad 
 
 bool bRun = false;
-void __stdcall Download_Progress(XNETHANDLE xhDown, double dlTotal, double dlNow, double ulTotal, double ulNow, ENUM_DOWNENGINE_STATUS en_DownHttpStatus, LPVOID lParam)
+void __stdcall Download_Progress(XHANDLE xhToken, double dlTotal, double dlNow, double ulTotal, double ulNow, ENUM_DOWNENGINE_STATUS en_DownHttpStatus, LPVOID lParam)
 {
-	printf("下载任务：%llu,总大小：%lf，已经下载大小：%lf，下载标识符：%d\n", xhDown, dlTotal, dlNow, en_DownHttpStatus);
+	printf("下载任务：%p,总大小：%lf，已经下载大小：%lf，下载标识符：%d\n", xhToken, dlTotal, dlNow, en_DownHttpStatus);
 
 	if (ENUM_XENGINE_DOWNLOAD_STATUS_COMPLETE == en_DownHttpStatus)
 	{
@@ -29,7 +29,6 @@ void __stdcall Download_Progress(XNETHANDLE xhDown, double dlTotal, double dlNow
 }
 int download_http()
 {
-	XNETHANDLE xhDownCall = 0;;
 	LPCTSTR lpszHttpAddr = _T("https://webcdn.m.qq.com/spcmgr/download/QQ9.6.1.28732.exe");
 	//LPCTSTR lpszHttpAddr = _T("http://192.168.1.7:5101/QQ.exe");
 #ifdef _WINDOWS
@@ -37,7 +36,9 @@ int download_http()
 #else
 	LPCTSTR lpszFileAddr = _T("QQ.exe");
 #endif
-	if (!DownLoad_Http_Create(&xhDownCall, lpszHttpAddr, lpszFileAddr, NULL, Download_Progress))
+
+	XHANDLE xhDownCall = DownLoad_Http_Create(lpszHttpAddr, lpszFileAddr, NULL, Download_Progress);
+	if (NULL == xhDownCall)
 	{
 		printf("下载失败！");
 		return -1;
@@ -63,7 +64,6 @@ int download_http()
 }
 int upload_http()
 {
-	XNETHANDLE xhUPLoad = 0;;
 	LPCTSTR lpszHttpAddr = _T("http://192.168.1.7:5102/QQ.exe");
 #ifdef _WINDOWS
 	LPCTSTR lpszFileAddr = _T("D:\\xengine_apps\\Debug\\QQ.exe");
@@ -71,7 +71,8 @@ int upload_http()
 	LPCTSTR lpszFileAddr = _T("QQ.exe");
 #endif
 
-	if (!DownLoad_Http_Create(&xhUPLoad, lpszHttpAddr, lpszFileAddr, NULL, NULL, NULL, "PUT"))
+	XHANDLE xhUPLoad = DownLoad_Http_Create(lpszHttpAddr, lpszFileAddr, NULL, NULL, NULL, "PUT");
+	if (NULL == xhUPLoad)
 	{
 		printf("下载失败！");
 		return -1;
@@ -90,7 +91,7 @@ int upload_http()
 		{
 			break;
 		}
-		printf("上传任务：%llu,总大小：%lf，已经上传大小：%lf，标识符：%d\n", xhUPLoad, st_TaskInfo.ulTotal, st_TaskInfo.ulNow, st_TaskInfo.en_DownStatus);
+		printf("上传任务：%p,总大小：%lf，已经上传大小：%lf，标识符：%d\n", xhUPLoad, st_TaskInfo.ulTotal, st_TaskInfo.ulNow, st_TaskInfo.en_DownStatus);
 	}
 	DownLoad_Http_Delete(xhUPLoad);
 	return 0;

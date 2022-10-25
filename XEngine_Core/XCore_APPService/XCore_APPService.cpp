@@ -21,10 +21,9 @@ using namespace std;
 //Linux:g++ -std=gnu++17 -Wall -g XCore_APPService.cpp -o XCore_APPService.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_ManagePool -lXEngine_Core -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
 //Macos:g++ -std=gnu++17 -Wall -g XCore_APPService.cpp -o XCore_APPService.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_ManagePool -lXEngine_Core
 
-XNETHANDLE xhXSelect = 0;
-XNETHANDLE xhTCPCore = 0;
-XNETHANDLE xhUDPCore = 0;
-XNETHANDLE xhUDX = 0;
+XHANDLE xhTCPCore = NULL;
+XHANDLE xhUDPCore = NULL;
+XHANDLE xhUDX = NULL;
 TCHAR tszClientAddr[64];
 
 BOOL CALLBACK TCPOverlapped_Login(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
@@ -48,19 +47,6 @@ void CALLBACK Callback_UDPRecv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lps
 	NetCore_UDPXCore_SendMsgEx(xhUDPCore, lpszClientAddr, lpszRecvMsg, &nMsgLen);
 }
 
-int test_tcpselectserver()
-{
-	if (NetCore_TCPSelect_StartEx(&xhXSelect, 5000))
-	{
-		printf(_T("test_tcpselectserver Start Is Ok!\n"));
-	}
-	else
-	{
-		printf(_T("test_tcpselectserver Start Is Failed!\n"));
-	}
-	NetCore_TCPSelect_SetCallBackEx(xhXSelect, TCPOverlapped_Login, TCPOverlapped_Recv, TCPOverlapped_Leave);
-	return 0;
-}
 int test_tcpxpoll()
 {
 	if (NetCore_TCPXPoll_Start(5001))
@@ -76,7 +62,8 @@ int test_tcpxpoll()
 }
 int test_tcpxcore()
 {
-	if (NetCore_TCPXCore_StartEx(&xhTCPCore,5002))
+	xhTCPCore = NetCore_TCPXCore_StartEx(5002);
+	if (NULL != xhTCPCore)
 	{
 		printf(_T("NetCore_TCPXCore_StartEx Start Is Ok!\n"));
 	}
@@ -91,7 +78,8 @@ int test_tcpxcore()
 }
 int test_udpxcore()
 {
-	if (NetCore_UDPXCore_StartEx(&xhUDPCore, 5002))
+	xhUDPCore = NetCore_UDPXCore_StartEx(5002);
+	if (NULL != xhUDPCore)
 	{
 		printf(_T("NetCore_UDPXCore_StartEx Start Is Ok!\n"));
 	}
@@ -142,7 +130,8 @@ int test_udx()
 
 	memset(tszClientAddr, '\0', sizeof(tszClientAddr));
 
-	if (!NetCore_UDXSocket_InitEx(&xhUDX, &st_UDXConfig, 11339))
+	xhUDX = NetCore_UDXSocket_InitEx(&st_UDXConfig, 11339);
+	if (NULL == xhUDX)
 	{
 		printf("启动UDX服务失败");
 		return -1;
@@ -169,7 +158,7 @@ int main()
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
-	//test_tcpselectserver();
+
 	//test_tcpxpoll();
 	test_tcpxcore();
 	//test_udpxcore();
@@ -178,7 +167,6 @@ int main()
 	
 	std::this_thread::sleep_for(std::chrono::seconds(50000));
 	NetCore_TCPXPoll_Stop();
-	NetCore_TCPSelect_StopEx(xhXSelect);
 	NetCore_TCPXCore_DestroyEx(xhTCPCore);
 	NetCore_UDPXCore_DestroyEx(xhUDPCore);
 	NetCore_UnixDomain_Stop();

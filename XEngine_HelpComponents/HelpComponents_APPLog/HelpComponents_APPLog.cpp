@@ -2,11 +2,10 @@
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/HelpComponents_XLog.lib")
-#else
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#endif
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_XLog/XLog_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_XLog/XLog_Error.h"

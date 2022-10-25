@@ -18,7 +18,7 @@
 
 void EventTest()
 {
-	XNETEVENT hEvent = BaseLib_OperatorEvent_Create();
+	XEVENT hEvent = BaseLib_OperatorEvent_Create();
 	if (NULL == hEvent)
 	{
 		return;
@@ -205,7 +205,7 @@ int TestAddrLib()
 int test_Mutex()
 {
 	LPCTSTR lpszName = _T("xyry");
-	XNETEVENT xhEvent = BaseLib_OperatorSemaphore_Create(lpszName);
+	XEVENT xhEvent = BaseLib_OperatorSemaphore_Create(lpszName);
 	if (NULL == xhEvent)
 	{
 		printf("失败\n");
