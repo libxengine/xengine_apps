@@ -233,7 +233,7 @@ int Test_LivePush()
 	AVHelp_Parse_FrameInit(&xhAParse, ENUM_AVCODEC_AUDIO_TYPE_AAC);
 	AVHelp_Parse_FrameInit(&xhVParse, ENUM_ENTENGINE_AVCODEC_VEDIO_TYPE_H264);
 
-	xhStream = XClient_CodecPush_Init(lpszUrl, &st_MediaStream, "flv");
+	xhStream = XClient_CodecPush_Init(lpszUrl, &st_MediaStream);
 	XClient_CodecPush_WriteHdr(xhStream);
 
 	while (TRUE)
@@ -287,8 +287,8 @@ int main()
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
-	//Test_LivePush();
-	Test_RTMPPush();
+	Test_LivePush();
+	//Test_RTMPPush();
 	
 #ifdef _WINDOWS
 	WSACleanup();

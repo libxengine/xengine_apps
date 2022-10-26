@@ -25,33 +25,33 @@ using namespace std;
 
 void md5cal()
 {
-	UCHAR tszMD5[512];
-	memset(tszMD5, '\0', 512);
-	LPCTSTR lpszFile = _T("123123");
-	int nLen = 6;
+	UCHAR tszMD5Hex[MAX_PATH];
+	TCHAR tszMD5Str[MAX_PATH];
 
-	if (!OPenSsl_Api_Digest(lpszFile, tszMD5, &nLen))
+	memset(tszMD5Hex, '\0', MAX_PATH);
+	memset(tszMD5Str, '\0', MAX_PATH);
+
+	int nLen = 512;
+	LPCTSTR lpszFile = _T("D:\\XEngine_Storage\\XEngine_Source\\Debug\\XEngine_File2\\a.txt");
+
+	if (!OPenSsl_Api_Digest(lpszFile, tszMD5Hex, &nLen, TRUE, XENGINE_OPENSSL_API_DIGEST_MD5))
+	{
+		return;
+	}
+	BaseLib_OperatorString_StrToHex((char*)tszMD5Hex, nLen, tszMD5Str);
+	printf(_T("%s\n"), tszMD5Str);
+
+	nLen = MAX_PATH;
+	memset(tszMD5Hex, '\0', MAX_PATH);
+	memset(tszMD5Str, '\0', MAX_PATH);
+
+	if (!OPenSsl_Api_Digest("D:\\xengine_apps\\Debug\\XEngine_BaseLib.dll", tszMD5Hex, NULL, TRUE, XENGINE_OPENSSL_API_DIGEST_SHA1))
 	{
 		return;
 	}
 
-	for (int i = 0; i < 16; i++)
-	{
-		printf(_T("%X"), tszMD5[i]);
-	}
-	printf(_T("MD5 END\n"));
-
-	nLen = 512;
-	memset(tszMD5, '\0', 512);
-	if (!OPenSsl_Api_Digest("D:\\xengine_apps\\Debug\\XEngine_BaseLib.dll", tszMD5, NULL,TRUE, XENGINE_OPENSSL_API_DIGEST_SHA1))
-	{
-		return;
-	}
-	TCHAR tszHash[256];
-	memset(tszHash, '\0', sizeof(tszHash));
-
-	BaseLib_OperatorString_StrToHex((char*)tszMD5, 20, tszHash);
-	printf("%s\n", tszHash);
+	BaseLib_OperatorString_StrToHex((char*)tszMD5Hex, 20, tszMD5Str);
+	printf("%s\n", tszMD5Str);
 
 	printf(_T("HASH END\n"));
 }
