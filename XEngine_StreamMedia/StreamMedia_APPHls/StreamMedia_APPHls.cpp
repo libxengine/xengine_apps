@@ -62,7 +62,7 @@ int main()
 		return -1;
 	}
 
-	XHANDLE xhToken = HLSProtocol_Section_Init(12, HLSProtocol_CBNotify);
+	XHANDLE xhToken = HLSProtocol_Section_Init(12, TRUE, FALSE, HLSProtocol_CBNotify);
 	if (NULL == xhToken)
 	{
 		printf("HLSProtocol_Section_Init:%lX\n", HLSProtocol_GetLastError());

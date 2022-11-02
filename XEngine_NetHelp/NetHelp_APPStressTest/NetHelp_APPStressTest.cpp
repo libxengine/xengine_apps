@@ -17,7 +17,7 @@ using namespace std;
 //Linux::g++ -std=c++17 -Wall -g NetHelp_APPStressTest.cpp -o NetHelp_APPStressTest.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp -lXEngine_BaseLib -lXClient_Socket -lNetHelp_StressTest -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp,--disable-new-dtags
 //Macos::g++ -std=c++17 -Wall -g NetHelp_APPStressTest.cpp -o NetHelp_APPStressTest.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_NetHelp -lXEngine_BaseLib -lXClient_Socket -lNetHelp_StressTest -Wl,-rpath,@executable_path/../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -Wl,-rpath,@executable_path/../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Client -Wl,-rpath,@executable_path/../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_NetHelp
 
-void CALLBACK CBDatas_TestStress(XHANDLE xhToken, LPCSTR lpszAddr, int nPort, int nClient, int nNumber, int nMsgLen, LPVOID lParam)
+void CALLBACK CBDatas_TestStress(XHANDLE xhToken, LPCSTR lpszAddr, int nPort, int nClient, int nNumber, int nMsgLen, int nSDError, int nRVError, LPVOID lParam)
 {
 	printf("地址：%s:%d，索引:%d 发送次数：%d\n", lpszAddr, nPort, nClient, nNumber);
 }
@@ -33,7 +33,7 @@ int main()
 	NETHELP_STRESSTEST_RECONNECT st_TCPConnect;
 	memset(&st_TCPConnect, '\0', sizeof(NETHELP_STRESSTEST_RECONNECT));
 
-	st_TCPConnect.nPort = 5402;
+	st_TCPConnect.nPort = 5300;
 	st_TCPConnect.nCloseWaitContTime = 0;
 	st_TCPConnect.nConnectCount = 10;
 	st_TCPConnect.nConnectTest = 100;
@@ -56,12 +56,12 @@ int main()
 	memset(&st_TCPDatas, '\0', sizeof(NETHELP_STRESSTEST_DATAS));
 
 	st_TCPDatas.nClientCount = 20;
-	st_TCPDatas.nMsgLen = 5;
-	st_TCPDatas.nPort = 5402;
+	st_TCPDatas.nSDLen = 5;
+	st_TCPDatas.nPort = 5300;
 	st_TCPDatas.nTestNumber = 10;
-	st_TCPDatas.ptszMsgBuffer = (TCHAR*)malloc(5);
+	st_TCPDatas.ptszSDBuffer = (TCHAR*)malloc(5);
 	strcpy(st_TCPDatas.tszAddr, lpszAddr);
-	strcpy(st_TCPDatas.ptszMsgBuffer, "hello");
+	strcpy(st_TCPDatas.ptszSDBuffer, "hello");
 
 	xhToken = StressTest_TCPSocket_StartDatas(2, &st_TCPDatas, CBDatas_TestStress);
 	if (NULL == xhToken)

@@ -173,7 +173,7 @@ int main_client()
 	int nPos = 0;
 	nLen = 1024;
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (!XClient_TCPSelect_RecvMsg(hSocket, tszMsgBuffer, &nLen, FALSE))
+	if (!XClient_TCPSelect_RecvMsg(hSocket, tszMsgBuffer, &nLen))
 	{
 		printf("NetClient_TCPSelect_RecvMsg:%lX", XClient_GetLastError());
 		return -1;
@@ -211,7 +211,7 @@ int main_client()
 		memset(tszRecvBuffer, '\0', sizeof(tszRecvBuffer));
 		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
-		if (XClient_TCPSelect_RecvMsg(hSocket, tszRecvBuffer, &nRVLen, FALSE))
+		if (XClient_TCPSelect_RecvMsg(hSocket, tszRecvBuffer, &nRVLen))
 		{
 			if (!RfcComponents_WSPacket_PostEx(xhWBPacket,"ClientToken", tszRecvBuffer, nRVLen))
 			{

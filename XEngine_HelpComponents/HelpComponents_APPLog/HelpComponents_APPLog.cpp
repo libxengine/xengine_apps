@@ -27,7 +27,7 @@ int main()
 
 	//st_XLogConfig.st_BackInfo.enBackType = HELPCOMPONENTS_XLOG_BACKTYPE_TIME;./
 	strcpy(st_XLogConfig.st_BackInfo.tszBackDir, _T("./back/"));
-	strcpy(st_XLogConfig.tszFileName, _T("test.log"));
+	strcpy(st_XLogConfig.tszFileName, _T("./log/test.log"));
 	XLOG xhLog = HelpComponents_XLog_Init(HELPCOMPONENTS_XLOG_OUTTYPE_FILE | HELPCOMPONENTS_XLOG_OUTTYPE_STD, &st_XLogConfig);
 	if (NULL == xhLog)
 	{

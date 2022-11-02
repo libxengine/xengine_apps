@@ -44,7 +44,7 @@ int XClient_ProxyClient()
 	}
 	nMsgLen = 10240;
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nMsgLen, FALSE))
+	if (XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nMsgLen))
 	{
 		printf("XClient_TCPSelect_RecvMsg:%s\n", tszMsgBuffer);
 	}
@@ -63,7 +63,7 @@ int XClient_ProxyClient()
 	{
 		nMsgLen = 10240;
 		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-		if (XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nMsgLen, FALSE))
+		if (XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nMsgLen))
 		{
 			printf("%s", tszMsgBuffer);
 		}
