@@ -121,6 +121,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RfcComponents_APPHttpModule
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StreamMedia_APPPull", "XEngine_StreamMedia\StreamMedia_APPPull\StreamMedia_APPPull.vcxproj", "{19033A65-6942-4737-A522-26A1B9874056}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RfcComponents_APPMQTT", "XEngine_RfcComponents\RfcComponents_APPMQTT\RfcComponents_APPMQTT.vcxproj", "{38222526-960C-4E97-9DBB-B506A69E5CB0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -521,6 +523,14 @@ Global
 		{19033A65-6942-4737-A522-26A1B9874056}.Release|x64.Build.0 = Release|x64
 		{19033A65-6942-4737-A522-26A1B9874056}.Release|x86.ActiveCfg = Release|Win32
 		{19033A65-6942-4737-A522-26A1B9874056}.Release|x86.Build.0 = Release|Win32
+		{38222526-960C-4E97-9DBB-B506A69E5CB0}.Debug|x64.ActiveCfg = Debug|x64
+		{38222526-960C-4E97-9DBB-B506A69E5CB0}.Debug|x64.Build.0 = Debug|x64
+		{38222526-960C-4E97-9DBB-B506A69E5CB0}.Debug|x86.ActiveCfg = Debug|Win32
+		{38222526-960C-4E97-9DBB-B506A69E5CB0}.Debug|x86.Build.0 = Debug|Win32
+		{38222526-960C-4E97-9DBB-B506A69E5CB0}.Release|x64.ActiveCfg = Release|x64
+		{38222526-960C-4E97-9DBB-B506A69E5CB0}.Release|x64.Build.0 = Release|x64
+		{38222526-960C-4E97-9DBB-B506A69E5CB0}.Release|x86.ActiveCfg = Release|Win32
+		{38222526-960C-4E97-9DBB-B506A69E5CB0}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -575,6 +585,7 @@ Global
 		{567676BB-67B7-4A35-A1AC-4815C138830B} = {A11E0BB3-4C3C-432C-B528-3417CAD0D5B1}
 		{A0941C7B-5B2D-48A5-9C30-E6CEC5448B04} = {A11E0BB3-4C3C-432C-B528-3417CAD0D5B1}
 		{19033A65-6942-4737-A522-26A1B9874056} = {54FEE2BB-EBE2-4F7B-9A24-BF6D3CD2FD79}
+		{38222526-960C-4E97-9DBB-B506A69E5CB0} = {A11E0BB3-4C3C-432C-B528-3417CAD0D5B1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7DA25D94-055D-4CEF-BDCD-F7BD3315697C}
