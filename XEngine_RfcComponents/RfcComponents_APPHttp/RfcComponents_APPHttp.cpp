@@ -143,6 +143,17 @@ int main()
 	}
 	BaseLib_OperatorMemory_Free((XPPPMEM)&pptszListParam, nListCount);
 
+	for (int i = 0; i < 10; i++)
+	{
+		TCHAR tszDomainUrl[MAX_PATH];
+		TCHAR tszDomainKey[MAX_PATH];
+
+		memset(tszDomainUrl, '\0', MAX_PATH);
+		memset(tszDomainKey, '\0', MAX_PATH);
+		RfcComponents_HttpHelp_ShortLink(lpszUrl, tszDomainUrl, tszDomainKey);
+		printf("%s %s\n", tszDomainUrl, tszDomainKey);
+	}
+
 	bIsRun = TRUE;
 	if (1 == nRVMode)
 	{
