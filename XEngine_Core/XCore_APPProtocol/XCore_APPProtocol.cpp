@@ -33,8 +33,8 @@ BOOL CALLBACK XEngine_Protocol_Callback_Trace(LPCTSTR lpszSource, LPCTSTR lpszDe
 }
 int Protocol_TestPing()
 {
-	LPCTSTR lpszSourceAddr = _T("192.168.74.128");
-	LPCTSTR lpszDestAddr = _T("192.168.1.8");
+	LPCTSTR lpszSourceAddr = _T("192.168.1.12");
+	LPCTSTR lpszDestAddr = _T("42.194.178.57");
 	XENGINE_VALTIME st_VALTime;
 
 	memset(&st_VALTime, '\0', sizeof(XENGINE_VALTIME));
@@ -52,8 +52,8 @@ int Protocol_TestPing()
 
 int Protocol_TestTrace()
 {
-	LPCTSTR lpszSourceAddr = _T("192.168.1.10");
-	LPCTSTR lpszDestAddr = _T("42.192.166.120");
+	LPCTSTR lpszSourceAddr = _T("192.168.1.12");
+	LPCTSTR lpszDestAddr = _T("42.194.178.57");
 
 	if (!Protocol_Icmp_Traceroute(lpszSourceAddr, lpszDestAddr, XEngine_Protocol_Callback_Trace))
 	{
@@ -135,9 +135,10 @@ int main()
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 	
-	Protocol_TestTCPRaw();
 	Protocol_TestPing();
 	Protocol_TestTrace();
+	Protocol_TestTCPRaw();
+
 #ifdef _WINDOWS
 	WSACleanup();
 #endif
