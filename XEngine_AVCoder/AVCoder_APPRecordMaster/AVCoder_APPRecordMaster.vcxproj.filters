@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="RfcComponents_APPUPnp.cpp">
+    <ClCompile Include="AVCoder_APPRecordMaster.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
