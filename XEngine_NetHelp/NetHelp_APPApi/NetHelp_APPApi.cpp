@@ -1,68 +1,19 @@
 ﻿#ifdef _WINDOWS
 #include <Windows.h>
 #include <tchar.h>
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/NetHelp_APIHelp.lib")
 #endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
-#include <time.h>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_APIHelp/APIHelp_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_APIHelp/APIHelp_Error.h"
 
 //Linux::g++ -std=c++17 -Wall -g NetHelp_APPApi.cpp -o NetHelp_APPApi.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp -lXEngine_BaseLib -lNetHelp_APIHelp -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp,--disable-new-dtags
 //Macos::g++ -std=c++17 -Wall -g NetHelp_APPApi.cpp -o NetHelp_APPApi.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_NetHelp -lXEngine_BaseLib -lNetHelp_APIHelp
 
-int Test_Http2Request()
-{
-	LPCTSTR lpszUrl = _T("http://test.xyry.org:5002");
-	LPCTSTR lpszMsgBuffer = _T("12345");
-	CHAR* ptszMsgBuffer = NULL;
-	int nCode = 0;
-	int nLen = 0;
-	APIHELP_HTTPPARAMENT st_HTTPParam;
-	memset(&st_HTTPParam, '\0', sizeof(APIHELP_HTTPPARAMENT));
 
-	st_HTTPParam.bHTTP2Enable = TRUE;
-
-	APIHelp_HttpRequest_Custom(_T("GET"), lpszUrl, NULL, NULL, &ptszMsgBuffer, &nLen, NULL, NULL, &st_HTTPParam);
-	//APIHelp_HttpRequest_Post(lpszUrl, lpszMsgBuffer, NULL, &ptszMsgBuffer, &nLen, NULL, NULL, &st_HTTPParam);
-	printf("%s\n", ptszMsgBuffer);
-	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
-	return 0;
-}
-int Test_HttpRequest()
-{
-	LPCTSTR lpszUrl = _T("http://www.baidu.com");
-	CHAR* ptszMsgBuffer = NULL;
-
-	APIHelp_HttpRequest_Custom(_T("GET"), lpszUrl, NULL, NULL, &ptszMsgBuffer);
-	printf("%s\n", ptszMsgBuffer);
-	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
-	return 0;
-}
-int Test_NetGetIPAddr()
-{
-	TCHAR tszRemoteBuffer[1024];
-	memset(tszRemoteBuffer, '\0', sizeof(tszRemoteBuffer));
-
-	if (!APIHelp_NetWork_GetIPNet(tszRemoteBuffer))
-	{
-		printf("APIHelp_NetWork_GetIPNet:%lX", APIHelp_GetLastError());
-	}
-	printf("%s\n", tszRemoteBuffer);
-	return 0;
-}
-
-void __stdcall NetHelp_HttpGet_Chunked(LPVOID lpszMsgBuffer, int nMsgLen, LPVOID lParam)
-{
-	printf("%d\n%s\n", nMsgLen, (LPCTSTR)lpszMsgBuffer);
-}
 int Test_Domain()
 {
 	TCHAR tszUrlPath[MAX_PATH];
@@ -76,45 +27,11 @@ int Test_Domain()
 	printf("APIHelp_Domain_GetInfo:%s,%s,%s,%s,%d\n",st_APIDomain.tszDomainName, st_APIDomain.tszMainDomain, st_APIDomain.tszSubDomain, st_APIDomain.tszTopDomain, enAPIDomain);
 	return 0;
 }
-int Test_HttpCreate()
-{
-	XNETHANDLE xhToken = 0;
-	CHAR* ptszMsgBuffer = NULL;
-
-	APIHelp_HttpRequest_Create(&xhToken , NetHelp_HttpGet_Chunked);
-	APIHelp_HttpRequest_SetUrl(xhToken, "www.xyry.org", "GET");
-
-	APIHelp_HttpRequest_Excute(xhToken, &ptszMsgBuffer);
-	APIHelp_HttpRequest_Close(xhToken);
-	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
-	return 0;
-}
-int Test_HttpCustom()
-{
-	//获取本地外网IP地址
-	int nBLen = 0;
-	TCHAR* ptszBody = NULL;
-	LPCTSTR lpszUrl = _T("http://members.3322.org/dyndns/getip");
-	LPCTSTR lpszHdrBuffer = _T("Connection: close\r\nDNT: 1\r\nUpgrade-Insecure-Requests: 1\r\nUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36 Edg/97.0.1072.55\r\nAccept: text/html\r\nAccept-Language: zh-CN,zh\r\nAccept-Encoding: deflate\r\n");
-
-	if (!APIHelp_HttpRequest_Custom(_T("GET"), lpszUrl, NULL, NULL, &ptszBody, &nBLen, lpszHdrBuffer))
-	{
-		return FALSE;
-	}
-	printf("%s\n", ptszBody);
-	BaseLib_OperatorMemory_FreeCStyle((VOID**)&ptszBody);
-	return 0;
-}
 
 int main()
 {
-	//Test_Http2Request();
-	Test_HttpCustom();
 	Test_Domain();
-	Test_NetGetIPAddr();
-	Test_HttpRequest();
-	Test_HttpCreate();
-	
+
 	return 0;
 }
 

@@ -16,7 +16,14 @@ using namespace std;
 
 //Linux:g++ -std=gnu++11 -Wall -g Lib_APPAlgorithm.cpp -o Lib_APPAlgorithm.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -lXEngine_Algorithm -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib
 //Macos:g++ -std=gnu++11 -Wall -g Lib_APPAlgorithm.cpp -o Lib_APPAlgorithm.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -lXEngine_Algorithm 
+void CALLBACK Test_CBPassive(XHANDLE xhToken, __int64u nAvgSDFlow, __int64u nAvgRVFlow, __int64u nAvgTime, LPVOID lParam)
+{
+	TCHAR tszClientAddr[128];
+	memset(tszClientAddr, '\0', 128);
 
+	_tcscpy(tszClientAddr, (LPCSTR)lParam);
+	printf("%s: AVG_Flow:%d\n", tszClientAddr, nAvgSDFlow);
+}
 
 int Test_Calulation()
 {
@@ -34,7 +41,7 @@ int Test_Calulation()
 	Algorithm_Calculation_GetTime(xhToken, &nTime);
 	printf("%llu\n", nTime);
 
-	Algorithm_Calculation_ResetTime(xhToken);
+	Algorithm_Calculation_Reset(xhToken);
 
 	for (int i = 0; i < 10; i++)
 	{
@@ -47,7 +54,22 @@ int Test_Calulation()
 		Algorithm_Calculation_GetRVFlow(xhToken, &nFlow, TRUE);
 		printf("%llu\n", nFlow);
 	}
+
+	Algorithm_Calculation_Reset(xhToken);
+	TCHAR* ptszMsgBuffer = (TCHAR*)malloc(128);
+	memset(ptszMsgBuffer, '\0', 128);
+
+	strcpy(ptszMsgBuffer, "127.0.0.1");
+	Algorithm_Calculation_PassiveOPen(xhToken, Test_CBPassive, 1024, 0, 0, ptszMsgBuffer);
+	for (int i = 0; i < 500; i++)
+	{
+		Algorithm_Calculation_ADDSDFlow(xhToken, rand());
+		std::this_thread::sleep_for(std::chrono::milliseconds(30));
+	}
+	std::this_thread::sleep_for(std::chrono::seconds(5));
+	Algorithm_Calculation_PassiveClose(xhToken);
 	Algorithm_Calculation_Close(xhToken);
+
 	return 0;
 }
 
