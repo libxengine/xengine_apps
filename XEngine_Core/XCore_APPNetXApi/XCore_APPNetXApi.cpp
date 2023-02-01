@@ -115,24 +115,12 @@ int NetXApi_TestSocket()
 	{
 		printf("Net Type: IPV4 \n");
 	}
-	NETXAPI_IPSTATICS st_IPInfo;
-	NETXAPI_TCPSTATICS st_TCPInfo;
-	NETXAPI_UDPSTATICS st_UDPInfo;
-	NETXAPI_ICMPSTATICS st_ICMPInfo;
-
-	memset(&st_IPInfo, '\0', sizeof(NETXAPI_IPSTATICS));
-	memset(&st_TCPInfo, '\0', sizeof(NETXAPI_TCPSTATICS));
-	memset(&st_UDPInfo, '\0', sizeof(NETXAPI_UDPSTATICS));
-	memset(&st_ICMPInfo, '\0', sizeof(NETXAPI_ICMPSTATICS));
-
-	NetXApi_Socket_GetProtocolStatics(&st_IPInfo, &st_TCPInfo, &st_UDPInfo, &st_ICMPInfo);
-
-	NETXAPI_PROCESSTABLE** ppSt_ListTCPProcess;
-	NETXAPI_PROCESSTABLE** ppSt_ListUDPProcess;
+	NETXAPI_NETTABLE** ppSt_ListTCPProcess;
+	NETXAPI_NETTABLE** ppSt_ListUDPProcess;
 
 	int nTCPCount = 0;
 	int nUDPCount = 0;
-	NetXApi_Socket_ProcessNet(&ppSt_ListTCPProcess, &ppSt_ListUDPProcess, &nTCPCount, &nUDPCount);
+	NetXApi_Socket_NetList(&ppSt_ListTCPProcess, &ppSt_ListUDPProcess, &nTCPCount, &nUDPCount);
 
 	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListTCPProcess, nTCPCount);
 	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListUDPProcess, nUDPCount);
@@ -154,9 +142,10 @@ int main()
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
+
+	NetXApi_TestSocket();
 	Test_NetSniffer();
 	Test_NetFlow();
-	NetXApi_TestSocket();
 	//Test_CtrlFlow();
 #ifdef _WINDOWS
 	WSACleanup();

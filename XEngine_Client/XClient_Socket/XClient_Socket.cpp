@@ -113,7 +113,7 @@ int TCPTest()
 	return 1;
 }
 
-void CALLBACK XClient_TCPCallback_Recv(XHANDLE xhToken, SOCKET hSocket, ENUM_NETCLIENT_TCPEVENTS enTCPClientEvents, LPCSTR lpszMsgBuffer, int nLen, LPVOID lParam)
+void CALLBACK XClient_TCPCallback_Recv(XHANDLE xhToken, XNETHANDLE xhClient, SOCKET hSocket, ENUM_NETCLIENT_TCPEVENTS enTCPClientEvents, LPCSTR lpszMsgBuffer, int nLen, LPVOID lParam)
 {
 	if (ENUM_XENGINE_XCLIENT_SOCKET_TCP_EVENT_RECV == enTCPClientEvents)
 	{
@@ -130,21 +130,19 @@ void CALLBACK XClient_TCPCallback_Recv(XHANDLE xhToken, SOCKET hSocket, ENUM_NET
 }
 int TCPTestEx()
 {
-	XHANDLE xhToken[4];
-
+	XNETHANDLE xhClient[4];
+	XHANDLE xhToken = XClient_TCPSelect_StartEx(XClient_TCPCallback_Recv);
+	XClient_TCPSelect_HBStartEx(xhToken, 2);
 	for (int i = 0; i < 4; i++)
 	{
-		xhToken[i] = XClient_TCPSelect_StartEx(_T("192.168.1.12"), 5600, 2, XClient_TCPCallback_Recv, NULL, TRUE);
-		XClient_TCPSelect_HBStartEx(xhToken[i], 2);
+		XClient_TCPSelect_InsertEx(xhToken, _T("192.168.1.8"), 5002, &xhClient[i]);
 	}
-
-	std::this_thread::sleep_for(std::chrono::seconds(100));
-
+	std::this_thread::sleep_for(std::chrono::seconds(10));
 	for (int i = 0; i < 4; i++)
 	{
-		XClient_TCPSelect_StopEx(xhToken[i]);
+		XClient_TCPSelect_DeleteEx(xhToken, xhClient[i]);
 	}
- 	
+	XClient_TCPSelect_StopEx(xhToken);
 	return 1;
 }
 

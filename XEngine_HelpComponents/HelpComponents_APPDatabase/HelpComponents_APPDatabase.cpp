@@ -18,7 +18,7 @@
 
 int Test_SQLite()
 {
-	XHDATA xhData = 0;
+	XNETHANDLE xhData = 0;
 	if (DataBase_SQLite_Create(_T("SQLUser.db")))
 	{
 		if (!DataBase_SQLite_Open(&xhData, _T("SQLUser.db")))
@@ -71,7 +71,7 @@ int Test_SQLite()
 }
 int mysql_test()
 {
-	XHDATA xhDBDay;
+	XNETHANDLE xhDBDay;
 	DATABASE_MYSQL_CONNECTINFO st_ConnectInfo;
 	memset(&st_ConnectInfo, '\0', sizeof(DATABASE_MYSQL_CONNECTINFO));
 
