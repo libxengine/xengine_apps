@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="NetHelp_APPStressTest.cpp">
+    <ClCompile Include="NetHelp_APPBTorrent.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

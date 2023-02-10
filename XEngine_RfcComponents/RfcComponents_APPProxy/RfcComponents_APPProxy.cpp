@@ -72,7 +72,7 @@ int main()
 
 	int nListCount = 0;
 	PROXYPROTOCOL_CLIENTINFO **ppSt_ClientList;
-	ProxyProtocol_TunnelCore_GetList((XPPPMEM)&ppSt_ClientList, &nListCount);
+	ProxyProtocol_TunnelCore_GetList((XPPPMEM)&ppSt_ClientList, &nListCount, sizeof(PROXYPROTOCOL_CLIENTINFO));
 	for (int i = 0; i < nListCount; i++)
 	{
 		printf("%d %d %lld %d %s\n", ppSt_ClientList[i]->bClose, ppSt_ClientList[i]->hSocket, ppSt_ClientList[i]->xhClient, ppSt_ClientList[i]->enStatus, ppSt_ClientList[i]->tszIPAddr);

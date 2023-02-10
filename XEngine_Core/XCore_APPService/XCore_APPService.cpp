@@ -44,7 +44,7 @@ void CALLBACK TCPOverlapped_Leave(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID 
 void CALLBACK Callback_UDPRecv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpszRecvMsg, int nMsgLen, LPVOID lParam)
 {
 	printf("TCPOverlapped_Recv:%s = %s = %d\n", lpszClientAddr, lpszRecvMsg, nMsgLen);
-	NetCore_UDPXCore_SendMsgEx(xhUDPCore, lpszClientAddr, lpszRecvMsg, &nMsgLen);
+	NetCore_UDPXCore_SendEx(xhUDPCore, lpszClientAddr, lpszRecvMsg, &nMsgLen);
 }
 
 int test_tcpxpoll()
@@ -57,7 +57,7 @@ int test_tcpxpoll()
 	{
 		printf(_T("test_tcpxpoll Start Is Failed!\n"));
 	}
-	NetCore_TCPXPoll_SetCallBack(TCPOverlapped_Login, TCPOverlapped_Recv, TCPOverlapped_Leave);
+	NetCore_TCPXPoll_RegisterCallBack(TCPOverlapped_Login, TCPOverlapped_Recv, TCPOverlapped_Leave);
 	return 0;
 }
 int test_tcpxcore()

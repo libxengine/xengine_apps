@@ -1,8 +1,8 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BTorrent.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/NetHelp_BTorrent.lib")
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,16 +11,16 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_DownLoad/XEngine_BTorrent/BTDload_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_DownLoad/XEngine_BTorrent/BTDload_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_BTorrent/BTorrent_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_BTorrent/BTorrent_Error.h"
 
-//Linux::g++ -std=c++17 -Wall -g BTorrent_APPClient.cpp -o BTorrent_APPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_DownLoad -lXEngine_BaseLib -lXEngine_BTorrent -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_DownLoad,--disable-new-dtags
-//MacOS::g++ -std=c++17 -Wall -g BTorrent_APPClient.cpp -o BTorrent_APPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_DownLoad -lXEngine_BaseLib -lXEngine_BTorrent
+//Linux::g++ -std=c++17 -Wall -g NetHelp_APPBTorrent.cpp -o NetHelp_APPBTorrent.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/NetHelp_BTorrent -lXEngine_BaseLib -lNetHelp_BTorrent -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/NetHelp_BTorrent,--disable-new-dtags
+//MacOS::g++ -std=c++17 -Wall -g NetHelp_APPBTorrent.cpp -o NetHelp_APPBTorrent.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/NetHelp_BTorrent -lXEngine_BaseLib -lNetHelp_BTorrent
 
 int BTorrent_Parse(LPCTSTR lpszFile)
 {
 	XNETHANDLE xhToken;
-	
+
 	if (!BTorrent_Parse_Init(&xhToken, lpszFile))
 	{
 		printf("BTorrent_Parse_Init:%lX\n", BTorrent_GetLastError());
@@ -98,7 +98,7 @@ int BTorrent_Parse(LPCTSTR lpszFile)
 	}
 	for (int i = 0; i < nListCount; i++)
 	{
-		printf("BTorrent_Parse_GetFile:%s %s %s %s %lld %lld %ld %d %d\n", ppSt_FileList[i]->tszFileHash, ppSt_FileList[i]->tszFilePath, ppSt_FileList[i]->tszFileName, ppSt_FileList[i]->tszFileLink, ppSt_FileList[i]->nFileOffset, ppSt_FileList[i]->nFileSize, ppSt_FileList[i]->nFileTime, ppSt_FileList[i]->nFileStart, ppSt_FileList[i]->nFileEnd);
+		printf("BTorrent_Parse_GetFile:%s %s %s %s %lld %lld %lld %d %d\n", ppSt_FileList[i]->tszFileHash, ppSt_FileList[i]->tszFilePath, ppSt_FileList[i]->tszFileName, ppSt_FileList[i]->tszFileLink, ppSt_FileList[i]->nFileOffset, ppSt_FileList[i]->nFileSize, ppSt_FileList[i]->nFileTime, ppSt_FileList[i]->nFileStart, ppSt_FileList[i]->nFileEnd);
 	}
 	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_FileList, nListCount);
 
@@ -177,7 +177,7 @@ int BTorrent_Download()
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 		BaseLib_OperatorMemory_Free((XPPPMEM)&ppenEventList, nListCount);
 	}
-	
+
 	BTorrent_DLoader_Close(xhToken);
 	return 0;
 }
@@ -192,6 +192,6 @@ int main()
 	BTorrent_Download();
 	BTorrent_Creator(lpszFile);
 	BTorrent_Parse(lpszFile);
-	
+
 	return 0;
 }

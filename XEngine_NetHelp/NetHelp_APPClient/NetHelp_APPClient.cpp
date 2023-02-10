@@ -117,14 +117,97 @@ int Test_HttpCreate()
 	return 0;
 }
 
+bool bRun = false;
+void __stdcall Download_Progress(XHANDLE xhToken, double dlTotal, double dlNow, double ulTotal, double ulNow, ENUM_NETHELP_APICLIENT_FILE_STATUS en_DownHttpStatus, LPVOID lParam)
+{
+	printf("下载任务：%p,总大小：%lf，已经下载大小：%lf，下载标识符：%d\n", xhToken, dlTotal, dlNow, en_DownHttpStatus);
+
+	if (ENUM_NETHELP_APICLIENT_FILE_STATUS_COMPLETE == en_DownHttpStatus)
+	{
+		bRun = false;
+	}
+}
+int download_http()
+{
+	LPCTSTR lpszHttpAddr = _T("https://webcdn.m.qq.com/spcmgr/download/QQ9.7.1.28940.exe");
+	//LPCTSTR lpszHttpAddr = _T("http://192.168.1.7:5101/QQ.exe");
+#ifdef _MSC_BUILD
+	LPCTSTR lpszFileAddr = _T("D:\\xengine_apps\\Debug\\QQ.exe");
+#else
+	LPCTSTR lpszFileAddr = _T("QQ.exe");
+#endif
+
+	XHANDLE xhDownCall = APIClient_File_Create(lpszHttpAddr, lpszFileAddr, TRUE, NULL, Download_Progress);
+	if (NULL == xhDownCall)
+	{
+		printf("下载失败！");
+		return -1;
+	}
+	bRun = TRUE;
+	APIClient_File_Start(xhDownCall);
+
+	while (bRun)
+	{
+		NETHELP_FILEINFO st_TaskInfo;
+		memset(&st_TaskInfo, '\0', sizeof(NETHELP_FILEINFO));
+
+		if (!APIClient_File_Query(xhDownCall, &st_TaskInfo))
+		{
+			break;
+		}
+		if (ENUM_NETHELP_APICLIENT_FILE_STATUS_COMPLETE == st_TaskInfo.en_DownStatus)
+		{
+			break;
+		}
+	}
+	APIClient_File_Delete(xhDownCall);
+	return 0;
+}
+int upload_http()
+{
+	LPCTSTR lpszHttpAddr = _T("http://192.168.1.7:5102/QQ.exe");
+#ifdef _MSC_BUILD
+	LPCTSTR lpszFileAddr = _T("D:\\xengine_apps\\Debug\\QQ.exe");
+#else
+	LPCTSTR lpszFileAddr = _T("QQ.exe");
+#endif
+
+	XHANDLE xhUPLoad = APIClient_File_Create(lpszHttpAddr, lpszFileAddr, FALSE);
+	if (NULL == xhUPLoad)
+	{
+		printf("下载失败！");
+		return -1;
+	}
+	APIClient_File_Start(xhUPLoad, FALSE, "PUT");
+	while (1)
+	{
+		NETHELP_FILEINFO st_TaskInfo;
+		memset(&st_TaskInfo, '\0', sizeof(NETHELP_FILEINFO));
+
+		if (!APIClient_File_Query(xhUPLoad, &st_TaskInfo))
+		{
+			break;
+		}
+		if (ENUM_NETHELP_APICLIENT_FILE_STATUS_COMPLETE == st_TaskInfo.en_DownStatus)
+		{
+			break;
+		}
+		printf("上传任务：%p,总大小：%lf，已经上传大小：%lf，标识符：%d\n", xhUPLoad, st_TaskInfo.ulTotal, st_TaskInfo.ulNow, st_TaskInfo.en_DownStatus);
+	}
+	APIClient_File_Delete(xhUPLoad);
+	return 0;
+}
+
 int main()
 {
+	//upload_http();
+	download_http();
+
 	Test_Http2Request();
 	Test_HttpRequest();
 	Test_HttpCreate();
 
 	NetHelp_APPClient_EMailPop3();
 	NetHelp_APPClient_EMailSmtp();
-	
 	return 0;
 }

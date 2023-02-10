@@ -94,7 +94,7 @@ void CALLBACK NetCore_CBRecv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpszR
 			}
 			RfcComponents_HttpConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
 			RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nRecvLen);
-			NetCore_UDPXCore_SendMsgEx(xhToken, lpszClientAddr, tszMsgBuffer, &nRecvLen);
+			NetCore_UDPXCore_SendEx(xhToken, lpszClientAddr, tszMsgBuffer, &nRecvLen);
 		}
 		else
 		{
@@ -106,14 +106,14 @@ void CALLBACK NetCore_CBRecv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpszR
 					//如果是呼叫
 					RfcComponents_HttpConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
 					RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nRecvLen);
-					NetCore_UDPXCore_SendMsgEx(xhToken, lpszClientAddr, tszMsgBuffer, &nRecvLen);
+					NetCore_UDPXCore_SendEx(xhToken, lpszClientAddr, tszMsgBuffer, &nRecvLen);
 
-					NetCore_UDPXCore_SendMsgEx(xhToken, tszToAddr, lpszRecvMsg, &nMsgLen);
+					NetCore_UDPXCore_SendEx(xhToken, tszToAddr, lpszRecvMsg, &nMsgLen);
 				}
 				else
 				{
 					//其他情况
-					NetCore_UDPXCore_SendMsgEx(xhToken, tszToAddr, lpszRecvMsg, &nMsgLen);
+					NetCore_UDPXCore_SendEx(xhToken, tszToAddr, lpszRecvMsg, &nMsgLen);
 				}
 			}
 			else
@@ -123,7 +123,7 @@ void CALLBACK NetCore_CBRecv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpszR
 
 				RfcComponents_SIPServer_SetStatus(lpszClientAddr);//还原状态
 				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nRecvLen);
-				NetCore_UDPXCore_SendMsgEx(xhToken, lpszClientAddr, tszMsgBuffer, &nRecvLen);
+				NetCore_UDPXCore_SendEx(xhToken, lpszClientAddr, tszMsgBuffer, &nRecvLen);
 			}
 		}
 	}
@@ -132,7 +132,7 @@ void CALLBACK NetCore_CBRecv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpszR
 		//需要转发
 		if (RfcComponents_SIPServer_FindAddr(st_SIPProtocol.st_To.tszName, tszToAddr))
 		{
-			NetCore_UDPXCore_SendMsgEx(xhToken, tszToAddr, lpszRecvMsg, &nRecvLen);
+			NetCore_UDPXCore_SendEx(xhToken, tszToAddr, lpszRecvMsg, &nRecvLen);
 			printf("%s\n", lpszRecvMsg);
 		}
 	}

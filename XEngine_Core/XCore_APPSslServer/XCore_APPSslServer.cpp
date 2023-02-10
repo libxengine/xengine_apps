@@ -77,8 +77,7 @@ int main()
 		printf("NetCore_TCPIocp_StartEx %lX\n", OPenSsl_GetLastError());
 		return -1;
 	}
-	NetCore_TCPSelect_SetCallBack(TCPSelect_CBLogin, TCPSelect_CBRecv, TCPSelect_CBLeave);
-
+	NetCore_TCPSelect_RegisterCallBack(TCPSelect_CBLogin, TCPSelect_CBRecv, TCPSelect_CBLeave);
 	printf("ok\n");
 	while (1)
 	{
