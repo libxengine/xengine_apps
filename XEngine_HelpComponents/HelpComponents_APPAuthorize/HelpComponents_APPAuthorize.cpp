@@ -105,8 +105,16 @@ int Authorize_APPLocal()
 	st_AuthLocal.st_AuthRegInfo.enRegType = ENUM_HELPCOMPONENTS_AUTHORIZE_REG_TYPE_TRY;
 	st_AuthLocal.st_AuthRegInfo.enHWType = ENUM_HELPCOMPONENTS_AUTHORIZE_HW_TYPE_CPU;
 	st_AuthLocal.st_AuthRegInfo.enVModeType = ENUM_HELPCOMPONENTS_AUTHORIZE_VERMODE_TYPE_LOCAL;
-
 	strcpy(st_AuthLocal.st_AuthRegInfo.tszHardware, "CPUSERIAL001");
+
+	st_AuthLocal.st_AuthSerial.st_TimeLimit.nTimeCount = 5;
+	st_AuthLocal.st_AuthSerial.st_TimeLimit.nTimeNow = 0;
+	strcpy(st_AuthLocal.st_AuthSerial.st_TimeLimit.tszTimeSerial, "WADN21-E21DDN0N2-21D21NI-312D1ED-AWD21");
+
+	strcpy(st_AuthLocal.st_AuthSerial.st_DataLimit.tszDataSerial, "WADN21-E21DDN0N2-21D21NI-312D1ED-ADWD");
+	strcpy(st_AuthLocal.st_AuthSerial.st_DataLimit.tszDataTime, "2025-01-01 01:01:01");
+
+	strcpy(st_AuthLocal.st_AuthSerial.st_UNLimit.tszUNLimitSerial, "WADN21-E21DDN0N2-21D21NI-312D1ED-FFFF");
 
 	strcpy(st_AuthLocal.st_AuthUserInfo.tszUserName, "XEngine");
 	strcpy(st_AuthLocal.st_AuthUserInfo.tszUserContact, "486179@qq.com");
@@ -170,6 +178,7 @@ int Authorize_APPLocal()
 	}
 	Authorize_Local_GetLeftTimer(&st_AuthLocal);
 	printf("%s = %lld\n", st_AuthLocal.st_AuthRegInfo.tszHardware, st_AuthLocal.st_AuthRegInfo.nHasTime);
+	Authorize_Local_GetLeftTimer(&st_AuthLocal, "WADN21-E21DDN0N2-21D21NI-312D1ED-AWD21");
 
 	int nListCount = 0;
 	TCHAR** pptszTimeList;
