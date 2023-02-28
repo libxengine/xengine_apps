@@ -1,9 +1,11 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
+#ifdef _WIN64
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_BaseLib.lib")
 #else
-
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
+#endif
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,13 +42,13 @@ void TimeSpanTest()
 
 	BaseLib_OperatorTimeSpan_GetForStr(lpszStartTime, lpszEndTime, &nDayTTime, 0);
 	BaseLib_OperatorTimeSpan_GetForStr(lpszStartTime, lpszEndTime, &nHourTTime, 1);
-	printf(_T("\n跨了：%lld天 %lld小时\n"), nDayTTime, nHourTTime);
+	_tprintf(_T("\n跨了：%lld天 %lld小时\n"), nDayTTime, nHourTTime);
 
 	BaseLib_OperatorTimeSpan_CalForStr(lpszStartTime, lpszEndTime, &st_LibTimer, TRUE);
-	printf(_T("%d/%d/%d-%d:%d:%d\n"), st_LibTimer.wYear, st_LibTimer.wMonth, st_LibTimer.wDay, st_LibTimer.wHour, st_LibTimer.wMinute, st_LibTimer.wSecond);
+	_tprintf(_T("%d/%d/%d-%d:%d:%d\n"), st_LibTimer.wYear, st_LibTimer.wMonth, st_LibTimer.wDay, st_LibTimer.wHour, st_LibTimer.wMinute, st_LibTimer.wSecond);
 
 	BaseLib_OperatorTimeSpan_CalForStr(lpszStartTime, lpszEndTime, &st_LibTimer, FALSE);
-	printf(_T("%d/%d/%d-%d:%d:%d\n"), st_LibTimer.wYear, st_LibTimer.wMonth, st_LibTimer.wDay, st_LibTimer.wHour, st_LibTimer.wMinute, st_LibTimer.wSecond);
+	_tprintf(_T("%d/%d/%d-%d:%d:%d\n"), st_LibTimer.wYear, st_LibTimer.wMonth, st_LibTimer.wDay, st_LibTimer.wHour, st_LibTimer.wMinute, st_LibTimer.wSecond);
 }
 void TimeTest()
 {
@@ -58,7 +60,7 @@ void TimeTest()
 	BaseLib_OperatorTime_TTimeToStuTime(nTime, &st_LibTimer);
 
 	__int64x nTTime = 0;
-	char tszTimeStr[128] = {0};
+	TCHAR tszTimeStr[128] = {0};
 	LPCTSTR lpszTimeStr = _T("2022-08-01 10:22:01");
 	BaseLib_OperatorTime_StrToInt(lpszTimeStr, &nTTime);
 	BaseLib_OperatorTime_IntToStr(nTTime, tszTimeStr);
@@ -78,13 +80,11 @@ void StringTest()
 	memset(tszValue, '\0', sizeof(tszValue));
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
-	_stprintf(tszMsgBuffer, _T("123456789 :  abcd"));
+	_tcscpy(tszMsgBuffer, _T("123456789 : abcd"));
+
 	BaseLib_OperatorString_DelSub(tszMsgBuffer, _T("9"));
 
-	BaseLib_OperatorString_DelChar(tszMsgBuffer, ' ', &nDelLen);
-	BaseLib_OperatorString_GetKeyValue(tszMsgBuffer, ":", tszKey, tszValue, TRUE, &nHdrLen, &nBodyLen);
-	BaseLib_OperatorString_DelLastForChar(tszMsgBuffer, ':', FALSE);
-	//BaseLib_OperatorString_DelFirstForChar(tszMsgBuffer, ':', TRUE);
+	BaseLib_OperatorString_GetKeyValue(tszMsgBuffer, _T(":"), tszKey, tszValue, TRUE, &nHdrLen, &nBodyLen);
 	LPCTSTR lpszFile1 = _T("./adadad/file.txt");
 	LPCTSTR lpszFile2 = _T("D:\\adadad\\file.txt");
 	LPCTSTR lpszFile3 = _T("./file.txt");
@@ -122,7 +122,7 @@ void HandleTest()
 	TCHAR tszMsgBuffer[64];
 	memset(tszMsgBuffer, '\0', 64);
 	BaseLib_OperatorHandle_CreateGuid(tszMsgBuffer, TRUE, FALSE);
-	printf("%s\n", tszMsgBuffer);
+	_tprintf(_T("%s\n"), tszMsgBuffer);
 
 	typedef struct
 	{
@@ -152,7 +152,7 @@ void GMTTimeTest()
 	memset(tszGMTTime, '\0', sizeof(tszGMTTime));
 	BaseLib_OperatorTime_GMTTime(tszGMTTime);
 
-	printf("%s\n", tszGMTTime);
+	_tprintf(_T("%s\n"), tszGMTTime);
 }
 
 int TestAddrLib()
@@ -208,17 +208,17 @@ int test_Mutex()
 	XEVENT xhEvent = BaseLib_OperatorSemaphore_Create(lpszName);
 	if (NULL == xhEvent)
 	{
-		printf("失败\n");
+		_tprintf(_T("失败\n"));
 		return 0;
 	}
 
 	if (BaseLib_OperatorSemaphore_IsExist(lpszName))
 	{
-		printf("存在\n");
+		_tprintf(_T("存在\n"));
 	}
 	else
 	{
-		printf("不存在\n");
+		_tprintf(_T("不存在\n"));
 	}
 	BaseLib_OperatorSemaphore_Delete(xhEvent);
 	return 0;
@@ -236,22 +236,22 @@ int test_Memory()
 	}
 	for (int i = 0; i < 3; i++)
 	{
-		printf("%d\n", *(ppIntArray[i]));
+		_tprintf(_T("%d\n"), *(ppIntArray[i]));
 	}
 	BaseLib_OperatorMemory_Free((void***)&ppIntArray, 3);
 
-	CHAR** ppszStr;
-	if (!BaseLib_OperatorMemory_Malloc((void***)&ppszStr, 3, 6))
+	TCHAR** ppszStr;
+	if (!BaseLib_OperatorMemory_Malloc((void***)&ppszStr, 3, sizeof(TCHAR) * 6))
 	{
 		return -1;
 	}
 	for (int i = 0; i < 3; i++)
 	{
-		strcpy(ppszStr[i], "hello");
+		_tcscpy(ppszStr[i], _T("hello"));
 	}
 	for (int i = 0; i < 3; i++)
 	{
-		printf("%s\n", ppszStr[i]);
+		_tprintf(_T("%s\n"), ppszStr[i]);
 	}
 	BaseLib_OperatorMemory_Free((void***)&ppszStr, 3);
 
@@ -269,7 +269,7 @@ int test_Memory()
 	}
 	for (int i = 0; i < 3; i++)
 	{
-		printf("%d %d\n", ppSt_Memory[i]->a, ppSt_Memory[i]->b);
+		_tprintf(_T("%d %d\n"), ppSt_Memory[i]->a, ppSt_Memory[i]->b);
 	}
 	BaseLib_OperatorMemory_Free((void***)&ppSt_Memory, 3);
 	return 0;
@@ -307,20 +307,19 @@ void Test_GetTimeofday()
 	BaseLib_OperatorTime_TTimeToStuTime(st_Timeval.tv_sec, &st_LibTime);
 	BaseLib_OperatorTime_TimeToStr(tszMsgTimer, NULL, NULL, &st_LibTime);
 
-#ifdef _WINDOWS
-	printf("%lld %lld %llu %llu  %s\n", time(NULL), st_Timeval.tv_sec, st_Timeval.tv_value, st_Timeval.tv_usec, tszMsgTimer);
+#ifdef _MSC_BUILD
+	_tprintf(_T("%lld %lld %llu %llu  %s\n"), time(NULL), st_Timeval.tv_sec, st_Timeval.tv_value, st_Timeval.tv_usec, tszMsgTimer);
 #else
-	printf("%ld %ld %llu %llu  %s\n", time(NULL), st_Timeval.tv_sec, st_Timeval.tv_value, st_Timeval.tv_usec, tszMsgTimer);
+	_tprintf("%ld %ld %llu %llu  %s\n", time(NULL), st_Timeval.tv_sec, st_Timeval.tv_value, st_Timeval.tv_usec, tszMsgTimer);
 #endif
 }
 int profiletest()
 {
-#ifdef _WINDOWS
-	LPCTSTR lpszFile = _T("D:\\xengine_apps\\Debug\\1.txt");
+#ifdef _MSC_BUILD
+	LPCSTR lpszFile = "D:\\xengine_apps\\x64\\Debug\\1.txt";
 #else
-	LPCTSTR lpszFile = _T("./1.txt");
+	LPCSTR lpszFile = "./1.txt";
 #endif
-
 	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test", "a", "1");
 	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test", "b", "2");
 	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test", "c", "3");
@@ -329,12 +328,12 @@ int profiletest()
 	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test2", "2", "b");
 	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test2", "3", "c");
 
-	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test", "c", "c3");
+	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test", "c", "中文");
 	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test", "d", "4");
 	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test", "b", "b2");
 	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test2", "2", "2b");
 
-	TCHAR tszValue[64];
+	CHAR tszValue[64];
 	memset(tszValue, '\0', sizeof(tszValue));
 
 	BaseLib_OperatorFile_ReadProfileFromFile(lpszFile, "test", "a", tszValue);
@@ -372,13 +371,15 @@ int test_handle()
 	{
 		XNETHANDLE xhToken = 0;
 		BaseLib_OperatorHandle_Create(&xhToken);
-		printf("%lld\n", xhToken);
+		_tprintf(_T("%lld\n"), xhToken);
 	}
 	return 0;
 }
-
+#include <locale.h>
 int main()
 {
+	setlocale(LC_ALL, "");
+
 	test_handle();
 	TestAddrLib();
 	StringTest();

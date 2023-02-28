@@ -1,13 +1,16 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #include <time.h>
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_Algorithm.lib")
+#ifdef _WIN64
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_Algorithm.lib")
 #else
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_Algorithm.lib")
+#endif
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#endif
 #include <thread>
 using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
@@ -21,8 +24,8 @@ void CALLBACK Test_CBPassive(XHANDLE xhToken, __int64u nAvgSDFlow, __int64u nAvg
 	TCHAR tszClientAddr[128];
 	memset(tszClientAddr, '\0', 128);
 
-	_tcscpy(tszClientAddr, (LPCSTR)lParam);
-	printf("%s: AVG_Flow:%d\n", tszClientAddr, nAvgSDFlow);
+	_tcscpy(tszClientAddr, (LPCTSTR)lParam);
+	_tprintf(_T("%s: AVG_Flow:%llu\n"), tszClientAddr, nAvgSDFlow);
 }
 
 int Test_Calulation()
@@ -39,7 +42,7 @@ int Test_Calulation()
 	std::this_thread::sleep_for(std::chrono::seconds(2));
 	__int64u nTime = 0;
 	Algorithm_Calculation_GetTime(xhToken, &nTime);
-	printf("%llu\n", nTime);
+	_tprintf(_T("%llu\n"), nTime);
 
 	Algorithm_Calculation_Reset(xhToken);
 
@@ -50,16 +53,16 @@ int Test_Calulation()
 		Algorithm_Calculation_ADDRVFlow(xhToken, rand());
 		std::this_thread::sleep_for(std::chrono::seconds(2));
 		Algorithm_Calculation_GetRVFlow(xhToken, &nFlow);
-		printf("%llu\n", nFlow);
+		_tprintf(_T("%llu\n"), nFlow);
 		Algorithm_Calculation_GetRVFlow(xhToken, &nFlow, TRUE);
-		printf("%llu\n", nFlow);
+		_tprintf(_T("%llu\n"), nFlow);
 	}
 
 	Algorithm_Calculation_Reset(xhToken);
 	TCHAR* ptszMsgBuffer = (TCHAR*)malloc(128);
 	memset(ptszMsgBuffer, '\0', 128);
 
-	strcpy(ptszMsgBuffer, "127.0.0.1");
+	_tcscpy(ptszMsgBuffer, _T("127.0.0.1"));
 	Algorithm_Calculation_PassiveOPen(xhToken, Test_CBPassive, 1024, 0, 0, ptszMsgBuffer);
 	for (int i = 0; i < 500; i++)
 	{
@@ -87,14 +90,14 @@ int main()
 	LPCTSTR lpszFindStr = _T("hell");
 	if (Algorithm_String_XFastMatch(lpszSourceStr, lpszFindStr, &nPos))
 	{
-		printf("Algorithm_String_XFastMatch:%d\n", nPos);
+		_tprintf(_T("Algorithm_String_XFastMatch:%d\n"), nPos);
 	}
 
 	int nSwapA = 100;
 	int nSwapB = 200;
 	if (Algorithm_Math_Swap(&nSwapA, &nSwapB))
 	{
-		printf("%d = %d\n", nSwapA, nSwapB);
+		_tprintf(_T("%d = %d\n"), nSwapA, nSwapB);
 	}
 
 	int nCount = 0;
@@ -104,7 +107,7 @@ int main()
 	{
 		for (int i = 0; i < nCount; i++)
 		{
-			printf("%lld\n", nArrayValue[i]);
+			_tprintf(_T("%lld\n"), nArrayValue[i]);
 		}
 	}
 
@@ -112,12 +115,12 @@ int main()
 	int nOutBit = 0;
 	if (Algorithm_Math_GetBit(&nInBit, 3, &nOutBit))
 	{
-		printf("%d\n", nOutBit);
+		_tprintf(_T("%d\n"), nOutBit);
 	}
 
 	if (Algorithm_Math_SetBit(&nInBit, 4, 7))
 	{
-		printf("%d\n", nInBit);
+		_tprintf(_T("%d\n"), nInBit);
 	}
 
 	return 0;
