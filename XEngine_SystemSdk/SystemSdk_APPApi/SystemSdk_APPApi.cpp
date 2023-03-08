@@ -24,13 +24,17 @@ int Test_SerialInfo()
 	SYSTEMAPI_SERIAL_INFOMATION st_SDKSerial;
 	memset(&st_SDKSerial, '\0', sizeof(SYSTEMAPI_SERIAL_INFOMATION));
 
-	DWORD dwOSVersion = 0;
-	DWORD dwOSBuild = 0;
 	DWORD dwOSProcessor = 0;
 	TCHAR tszOSBuffer[MAX_PATH];
+	TCHAR tszOSVersion[MAX_PATH];
+	TCHAR tszOSVBuild[MAX_PATH];
+
 	memset(tszOSBuffer, '\0', MAX_PATH);
-	SystemApi_System_GetSystemVer(tszOSBuffer, &dwOSVersion, &dwOSBuild, &dwOSProcessor);
-	printf("%s %lu %lu %lu\n", tszOSBuffer, dwOSVersion, dwOSBuild, dwOSProcessor);
+	memset(tszOSVersion, '\0', MAX_PATH);
+	memset(tszOSVBuild, '\0', MAX_PATH);
+
+	SystemApi_System_GetSystemVer(tszOSBuffer, tszOSVersion, tszOSVBuild, &dwOSProcessor);
+	printf("%s %s %s %lu\n", tszOSBuffer, tszOSVersion, tszOSVBuild, dwOSProcessor);
 
 #ifndef _MSC_BUILD
 #ifdef __linux__

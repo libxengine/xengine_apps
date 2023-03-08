@@ -124,11 +124,11 @@ int main()
 	AVHelp_Device_EnumDevice(&ppSt_AudioList, &ppSt_VideoList, &nACount, &nVCount);
 	for (int i = 0; i < nACount; i++)
 	{
-		printf("Audio:%s\n", ppSt_AudioList[i]->tszName);
+		printf("Audio:%s\n", ppSt_AudioList[i]->st_MetaInfo.tszKey);
 	}
 	for (int i = 0; i < nVCount; i++)
 	{
-		printf("Video:%s\n", ppSt_VideoList[i]->tszName);
+		printf("Video:%s\n", ppSt_VideoList[i]->st_MetaInfo.tszKey);
 	}
 	BaseLib_OperatorMemory_Free((void***)&ppSt_AudioList, nACount);
 	BaseLib_OperatorMemory_Free((void***)&ppSt_VideoList, nVCount);

@@ -116,36 +116,6 @@ void StringTest()
 	BaseLib_OperatorString_GetFileAndPath(lpszFile4, tszFileDir, tszFileName);
 }
 
-
-void HandleTest()
-{
-	TCHAR tszMsgBuffer[64];
-	memset(tszMsgBuffer, '\0', 64);
-	BaseLib_OperatorHandle_CreateGuid(tszMsgBuffer, TRUE, FALSE);
-	_tprintf(_T("%s\n"), tszMsgBuffer);
-
-	typedef struct
-	{
-		int a;
-		int b;
-	}NETENGINE_HANDLETEST;
-
-	XNETHANDLE xhNet = 0;
-	NETENGINE_HANDLETEST st_HandleTest;
-	st_HandleTest.a = 1;
-	st_HandleTest.b = 2;
-
-	BaseLib_OperatorHandle_Add(&xhNet, sizeof(NETENGINE_HANDLETEST));
-	memset(&st_HandleTest, '\0', sizeof(NETENGINE_HANDLETEST));
-	BaseLib_OperatorHandle_Get(xhNet, &st_HandleTest);
-	st_HandleTest.a = 3;
-	st_HandleTest.b = 4;
-	BaseLib_OperatorHandle_Set(xhNet, &st_HandleTest);
-	memset(&st_HandleTest, '\0', sizeof(NETENGINE_HANDLETEST));
-	BaseLib_OperatorHandle_Get(xhNet, &st_HandleTest);
-	BaseLib_OperatorHandle_Del(xhNet);
-}
-
 void GMTTimeTest()
 {
 	TCHAR tszGMTTime[128];

@@ -86,30 +86,31 @@ void Cryptto()
 }
 void RsaSSL()
 {
-	LPCTSTR lpszSource = _T("Hello World");
+	LPCTSTR lpszPass = "123123";
+	LPCTSTR lpszSource = "Hello World";
 #ifdef _WINDOWS
-	LPCTSTR lpszPrivateKey = _T("H:\\XEngine_Apps\\Debug\\test.Key");
-	LPCTSTR lpszPublicKey = _T("H:\\XEngine_Apps\\Debug\\test_pub.Key");
+	LPCTSTR lpszPrivateKey = _T("D:\\XEngine_Apps\\Debug\\test.Key");
+	LPCTSTR lpszPublicKey = _T("D:\\XEngine_Apps\\Debug\\test_pub.Key");
 #else
 	LPCTSTR lpszPrivateKey = _T("test.Key");
 	LPCTSTR lpszPublicKey = _T("test_pub.Key");
 #endif
 
-	if (!OPenSsl_Api_RsaGenerater(lpszPublicKey, lpszPrivateKey, "123123"))
+	if (!OPenSsl_Api_RSACreate(lpszPublicKey, lpszPrivateKey, lpszPass))
 	{
 		return;
 	}
-	int nRsaLen = strlen(lpszSource);
+	int nRsaLen = _tcslen(lpszSource);
 	UCHAR puszRsaEnString[1024];
 	memset(puszRsaEnString, '\0', 1024);
-	if (!OPenSsl_Api_RsaEnCodec(lpszPrivateKey, lpszSource, &nRsaLen, puszRsaEnString, FALSE, "123123"))
+	if (!OPenSsl_Api_RSAEncodec(lpszPublicKey, lpszSource, &nRsaLen, puszRsaEnString, TRUE, lpszPass))
 	{
 		return;
 	}
 	printf("RSA:%s\n", puszRsaEnString);
 	TCHAR tszDeString[1024];
 	memset(tszDeString, '\0', sizeof(tszDeString));
-	if (!OPenSsl_Api_RsaDeCodec(lpszPublicKey, puszRsaEnString, &nRsaLen, tszDeString, TRUE))
+	if (!OPenSsl_Api_RSADecodec(lpszPrivateKey, puszRsaEnString, &nRsaLen, tszDeString, FALSE, lpszPass))
 	{
 		return;
 	}
@@ -121,23 +122,24 @@ void SignVer()
 	LPCTSTR lpszPass = _T("123123");
 
 	int nLen = strlen(lpszSource);
+	int nOLen = 1024;
 	TCHAR tszSource[2048];
 
 	memset(tszSource, '\0', sizeof(tszSource));
 
 #ifdef _WINDOWS
-	LPCTSTR lpszPrivateKey = _T("H:\\XEngine_Apps\\Debug\\test.Key");
-	LPCTSTR lpszPublicKey = _T("H:\\XEngine_Apps\\Debug\\test_pub.Key");
+	LPCTSTR lpszPrivateKey = _T("D:\\XEngine_Apps\\Debug\\test.Key");
+	LPCTSTR lpszPublicKey = _T("D:\\XEngine_Apps\\Debug\\test_pub.Key");
 #else
 	LPCTSTR lpszPrivateKey = _T("test.Key");
 	LPCTSTR lpszPublicKey = _T("test_pub.Key");
 #endif
 
-	if (!OPenSsl_Cert_SignEncoder(lpszPrivateKey, lpszPass, lpszSource, tszSource, &nLen, XENGINE_OPENSSL_API_DIGEST_MD5))
+	if (!OPenSsl_Cert_SignEncoder(lpszSource,nLen, tszSource, &nOLen, lpszPrivateKey, lpszPass))
 	{
 		return;
 	}
-	if (!OPenSsl_Cert_SignVerifly(lpszPublicKey, lpszPass, tszSource, nLen, lpszSource, 11, XENGINE_OPENSSL_API_DIGEST_MD5))
+	if (!OPenSsl_Cert_SignVerifly(lpszSource, 11, tszSource, nOLen, lpszPublicKey, lpszPass))
 	{
 		return;
 	}
@@ -146,29 +148,19 @@ void SignVer()
 void VerSign()
 {
 #ifdef _WINDOWS
-	LPCTSTR lpszPrivateKey = _T("H:\\XEngine_Apps\\Debug\\test.Key");
-	LPCTSTR lpszPublicKey = _T("H:\\XEngine_Apps\\Debug\\test_pub.Key");
-	LPCTSTR lpszReqFile = _T("H:\\XEngine_Apps\\Debug\\test.csr");
-	LPCTSTR lpszCAFile = _T("H:\\XEngine_Apps\\Debug\\ca.crt");
-	LPCTSTR lpszCAKey = _T("H:\\XEngine_Apps\\Debug\\ca.Key");
-	LPCTSTR lpszUserFile = _T("H:\\XEngine_Apps\\Debug\\test.crt");
+	LPCTSTR lpszPrivateKey = _T("D:\\XEngine_Apps\\Debug\\test.Key");
+	LPCTSTR lpszPublicKey = _T("D:\\XEngine_Apps\\Debug\\test_pub.Key");
+	LPCTSTR lpszReqFile = _T("D:\\XEngine_Apps\\Debug\\test.csr");
+	LPCTSTR lpszCAFile = _T("D:\\XEngine_Apps\\Debug\\ca.crt");
+	LPCTSTR lpszUserFile = _T("D:\\XEngine_Apps\\Debug\\test.crt");
 #else
 	LPCTSTR lpszPrivateKey = _T("test.Key");
 	LPCTSTR lpszPublicKey = _T("test_pub.Key");
 	LPCTSTR lpszReqFile = _T("test.csr");
 	LPCTSTR lpszCAFile = _T("ca.crt");
-	LPCTSTR lpszCAKey = _T("ca.Key");
 	LPCTSTR lpszUserFile = _T("test.crt");
 #endif
-	LPCTSTR lpszPass = _T("12345");
-	
-	_tremove(lpszPrivateKey);
-	_tremove(lpszPublicKey);
-
-	if (!OPenSsl_Api_RsaGenerater(lpszPublicKey, lpszPrivateKey, lpszPass))
-	{
-		return;
-	}
+	LPCTSTR lpszPass = _T("123123");
 
 	OPENSSL_X509CCINL st_X509Info;
 	memset(&st_X509Info, '\0', sizeof(OPENSSL_X509CCINL));
@@ -181,16 +173,15 @@ void VerSign()
 	strcpy(st_X509Info.tszOrgUnitName, "soft");
 	strcpy(st_X509Info.tszEmailAddress, "486179@qq.com");
 
-	OPenSsl_Cert_MakeCACert(lpszCAFile, lpszCAKey, "333", 2048, 120102, 60 * 60 * 24 * 10, &st_X509Info);
-
+	OPenSsl_Cert_MakeCACert(lpszCAFile, 120102, 60 * 60 * 24 * 10, &st_X509Info, lpszPrivateKey, lpszPass);
 	OPenSsl_Cert_X509GenRequest(lpszReqFile, &st_X509Info, lpszPrivateKey, lpszPass);
-	OPenSsl_Cert_X509SignVer(lpszCAFile, lpszCAKey, "333", lpszReqFile, lpszPass, lpszUserFile, 1100220011, 60 * 60 * 24 * 10, NULL);
+	OPenSsl_Cert_X509SignVer(lpszCAFile, lpszReqFile, lpszPass, lpszUserFile, 1100220011, 60 * 60 * 24 * 10, lpszPrivateKey, lpszPass);
 }
 void CertVer()
 {
 #ifdef _WINDOWS
-	LPCTSTR lpszRootKey = _T("H:\\XEngine_Apps\\Debug\\ca.crt");
-	LPCTSTR lpszUserKey = _T("H:\\XEngine_Apps\\Debug\\Debug\\test.crt");
+	LPCTSTR lpszRootKey = _T("D:\\XEngine_Apps\\Debug\\ca.crt");
+	LPCTSTR lpszUserKey = _T("D:\\XEngine_Apps\\Debug\\test.crt");
 #else
 	LPCTSTR lpszRootKey = _T("ca.crt");
 	LPCTSTR lpszUserKey = _T("test.crt");
@@ -204,7 +195,7 @@ void CertVer()
 void GetCert()
 {
 #ifdef _WINDOWS
-	LPCTSTR lpszKey = _T("H:\\XEngine_Apps\\Debug\\test.crt");
+	LPCTSTR lpszKey = _T("D:\\XEngine_Apps\\Debug\\test.crt");
 #else
 	LPCTSTR lpszKey = _T("test.crt");
 #endif

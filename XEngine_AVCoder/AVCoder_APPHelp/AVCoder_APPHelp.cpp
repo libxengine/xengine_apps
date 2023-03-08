@@ -213,24 +213,15 @@ void Test_AVList()
 	AVHelp_Device_EnumDevice(&ppSt_ListAudio, &ppSt_ListVideo, &nAudioCount, &nVideoCount);
 	for (int i = 0; i < nAudioCount; i++)
 	{
-		printf("%s %d\n", ppSt_ListAudio[i]->tszName, ppSt_ListAudio[i]->nCardNumber);
+		printf("%s %s\n", ppSt_ListAudio[i]->st_MetaInfo.tszKey, ppSt_ListAudio[i]->st_MetaInfo.tszValue);
 	}
 	for (int i = 0; i < nVideoCount; i++)
 	{
-		printf("%s %d\n", ppSt_ListVideo[i]->tszName, ppSt_ListVideo[i]->nCardNumber);
-	}
-
-	int nListMeta = 0;
-	AVHELP_METAINFO **ppSt_ListMeta;
-	AVHelp_Device_DeviceList(&ppSt_ListMeta, &nListMeta);
-	for (int i = 0; i < nListMeta; i++)
-	{
-		printf("%s=%s\n", ppSt_ListMeta[i]->tszKey, ppSt_ListMeta[i]->tszValue);
+		printf("%s %s\n", ppSt_ListVideo[i]->st_MetaInfo.tszKey, ppSt_ListVideo[i]->st_MetaInfo.tszValue);
 	}
 
 	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListAudio, nAudioCount);
 	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListVideo, nVideoCount);
-	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListMeta, nListMeta);
 }
 
 int main()
