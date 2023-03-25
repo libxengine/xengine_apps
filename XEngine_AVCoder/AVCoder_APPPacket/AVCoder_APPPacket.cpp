@@ -28,9 +28,9 @@ int AVPacket_Test_FileLink()
 {
 	double nTotalAVTime = 0;
 #ifdef _WINDOWS
-	LPCTSTR lpszSrcFile1 = "D:\\h264 file\\480p.flv";
-	LPCTSTR lpszSrcFile2 = "D:\\h264 file\\480p1.flv";
-	LPCTSTR lpszDstFile = "D:\\h264 file\\480p.mp4";
+	LPCTSTR lpszSrcFile1 = "D:\\xengine_apps\\Debug\\1.mp4";
+	LPCTSTR lpszSrcFile2 = "D:\\xengine_apps\\Debug\\2.mp4";
+	LPCTSTR lpszDstFile = "D:\\xengine_apps\\Debug\\480p.mp4";
 #else
 	LPCTSTR lpszSrcFile1 = "480p.flv";
 	LPCTSTR lpszSrcFile2 = "480p1.flv";
@@ -48,6 +48,7 @@ int AVPacket_Test_FileLink()
 		printf("AVPacket_FileConvert_Input:%lX\n", AVPacket_GetLastError());
 		return -1;
 	}
+	
 	if (!AVPacket_FileLink_Input(xhAVFile, lpszSrcFile2))
 	{
 		printf("AVPacket_FileConvert_Input:%lX\n", AVPacket_GetLastError());
@@ -257,8 +258,8 @@ int AVPacket_Test_UNPacket()
 }
 int main()
 {
-	//AVPacket_Test_FileLink();
-	AVPacket_Test_FileConvert();
+	AVPacket_Test_FileLink();
+	//AVPacket_Test_FileConvert();
 	//AVPacket_Test_FilePacket();
 	//AVPacket_Test_UNPacket();
 	

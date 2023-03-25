@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <time.h>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVCollect/AVCollect_Define.h"
@@ -28,7 +29,7 @@ void Test_MetaInfo()
 	AVHELP_METAINFO** ppSt_MetaList;
 
 #ifdef _WINDOWS
-	LPCTSTR lpszSrcFile = "H:\\h264 file\\1004523.mp3";
+	LPCTSTR lpszSrcFile = "D:\\xengine_apps\\Debug\\1.mp4";
 #else
 	LPCTSTR lpszSrcFile = "1004523.mp3";
 #endif
@@ -51,6 +52,8 @@ void Test_MetaInfo()
 		printf("%s %s\n", ppSt_MetaList[i]->tszKey, ppSt_MetaList[i]->tszValue);
 #endif
 	}
+	BaseLib_OperatorMemory_Free((XPPPMEM)&st_AVMetaData.ppSt_AVList, st_AVMetaData.nNBStream);
+	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_MetaList, nListCount);
 }
 
 void Test_Parse()
@@ -226,12 +229,12 @@ void Test_AVList()
 
 int main()
 {
+	Test_MetaInfo();
 	Test_Parse();
 	Test_PPS264Info();
 	Test_PPS265Info();
 	Test_AudioInfo();
 	Test_AVList();
-	Test_MetaInfo();
 
 	return 0;
 }

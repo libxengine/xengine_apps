@@ -26,7 +26,7 @@ int Player_Video()
 		return -1;
 	}
 #ifdef _MSC_BUILD
-	LPCTSTR lpszFile = _T("H:\\h264 file\\ds.yuv");
+	LPCTSTR lpszFile = _T("D:\\RadarVision\\Debug\\ds.yuv");
 #else
 	LPCTSTR lpszFile = _T("./ds.yuv");
 #endif

@@ -24,8 +24,8 @@ void CBStream_Pull(uint8_t* puszMsgBuffer, int nSize, int nAVType, __int64x nPts
 }
 int Test_RTMPPull()
 {
-	LPCTSTR lpszPullUrl = _T("rtsp://admin:sihan123@192.168.8.152:554/cam/realmonitor?channel=1?subtype=0");
-	LPCTSTR lpszPushUrl = _T("rtmp://app.xyry.org:1935/live/123");
+	LPCTSTR lpszPullUrl = _T("http://app.xyry.org:8088/live/qyt.flv");
+	LPCTSTR lpszPushUrl = _T("rtmp://app.xyry.org/live/123");
 	int nStreamCount = 0;
 	STREAMMEDIA_PULLSTREAM** ppSt_PullStream;
 

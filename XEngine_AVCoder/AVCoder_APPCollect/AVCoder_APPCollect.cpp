@@ -9,6 +9,7 @@
 #include <thread>
 using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVCollect/AVCollect_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVCollect/AVCollect_Error.h"
 
@@ -32,7 +33,9 @@ int main()
 {
 	XHANDLE xhVideo;
 	XHANDLE xhAudio;
-	int64_t nBitRate;
+	XENGINE_PROTOCOL_AVINFO st_AVInfo;
+	memset(&st_AVInfo, '\0', sizeof(XENGINE_PROTOCOL_AVINFO));
+
 #ifdef _WINDOWS
 	pSt_File = fopen("D:\\xengine_apps\\Debug\\ds.yuv", "wb");
 #else
@@ -41,7 +44,6 @@ int main()
 	AVCOLLECT_SCREENINFO st_AVScreen;
 	memset(&st_AVScreen, '\0', sizeof(AVCOLLECT_SCREENINFO));
 
-	st_AVScreen.nFrameRate = 24;
 	strcpy(st_AVScreen.tszVideoDev, "video=screen-capture-recorder");
 	//strcpy(st_AVScreen.tszVideoSize, _T("800x600"));DSHOW不支持
 
@@ -51,22 +53,17 @@ int main()
 		printf(_T("初始化失败"));
 		return -1;
 	}
-	xhAudio = AVCollect_Audio_Init(_T("耳机 (Redmi AirDots 3 Pro Hands-Free AG Audio)"), XEngine_AVCollect_CBAudio);
+	AVCollect_Video_GetInfo(xhVideo, &st_AVInfo);
+	printf("AVCollect_Screen_GetInfo:%d %d %lld\n", st_AVInfo.st_VideoInfo.nWidth, st_AVInfo.st_VideoInfo.nHeight, st_AVInfo.st_VideoInfo.nBitRate);
+
+	xhAudio = AVCollect_Audio_Init(_T("virtual-audio-capturer"), XEngine_AVCollect_CBAudio);
 	if (NULL == xhAudio)
 	{
 		printf(_T("初始化失败"));
 		return -1;
 	}
-
-	AVCollect_Video_GetInfo(xhVideo, &nWidth, &nHeight, &nBitRate);
-	printf("AVCollect_Screen_GetInfo:%d %d %lld\n", nWidth, nHeight, nBitRate);
-
-	ENUM_AVCOLLECT_AUDIOSAMPLEFORMAT enAVSampleFmt;
-	__int64x nARate = 0;
-	int nSampleRate = 0;
-	int nChannels = 0;
-	AVCollect_Audio_GetInfo(xhAudio, &enAVSampleFmt, &nARate, &nSampleRate, &nChannels);
-	printf("AVCollect_Audio_GetInfo:%d %lld %d %ld\n", enAVSampleFmt, nARate, nSampleRate, nChannels);
+	AVCollect_Audio_GetInfo(xhAudio, &st_AVInfo);
+	printf("AVCollect_Audio_GetInfo:%d %lld\n", st_AVInfo.st_AudioInfo.nSampleFmt, st_AVInfo.st_AudioInfo.nBitRate);
 
 	AVCollect_Video_Start(xhVideo);
 	AVCollect_Audio_Start(xhAudio);
