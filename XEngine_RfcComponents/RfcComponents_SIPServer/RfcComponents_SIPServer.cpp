@@ -1,10 +1,10 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"Ws2_32.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_Core.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_HttpServer.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_HttpProtocol.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_SIPPorotocol.lib")
 #else
 #include <unistd.h>
@@ -20,16 +20,17 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_HttpServer/HttpServer_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_HttpServer/HttpServer_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_HttpProtocol/HttpProtocol_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_HttpProtocol/HttpProtocol_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_SIPPorotocol/SIPProtocol_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_SIPPorotocol/SIPProtocol_Error.h"
 
 
-//Linux::g++ -std=c++17 -Wall -g RfcComponents_SIPServer.cpp -o RfcComponents_SIPServer.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lRfcComponents_HttpServer -lRfcComponents_SIPPorotocol -lpthread -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
-//Macos::g++ -std=c++17 -Wall -g RfcComponents_SIPServer.cpp -o RfcComponents_SIPServer.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lRfcComponents_HttpServer -lRfcComponents_SIPPorotocol -lpthread 
+//Linux::g++ -std=c++17 -Wall -g RfcComponents_SIPServer.cpp -o RfcComponents_SIPServer.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lRfcComponents_HttpProtocol -lRfcComponents_SIPPorotocol -lpthread -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
+//Macos::g++ -std=c++17 -Wall -g RfcComponents_SIPServer.cpp -o RfcComponents_SIPServer.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lRfcComponents_HttpProtocol -lRfcComponents_SIPPorotocol -lpthread 
 
-
+BOOL bIsRun = FALSE;
+XHANDLE xhHttp = NULL;
 XHANDLE xhToken = NULL;
 int Test_SIPRegister()
 {
@@ -59,113 +60,176 @@ int Test_SIPRegister()
 
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	st_SIPProtocol.st_Response.nCode = 200;
-	RfcComponents_HttpConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
+	HttpProtocol_ServerConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
 	RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen);
 
 	return 0;
 }
-void CALLBACK NetCore_CBRecv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpszRecvMsg, int nMsgLen, LPVOID lParam)
+
+BOOL CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
-	int nRecvLen = nMsgLen;
-	TCHAR tszMsgBuffer[2048];
-	TCHAR tszToAddr[64];
-	SIPPROTOCOL_HDRINFO st_SIPProtocol;
-
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	memset(tszToAddr, '\0', sizeof(tszToAddr));
-	memset(&st_SIPProtocol, '\0', sizeof(SIPPROTOCOL_HDRINFO));
-
+	HttpProtocol_Server_CreateClientEx(xhHttp, lpszClientAddr, 0);
 	if (!RfcComponents_SIPServer_Exist(lpszClientAddr))
 	{
 		RfcComponents_SIPServer_Create(lpszClientAddr);
 		printf("用户进入:%s\n", lpszClientAddr);
 	}
-	RfcComponents_SIPProtocol_Parse(lpszRecvMsg, nRecvLen, &st_SIPProtocol);
-	RfcComponents_SIPServer_Process(lpszClientAddr, &st_SIPProtocol);
-
-	if (st_SIPProtocol.bRequest)
+	return TRUE;
+}
+void CALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
+{
+	printf("NetCore_CB_Recv:%s-%d\n", lpszClientAddr, nMsgLen);
+	if (!HttpProtocol_Server_InserQueueEx(xhHttp, lpszClientAddr, lpszRecvMsg, nMsgLen))
 	{
-		//是转发还是本地
-		if ((st_SIPProtocol.st_Session.nForward == 0) || (0 == _tcsnicmp(st_SIPProtocol.st_To.tszAddr, st_SIPProtocol.st_From.tszAddr, _tcslen(st_SIPProtocol.st_To.tszAddr))))
-		{
-			if (_tcslen(st_SIPProtocol.st_From.tszName) > 0)
-			{
-				//在这里处理用户名是否允许使用
-			}
-			RfcComponents_HttpConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
-			RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nRecvLen);
-			NetCore_UDPXCore_SendEx(xhToken, lpszClientAddr, tszMsgBuffer, &nRecvLen);
-		}
-		else
-		{
-			//呼叫请求
-			if (RfcComponents_SIPServer_FindAddr(st_SIPProtocol.st_To.tszName, tszToAddr))
-			{
-				if (100 == st_SIPProtocol.st_Response.nCode)
-				{
-					//如果是呼叫
-					RfcComponents_HttpConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
-					RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nRecvLen);
-					NetCore_UDPXCore_SendEx(xhToken, lpszClientAddr, tszMsgBuffer, &nRecvLen);
+		printf("RfcComponents_WSPacket_Post:%lX\n", HttpProtocol_GetLastError());
+	}
+}
+void CALLBACK NetCore_CB_Close(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+{
+	HttpProtocol_Server_CloseClinetEx(xhHttp, lpszClientAddr);
+	RfcComponents_SIPServer_Delete(lpszClientAddr);
+	printf("用户离开:%s\n", lpszClientAddr);
+}
 
-					NetCore_UDPXCore_SendEx(xhToken, tszToAddr, lpszRecvMsg, &nMsgLen);
-				}
-				else
-				{
-					//其他情况
-					NetCore_UDPXCore_SendEx(xhToken, tszToAddr, lpszRecvMsg, &nMsgLen);
-				}
-			}
-			else
+XHTHREAD CALLBACK NetCore_Thread()
+{
+	while (bIsRun)
+	{
+		if (HttpProtocol_Server_EventWaitEx(xhHttp, 1))
+		{
+			int nListCount = 0;
+			RFCCOMPONENTS_HTTP_PKTCLIENT** ppSt_ListClient;
+			if (HttpProtocol_Server_GetPoolEx(xhHttp, 1, &ppSt_ListClient, &nListCount))
 			{
-				st_SIPProtocol.st_Response.nCode = 404;
-				RfcComponents_HttpConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
+				for (int i = 0; i < nListCount; i++)
+				{
+					int nMsgLen = 0;
+					int nListCount = 0;
+					CHAR** ppszListHdr;
+					TCHAR* ptszMsgBuffer = NULL;
+					RFCCOMPONENTS_HTTP_REQPARAM st_ReqParam;
 
-				RfcComponents_SIPServer_SetStatus(lpszClientAddr);//还原状态
-				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nRecvLen);
-				NetCore_UDPXCore_SendEx(xhToken, lpszClientAddr, tszMsgBuffer, &nRecvLen);
+					memset(&st_ReqParam, '\0', sizeof(RFCCOMPONENTS_HTTP_REQPARAM));
+					if (HttpProtocol_Server_GetMemoryEx(xhHttp, ppSt_ListClient[i]->tszClientAddr, &ptszMsgBuffer, &nMsgLen, &st_ReqParam, &ppszListHdr, &nListCount))
+					{
+						TCHAR tszMsgBuffer[2048];
+						TCHAR tszToAddr[64];
+						SIPPROTOCOL_HDRINFO st_SIPProtocol;
+
+						memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+						memset(tszToAddr, '\0', sizeof(tszToAddr));
+						memset(&st_SIPProtocol, '\0', sizeof(SIPPROTOCOL_HDRINFO));
+
+						RfcComponents_SIPProtocol_ParseByHttp(st_ReqParam.tszHttpMethod, st_ReqParam.tszHttpUri, st_ReqParam.tszHttpVer, ptszMsgBuffer, nMsgLen, &ppszListHdr, nListCount, &st_SIPProtocol);
+						RfcComponents_SIPServer_Process(ppSt_ListClient[i]->tszClientAddr, &st_SIPProtocol);
+
+						if (st_SIPProtocol.bRequest)
+						{
+							//是转发还是本地
+							if ((st_SIPProtocol.st_Session.nForward == 0) || (0 == _tcsnicmp(st_SIPProtocol.st_To.tszAddr, st_SIPProtocol.st_From.tszAddr, _tcslen(st_SIPProtocol.st_To.tszAddr))))
+							{
+								if (_tcslen(st_SIPProtocol.st_From.tszName) > 0)
+								{
+									//在这里处理用户名是否允许使用
+								}
+								HttpProtocol_ServerConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
+								RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen);
+								NetCore_TCPXCore_SendEx(xhToken, ppSt_ListClient[i]->tszClientAddr, tszMsgBuffer, nMsgLen);
+							}
+							else
+							{
+								//呼叫请求
+								if (RfcComponents_SIPServer_FindAddr(st_SIPProtocol.st_To.tszName, tszToAddr))
+								{
+									if (100 == st_SIPProtocol.st_Response.nCode)
+									{
+										//如果是呼叫
+										HttpProtocol_ServerConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
+										RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen);
+										NetCore_TCPXCore_SendEx(xhToken, ppSt_ListClient[i]->tszClientAddr, tszMsgBuffer, nMsgLen);
+										NetCore_TCPXCore_SendEx(xhToken, tszToAddr, ptszMsgBuffer, nMsgLen);
+									}
+									else
+									{
+										//其他情况
+										NetCore_UDPXCore_SendEx(xhToken, tszToAddr, ptszMsgBuffer, nMsgLen);
+									}
+								}
+								else
+								{
+									st_SIPProtocol.st_Response.nCode = 404;
+									HttpProtocol_ServerConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
+
+									RfcComponents_SIPServer_SetStatus(ppSt_ListClient[i]->tszClientAddr);//还原状态
+									RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen);
+									NetCore_UDPXCore_SendEx(xhToken, ppSt_ListClient[i]->tszClientAddr, tszMsgBuffer, nMsgLen);
+								}
+							}
+						}
+						else
+						{
+							//需要转发
+							if (RfcComponents_SIPServer_FindAddr(st_SIPProtocol.st_To.tszName, tszToAddr))
+							{
+								NetCore_UDPXCore_SendEx(xhToken, tszToAddr, ptszMsgBuffer, nMsgLen);
+								printf("%s\n", ptszMsgBuffer);
+							}
+						}
+						printf("用户发送数据:%s\n", ppSt_ListClient[i]->tszClientAddr);
+					}
+				}
 			}
 		}
 	}
-	else
-	{
-		//需要转发
-		if (RfcComponents_SIPServer_FindAddr(st_SIPProtocol.st_To.tszName, tszToAddr))
-		{
-			NetCore_UDPXCore_SendEx(xhToken, tszToAddr, lpszRecvMsg, &nRecvLen);
-			printf("%s\n", lpszRecvMsg);
-		}
-	}
-	printf("用户发送数据:%s\n", lpszClientAddr);
+	printf("exit\n");
+	return 0;
 }
 
 int main()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
+
+	LPCTSTR lpszWFile = _T("D:\\xengine_apps\\Debug\\2.png");
+	LPCTSTR lpszMiniFile = _T("D:\\xengine_apps\\Debug\\HttpMime.types");
+	LPCTSTR lpszCodeFile = _T("D:\\xengine_apps\\Debug\\SIPCode.types");
+#else
+	LPCTSTR lpszWFile = _T("2.png");
+	LPCTSTR lpszMiniFile = _T("HttpMime.types");
+	LPCTSTR lpszCodeFile = _T("SIPCode.types");
 #endif
 	Test_SIPRegister();
-
-	LPCTSTR lpszCodeFile = _T("SIPCode.types");
-	RfcComponents_HttpConfig_InitCode(lpszCodeFile, FALSE);
- 	
-	xhToken = NetCore_UDPXCore_StartEx(5000, 2);
+	bIsRun = TRUE;
+	xhHttp = HttpProtocol_Server_InitEx(lpszCodeFile, lpszMiniFile, 1);
+	if (NULL == xhHttp)
+	{
+		printf("HttpProtocol_Server_InitEx:%lX\n", HttpProtocol_GetLastError());
+		return 0;
+	}
+	xhToken = NetCore_TCPXCore_StartEx(5000);
 	if (NULL == xhToken)
 	{
-		printf("错误\n");
-		return -1;
+		printf("NetCore_TCPXCore_StartEx:%lX\n", NetCore_GetLastError());
+		return 0;
 	}
-	NetCore_UDPXCore_RegisterCallBackEx(xhToken, NetCore_CBRecv);
+
+	NetCore_TCPXCore_RegisterCallBackEx(xhToken, NetCore_CB_Login, NetCore_CB_Recv, NetCore_CB_Close);
 
 	RfcComponents_SIPServer_Init("xyry.org", TRUE);
 	printf("启动服务成功\n");
-	while (1)
-	{
-		std::this_thread::sleep_for(std::chrono::seconds(1));
-	}
+	std::thread pSTDThread(NetCore_Thread);
 
-#ifdef _WINDOWS
+	std::this_thread::sleep_for(std::chrono::seconds(100000));
+
+	bIsRun = FALSE;
+	HttpProtocol_Server_DestroyEx(xhHttp);
+	pSTDThread.join();
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+	NetCore_TCPXCore_DestroyEx(xhToken);
+
+
+#ifdef _MSC_BUILD
 	WSACleanup();
 #endif
 	return 0;

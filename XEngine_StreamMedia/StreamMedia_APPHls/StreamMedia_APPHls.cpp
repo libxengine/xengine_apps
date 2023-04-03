@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/StreamMedia_HLSProtocol.lib")
@@ -20,7 +20,7 @@ XNETHANDLE xhLow;
 XNETHANDLE xhNormal;
 XNETHANDLE xhHigh;
 
-void __stdcall HLSProtocol_CBNotify(XHANDLE xhToken, LPCSTR lpszFileName, double dlTime, int nIndex, LPVOID lParam)
+void __stdcall HLSProtocol_CBNotify(XHANDLE xhToken, LPCXSTR lpszFileName, double dlTime, int nIndex, XPVOID lParam)
 {
 	printf("File:%s,Index:%d,Time:%lf\n", lpszFileName, nIndex, dlTime);
 	HLSProtocol_M3u8File_AddFile(xhRoot, xhNormal, lpszFileName, dlTime, FALSE);

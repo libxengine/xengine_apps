@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <stdio.h>
 #include <Windows.h>
 #include <tchar.h>
@@ -88,7 +88,7 @@ void RsaSSL()
 {
 	LPCTSTR lpszPass = "123123";
 	LPCTSTR lpszSource = "Hello World";
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszPrivateKey = _T("D:\\XEngine_Apps\\Debug\\test.Key");
 	LPCTSTR lpszPublicKey = _T("D:\\XEngine_Apps\\Debug\\test_pub.Key");
 #else
@@ -127,7 +127,7 @@ void SignVer()
 
 	memset(tszSource, '\0', sizeof(tszSource));
 
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszPrivateKey = _T("D:\\XEngine_Apps\\Debug\\test.Key");
 	LPCTSTR lpszPublicKey = _T("D:\\XEngine_Apps\\Debug\\test_pub.Key");
 #else
@@ -147,7 +147,7 @@ void SignVer()
 
 void VerSign()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszPrivateKey = _T("D:\\XEngine_Apps\\Debug\\test.Key");
 	LPCTSTR lpszPublicKey = _T("D:\\XEngine_Apps\\Debug\\test_pub.Key");
 	LPCTSTR lpszReqFile = _T("D:\\XEngine_Apps\\Debug\\test.csr");
@@ -179,7 +179,7 @@ void VerSign()
 }
 void CertVer()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszRootKey = _T("D:\\XEngine_Apps\\Debug\\ca.crt");
 	LPCTSTR lpszUserKey = _T("D:\\XEngine_Apps\\Debug\\test.crt");
 #else
@@ -194,7 +194,7 @@ void CertVer()
 }
 void GetCert()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszKey = _T("D:\\XEngine_Apps\\Debug\\test.crt");
 #else
 	LPCTSTR lpszKey = _T("test.crt");
@@ -227,7 +227,7 @@ int XCrypto_Test()
 	}
 	printf("\r\n%s\n", tszEncoder);
 		
-	OPenSsl_XCrypto_Decoder((LPCSTR)tszEncoder, &nLen, tszDecoder, "123123");
+	OPenSsl_XCrypto_Decoder((LPCXSTR)tszEncoder, &nLen, tszDecoder, "123123");
 	printf("%s\n", tszDecoder);
 	return 0;
 }

@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
@@ -21,7 +21,7 @@
 
 int Test_Cache()
 {
-	SOCKET hSocket = 100;
+	XSOCKET hSocket = 100;
 	XHANDLE xhPacket = HelpComponents_Cache_InitEx();
 	if (NULL == xhPacket)
 	{
@@ -50,7 +50,7 @@ int Test_Cache()
 }
 int Test_Packets()
 {
-	SOCKET hSocket = 100;
+	XSOCKET hSocket = 100;
 	XHANDLE xhPacket = HelpComponents_Packets_Init();
 	if (NULL == xhPacket)
 	{
@@ -267,7 +267,7 @@ typedef struct
 
 int Test_PacketCustom()
 {
-	SOCKET hSocket = 1000;
+	XSOCKET hSocket = 1000;
 	XHANDLE xhPacket = HelpComponents_PKTCustom_Init();
 	if (NULL == xhPacket)
 	{
@@ -358,7 +358,7 @@ typedef struct
 }XENGINE_RTPPACKETHDR;
 int Test_PacketCustom2()
 {
-	SOCKET hSocket = 1000;
+	XSOCKET hSocket = 1000;
 	XHANDLE xhPacket = HelpComponents_PKTCustom_Init();
 	if (NULL == xhPacket)
 	{
@@ -378,7 +378,7 @@ int Test_PacketCustom2()
 		return -1;
 	}
 
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszFile = _T("D:\\XEngine_JT1078\\XEngine_APPClient\\Debug\\1.rtp");
 #else
 	LPCTSTR lpszFile = _T("1.rtp");
@@ -424,7 +424,7 @@ int Test_PacketCustom2()
 	return 0;
 }
 
-void CALLBACK Packet_CBChunk(LPCSTR lpszClientAddr, LPCSTR lpszMsgBuffer, int nMsgLen, int nChunkCode, LPVOID lParam)
+void CALLBACK Packet_CBChunk(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int nMsgLen, int nChunkCode, XPVOID lParam)
 {
 	printf("%s:%d-%d\n", lpszClientAddr, nChunkCode, nMsgLen);
 }

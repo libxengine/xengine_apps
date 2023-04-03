@@ -33,7 +33,7 @@ typedef struct
 	TCHAR tszIPAddr[128];
 	ENUM_RFCCOMPONENTS_PROXY_STATUS enStatus;
 	XNETHANDLE xhClient;
-	SOCKET hSocket;
+	XSOCKET hSocket;
 	BOOL bClose;
 }PROXYPROTOCOL_CLIENTINFO;
 

@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/HelpComponents_XLog.lib")
@@ -29,7 +29,7 @@ int main()
 	//st_XLogConfig.st_BackInfo.enBackType = HELPCOMPONENTS_XLOG_BACKTYPE_TIME;./
 	strcpy(st_XLogConfig.st_BackInfo.tszBackDir, _T("./back/"));
 	strcpy(st_XLogConfig.tszFileName, _T("./log/test.log"));
-	XLOG xhLog = HelpComponents_XLog_Init(HELPCOMPONENTS_XLOG_OUTTYPE_FILE | HELPCOMPONENTS_XLOG_OUTTYPE_STD, &st_XLogConfig);
+	XHANDLE xhLog = HelpComponents_XLog_Init(HELPCOMPONENTS_XLOG_OUTTYPE_FILE | HELPCOMPONENTS_XLOG_OUTTYPE_STD, &st_XLogConfig);
 	if (NULL == xhLog)
 	{
 		printf("HelpComponents_XLog_Init:%lX\n", XLog_GetLastError());

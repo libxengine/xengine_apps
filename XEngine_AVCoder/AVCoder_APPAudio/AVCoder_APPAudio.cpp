@@ -1,8 +1,8 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AudioCoder.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AudioCodec.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
 #endif
 #include <stdio.h>
@@ -11,19 +11,20 @@
 #include <string.h>
 #include <time.h>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVCollect/AVCollect_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_VideoCoder/VideoCoder_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVHelp/AVHelp_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVHelp/AVHelp_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AudioCoder/AudioCoder_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AudioCoder/AudioCoder_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVCollect/AVCollect_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Error.h"
 
-//Linux::g++ -std=c++17 -Wall -g AVCoder_APPAudio.cpp -o AVCoder_APPAudio.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder -lXEngine_BaseLib -lXEngine_AVHelp -lXEngine_AudioCoder -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
-//Macos::g++ -std=c++17 -Wall -g AVCoder_APPAudio.cpp -o AVCoder_APPAudio.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCoder -lXEngine_BaseLib -lXEngine_AVHelp -lXEngine_AudioCoder
+//Linux::g++ -std=c++17 -Wall -g AVCoder_APPAudio.cpp -o AVCoder_APPAudio.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_AVHelp -lXEngine_AudioCodec -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
+//Macos::g++ -std=c++17 -Wall -g AVCoder_APPAudio.cpp -o AVCoder_APPAudio.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_AVHelp -lXEngine_AudioCoder
 
-void __stdcall AudioCodec_Stream_Callback(XNETHANDLE xhNet, uint8_t* pszBuffer, int nLen, AVCODEC_AUDIO_INFO* pSt_AudioInfo, LPVOID lParam)
+void __stdcall AudioCodec_Stream_Callback(XNETHANDLE xhNet, uint8_t* pszBuffer, int nLen, AVCODEC_AUDIO_INFO* pSt_AudioInfo, XPVOID lParam)
 {
 	FILE* pSt_File = (FILE*)lParam;
 	printf("%llu write:%d\n", xhNet, nLen);
@@ -64,7 +65,7 @@ void Audio_Encode()
 		printf("AudioCodec_Stream_ResamplerInit\n");
 		return;
 	}
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	FILE* pSt_File = fopen("d:\\audio\\44.1k_2_16.pcm", "rb");
 	FILE* pSt_FileAac = fopen("d:\\audio\\44.1k_2_16.aac", "wb");
 #else
@@ -109,7 +110,7 @@ void Audio_DeCodec()
 {
 	XNETHANDLE xhCoder;
 
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	FILE* pSt_FileEnCode = fopen("H:\\audio\\44.1k_2_16.aac", "rb");
 	FILE* pSt_FileDeCodec = fopen("H:\\audio\\44.1k_2_16.aac.pcm", "wb");
 #else
@@ -157,7 +158,7 @@ void Audio_Mix()
 {
 	XNETHANDLE xhFilter;
 
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszAudioFile1 = "H:\\audio\\3.pcm";
 	LPCTSTR lpszAudioFile2 = "H:\\audio\\4.pcm";
 	LPCTSTR lpszDstFile = "H:\\audio\\mix.pcm";

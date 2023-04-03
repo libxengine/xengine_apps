@@ -16,7 +16,7 @@
 //Linux::g++ -std=c++17 -Wall -g NetHelp_APPClient.cpp -o NetHelp_APPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp -lXEngine_BaseLib -lNetHelp_APIClient -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/NetHelp_APIClient,--disable-new-dtags
 //Macos::g++ -std=c++17 -Wall -g NetHelp_APPClient.cpp -o NetHelp_APPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/NetHelp_APIClient -lXEngine_BaseLib -lNetHelp_APIClient
 
-void CALLBACK NetHelp_APPClient_CBRecv(XHANDLE xhToken, LPCSTR lpszMsgBuffer, int nMsgLen, LPVOID lParam)
+void CALLBACK NetHelp_APPClient_CBRecv(XHANDLE xhToken, LPCXSTR lpszMsgBuffer, int nMsgLen, XPVOID lParam)
 {
 	printf("NetHelp_APPClient_CBRecv:%d,%s\n", nMsgLen, lpszMsgBuffer);
 	if (-1 == nMsgLen)
@@ -24,7 +24,7 @@ void CALLBACK NetHelp_APPClient_CBRecv(XHANDLE xhToken, LPCSTR lpszMsgBuffer, in
 		printf(_T("接受完毕！\n"));
 	}
 }
-void CALLBACK NetHelp_HttpGet_Chunked(XNETHANDLE xhToken, LPVOID lpszMsgBuffer, int nMsgLen, LPVOID lParam)
+void CALLBACK NetHelp_HttpGet_Chunked(XNETHANDLE xhToken, XPVOID lpszMsgBuffer, int nMsgLen, XPVOID lParam)
 {
 	printf("%d\n%s\n", nMsgLen, (LPCTSTR)lpszMsgBuffer);
 }
@@ -118,7 +118,7 @@ int Test_HttpCreate()
 }
 
 bool bRun = false;
-void __stdcall Download_Progress(XHANDLE xhToken, double dlTotal, double dlNow, double ulTotal, double ulNow, ENUM_NETHELP_APICLIENT_FILE_STATUS en_DownHttpStatus, LPVOID lParam)
+void __stdcall Download_Progress(XHANDLE xhToken, double dlTotal, double dlNow, double ulTotal, double ulNow, ENUM_NETHELP_APICLIENT_FILE_STATUS en_DownHttpStatus, XPVOID lParam)
 {
 	printf("下载任务：%p,总大小：%lf，已经下载大小：%lf，下载标识符：%d\n", xhToken, dlTotal, dlNow, en_DownHttpStatus);
 

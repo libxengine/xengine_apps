@@ -108,7 +108,7 @@ int BTorrent_Parse(LPCTSTR lpszFile)
 int BTorrent_Creator(LPCTSTR lpszFile)
 {
 	XNETHANDLE xhToken;
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszFileDir = _T("D:\\321");
 #else
 	LPCTSTR lpszFileDir = _T("./321");
@@ -134,7 +134,7 @@ int BTorrent_Creator(LPCTSTR lpszFile)
 int BTorrent_Download()
 {
 	XNETHANDLE xhToken;
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszBTFile = _T("D:\\123.torrent");
 	LPCTSTR lpszFileDir = _T("D:\\321");
 #else
@@ -183,7 +183,7 @@ int BTorrent_Download()
 }
 int main()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszFile = _T("D:\\321.torrent");
 #else
 	LPCTSTR lpszFile = _T("./321.torrent");

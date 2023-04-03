@@ -1,10 +1,10 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"Ws2_32.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_Core.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_HttpServer.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_HttpProtocol.lib")
 #else
 #include <unistd.h>
 #endif
@@ -19,11 +19,11 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_HttpServer/HttpServer_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_HttpServer/HttpServer_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_HttpProtocol/HttpProtocol_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_HttpProtocol/HttpProtocol_Error.h"
 
-//Linux::g++ -std=c++17 -Wall -g RfcComponents_APPHttp.cpp -o RfcComponents_APPHttp.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lXEngine_OPenSsl -lRfcComponents_HttpServer -lpthread -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
-//Macos::g++ -std=c++17 -Wall -g RfcComponents_APPHttp.cpp -o RfcComponents_APPHttp.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lXEngine_OPenSsl -lRfcComponents_HttpServer -lpthread
+//Linux::g++ -std=c++17 -Wall -g RfcComponents_APPHttp.cpp -o RfcComponents_APPHttp.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lXEngine_OPenSsl -lRfcComponents_HttpProtocol -lpthread -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
+//Macos::g++ -std=c++17 -Wall -g RfcComponents_APPHttp.cpp -o RfcComponents_APPHttp.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lXEngine_OPenSsl -lRfcComponents_HttpProtocol -lpthread
 
 BOOL bIsRun = FALSE;
 int nRVMode = 0;
@@ -31,36 +31,36 @@ XHANDLE xhToken = NULL;
 XHANDLE xhHttp = NULL;
 FILE* pSt_File = NULL;
 
-BOOL CALLBACK NetCore_CB_Login(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
+BOOL CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("NetCore_CB_Login:%s\n", lpszClientAddr);
-	RfcComponents_HttpServer_CreateClientEx(xhHttp, lpszClientAddr, 0);
-	RfcComponents_HttpServer_SetRecvModeEx(xhHttp, lpszClientAddr, nRVMode);
+	HttpProtocol_Server_CreateClientEx(xhHttp, lpszClientAddr, 0);
+	HttpProtocol_Server_SetRecvModeEx(xhHttp, lpszClientAddr, nRVMode);
 	return TRUE;
 }
-void CALLBACK NetCore_CB_Recv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpszRecvMsg, int nMsgLen, LPVOID lParam)
+void CALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
 	printf("NetCore_CB_Recv:%s-%d\n", lpszClientAddr, nMsgLen);
-	if (!RfcComponents_HttpServer_InserQueueEx(xhHttp, lpszClientAddr, lpszRecvMsg, nMsgLen))
+	if (!HttpProtocol_Server_InserQueueEx(xhHttp, lpszClientAddr, lpszRecvMsg, nMsgLen))
 	{
-		printf("RfcComponents_WSPacket_Post:%lX\n", HttpServer_GetLastError());
+		printf("RfcComponents_WSPacket_Post:%lX\n", HttpProtocol_GetLastError());
 	}
 }
-void CALLBACK NetCore_CB_Close(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
+void CALLBACK NetCore_CB_Close(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("NetCore_CB_Close:%s\n", lpszClientAddr);
-	RfcComponents_HttpServer_CloseClinetEx(xhHttp, lpszClientAddr);
+	HttpProtocol_Server_CloseClinetEx(xhHttp, lpszClientAddr);
 }
 
 XHTHREAD CALLBACK NetCore_Thread()
 {
 	while (bIsRun)
 	{
-		if (RfcComponents_HttpServer_EventWaitEx(xhHttp, 1))
+		if (HttpProtocol_Server_EventWaitEx(xhHttp, 1))
 		{
 			int nListCount = 0;
 			RFCCOMPONENTS_HTTP_PKTCLIENT** ppSt_ListClient;
-			if (RfcComponents_HttpServer_GetPoolEx(xhHttp, 1, &ppSt_ListClient, &nListCount))
+			if (HttpProtocol_Server_GetPoolEx(xhHttp, 1, &ppSt_ListClient, &nListCount))
 			{
 				for (int i = 0; i < nListCount; i++)
 				{
@@ -69,12 +69,12 @@ XHTHREAD CALLBACK NetCore_Thread()
 					RFCCOMPONENTS_HTTP_REQPARAM st_ReqParam;
 
 					memset(&st_ReqParam, '\0', sizeof(RFCCOMPONENTS_HTTP_REQPARAM));
-					if (RfcComponents_HttpServer_GetMemoryEx(xhHttp, ppSt_ListClient[i]->tszClientAddr, &ptszMsgBuffer, &nMsgLen, &st_ReqParam))
+					if (HttpProtocol_Server_GetMemoryEx(xhHttp, ppSt_ListClient[i]->tszClientAddr, &ptszMsgBuffer, &nMsgLen, &st_ReqParam))
 					{
 						int nRVMode = 0;
 						int nRVCount = 0;
 						int nHDSize = 0;
-						RfcComponents_HttpServer_GetRecvModeEx(xhHttp, ppSt_ListClient[i]->tszClientAddr, &nRVMode, &nRVCount, &nHDSize);
+						HttpProtocol_Server_GetRecvModeEx(xhHttp, ppSt_ListClient[i]->tszClientAddr, &nRVMode, &nRVCount, &nHDSize);
 						if (1 == nRVMode)
 						{
 							printf("count:%d,recv:%d\n", nRVCount, nHDSize);
@@ -87,7 +87,7 @@ XHTHREAD CALLBACK NetCore_Thread()
 								st_HdrParam.bIsClose = TRUE;
 								st_HdrParam.nHttpCode = 200;
 								nMsgLen = 2048;
-								RfcComponents_HttpServer_SendMsgEx(xhHttp, ptszMsgBuffer, &nMsgLen, &st_HdrParam);
+								HttpProtocol_Server_SendMsgEx(xhHttp, ptszMsgBuffer, &nMsgLen, &st_HdrParam);
 								NetCore_TCPXCore_SendEx(xhToken, ppSt_ListClient[i]->tszClientAddr, ptszMsgBuffer, nMsgLen);
 
 								fclose(pSt_File);
@@ -106,7 +106,7 @@ XHTHREAD CALLBACK NetCore_Thread()
 							st_HdrParam.bIsClose = TRUE;
 							st_HdrParam.nHttpCode = 200;
 							nMsgLen = 2048;
-							RfcComponents_HttpServer_SendMsgEx(xhHttp, tszMsgBuffer, &nMsgLen, &st_HdrParam, "123456789", 9);
+							HttpProtocol_Server_SendMsgEx(xhHttp, tszMsgBuffer, &nMsgLen, &st_HdrParam, "123456789", 9);
 							NetCore_TCPXCore_SendEx(xhToken, ppSt_ListClient[i]->tszClientAddr, tszMsgBuffer, nMsgLen);
 						}
 					}
@@ -120,7 +120,7 @@ XHTHREAD CALLBACK NetCore_Thread()
 
 int main()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 
@@ -136,7 +136,7 @@ int main()
 	int nListCount = 0;
 	TCHAR** pptszListParam;
 	TCHAR tszUrlAddr[MAX_PATH];
-	RfcComponents_HttpHelp_GetParament(lpszUrl, &pptszListParam, &nListCount, tszUrlAddr);
+	HttpProtocol_ServerHelp_GetParament(lpszUrl, &pptszListParam, &nListCount, tszUrlAddr);
 	for (int i = 0; i < nListCount; i++)
 	{
 		printf("%s\n", pptszListParam[i]);
@@ -150,7 +150,7 @@ int main()
 
 		memset(tszDomainUrl, '\0', MAX_PATH);
 		memset(tszDomainKey, '\0', MAX_PATH);
-		RfcComponents_HttpHelp_ShortLink(lpszUrl, tszDomainUrl, tszDomainKey);
+		HttpProtocol_ServerHelp_ShortLink(lpszUrl, tszDomainUrl, tszDomainKey);
 		printf("%s %s\n", tszDomainUrl, tszDomainKey);
 	}
 
@@ -164,10 +164,10 @@ int main()
 			return 0;
 		}
 	}
-	xhHttp = RfcComponents_HttpServer_InitEx(lpszCodeFile, lpszMiniFile, 1);
+	xhHttp = HttpProtocol_Server_InitEx(lpszCodeFile, lpszMiniFile, 1);
 	if (NULL == xhHttp)
 	{
-		printf("RfcComponents_HttpServer_InitEx:%lX\n", HttpServer_GetLastError());
+		printf("HttpProtocol_Server_InitEx:%lX\n", HttpProtocol_GetLastError());
 		return 0;
 	}
 	xhToken = NetCore_TCPXCore_StartEx(8080);
@@ -182,14 +182,14 @@ int main()
 
 	std::this_thread::sleep_for(std::chrono::seconds(10));
 	bIsRun = FALSE;
-	RfcComponents_HttpServer_DestroyEx(xhHttp);
+	HttpProtocol_Server_DestroyEx(xhHttp);
 	pSTDThread.join();
 
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 	NetCore_TCPXCore_DestroyEx(xhToken);
 	
 
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSACleanup();
 #endif
 	return 0;

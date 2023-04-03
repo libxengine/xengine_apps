@@ -19,7 +19,7 @@ using namespace std;
 
 //Linux:g++ -std=gnu++11 -Wall -g Lib_APPAlgorithm.cpp -o Lib_APPAlgorithm.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -lXEngine_Algorithm -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib
 //Macos:g++ -std=gnu++11 -Wall -g Lib_APPAlgorithm.cpp -o Lib_APPAlgorithm.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -lXEngine_Algorithm 
-void CALLBACK Test_CBPassive(XHANDLE xhToken, __int64u nAvgSDFlow, __int64u nAvgRVFlow, __int64u nAvgTime, LPVOID lParam)
+void CALLBACK Test_CBPassive(XHANDLE xhToken, __int64u nAvgSDFlow, __int64u nAvgRVFlow, __int64u nAvgTime, XPVOID lParam)
 {
 	TCHAR tszClientAddr[128];
 	memset(tszClientAddr, '\0', 128);

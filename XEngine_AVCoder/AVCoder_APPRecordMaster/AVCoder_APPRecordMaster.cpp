@@ -3,8 +3,8 @@
 #include <tchar.h>
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVCollect.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_VideoCoder.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AudioCoder.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_VideoCodec.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AudioCodec.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVPacket.lib")
 #endif
@@ -14,21 +14,22 @@
 #include <thread>
 using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVCollect/AVCollect_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVCollect/AVCollect_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_VideoCoder/VideoCoder_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_VideoCoder/VideoCoder_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AudioCoder/AudioCoder_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AudioCoder/AudioCoder_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVHelp/AVHelp_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVHelp/AVHelp_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVPacket/AVPacket_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVPacket/AVPacket_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVCollect/AVCollect_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVCollect/AVCollect_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVPacket/AVPacket_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVPacket/AVPacket_Error.h"
 
-//Linux::g++ -std=c++17 -Wall -g AVCoder_APPRecordMaster.cpp -o AVCoder_APPRecordMaster.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder -lXEngine_BaseLib -lXEngine_AVCollect -lXEngine_VideoCoder -lXEngine_AudioCoder -lXEngine_AVHelp -lXEngine_AVPacket -lpthread -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder,--disable-new-dtags
-//MacOS::g++ -std=c++17 -Wall -g AVCoder_APPRecordMaster.cpp -o AVCoder_APPRecordMaster.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCoder -lXEngine_BaseLib -lXEngine_AVCollect -lXEngine_VideoCoder -lXEngine_AudioCoder -lXEngine_AVHelp -lXEngine_AVPacket -lpthread
+//Linux::g++ -std=c++17 -Wall -g AVCoder_APPRecordMaster.cpp -o AVCoder_APPRecordMaster.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_AVCollect -lXEngine_VideoCoder -lXEngine_AudioCoder -lXEngine_AVHelp -lXEngine_AVPacket -lpthread -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec,--disable-new-dtags
+//MacOS::g++ -std=c++17 -Wall -g AVCoder_APPRecordMaster.cpp -o AVCoder_APPRecordMaster.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_AVCollect -lXEngine_VideoCoder -lXEngine_AudioCoder -lXEngine_AVHelp -lXEngine_AVPacket -lpthread
 BOOL bAudio = TRUE;
 XNETHANDLE xhVideo = 0;
 XNETHANDLE xhAudio = 0;
@@ -36,9 +37,8 @@ XNETHANDLE xhFilter = 0;
 XHANDLE xhPacket = NULL;
 FILE* pSt_AudioFile = NULL;
 FILE* pSt_VideoFile = NULL;
-__int64x nBitRate;
-int nSmpRate;
-int nChannel;
+XENGINE_PROTOCOL_AVINFO st_AVInfo;
+
 
 #ifdef _MSC_BUILD
 LPCTSTR lpszVideoFile = "D:\\xengine_apps\\Debug\\Video.h264";
@@ -50,7 +50,7 @@ LPCTSTR lpszAudioFile = "Audio.aac";
 LPCTSTR lpszMP4File = "1.mp4";
 #endif
 
-void CALLBACK XEngine_AVCollect_CBScreen(uint8_t* punStringY, int nYLen, uint8_t* punStringU, int nULen, uint8_t* punStringV, int nVLen, LPVOID lParam)
+void CALLBACK XEngine_AVCollect_CBScreen(uint8_t* punStringY, int nYLen, uint8_t* punStringU, int nULen, uint8_t* punStringV, int nVLen, XPVOID lParam)
 {
 	int nFLen = 1024 * 1024 * 10;
 	int nELen = 1024 * 1024 * 10;
@@ -77,7 +77,7 @@ void CALLBACK XEngine_AVCollect_CBScreen(uint8_t* punStringY, int nYLen, uint8_t
 	ptszFilterBuffer = NULL;
 	ptszEncodeBuffer = NULL;
 }
-void CALLBACK XEngine_AVCollect_CBAudio(uint8_t* punStringAudio, int nVLen, LPVOID lParam)
+void CALLBACK XEngine_AVCollect_CBAudio(uint8_t* punStringAudio, int nVLen, XPVOID lParam)
 {
 	int nListCount = 0;
 	AVCODEC_AUDIO_MSGBUFFER** ppSt_ListMsgBuffer;
@@ -85,7 +85,7 @@ void CALLBACK XEngine_AVCollect_CBAudio(uint8_t* punStringAudio, int nVLen, LPVO
 	for (int i = 0; i < nListCount; i++)
 	{
 		BYTE byAACHdr[8];
-		AVHelp_Packet_AACHdr(byAACHdr, nSmpRate, nChannel, ppSt_ListMsgBuffer[i]->nMsgLen);
+		AVHelp_Packet_AACHdr(byAACHdr, st_AVInfo.st_AudioInfo.nSampleRate, st_AVInfo.st_AudioInfo.nChannel, ppSt_ListMsgBuffer[i]->nMsgLen);
 
 		fwrite(byAACHdr, 1, 7, pSt_AudioFile);
 		fwrite(ppSt_ListMsgBuffer[i]->pbyMsgBuffer, 1, ppSt_ListMsgBuffer[i]->nMsgLen, pSt_AudioFile);
@@ -93,7 +93,7 @@ void CALLBACK XEngine_AVCollect_CBAudio(uint8_t* punStringAudio, int nVLen, LPVO
 	BaseLib_OperatorMemory_Free((void***)&ppSt_ListMsgBuffer, nListCount);
 }
 
-void CALLBACK XEngine_AVPacket_Callback(XHANDLE xhNet, int nCvtType, int nCvtFrame, double dlTime, LPVOID lParam)
+void CALLBACK XEngine_AVPacket_Callback(XHANDLE xhNet, int nCvtType, int nCvtFrame, double dlTime, XPVOID lParam)
 {
 	printf(_T("提示:正在打包...第 %d 个%s,当前时间:%lf\r\n"), nCvtFrame, nCvtType == 1 ? _T("视频帧") : _T("音频帧"), dlTime);
 }
@@ -121,6 +121,7 @@ int main()
 	AVHELP_DEVICEINFO** ppSt_AudioList;
 	AVHELP_DEVICEINFO** ppSt_VideoList;
 
+	memset(&st_AVInfo, '\0', sizeof(XENGINE_PROTOCOL_AVINFO));
 	AVHelp_Device_EnumDevice(&ppSt_AudioList, &ppSt_VideoList, &nACount, &nVCount);
 	for (int i = 0; i < nACount; i++)
 	{
@@ -142,16 +143,15 @@ int main()
 			printf(_T("初始化音频采集器失败"));
 			return -1;
 		}
-		ENUM_AVCOLLECT_AUDIOSAMPLEFORMAT enAudioFmt;
-		AVCollect_Audio_GetInfo(xhSound, &enAudioFmt, &nBitRate, &nSmpRate, &nChannel);
+		AVCollect_Audio_GetInfo(xhSound, &st_AVInfo);
 		//文件保存需要的属性
-		if (!AudioCodec_Stream_EnInit(&xhAudio, ENUM_AVCODEC_AUDIO_TYPE_AAC, nSmpRate, nChannel, nBitRate, 0, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP))
+		if (!AudioCodec_Stream_EnInit(&xhAudio, ENUM_AVCODEC_AUDIO_TYPE_AAC, st_AVInfo.st_AudioInfo.nSampleRate, st_AVInfo.st_AudioInfo.nChannel, st_AVInfo.st_AudioInfo.nBitRate, 0, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP))
 		{
 			printf(_T("初始化编码器失败"));
 			return -1;
 		}
 		int nLen = 0;
-		if (!AudioCodec_Stream_SetResample(xhAudio, &nLen, nSmpRate, nSmpRate, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_S16, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP, nChannel, nChannel))
+		if (!AudioCodec_Stream_SetResample(xhAudio, &nLen, st_AVInfo.st_AudioInfo.nSampleRate, st_AVInfo.st_AudioInfo.nSampleRate, (ENUM_AVCOLLECT_AUDIOSAMPLEFORMAT)st_AVInfo.st_AudioInfo.nSampleFmt, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP, st_AVInfo.st_AudioInfo.nChannel, st_AVInfo.st_AudioInfo.nChannel))
 		{
 			printf(_T("初始化重采样工具失败"));
 			return -1;
@@ -176,11 +176,9 @@ int main()
 		printf(_T("初始化屏幕采集失败"));
 		return -1;
 	}
-	int nWidth = 0;
-	int nHeight = 0;
-	AVCollect_Video_GetInfo(xhScreen, &nWidth, &nHeight, &nBitRate);
+	AVCollect_Video_GetInfo(xhScreen, &st_AVInfo);
 	//视频编码
-	if (!VideoCodec_Stream_EnInit(&xhVideo, nWidth, nHeight, ENUM_ENTENGINE_AVCODEC_VEDIO_TYPE_H264, nBitRate))
+	if (!VideoCodec_Stream_EnInit(&xhVideo, st_AVInfo.st_VideoInfo.nWidth, st_AVInfo.st_VideoInfo.nHeight, ENUM_ENTENGINE_AVCODEC_VEDIO_TYPE_H264, st_AVInfo.st_VideoInfo.nBitRate))
 	{
 		printf(_T("初始化失败"));
 		return -1;
@@ -189,7 +187,7 @@ int main()
 	memset(tszFilterStr, '\0', MAX_PATH);
 
 	sprintf(tszFilterStr, _T("drawtext=fontfile=Arial.ttf:fontcolor=green:fontsize=30:x=100:y=10:text='www.xyry.org'"));
-	if (!VideoCodec_Help_FilterInit(&xhFilter, tszFilterStr, nWidth, nHeight, ENUM_AVCOLLECT_VIDEO_FMT_YUV420P, 24))
+	if (!VideoCodec_Help_FilterInit(&xhFilter, tszFilterStr, st_AVInfo.st_VideoInfo.nWidth, st_AVInfo.st_VideoInfo.nHeight, ENUM_AVCOLLECT_VIDEO_FMT_YUV420P, 24))
 	{
 		printf(_T("初始化过滤器失败"));
 		return -1;

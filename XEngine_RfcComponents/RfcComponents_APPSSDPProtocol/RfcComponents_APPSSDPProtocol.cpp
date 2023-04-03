@@ -35,7 +35,7 @@ int main()
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
-	SOCKET hSocket;
+	XSOCKET hSocket;
 	//准备
 	if (!NetCore_GroupCast_Create(&hSocket, 1900, _T("239.255.255.250"), _T("192.168.1.8")))
 	{

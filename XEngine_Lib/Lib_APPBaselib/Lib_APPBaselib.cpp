@@ -286,9 +286,9 @@ void Test_GetTimeofday()
 int profiletest()
 {
 #ifdef _MSC_BUILD
-	LPCSTR lpszFile = "D:\\xengine_apps\\x64\\Debug\\1.txt";
+	LPCXSTR lpszFile = "D:\\xengine_apps\\x64\\Debug\\1.txt";
 #else
-	LPCSTR lpszFile = "./1.txt";
+	LPCXSTR lpszFile = "./1.txt";
 #endif
 	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test", "a", "1");
 	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test", "b", "2");

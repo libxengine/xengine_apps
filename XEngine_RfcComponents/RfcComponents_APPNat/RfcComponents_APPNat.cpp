@@ -1,10 +1,10 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"Ws2_32.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XClient_Socket.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_NatClient.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_NatProtocol.lib")
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,20 +15,20 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_NatClient/NatClient_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_NatClient/NatClient_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_NatProtocol/NatProtocol_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_NatProtocol/NatProtocol_Error.h"
 
-//Linux::g++ -std=c++17 -Wall -g RfcComponents_APPNat.cpp -o RfcComponents_APPNat.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lXClient_Socket -lRfcComponents_NatClient -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents,--disable-new-dtags
-//Macos::g++ -std=c++17 -Wall -g RfcComponents_APPNat.cpp -o RfcComponents_APPNat.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_RfcComponents -lXEngine_BaseLib -lXClient_Socket -lRfcComponents_NatClient
+//Linux::g++ -std=c++17 -Wall -g RfcComponents_APPNat.cpp -o RfcComponents_APPNat.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lXClient_Socket -lRfcComponents_NatProtocol -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents,--disable-new-dtags
+//Macos::g++ -std=c++17 -Wall -g RfcComponents_APPNat.cpp -o RfcComponents_APPNat.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_RfcComponents -lXEngine_BaseLib -lXClient_Socket -lRfcComponents_NatProtocol
 
 
 int main()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
-	SOCKET m_Socket;
+	XSOCKET m_Socket;
 	int nMsgLen = 2048;
 	TCHAR tszMsgBuffer[2048];
 	UINT nToken[3];
@@ -40,12 +40,12 @@ int main()
 
 	if (!XClient_UDPSelect_Create(&m_Socket))
 	{
-		printf("创建套接字失败!,错误:%lX\n", NatClient_GetLastError());
+		printf("创建套接字失败!,错误:%lX\n", NatProtocol_GetLastError());
 		return -1;
 	}
 	XClient_UDPSelect_Bind(m_Socket, 3478, "159.75.200.173");
 
-	if (!RfcComponents_StunNat_Request(tszMsgBuffer, &nMsgLen, nToken, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_CLASS_REQUEST, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_ATTR_MAPPED_ADDRESS))
+	if (!NatProtocol_StunNat_Request(tszMsgBuffer, &nMsgLen, nToken, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_CLASS_REQUEST, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_ATTR_MAPPED_ADDRESS))
 	{
 		printf("构建请求包缓冲区错误!\n");
 		return -1;
@@ -65,9 +65,9 @@ int main()
 	}
 	int nListCount = 0;
 	RFCCOMPONENTS_NATATTR** ppSt_ListAttr;
-	if (!RfcComponents_StunNat_Response(tszMsgBuffer, nMsgLen, &st_NatClient, &ppSt_ListAttr, &nListCount))
+	if (!NatProtocol_StunNat_Response(tszMsgBuffer, nMsgLen, &st_NatClient, &ppSt_ListAttr, &nListCount))
 	{
-		printf("处理数据失败!,错误:%lX\n", NatClient_GetLastError());
+		printf("处理数据失败!,错误:%lX\n", NatProtocol_GetLastError());
 		return -1;
 	}
 	printf("%s %d %d %d\n", st_NatClient.tszServiceName, st_NatClient.xhToken[0], st_NatClient.xhToken[1], st_NatClient.xhToken[2]);
@@ -81,7 +81,7 @@ int main()
 			TCHAR tszMsgBuffer[2048];
 			memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
-			RfcComponents_StunNat_ParseError(ppSt_ListAttr[i], &nErrorCode, tszMsgBuffer, &nMsgLen);
+			NatProtocol_StunNat_ParseError(ppSt_ListAttr[i], &nErrorCode, tszMsgBuffer, &nMsgLen);
 		}
 		else if (RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_ATTR_XOR_MAPPED_ADDRESS == ppSt_ListAttr[i]->wAttr)
 		{
@@ -92,7 +92,7 @@ int main()
 
 			memcpy(&wXor, &st_NatClient.unMagic, sizeof(WORD));
 
-			RfcComponents_StunNat_ParseAddr(ppSt_ListAttr[i], &nIPVer, tszIPAddr, wXor);
+			NatProtocol_StunNat_ParseAddr(ppSt_ListAttr[i], &nIPVer, tszIPAddr, wXor);
 			printf("%d %s\n", nIPVer, tszIPAddr);
 		}
 		else if (RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_ATTR_MAPPED_ADDRESS == ppSt_ListAttr[i]->wAttr)
@@ -101,7 +101,7 @@ int main()
 			TCHAR tszIPAddr[128];
 			memset(tszIPAddr, '\0', sizeof(tszIPAddr));
 
-			RfcComponents_StunNat_ParseAddr(ppSt_ListAttr[i], &nIPVer, tszIPAddr);
+			NatProtocol_StunNat_ParseAddr(ppSt_ListAttr[i], &nIPVer, tszIPAddr);
 			printf("%d %s\n", nIPVer, tszIPAddr);
 		}
 		else if (RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_ATTR_SERVERADDR == ppSt_ListAttr[i]->wAttr)
@@ -110,7 +110,7 @@ int main()
 			TCHAR tszIPAddr[128];
 			memset(tszIPAddr, '\0', sizeof(tszIPAddr));
 
-			RfcComponents_StunNat_ParseAddr(ppSt_ListAttr[i], &nIPVer, tszIPAddr);
+			NatProtocol_StunNat_ParseAddr(ppSt_ListAttr[i], &nIPVer, tszIPAddr);
 			printf("%d %s\n", nIPVer, tszIPAddr);
 		}
 	}
@@ -124,12 +124,12 @@ int main()
 	memset(tszAttrBuffer, '\0', MAX_PATH);
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
-	RfcComponents_StunNat_BuildTransPort(tszAttrBuffer, &nA1Len);
-	RfcComponents_StunNat_BuildLeftTime(tszAttrBuffer + nA1Len, &nA2Len);
-	RfcComponents_StunNat_BuildAddrFamily(tszAttrBuffer + nA1Len + nA2Len, &nA3Len);
+	NatProtocol_StunNat_BuildTransPort(tszAttrBuffer, &nA1Len);
+	NatProtocol_StunNat_BuildLeftTime(tszAttrBuffer + nA1Len, &nA2Len);
+	NatProtocol_StunNat_BuildAddrFamily(tszAttrBuffer + nA1Len + nA2Len, &nA3Len);
 	nMsgLen = nA1Len + nA2Len + nA3Len;
 
-	if (!RfcComponents_StunNat_Request(tszMsgBuffer, &nMsgLen, nToken, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_CLASS_REQUEST, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_METHOD_ALLOCATE, tszAttrBuffer))
+	if (!NatProtocol_StunNat_Request(tszMsgBuffer, &nMsgLen, nToken, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_CLASS_REQUEST, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_METHOD_ALLOCATE, tszAttrBuffer))
 	{
 		printf("构建请求包缓冲区错误!\n");
 		return -1;
@@ -149,7 +149,7 @@ int main()
 	}
 
 	XClient_UDPSelect_Close(m_Socket);
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSACleanup();
 #endif
 	return 0;

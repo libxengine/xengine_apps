@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"Ws2_32.lib")
@@ -32,21 +32,21 @@ XHANDLE xhToken = NULL;
 XHANDLE xhWBPacket = NULL;
 TCHAR tszClientAddr[64];
 
-BOOL CALLBACK NetCore_CB_Login(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
+BOOL CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	strcpy(tszClientAddr, lpszClientAddr);
 	printf("NetCore_CB_Login:%s\n", lpszClientAddr);
 	RfcComponents_WSPacket_CreateEx(xhWBPacket, lpszClientAddr, 1);
 	return TRUE;
 }
-void CALLBACK NetCore_CB_Recv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpszRecvMsg, int nMsgLen, LPVOID lParam)
+void CALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
 	printf("NetCore_CB_Recv:%s-%d\n", lpszClientAddr, nMsgLen);
 	BOOL bLogin = FALSE;
 	RfcComponents_WSPacket_GetLoginEx(xhWBPacket, lpszClientAddr, &bLogin);
 	if (bLogin)
 	{
-		if (!RfcComponents_WSPacket_PostEx(xhWBPacket, lpszClientAddr, lpszRecvMsg, nMsgLen))
+		if (!RfcComponents_WSPacket_InsertQueueEx(xhWBPacket, lpszClientAddr, lpszRecvMsg, nMsgLen))
 		{
 			printf("RfcComponents_WSPacket_Post:%lX\n", WSFrame_GetLastError());
 		}
@@ -63,7 +63,7 @@ void CALLBACK NetCore_CB_Recv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpsz
 		printf("login:%s-%d\n", lpszClientAddr, nMsgLen);
 	}
 }
-void CALLBACK NetCore_CB_Close(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
+void CALLBACK NetCore_CB_Close(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("NetCore_CB_Close:%s\n", lpszClientAddr);
 	RfcComponents_WSPacket_DeleteEx(xhWBPacket, lpszClientAddr);
@@ -112,7 +112,7 @@ XHTHREAD CALLBACK NetCore_Thread()
 
 int main()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
@@ -126,12 +126,12 @@ int main()
 		return 0;
 	}
 	NetCore_TCPXCore_RegisterCallBackEx(xhToken, NetCore_CB_Login, NetCore_CB_Recv, NetCore_CB_Close);
-	xhWBPacket = RfcComponents_WSPacket_InitEx(10000, FALSE, 4);
+	xhWBPacket = RfcComponents_WSPacket_InitEx(4);
 
 	std::thread pSTDThread(NetCore_Thread);
 	pSTDThread.join();
 
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSACleanup();
 #endif
 	return 0;
@@ -139,7 +139,7 @@ int main()
 
 int main_client()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
@@ -157,7 +157,7 @@ int main_client()
 		return -1;
 	}
 
-	SOCKET hSocket = 0;
+	XSOCKET hSocket = 0;
 	if (!XClient_TCPSelect_Create(&hSocket, _T("127.0.0.1"), 5000))
 	{
 		printf("NetClient_TCPSelect_Create:%lX", XClient_GetLastError());
@@ -213,7 +213,7 @@ int main_client()
 
 		if (XClient_TCPSelect_RecvMsg(hSocket, tszRecvBuffer, &nRVLen))
 		{
-			if (!RfcComponents_WSPacket_PostEx(xhWBPacket,"ClientToken", tszRecvBuffer, nRVLen))
+			if (!RfcComponents_WSPacket_InsertQueueEx(xhWBPacket,"ClientToken", tszRecvBuffer, nRVLen))
 			{
 				printf("RfcComponents_WSPacket_Post:%lX\n", WSFrame_GetLastError());
 			}
@@ -224,7 +224,7 @@ int main_client()
 	}
 	pSTDThread.join();
 
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSACleanup();
 #endif
 	return 0;

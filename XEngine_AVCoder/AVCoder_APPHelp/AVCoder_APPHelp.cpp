@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
@@ -13,14 +13,14 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVCollect/AVCollect_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_VideoCoder/VideoCoder_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AudioCoder/AudioCoder_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVHelp/AVHelp_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVHelp/AVHelp_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVCollect/AVCollect_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
 
-//Linux::g++ -std=c++17 -Wall -g AVCoder_APPHelp.cpp -o AVCoder_APPHelp.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder -lXEngine_BaseLib -lXEngine_AVHelp -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder,--disable-new-dtags
-//Macos::g++ -std=c++17 -Wall -g AVCoder_APPHelp.cpp -o AVCoder_APPHelp.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCoder -lXEngine_BaseLib -lXEngine_AVHelp
+//Linux::g++ -std=c++17 -Wall -g AVCoder_APPHelp.cpp -o AVCoder_APPHelp.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_AVHelp -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec,--disable-new-dtags
+//Macos::g++ -std=c++17 -Wall -g AVCoder_APPHelp.cpp -o AVCoder_APPHelp.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_AVHelp
 
 void Test_MetaInfo()
 {
@@ -28,7 +28,7 @@ void Test_MetaInfo()
 	AVHELP_METADATA st_AVMetaData;
 	AVHELP_METAINFO** ppSt_MetaList;
 
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszSrcFile = "D:\\xengine_apps\\Debug\\1.mp4";
 #else
 	LPCTSTR lpszSrcFile = "1004523.mp3";
@@ -41,7 +41,7 @@ void Test_MetaInfo()
 	}
 	for (int i = 0; i < nListCount; i++)
 	{
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 		CHAR tszAStr[1024];
 		memset(tszAStr, '\0', sizeof(tszAStr));
 		int nLen = strlen(ppSt_MetaList[i]->tszValue);
@@ -77,7 +77,7 @@ void Test_Parse()
 		AVHelp_Parse_FrameGet(xhToken, tszMsgBuffer, nRet, &ppSt_Frame, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
-			XENGINE_AVCODER_VIDEOFRAMETYPE enVideoFrame;
+			XENGINE_AVCODEC_VIDEOFRAMETYPE enVideoFrame;
 			AVHelp_Parse_H264NaluType(ppSt_Frame[i]->ptszMsgBuffer, &enVideoFrame);
 		}
 	}
@@ -86,7 +86,7 @@ void Test_Parse()
 
 void Test_PPS264Info()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszSrcFile = "D:\\h264 file\\480p.264";
 #else
 	LPCTSTR lpszSrcFile = "480p.264";
@@ -131,7 +131,7 @@ void Test_PPS264Info()
 }
 void Test_PPS265Info()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszSrcFile = "D:\\h264 file\\2.hevc";
 #else
 	LPCTSTR lpszSrcFile = "2.hevc";
@@ -185,7 +185,7 @@ void Test_PPS265Info()
 }
 void Test_AudioInfo()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszSrcFile = "D:\\h264 file\\test.aac";
 #else
 	LPCTSTR lpszSrcFile = "test.aac";

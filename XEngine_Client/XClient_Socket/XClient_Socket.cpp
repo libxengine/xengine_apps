@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #include <locale.h>
@@ -31,7 +31,7 @@ int XClient_ProxyClient()
 	TCHAR tszMsgBuffer[10240];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
-	SOCKET m_Socket;
+	XSOCKET m_Socket;
 	if (!XClient_TCPSelect_Create(&m_Socket, _T("192.168.1.8"), 5401))
 	{
 		printf(_T("连接失败！\n"));
@@ -80,7 +80,7 @@ int TCPTest()
 
 	memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
 
-	SOCKET m_Socket;
+	XSOCKET m_Socket;
 	if (!XClient_TCPSelect_Create(&m_Socket, _T("127.0.0.1"), 5000))
 	{
 		printf(_T("连接失败！\n"));
@@ -113,7 +113,7 @@ int TCPTest()
 	return 1;
 }
 
-void CALLBACK XClient_TCPCallback_Recv(XHANDLE xhToken, XNETHANDLE xhClient, SOCKET hSocket, ENUM_NETCLIENT_TCPEVENTS enTCPClientEvents, LPCSTR lpszMsgBuffer, int nLen, LPVOID lParam)
+void CALLBACK XClient_TCPCallback_Recv(XHANDLE xhToken, XNETHANDLE xhClient, XSOCKET hSocket, ENUM_NETCLIENT_TCPEVENTS enTCPClientEvents, LPCXSTR lpszMsgBuffer, int nLen, XPVOID lParam)
 {
 	if (ENUM_XENGINE_XCLIENT_SOCKET_TCP_EVENT_RECV == enTCPClientEvents)
 	{
@@ -135,7 +135,7 @@ int TCPTestEx()
 	XClient_TCPSelect_HBStartEx(xhToken, 2);
 	for (int i = 0; i < 4; i++)
 	{
-		XClient_TCPSelect_InsertEx(xhToken, _T("192.168.1.8"), 5002, &xhClient[i]);
+		XClient_TCPSelect_InsertEx(xhToken, &xhClient[i], _T("192.168.1.8"), 5002);
 	}
 	std::this_thread::sleep_for(std::chrono::seconds(10));
 	for (int i = 0; i < 4; i++)
@@ -148,7 +148,7 @@ int TCPTestEx()
 
 int Test_UDPClient()
 {
-	SOCKET hSocket;
+	XSOCKET hSocket;
 	int nMsgLen = 1024;
 	TCHAR tszMsgBuffer[1024];
 	TCHAR tszIPAddr[128];
@@ -172,13 +172,13 @@ int Test_UDPClient()
 int Test_Unix()
 {
 	int nMsgLen = 1024;
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszUnixName = _T("H:\\XEngine_Apps\\Debug\\unix.socket");
 #else
 	LPCTSTR lpszUnixName = _T("/tmp/unix.socket");
 #endif
 
-	SOCKET m_Socket;
+	XSOCKET m_Socket;
 	if (!XClient_UnixDomain_Connect(lpszUnixName, &m_Socket))
 	{
 		printf(_T("连接失败！\n"));
@@ -195,7 +195,7 @@ int Test_Unix()
 
 int udx_test()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszFile = _T("H:\\XEngine_Apps\\Debug\\Lib_APPBaselib.exe");
 #else
 	LPCTSTR lpszFile = _T("Lib_APPBaselib.exe");
@@ -246,7 +246,7 @@ int udx_test()
 }
 int main()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
@@ -258,7 +258,7 @@ int main()
 	//Test_Unix();
 	//udx_test();
 	
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSACleanup();
 #endif
 	return 1;

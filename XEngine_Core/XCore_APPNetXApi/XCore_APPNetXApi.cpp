@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <stdio.h>
 #include <Windows.h>
 #include <tchar.h>
@@ -23,7 +23,7 @@ using namespace std;
 //Linux:g++ -std=gnu++17 -Wall -g XCore_APPNetXApi.cpp -o XCore_APPNetXApi.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -lXEngine_BaseLib -lXEngine_NetXApi -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
 //Macos:g++ -std=gnu++17 -Wall -g XCore_APPNetXApi.cpp -o XCore_APPNetXApi.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -lXEngine_BaseLib -lXEngine_NetXApi
 
-static void WINAPI NetXApi_Sniffer_Callback(XHANDLE xhToken, NETXAPI_PROTOCOLINFO* pSt_ProtoInfo, LPCSTR lpszMsgBuffer, LPVOID lParam)
+static void WINAPI NetXApi_Sniffer_Callback(XHANDLE xhToken, NETXAPI_PROTOCOLINFO* pSt_ProtoInfo, LPCXSTR lpszMsgBuffer, XPVOID lParam)
 {
 	printf("NetXApi_Sniffer_Callback:Source:%s Dest:%s nHdrLen:%d nMsgLen:%d\n", pSt_ProtoInfo->tszSourceAddr, pSt_ProtoInfo->tszDestAddr, pSt_ProtoInfo->nHdrLen, pSt_ProtoInfo->nMsgLen);
 	for (int i = 0; i < pSt_ProtoInfo->nMsgLen; i++)
@@ -41,7 +41,7 @@ int Test_NetFlow()
 		NETXAPI_FLOWSTATE st_FlowState;
 		memset(&st_FlowState, '\0', sizeof(NETXAPI_FLOWSTATE));
 
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 		NetXApi_NetFlow_GetAll(&st_FlowState, "Realtek PCIe GBE Family Controller");
 		
 #else
@@ -56,7 +56,7 @@ int Test_NetFlow()
 int Test_NetSniffer()
 {
 	//网路嗅探
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	XHANDLE xhNet = NetXApi_Sniffer_Start(_T("192.168.1.7"), NetXApi_Sniffer_Callback);
 #else
 	XHANDLE xhNet = NetXApi_Sniffer_Start(_T("any"), NetXApi_Sniffer_Callback);
@@ -69,7 +69,7 @@ int Test_CtrlFlow()
 {
 	XNETHANDLE xhNet;
 	XNETHANDLE xhFilter;
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	NetXApi_CtrlFlow_Init(&xhNet,NULL);
 #else
 	NetXApi_CtrlFlow_Init(&xhNet, "ens33");
@@ -138,7 +138,7 @@ int NetXApi_TestSocket()
 
 int main()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
@@ -147,7 +147,7 @@ int main()
 	Test_NetSniffer();
 	Test_NetFlow();
 	//Test_CtrlFlow();
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSACleanup();
 #endif
 	return 0;

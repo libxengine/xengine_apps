@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <stdio.h>
 #include <Windows.h>
 #include <tchar.h>

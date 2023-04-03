@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <stdio.h>
 #include <Windows.h>
 #include <tchar.h>
@@ -43,7 +43,7 @@ int Test_Anonymous()
 }
 int Test_Named()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszPIPName = _T("\\\\.\\pipe\\MyNamedPipeOne");
 #else
 	LPCTSTR lpszPIPName = _T("MyNamedPipeOne");
@@ -53,7 +53,7 @@ int Test_Named()
 		printf("%lX", NetCore_GetLastError());
 		return -1;
 	}
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	NetCore_PIPNamed_WaitConnect(lpszPIPName);
 #endif
 
@@ -68,7 +68,7 @@ int Test_Named()
 }
 int Test_MailSlot()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszPIPName = _T("\\\\.\\mailslot\\MyMailSlot");
 #else
 	LPCTSTR lpszPIPName = _T("/MyMailSlot");
@@ -112,8 +112,8 @@ int Test_MMap()
 	NetCore_PIPMMap_Write(lpszPIPName, (TCHAR*)lpszMsgBuffer, _tcslen(lpszMsgBuffer));
 	NetCore_PIPMMap_Write(lpszPIPName, (TCHAR*)lpszMsgBuffer, _tcslen(lpszMsgBuffer), 5);
 
-#ifdef _WINDOWS
-	LPVOID lPBuffer = NetCore_PIPMMap_GetPointer(lpszPIPName);
+#ifdef _MSC_BUILD
+	XPVOID lPBuffer = NetCore_PIPMMap_GetPointer(lpszPIPName);
 	memcpy(lPBuffer, _T("123123"), 6);
 	NetCore_PIPMMap_FreePointer(lpszPIPName);
 #endif
@@ -129,7 +129,7 @@ int Test_MMap()
 
 int Test_MIPC()
 {
-#ifndef _WINDOWS
+#ifndef _MSC_BUILD
 	int nKey = 0;
 	if (!NetCore_PIPIpc_Create(&nKey, 4096))
 	{
@@ -148,7 +148,7 @@ int Test_MIPC()
 }
 int main()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
@@ -157,7 +157,7 @@ int main()
 	Test_MIPC();
 	Test_Named();
 	//Test_MailSlot();
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSACleanup();
 #endif
 	return 0;

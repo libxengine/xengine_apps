@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #include <locale.h>
@@ -24,12 +24,12 @@
 
 int main()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 	XHANDLE xhNet;
-	SOCKET m_Socket;
+	XSOCKET m_Socket;
 	XCLIENT_SSLCERT_SRVINFO st_SrvInfo;
 	memset(&st_SrvInfo, '\0', sizeof(XCLIENT_SSLCERT_SRVINFO));
 
@@ -73,7 +73,7 @@ int main()
 	}
 	XClient_OPenSsl_CloseEx(xhNet);
 	XClient_TCPSelect_Close(m_Socket);
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSACleanup();
 #endif
 	return 0;

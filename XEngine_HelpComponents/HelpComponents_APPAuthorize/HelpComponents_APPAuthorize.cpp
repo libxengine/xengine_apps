@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
@@ -81,7 +81,7 @@ int Authorize_APPSerial()
 
 int Authorize_APPLocal()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszFile = _T("D:\\XEngine_Apps\\Debug\\XEngine_Authorize.key");
 #else
 	LPCTSTR lpszFile = _T("XEngine_Authorize.key");
@@ -197,7 +197,7 @@ int Authorize_APPLocal()
 }
 int Authorize_APPMemory()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszFile = _T("D:\\XEngine_Apps\\Debug\\XEngine_Authorize.txt");
 #else
 	LPCTSTR lpszFile = _T("XEngine_Authorize.txt");

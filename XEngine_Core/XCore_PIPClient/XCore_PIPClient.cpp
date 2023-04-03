@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <stdio.h>
 #include <Windows.h>
 #include <tchar.h>
@@ -20,7 +20,7 @@
 
 int Test_PIPNamed()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszPIPName = _T("\\\\.\\pipe\\MyNamedPipeOne");
 #else
 	LPCTSTR lpszPIPName = _T("MyNamedPipeOne");
@@ -38,7 +38,7 @@ int Test_PIPNamed()
 }
 int Test_PIPMailSlot()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszPIPName = _T("\\\\.\\mailslot\\MyMailSlot");
 #else
 	LPCTSTR lpszPIPName = _T("/MyMailSlot");

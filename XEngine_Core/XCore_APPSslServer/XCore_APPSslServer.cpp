@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <stdio.h>
 #include <Windows.h>
 #include <tchar.h>
@@ -28,7 +28,7 @@ using namespace std;
 //Macos::g++ -std=gnu++17 -Wall -g XCore_APPSsl.cpp -o XCore_APPSsl.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -lXEngine_BaseLib -lXEngine_Core -lXEngine_OPenSsl
 
 XHANDLE xhSSL = NULL;
-BOOL CALLBACK TCPSelect_CBLogin(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
+BOOL CALLBACK TCPSelect_CBLogin(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("recv_Login:%s\n", lpszClientAddr);
 	TCHAR tszSubject[2048];
@@ -43,7 +43,7 @@ BOOL CALLBACK TCPSelect_CBLogin(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lP
 	printf("TCPSelect_CBLogin:%s %s %s\n", tszSubject, tszIssus, tszAlg);
 	return TRUE;
 }
-void CALLBACK TCPSelect_CBRecv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpszRecvMsg, int nMsgLen, LPVOID lParam)
+void CALLBACK TCPSelect_CBRecv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
 	int nLen = 2048;
 	TCHAR tszMsgBuffer[2048];
@@ -53,7 +53,7 @@ void CALLBACK TCPSelect_CBRecv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lps
 		printf("TCPSelect_CBRecv:%s\n", tszMsgBuffer);
 	}
 }
-void CALLBACK TCPSelect_CBLeave(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
+void CALLBACK TCPSelect_CBLeave(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("TCPSelect_CBLeave:%s\n", lpszClientAddr);
 }

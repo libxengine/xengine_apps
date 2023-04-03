@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
@@ -60,7 +60,7 @@ int Test_DiskInfo()
 		SYSTEMAPI_DISK_INFOMATION st_DiskInfo;
 		memset(&st_DiskInfo, '\0', sizeof(SYSTEMAPI_DISK_INFOMATION));
 
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 		SystemApi_HardWare_GetDiskInfomation(ppszRootName[i], &st_DiskInfo);
 #else
 		SystemApi_HardWare_GetDiskInfomation("/", &st_DiskInfo);

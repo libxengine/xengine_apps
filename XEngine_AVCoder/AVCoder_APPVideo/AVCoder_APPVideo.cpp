@@ -1,8 +1,8 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_VideoCoder.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_VideoCodec.lib")
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,14 +10,15 @@
 #include <string.h>
 #include <time.h>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVCollect/AVCollect_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_VideoCoder/VideoCoder_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_VideoCoder/VideoCoder_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVCollect/AVCollect_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Error.h"
 
-//Linux::g++ -std=c++17 -Wall -g AVCoder_APPVideo.cpp -o AVCoder_APPVideo.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder -lXEngine_BaseLib -lXEngine_VideoCoder -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder,--disable-new-dtags
-//MacOS::g++ -std=c++17 -Wall -g AVCoder_APPVideo.cpp -o AVCoder_APPVideo.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCoder -lXEngine_BaseLib -lXEngine_VideoCoder
+//Linux::g++ -std=c++17 -Wall -g AVCoder_APPVideo.cpp -o AVCoder_APPVideo.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_VideoCodec -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec,--disable-new-dtags
+//MacOS::g++ -std=c++17 -Wall -g AVCoder_APPVideo.cpp -o AVCoder_APPVideo.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_VideoCodec
 
 XNETHANDLE xhDeVideo;
 XNETHANDLE xhEnVideo;
@@ -25,7 +26,7 @@ XNETHANDLE xhFilterVideo;
 FILE* pSt_YUVFile;
 FILE* pSt_264File;
 
-void __stdcall VideoCodec_Stream_Callback(XNETHANDLE xhVideo, uint8_t* pszYBuffer, uint8_t* pszUBuffer, uint8_t* pszVBuffer, int nYLen, int nULen, int nVLen, AVCODEC_VIDEO_INFO* pSt_VideoInfo, LPVOID lParam)
+void __stdcall VideoCodec_Stream_Callback(XNETHANDLE xhVideo, uint8_t* pszYBuffer, uint8_t* pszUBuffer, uint8_t* pszVBuffer, int nYLen, int nULen, int nVLen, AVCODEC_VIDEO_INFO* pSt_VideoInfo, XPVOID lParam)
 {
 	//printf("%llu: %d number:%d nWidth:%d nHeight\n", xhVideo, pSt_VideoInfo->en_FrameType, pSt_VideoInfo->nWidth, pSt_VideoInfo->nHeight);
 	//fwrite(pszYBuffer, 1, nYLen, pSt_YUVFile);
@@ -57,7 +58,7 @@ void __stdcall VideoCodec_Stream_Callback(XNETHANDLE xhVideo, uint8_t* pszYBuffe
 }
 int Test_CodecFilter()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	FILE* pSt_File = _tfopen("H:\\h264 file\\1080P.264", "rb");
 	pSt_264File = _tfopen("H:\\h264 file\\en.h264", "wb");
 	pSt_YUVFile = _tfopen("H:\\h264 file\\ds.yuv", "wb");

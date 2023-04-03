@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
@@ -20,7 +20,7 @@
 //Linux::g++ -std=c++17 -Wall -g SystemApi_APPFile.cpp -o SystemApi_APPFile.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk -lXEngine_BaseLib -lXEngine_SystemApi -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
 //Macos::g++ -std=c++17 -Wall -g SystemApi_APPFile.cpp -o SystemApi_APPFile.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_SystemSdk -lXEngine_BaseLib -lXEngine_SystemApi
 
-BOOL __stdcall EnumFile(LPCSTR lpFileOrPath, BOOL bFindPath, LPVOID lParam)
+BOOL __stdcall EnumFile(LPCXSTR lpFileOrPath, BOOL bFindPath, XPVOID lParam)
 {
 	if (bFindPath)
 	{
@@ -35,13 +35,13 @@ BOOL __stdcall EnumFile(LPCSTR lpFileOrPath, BOOL bFindPath, LPVOID lParam)
 
 int main()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	SystemApi_File_EnumFile("D:\\XEngine\\XEngine_SourceCode\\Debug\\*", NULL, NULL, EnumFile);
 #else
 	SystemApi_File_EnumFile("/tmp", NULL, NULL, EnumFile);
 #endif
 
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszFile = _T("D:\\xengine_apps\\Debug\\1.txt");
 #else
 	LPCTSTR lpszFile = _T("1.txt");

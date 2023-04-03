@@ -1,10 +1,10 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"Ws2_32.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XClient_Socket.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_HttpServer.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_HttpProtocol.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_SIPPorotocol.lib")
 #endif
 #include <stdio.h>
@@ -18,20 +18,40 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_HttpServer/HttpServer_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_HttpServer/HttpServer_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_HttpProtocol/HttpProtocol_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_HttpProtocol/HttpProtocol_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_SIPPorotocol/SIPProtocol_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_SIPPorotocol/SIPProtocol_Error.h"
 
-//Linux::g++ -std=c++17 -Wall -g RfcComponents_SIPClient.cpp -o RfcComponents_SIPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lXClient_Socket -lRfcComponents_HttpServer -lRfcComponents_SIPPorotocol -lpthread -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
-//Macos::g++ -std=c++17 -Wall -g RfcComponents_SIPClient.cpp -o RfcComponents_SIPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_RfcComponents -lXEngine_BaseLib -lXClient_Socket -lRfcComponents_HttpServer -lRfcComponents_SIPPorotocol -lpthread
+//Linux::g++ -std=c++17 -Wall -g RfcComponents_SIPClient.cpp -o RfcComponents_SIPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lXClient_Socket -lRfcComponents_HttpProtocol -lRfcComponents_SIPPorotocol -lpthread -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
+//Macos::g++ -std=c++17 -Wall -g RfcComponents_SIPClient.cpp -o RfcComponents_SIPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_RfcComponents -lXEngine_BaseLib -lXClient_Socket -lRfcComponents_HttpProtocol -lRfcComponents_SIPPorotocol -lpthread
 
 
-SOCKET hUDPSocket = 0;
+XSOCKET hTCPSocket = 0;
 XNETHANDLE xhToken = 0;
-XHTHREAD CALLBACK XClient_UDPSelect_Thread()
+int Test_TCPData()
 {
-	TCHAR tszClientAddr[64];
+	LPCTSTR lpszRegBuffer = "REGISTER sip:xyry.org;transport=tls SIP/2.0\r\n"
+		"Via: SIP/2.0/TLS 192.168.1.104:52400;branch=z9hG4bKccc1e88d4ab68cf2;rport\r\n"
+		"Via: SIP/2.0/UDP 192.168.2.111:52400;branch=z9hG4bKcc35138d4ab68cf2;rport\r\n"
+		"Contact: <sip:1001-0x20d1a38@192.168.1.104:52400;transport=tls>;expires=3600\r\n"
+		"Max-Forwards: 70\r\n"
+		"To: <sip:1001@xyry.org:5061>\r\n"
+		"From: <sip:1001@xyry.org:5061>;tag=24174dec803066c5\r\n"
+		"Call-ID: 8f8e5fb8ce260308\r\n"
+		"CSeq: 62430 REGISTER\r\n"
+		"User-Agent: 1.0.2\r\n"
+		"Allow: INVITE,ACK,BYE,CANCEL,OPTIONS,REFER,NOTIFY,SUBSCRIBE,INFO,MESSAGE\r\n"
+		"Keepalive: 30\r\n"
+		"Content-Length: 11\r\n\r\nhello world";
+
+	int nLen = _tcslen(lpszRegBuffer);
+	XClient_TCPSelect_SendMsg(hTCPSocket, lpszRegBuffer, nLen);
+	return 0;
+}
+
+XHTHREAD CALLBACK XClient_TCPSelect_Thread()
+{
 	TCHAR tszMsgBuffer[2048];
 
 	while (1)
@@ -39,10 +59,8 @@ XHTHREAD CALLBACK XClient_UDPSelect_Thread()
 		int nMsgLen = 2048;
 		SIPPROTOCOL_HDRINFO st_SIPProtocol;
 		memset(&st_SIPProtocol, '\0', sizeof(SIPPROTOCOL_HDRINFO));
-
-		memset(tszClientAddr, '\0', sizeof(tszClientAddr));
 		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-		if (XClient_UDPSelect_RecvMsg(hUDPSocket, tszMsgBuffer, &nMsgLen, tszClientAddr))
+		if (XClient_TCPSelect_RecvMsg(hTCPSocket, tszMsgBuffer, &nMsgLen))
 		{
 			RfcComponents_SIPProtocol_Parse(tszMsgBuffer, nMsgLen, &st_SIPProtocol);
 			RfcComponents_SIPClient_Process(xhToken, &st_SIPProtocol);
@@ -51,9 +69,9 @@ XHTHREAD CALLBACK XClient_UDPSelect_Thread()
 			if (0 == _tcsnicmp(st_SIPProtocol.st_Request.tszMethod, XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_INVITE, strlen(XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_INVITE)))
 			{
 				memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-				RfcComponents_HttpConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
+				HttpProtocol_ServerConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
 				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, TRUE);
-				XClient_UDPSelect_SendMsg(hUDPSocket, tszMsgBuffer, nMsgLen);
+				XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 				printf("Recv:%d\n,%s\n", nMsgLen, tszMsgBuffer);
 				//处理后的值是180,表示成功,才可以返回
 				if (st_SIPProtocol.st_Response.nCode == 180)
@@ -61,10 +79,10 @@ XHTHREAD CALLBACK XClient_UDPSelect_Thread()
 					std::this_thread::sleep_for(std::chrono::seconds(2));
 					st_SIPProtocol.st_Response.nCode = 200;       //等待两秒我们接起
 					RfcComponents_SIPClient_RepInvite(xhToken, &st_SIPProtocol);
-					RfcComponents_HttpConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
+					HttpProtocol_ServerConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
 					memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 					RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen);
-					XClient_UDPSelect_SendMsg(hUDPSocket, tszMsgBuffer, nMsgLen);
+					XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 				}
 			}
 			else if (0 == _tcsnicmp(st_SIPProtocol.st_Request.tszMethod, XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_ACK, strlen(XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_ACK)))
@@ -77,40 +95,41 @@ XHTHREAD CALLBACK XClient_UDPSelect_Thread()
 				//呼叫请求响应
 				printf("挂断\n");
 				memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-				RfcComponents_HttpConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
+				HttpProtocol_ServerConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
 				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, TRUE);
-				XClient_UDPSelect_SendMsg(hUDPSocket, tszMsgBuffer, nMsgLen);
+				XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 			}
 			else if (0 == _tcsnicmp(st_SIPProtocol.st_Request.tszMethod, XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_MESSAGE, strlen(XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_MESSAGE)))
 			{
-				printf("NEW MESSAGE %s:%s\n", st_SIPProtocol.st_From.tszName, st_SIPProtocol.st_Context.tszBodyBuffer);
+				printf("NEW MESSAGE %s:%s\n", st_SIPProtocol.st_From.tszName, st_SIPProtocol.st_Context.ptszBodyBuffer);
+				BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&st_SIPProtocol.st_Context.ptszBodyBuffer);
 				//清理SDP
 				memset(&st_SIPProtocol.st_Context, '\0', sizeof(st_SIPProtocol.st_Context));
 				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, TRUE);
-				RfcComponents_HttpConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
-				XClient_UDPSelect_SendMsg(hUDPSocket, tszMsgBuffer, nMsgLen);
+				HttpProtocol_ServerConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
+				XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 			}
 			else if (0 == _tcsnicmp(st_SIPProtocol.st_Request.tszMethod, XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_CANCEL, strlen(XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_CANCEL)))
 			{
 				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, TRUE);
-				RfcComponents_HttpConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
-				XClient_UDPSelect_SendMsg(hUDPSocket, tszMsgBuffer, nMsgLen);
+				HttpProtocol_ServerConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
+				XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 
 				if (200 == st_SIPProtocol.st_Response.nCode)
 				{
 					//继续返回一个481错误给客户端
 					st_SIPProtocol.st_Response.nCode = 481;
 					RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen);
-					RfcComponents_HttpConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
-					XClient_UDPSelect_SendMsg(hUDPSocket, tszMsgBuffer, nMsgLen);
+					HttpProtocol_ServerConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
+					XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 				}
 			}
 			else if (0 == _tcsnicmp(st_SIPProtocol.st_Request.tszMethod, XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_OPTIONS, strlen(XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_OPTIONS)))
 			{
 				printf("NEW OPTION %s\n", st_SIPProtocol.st_From.tszName);
 				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, TRUE);
-				RfcComponents_HttpConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
-				XClient_UDPSelect_SendMsg(hUDPSocket, tszMsgBuffer, nMsgLen);
+				HttpProtocol_ServerConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
+				XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 			}
 			//如果是响应并且为成功
 			if (!st_SIPProtocol.bRequest)
@@ -127,13 +146,13 @@ XHTHREAD CALLBACK XClient_UDPSelect_Thread()
 						std::this_thread::sleep_for(std::chrono::seconds(1));
 						memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 						RfcComponents_SIPProtocol_PacketRequest(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, TRUE);
-						XClient_UDPSelect_SendMsg(hUDPSocket, tszMsgBuffer, nMsgLen);
+						XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 						//通话5秒后挂断
 						std::this_thread::sleep_for(std::chrono::seconds(5));
 						memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 						RfcComponents_SIPClient_ReqBye(xhToken, &st_SIPProtocol);
 						RfcComponents_SIPProtocol_PacketRequest(&st_SIPProtocol, tszMsgBuffer, &nMsgLen);
-						XClient_UDPSelect_SendMsg(hUDPSocket, tszMsgBuffer, nMsgLen);
+						XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 					}
 					else if (ENUM_RFCCOMPONENTS_SIP_EVENTS_MESSAGE_ANSWERED == enSIPEvent)
 					{
@@ -172,7 +191,7 @@ XHTHREAD CALLBACK XClient_UDPSelect_Thread()
 }
 int main(int argc, char* argv[])
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
@@ -205,29 +224,27 @@ int main(int argc, char* argv[])
 	}
 
 	LPCTSTR lpszCodeFile = _T("SIPCode.types");
-	RfcComponents_HttpConfig_InitCode(lpszCodeFile, FALSE);
+	HttpProtocol_ServerConfig_InitCode(lpszCodeFile, FALSE);
 
 	SIPPROTOCOL_HDRINFO st_SIPProtocol;
 	memset(&st_SIPProtocol, '\0', sizeof(SIPPROTOCOL_HDRINFO));
 
-	if (!XClient_UDPSelect_Create(&hUDPSocket))
+	if (!XClient_TCPSelect_Create(&hTCPSocket, "127.0.0.1", 5000))
 	{
 		printf("错误\n");
 		return -1;
 	}
-	if (!XClient_UDPSelect_Bind(hUDPSocket, nPort))
+	Test_TCPData();
+	while (1)
 	{
-		printf("错误\n");
-		return -1;
+		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
-	XClient_UDPSelect_Connect(hUDPSocket, "127.0.0.1", 5000);
-
-	std::thread pSTDThread(XClient_UDPSelect_Thread);
+	std::thread pSTDThread(XClient_TCPSelect_Thread);
 	//注册
 	RfcComponents_SIPClient_Create(&xhToken, "xyry.org", tszUser, "123123");
 	RfcComponents_SIPClient_Register(xhToken, &st_SIPProtocol);
 	RfcComponents_SIPProtocol_PacketRequest(&st_SIPProtocol, tszMsgBuffer, &nMsgLen);
-	XClient_UDPSelect_SendMsg(hUDPSocket, tszMsgBuffer, nMsgLen);
+	XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 
 	if (bInvite)
 	{
@@ -240,13 +257,18 @@ int main(int argc, char* argv[])
 
 		//呼叫
 		//填充SDP
+		st_SIPProtocol.st_Context.ptszBodyBuffer = (CHAR*)malloc(10);
+		memset(st_SIPProtocol.st_Context.ptszBodyBuffer, '\0', 10);
 		st_SIPProtocol.st_Context.nBodyLen = 3;
-		strcpy(st_SIPProtocol.st_Context.tszBodyBuffer, "v=0");
+		strcpy(st_SIPProtocol.st_Context.ptszBodyBuffer, "v=0");
 		strcpy(st_SIPProtocol.st_Context.tszContentType, "application/sdp");
 		//发送
 		RfcComponents_SIPClient_ReqInvite(xhToken, &st_SIPProtocol);
 		RfcComponents_SIPProtocol_PacketRequest(&st_SIPProtocol, tszMsgBuffer, &nMsgLen);
-		XClient_UDPSelect_SendMsg(hUDPSocket, tszMsgBuffer, nMsgLen);
+		XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
+
+		free(st_SIPProtocol.st_Context.ptszBodyBuffer);
+		st_SIPProtocol.st_Context.ptszBodyBuffer = NULL;
 		/*MESSSAGE
 		st_SIPProtocol.st_Context.nBodyLen = 11;
 		strcpy(st_SIPProtocol.st_Context.tszBodyBuffer, "hello world");
@@ -254,18 +276,18 @@ int main(int argc, char* argv[])
 		//发送
 		RfcComponents_SIPClient_ReqMessage(xhToken, &st_SIPProtocol);
 		RfcComponents_SIPProtocol_PacketRequest(&st_SIPProtocol, tszMsgBuffer, &nMsgLen);
-		XClient_UDPSelect_SendMsg(hUDPSocket, tszMsgBuffer, nMsgLen);
+		XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 		//OPTIONS
 		RfcComponents_SIPClient_ReqOptions(xhToken, &st_SIPProtocol);
 		RfcComponents_SIPProtocol_PacketRequest(&st_SIPProtocol, tszMsgBuffer, &nMsgLen);
-		XClient_UDPSelect_SendMsg(hUDPSocket, tszMsgBuffer, nMsgLen);
+		XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 	*/
 	}
 	while (1)
 	{
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSACleanup();
 #endif
 	return 0;

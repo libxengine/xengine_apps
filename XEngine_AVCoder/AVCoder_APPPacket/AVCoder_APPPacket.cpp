@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
@@ -13,13 +13,13 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVPacket/AVPacket_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCoder/XEngine_AVPacket/AVPacket_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVPacket/AVPacket_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVPacket/AVPacket_Error.h"
 
-//Linux::g++ -std=c++17 -Wall -g AVCoder_APPPacket.cpp -o AVCoder_APPPacket.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder -lXEngine_BaseLib -lXEngine_AVPacket -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCoder,--disable-new-dtags
-//MacOS::g++ -std=c++17 -Wall -g AVCoder_APPPacket.cpp -o AVCoder_APPPacket.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCoder -lXEngine_BaseLib -lXEngine_AVPacket
+//Linux::g++ -std=c++17 -Wall -g AVCoder_APPPacket.cpp -o AVCoder_APPPacket.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_AVPacket -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec,--disable-new-dtags
+//MacOS::g++ -std=c++17 -Wall -g AVCoder_APPPacket.cpp -o AVCoder_APPPacket.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_AVPacket
 
-void __stdcall AVPacket_Pack_CBNotify(XHANDLE xhNet, int nCvtType, int nCvtFrame, double dlTime, LPVOID lParam)
+void __stdcall AVPacket_Pack_CBNotify(XHANDLE xhNet, int nCvtType, int nCvtFrame, double dlTime, XPVOID lParam)
 {
 	printf("AVPacket_Pack_CBConvert:%d %d %lf\n", nCvtType, nCvtFrame, dlTime);
 }
@@ -27,7 +27,7 @@ void __stdcall AVPacket_Pack_CBNotify(XHANDLE xhNet, int nCvtType, int nCvtFrame
 int AVPacket_Test_FileLink()
 {
 	double nTotalAVTime = 0;
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszSrcFile1 = "D:\\xengine_apps\\Debug\\1.mp4";
 	LPCTSTR lpszSrcFile2 = "D:\\xengine_apps\\Debug\\2.mp4";
 	LPCTSTR lpszDstFile = "D:\\xengine_apps\\Debug\\480p.mp4";
@@ -83,7 +83,7 @@ int AVPacket_Test_FileLink()
 int AVPacket_Test_FileConvert()
 {
 	double nTotalAVTime = 0;
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszSrcFile = "D:\\h264 file\\480p.flv";
 	LPCTSTR lpszDstFile = "D:\\h264 file\\480p.mp4";
 #else
@@ -130,7 +130,7 @@ int AVPacket_Test_FileConvert()
 
 int AVPacket_Test_FilePacket()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszVideoFile = "D:\\h264 file\\480p.264";
 	LPCTSTR lpszAudioFile1 = "D:\\h264 file\\1.aac";
 	LPCTSTR lpszAudioFile2 = "D:\\h264 file\\test.aac";
@@ -195,7 +195,7 @@ int AVPacket_Test_UNPacket()
 	int nListCount = 0;
 	AVCODEC_PACKETLIST** ppSt_ListFile;
 
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszVideoFile = "H:\\h264 file\\480p_1.264";
 	LPCTSTR lpszAudioFile1 = "H:\\h264 file\\test_1.aac";
 	LPCTSTR lpszAudioFile2 = "H:\\h264 file\\test_2.aac";

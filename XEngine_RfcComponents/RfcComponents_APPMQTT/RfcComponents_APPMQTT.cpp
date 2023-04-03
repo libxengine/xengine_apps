@@ -33,12 +33,12 @@ XHANDLE xhToken = NULL;
 int nTmpLen = 0;
 TCHAR tszTmpBuffer[2048];
 
-BOOL CALLBACK NetCore_CB_Login(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
+BOOL CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("NetCore_CB_Login:%s\n", lpszClientAddr);
 	return TRUE;
 }
-void CALLBACK NetCore_CB_Recv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpszRecvMsg, int nMsgLen, LPVOID lParam)
+void CALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
 	printf("NetCore_CB_Recv:%s-%d\n", lpszClientAddr, nMsgLen);
 
@@ -54,7 +54,7 @@ void CALLBACK NetCore_CB_Recv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpsz
 	memset(tszTmpBuffer, '\0', sizeof(tszTmpBuffer));
 	
 }
-void CALLBACK NetCore_CB_Close(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
+void CALLBACK NetCore_CB_Close(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("NetCore_CB_Close:%s\n", lpszClientAddr);
 }
@@ -154,7 +154,7 @@ BOOL RfcComponents_APPMQTT_Process(LPCTSTR lpszClientAddr, LPCTSTR lpszMsgBuffer
 	return TRUE;
 }
 
-BOOL RfcComponents_APPMQTT_Recv(SOCKET hSocket)
+BOOL RfcComponents_APPMQTT_Recv(XSOCKET hSocket)
 {
 	int nMsgLen = 2048;
 	TCHAR tszMsgBuffer[2048];
@@ -197,7 +197,7 @@ int main1()
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 
-	SOCKET hSocket = 0;
+	XSOCKET hSocket = 0;
 	if (!XClient_TCPSelect_Create(&hSocket, "127.0.0.1", 1883))
 	{
 		printf("XClient_TCPSelect_Create:%lX\n", XClient_GetLastError());

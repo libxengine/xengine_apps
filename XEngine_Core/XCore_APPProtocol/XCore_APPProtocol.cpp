@@ -26,7 +26,7 @@ using namespace std;
 //linux:g++ -std=gnu++17 -Wall -g XCore_APPProtocol.cpp -o XCore_APPProtocol.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -lXEngine_BaseLib -lXEngine_Protocol -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
 //macos:g++ -std=gnu++17 -Wall -g XCore_APPProtocol.cpp -o XCore_APPProtocol.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -lXEngine_BaseLib -lXEngine_Protocol
 
-BOOL CALLBACK XEngine_Protocol_Callback_Trace(LPCTSTR lpszSource, LPCTSTR lpszDestAddr, LPCTSTR lpszRecvAddr, int nTTL, XENGINE_VALTIME st_VALTime, LPVOID lParam)
+BOOL CALLBACK XEngine_Protocol_Callback_Trace(LPCTSTR lpszSource, LPCTSTR lpszDestAddr, LPCTSTR lpszRecvAddr, int nTTL, XENGINE_VALTIME st_VALTime, XPVOID lParam)
 {
 	printf("Src:%s Dst:%s Rcv:%s TTL:%d Time:%lld.%llu\n", lpszSource, lpszDestAddr, lpszRecvAddr, nTTL, st_VALTime.tv_sec, st_VALTime.tv_usec);
 	return TRUE;
@@ -66,8 +66,8 @@ int Protocol_TestTrace()
 //ONLY LINUX
 int Protocol_TestTCPRaw()
 {
-	SOCKET hSDSocket;
-	SOCKET hRVSocket;
+	XSOCKET hSDSocket;
+	XSOCKET hRVSocket;
 	LPCTSTR lpszSourceAddr = "192.168.1.8";
 
 	if (!Protocol_TCPRaw_Init(&hSDSocket, &hRVSocket))
@@ -130,7 +130,7 @@ int Protocol_TestTCPRaw()
 
 int main()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
@@ -139,7 +139,7 @@ int main()
 	Protocol_TestTrace();
 	Protocol_TestTCPRaw();
 
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSACleanup();
 #endif
 	std::this_thread::sleep_for(std::chrono::seconds(10));

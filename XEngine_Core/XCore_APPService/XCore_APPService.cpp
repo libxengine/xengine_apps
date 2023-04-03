@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <stdio.h>
 #include <Windows.h>
 #include <tchar.h>
@@ -26,25 +26,25 @@ XHANDLE xhUDPCore = NULL;
 XHANDLE xhUDX = NULL;
 TCHAR tszClientAddr[64];
 
-BOOL CALLBACK TCPOverlapped_Login(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
+BOOL CALLBACK TCPOverlapped_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	strcpy(tszClientAddr, lpszClientAddr);
 	printf("TCPOverlapped_Login:%s = %d\n", lpszClientAddr, hSocket);
 	return TRUE;
 }
-void CALLBACK TCPOverlapped_Recv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpszRecvMsg, int nMsgLen, LPVOID lParam)
+void CALLBACK TCPOverlapped_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
 	printf("TCPOverlapped_Recv:%s = %s = %d\n", lpszClientAddr, lpszRecvMsg, nMsgLen);
 	_tcscpy(tszClientAddr, lpszClientAddr);
 }
-void CALLBACK TCPOverlapped_Leave(LPCSTR lpszClientAddr, SOCKET hSocket, LPVOID lParam)
+void CALLBACK TCPOverlapped_Leave(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("TCPOverlapped_Leave:%s\n", lpszClientAddr);
 }
-void CALLBACK Callback_UDPRecv(LPCSTR lpszClientAddr, SOCKET hSocket, LPCSTR lpszRecvMsg, int nMsgLen, LPVOID lParam)
+void CALLBACK Callback_UDPRecv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
 	printf("TCPOverlapped_Recv:%s = %s = %d\n", lpszClientAddr, lpszRecvMsg, nMsgLen);
-	NetCore_UDPXCore_SendEx(xhUDPCore, lpszClientAddr, lpszRecvMsg, &nMsgLen);
+	NetCore_UDPXCore_SendEx(xhUDPCore, lpszClientAddr, lpszRecvMsg, nMsgLen);
 }
 
 int test_tcpxpoll()
@@ -92,10 +92,10 @@ int test_udpxcore()
 }
 int test_unixdomain()
 {
-#ifdef _WINDOWS
-	LPCSTR lpszUnixName = _T("H:\\XEngine_Apps\\Debug\\unix.socket");
+#ifdef _MSC_BUILD
+	LPCXSTR lpszUnixName = _T("H:\\XEngine_Apps\\Debug\\unix.socket");
 #else
-	LPCSTR lpszUnixName = "/tmp/unix.socket";
+	LPCXSTR lpszUnixName = "/tmp/unix.socket";
 #endif
 	if (NetCore_UnixDomain_Start(lpszUnixName))
 	{
@@ -111,7 +111,7 @@ int test_unixdomain()
 }
 int test_udx()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	LPCTSTR lpszFile = _T("H:\\XEngine_Apps\\Debug\\2.exe");
 #else
 	LPCTSTR lpszFile = _T("2.exe");
@@ -154,7 +154,7 @@ int test_udx()
 
 int main()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
@@ -171,7 +171,7 @@ int main()
 	NetCore_UDPXCore_DestroyEx(xhUDPCore);
 	NetCore_UnixDomain_Stop();
 	NetCore_UDXSocket_DestroyEx(xhUDX);
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSACleanup();
 #endif
 	return 1;

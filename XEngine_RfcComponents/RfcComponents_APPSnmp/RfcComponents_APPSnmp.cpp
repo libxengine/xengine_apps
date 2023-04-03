@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"Ws2_32.lib")
@@ -20,11 +20,11 @@
 
 int main()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
-	SOCKET hSocket;
+	XSOCKET hSocket;
 	int nMsgLen = 0;
 	int nPort = 161;
 	TCHAR tszMsgBuffer[1024];
@@ -80,7 +80,7 @@ int main()
 	RfcComponents_SnmpHelp_OIDToStr(st_SNMPProtocol.st_BindVar.tszOIDStr, st_SNMPProtocol.st_BindVar.nOLen, tszOIDBuffer, &nOLen);
 	printf("%s:%s\n", st_SNMPProtocol.tszCommname, st_SNMPProtocol.st_BindVar.tszTetStr);
 	XClient_UDPSelect_Close(hSocket);
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSACleanup();
 #endif
 	return 0;

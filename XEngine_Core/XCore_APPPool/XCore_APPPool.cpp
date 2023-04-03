@@ -1,4 +1,4 @@
-﻿#ifdef _WINDOWS
+﻿#ifdef _MSC_BUILD
 #include <stdio.h>
 #include <tchar.h>
 #include <Windows.h>
@@ -20,7 +20,7 @@ using namespace std;
 //linux:g++ -std=gnu++17 -Wall -g XCore_APPPool.cpp -o XCore_APPPool.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_ManagePool -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
 //macos:g++ -std=gnu++17 -Wall -g XCore_APPPool.cpp -o XCore_APPPool.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_ManagePool
 
-XHTHREAD CALLBACK ManagePool_ThreadPool(LPVOID lParam)
+XHTHREAD CALLBACK ManagePool_ThreadPool(XPVOID lParam)
 {
 	int *pInt_Number = (int*)lParam;
 	printf(_T("%d\n"), *pInt_Number);
@@ -64,7 +64,7 @@ void SocketPool_Test()
 		printf("ManagePool_Socket_Create!@\n");
 		return;
 	}
-	SOCKET hSocket = INVALID_SOCKET;
+	XSOCKET hSocket = INVALID_SOCKET;
 	if (!ManagePool_Socket_GetIdleSocket(xhPool, &hSocket))
 	{
 		printf("ManagePool_Socket_GetIdleSocket!@\n");
@@ -137,7 +137,7 @@ int MemoryPool_Test()
 }
 int main()
 {
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
@@ -148,7 +148,7 @@ int main()
 	{
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
-#ifdef _WINDOWS
+#ifdef _MSC_BUILD
 	WSACleanup();
 #endif
 	return 0;
