@@ -42,7 +42,7 @@ void ThreadPool_Test()
 		*pInt = i;
 		ManagePool_Thread_DTPostTask(xhPool, ManagePool_ThreadPool, pInt);
 	}
-	std::this_thread::sleep_for(std::chrono::seconds(1));
+	std::this_thread::sleep_for(std::chrono::seconds(5));
 	ManagePool_Thread_DTDestroy(xhPool);
 
 	ManagePool_Thread_CTCreate(2);
@@ -52,7 +52,7 @@ void ThreadPool_Test()
 		*pInt = i;
 		ManagePool_Thread_CTPostTask(ManagePool_ThreadPool, pInt);
 	}
-	std::this_thread::sleep_for(std::chrono::seconds(1));
+	std::this_thread::sleep_for(std::chrono::seconds(5));
 	ManagePool_Thread_CTDestroy();
 }
 
@@ -88,44 +88,44 @@ void SocketPool_Test()
 	ManagePool_Socket_Destroy(xhPool);
 }
 
-void __stdcall fun(void* p)
+void CALLBACK fun(void* p)
 {
 	printf("call fun\n");
 }
 int MemoryPool_Test()
 {
-	CHAR* p1, * p2, * p3, * p4;
+	XCHAR* p1, * p2, * p3, * p4;
 
 	XHANDLE xmPool = ManagePool_Memory_Create();
-	p1 = (CHAR*)ManagePool_Memory_Alloc(xmPool, 416); /*分配内存，在可分配内*/
+	p1 = (XCHAR*)ManagePool_Memory_Alloc(xmPool, 416); /*分配内存，在可分配内*/
 	memcpy(p1, "p1", 2);
 	printf("%s\n", p1);
 
-	p2 = (CHAR*)ManagePool_Memory_Alloc(xmPool, 200);/*分配内存，在可分配内，但pool中没有足够的内存空间*/
+	p2 = (XCHAR*)ManagePool_Memory_Alloc(xmPool, 200);/*分配内存，在可分配内，但pool中没有足够的内存空间*/
 	memcpy(p2, "p2", 2);
 	printf("%s\n", p2);
 
 	ManagePool_Memory_Free(xmPool, p1);
 	ManagePool_Memory_Free(xmPool, p2);
 
-	p3 = (CHAR*)ManagePool_Memory_Alloc(xmPool, 624);//分配大内存
+	p3 = (XCHAR*)ManagePool_Memory_Alloc(xmPool, 624);//分配大内存
 	memcpy(p3, "p3", 2);
 	printf("%s\n", p3);
 
-	p4 = (CHAR*)ManagePool_Memory_Alloc(xmPool, 100);//分配内存
+	p4 = (XCHAR*)ManagePool_Memory_Alloc(xmPool, 100);//分配内存
 	memcpy(p4, "p4", 2);
 	printf("%s\n", p4);
 
-	CHAR* p5 = (CHAR*)ManagePool_Memory_Alloc(xmPool, 4000);//分配内存
+	XCHAR* p5 = (XCHAR*)ManagePool_Memory_Alloc(xmPool, 4000);//分配内存
 	memcpy(p5, "p5", 2);
 	printf("%s,%s\n", p5, p4);
 
-	CHAR* p6 = (CHAR*)ManagePool_Memory_Alloc(xmPool, 5000);//分配大内存
+	XCHAR* p6 = (XCHAR*)ManagePool_Memory_Alloc(xmPool, 5000);//分配大内存
 	memcpy(p6, "p6", 2);
 	printf("%s,%s\n", p6, p4);
 
 	ManagePool_Memory_Free(xmPool, p6);
-	CHAR* p7 = (CHAR*)ManagePool_Memory_Alloc(xmPool, 5000);//分配大内存
+	XCHAR* p7 = (XCHAR*)ManagePool_Memory_Alloc(xmPool, 5000);//分配大内存
 	memcpy(p7, "p7", 2);
 	printf("%s,%s,%s\n", p7, p4, p5);
 

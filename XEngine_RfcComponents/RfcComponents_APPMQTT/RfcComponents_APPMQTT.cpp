@@ -27,16 +27,16 @@ using namespace std;
 
 //Linux::g++ -std=c++17 -Wall -g RfcComponents_APPMQTT.cpp -o RfcComponents_APPMQTT.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lXClient_Socket -lRfcComponents_MQTTProtocol -lpthread -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
 //Macos::g++ -std=c++17 -Wall -g RfcComponents_APPMQTT.cpp -o RfcComponents_APPMQTT.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lXClient_Socket -lRfcComponents_MQTTProtocol -lpthread
-BOOL RfcComponents_APPMQTT_Process(LPCTSTR lpszClientAddr, LPCTSTR lpszMsgBuffer, int nMsgLen);
+XBOOL RfcComponents_APPMQTT_Process(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int nMsgLen);
 
 XHANDLE xhToken = NULL;
 int nTmpLen = 0;
-TCHAR tszTmpBuffer[2048];
+XCHAR tszTmpBuffer[2048];
 
-BOOL CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+XBOOL CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("NetCore_CB_Login:%s\n", lpszClientAddr);
-	return TRUE;
+	return XTRUE;
 }
 void CALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
@@ -59,7 +59,7 @@ void CALLBACK NetCore_CB_Close(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID l
 	printf("NetCore_CB_Close:%s\n", lpszClientAddr);
 }
 
-void Packet_Property(TCHAR* ptszMsgBuffer, int* pInt_Len, MQTTPROTOCOL_HDRPROPERTY*** pppSt_HDRProperty, int nListCount)
+void Packet_Property(XCHAR* ptszMsgBuffer, int* pInt_Len, MQTTPROTOCOL_HDRPROPERTY*** pppSt_HDRProperty, int nListCount)
 {
 	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppSt_HDRProperty, nListCount, sizeof(MQTTPROTOCOL_HDRPROPERTY));
 
@@ -87,12 +87,12 @@ void Packet_Property(TCHAR* ptszMsgBuffer, int* pInt_Len, MQTTPROTOCOL_HDRPROPER
 	(*pppSt_HDRProperty)[5]->st_unValue.byValue = 1;
 	(*pppSt_HDRProperty)[5]->byProFlag = XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_PROPERTY_WILDCARDSUBAVAI;
 }
-BOOL RfcComponents_APPMQTT_Process(LPCTSTR lpszClientAddr, LPCTSTR lpszMsgBuffer, int nMsgLen)
+XBOOL RfcComponents_APPMQTT_Process(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int nMsgLen)
 {
 	int nSDLen = 0;
 	int nRVLen = 0;
-	TCHAR tszSDBuffer[1024];
-	TCHAR tszRVBuffer[1024];
+	XCHAR tszSDBuffer[1024];
+	XCHAR tszRVBuffer[1024];
 
 	MQTTPROTOCOL_INFORMATION st_MQTTProtcol;
 
@@ -151,13 +151,13 @@ BOOL RfcComponents_APPMQTT_Process(LPCTSTR lpszClientAddr, LPCTSTR lpszMsgBuffer
 		MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, 0, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PINGREP, 0);
 		NetCore_TCPXCore_SendEx(xhToken, lpszClientAddr, tszSDBuffer, nSDLen);
 	}
-	return TRUE;
+	return XTRUE;
 }
 
-BOOL RfcComponents_APPMQTT_Recv(XSOCKET hSocket)
+XBOOL RfcComponents_APPMQTT_Recv(XSOCKET hSocket)
 {
 	int nMsgLen = 2048;
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszMsgBuffer[2048];
 	MQTTPROTOCOL_INFORMATION st_MQTTProtcol;
 
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
@@ -187,7 +187,7 @@ BOOL RfcComponents_APPMQTT_Recv(XSOCKET hSocket)
 	{
 		printf("ping ok\n");
 	}
-	return TRUE;
+	return XTRUE;
 }
 
 int main1()
@@ -198,15 +198,15 @@ int main1()
 #endif
 
 	XSOCKET hSocket = 0;
-	if (!XClient_TCPSelect_Create(&hSocket, "127.0.0.1", 1883))
+	if (!XClient_TCPSelect_Create(&hSocket, "10.10.12.114", 1883))
 	{
 		printf("XClient_TCPSelect_Create:%lX\n", XClient_GetLastError());
 		return 0;
 	}
 	int nSDLen = 0;
 	int nRVLen = 0;
-	TCHAR tszSDBuffer[1024];
-	TCHAR tszRVBuffer[1024];
+	XCHAR tszSDBuffer[1024];
+	XCHAR tszRVBuffer[1024];
 	MQTTPROTOCOL_HDRCONNNECT st_HDRConnect;
 
 	memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));

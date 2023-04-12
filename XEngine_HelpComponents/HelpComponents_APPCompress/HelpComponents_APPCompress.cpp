@@ -22,16 +22,16 @@
 
 void CompressBuffer_Test()
 {
-	LPCTSTR lpszBuffer = _T("12345678901234567890123456789012345678901234567890");
-	TCHAR tszEnBuffer[2048];
-	TCHAR tszDeBuffer[2048];
+	LPCXSTR lpszBuffer = _T("12345678901234567890123456789012345678901234567890");
+	XCHAR tszEnBuffer[2048];
+	XCHAR tszDeBuffer[2048];
 
 	memset(tszEnBuffer, '\0', sizeof(tszEnBuffer));
 	memset(tszDeBuffer, '\0', sizeof(tszDeBuffer));
 
 	int nLen = strlen(lpszBuffer);
-	DWORD dwEnLen = 2048;
-	DWORD dwDeLen = 2048;
+	XLONG dwEnLen = 2048;
+	XLONG dwDeLen = 2048;
 
 	if (!HelpCompress_Memory_Compress(lpszBuffer, nLen, tszEnBuffer, &dwEnLen, 4))
 	{
@@ -49,16 +49,16 @@ void CompressBuffer_Test()
 void CompressFile_Test()
 {
 #ifdef _MSC_BUILD
-	XZIP xhFile = HelpCompress_File_Create(_T("H:\\XEngine_Apps\\Debug\\1.zip"));
-	HelpCompress_File_Add(xhFile, "XClient_Socket.dll", _T("H:\\XEngine_Apps\\Debug\\XClient_Socket.dll"));
-	HelpCompress_File_Add(xhFile, "zlibwapi.dll", _T("H:\\XEngine_Apps\\Debug\\zlibwapi.dll"));
-	HelpCompress_File_Add(xhFile, "123\\XEngine_WBlackList.dll", _T("H:\\XEngine_Apps\\Debug\\XEngine_WBlackList.dll"));
-	HelpCompress_File_Add(xhFile, "123\\XClient_OPenSsl.dll", _T("H:\\XEngine_Apps\\Debug\\XClient_OPenSsl.dll"));
+	XZIP xhFile = HelpCompress_File_Create(_T("d:\\xengine_apps\\Debug\\1.zip"));
+	HelpCompress_File_Add(xhFile, "XClient_Socket.dll", _T("d:\\xengine_apps\\Debug\\XClient_Socket.dll"));
+	HelpCompress_File_Add(xhFile, "XEngine_Authorize.txt", _T("d:\\xengine_apps\\Debug\\XEngine_Authorize.txt"));
+	HelpCompress_File_Add(xhFile, "123\\XEngine_WBlackList.dll", _T("d:\\xengine_apps\\Debug\\XEngine_WBlackList.dll"));
+	HelpCompress_File_Add(xhFile, "123\\XClient_OPenSsl.dll", _T("d:\\xengine_apps\\Debug\\XClient_OPenSsl.dll"));
 	HelpCompress_File_Close(xhFile);
 #else
 	XZIP xhFile = HelpCompress_File_Create(_T("./1.zip"));
 	HelpCompress_File_Add(xhFile, "1.png", _T("./1.png"));
-	HelpCompress_File_Add(xhFile, "2.png", _T("./1.png"));
+	HelpCompress_File_Add(xhFile, "2.png", _T("./2.png"));
 	HelpCompress_File_Add(xhFile, "123\\3.png", _T("./3.png"));
 	HelpCompress_File_Close(xhFile);
 #endif
@@ -66,7 +66,7 @@ void CompressFile_Test()
 void UNCompressTest()
 {
 #ifdef _MSC_BUILD
-	XZIP xhFile = HelpCompress_File_OPen(_T("H:\\XEngine_Apps\\Debug\\1.zip"));
+	XZIP xhFile = HelpCompress_File_OPen(_T("d:\\xengine_apps\\Debug\\1.zip"));
 #else
 	XZIP xhFile = HelpCompress_File_OPen(_T("./1.zip"));
 #endif
@@ -77,10 +77,10 @@ void UNCompressTest()
 	int nCount = 0;
 	HelpCompress_File_GetCount(xhFile, &nCount);
 
-	BOOL bRet = HelpCompress_File_GoFirstFile(xhFile);
+	XBOOL bRet = HelpCompress_File_GoFirstFile(xhFile);
 	while (bRet)
 	{
-		TCHAR tszExtDir[1024];
+		XCHAR tszExtDir[1024];
 		HELPCOMPRESS_ZLIBINFO st_ZLibInfo;
 
 		memset(tszExtDir, '\0', 1024);
@@ -90,7 +90,7 @@ void UNCompressTest()
 		if (st_ZLibInfo.bIsFile)
 		{
 #ifdef _MSC_BUILD
-			sprintf(tszExtDir, _T("H:\\XEngine_Apps\\Debug\\%s"), st_ZLibInfo.tszFileName);
+			sprintf(tszExtDir, _T("d:\\xengine_apps\\Debug\\%s"), st_ZLibInfo.tszFileName);
 #else
 			sprintf(tszExtDir, _T("./dezip/%s"), st_ZLibInfo.tszFileName);
 #endif
@@ -99,7 +99,7 @@ void UNCompressTest()
 		else
 		{
 #ifdef _MSC_BUILD
-			sprintf(tszExtDir, _T("H:\\XEngine_Apps\\Debug\\%s"), st_ZLibInfo.tszFileName);
+			sprintf(tszExtDir, _T("d:\\xengine_apps\\Debug\\%s"), st_ZLibInfo.tszFileName);
 #else
 			sprintf(tszExtDir, _T("./dezip/%s"), st_ZLibInfo.tszFileName);
 #endif

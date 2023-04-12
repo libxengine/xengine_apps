@@ -25,16 +25,16 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_ProxyProtocol/ProxyProtocol_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_ProxyProtocol/ProxyProtocol_Error.h"
 
-//Linux::g++ -std=c++17 -Wall -g RfcComponents_APPProxy.cpp -o RfcComponents_APPProxy.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lXClient_Socket -lRfcComponents_APPProxy -lpthread -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
-//Macos::g++ -std=c++17 -Wall -g RfcComponents_APPProxy.cpp -o RfcComponents_APPProxy.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lXClient_Socket -lRfcComponents_APPProxy -lpthread
+//Linux::g++ -std=c++17 -Wall -g RfcComponents_APPProxy.cpp -o RfcComponents_APPProxy.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lXClient_Socket -lRfcComponents_ProxyProtocol -lpthread -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
+//Macos::g++ -std=c++17 -Wall -g RfcComponents_APPProxy.cpp -o RfcComponents_APPProxy.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lXClient_Socket -lRfcComponents_ProxyProtocol -lpthread
 
 typedef struct
 {
-	TCHAR tszIPAddr[128];
+	XCHAR tszIPAddr[128];
 	ENUM_RFCCOMPONENTS_PROXY_STATUS enStatus;
 	XNETHANDLE xhClient;
 	XSOCKET hSocket;
-	BOOL bClose;
+	XBOOL bClose;
 }PROXYPROTOCOL_CLIENTINFO;
 
 int main()
@@ -44,8 +44,8 @@ int main()
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 
-	LPCTSTR lpszClient1 = "123123";
-	LPCTSTR lpszClient2 = "aaaddd";
+	LPCXSTR lpszClient1 = "123123";
+	LPCXSTR lpszClient2 = "aaaddd";
 	PROXYPROTOCOL_CLIENTINFO st_Client1;
 	PROXYPROTOCOL_CLIENTINFO st_Client2;
 
@@ -55,13 +55,13 @@ int main()
 	ProxyProtocol_TunnelCore_Create(lpszClient1);
 	ProxyProtocol_TunnelCore_Create(lpszClient2);
 	
-	st_Client1.bClose = FALSE;
+	st_Client1.bClose = XFALSE;
 	st_Client1.hSocket = 12;
 	st_Client1.xhClient = 13;
 	st_Client1.enStatus = ENUM_RFCCOMPONENTS_PROXY_STATUS_CREATE;
 	strcpy(st_Client1.tszIPAddr, "dwaodnwaodn");
 	
-	st_Client2.bClose = TRUE;
+	st_Client2.bClose = XTRUE;
 	st_Client2.hSocket = 14;
 	st_Client2.xhClient = 15;
 	st_Client2.enStatus = ENUM_RFCCOMPONENTS_PROXY_STATUS_FORWARD;

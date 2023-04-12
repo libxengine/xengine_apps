@@ -24,10 +24,10 @@ int Test_SerialInfo()
 	SYSTEMAPI_SERIAL_INFOMATION st_SDKSerial;
 	memset(&st_SDKSerial, '\0', sizeof(SYSTEMAPI_SERIAL_INFOMATION));
 
-	DWORD dwOSProcessor = 0;
-	TCHAR tszOSBuffer[MAX_PATH];
-	TCHAR tszOSVersion[MAX_PATH];
-	TCHAR tszOSVBuild[MAX_PATH];
+	XLONG dwOSProcessor = 0;
+	XCHAR tszOSBuffer[MAX_PATH];
+	XCHAR tszOSVersion[MAX_PATH];
+	XCHAR tszOSVBuild[MAX_PATH];
 
 	memset(tszOSBuffer, '\0', MAX_PATH);
 	memset(tszOSVersion, '\0', MAX_PATH);
@@ -53,7 +53,7 @@ int Test_SerialInfo()
 int Test_DiskInfo()
 {
 	int nDiskCount = 0;
-	TCHAR** ppszRootName;
+	XCHAR** ppszRootName;
 	SystemApi_HardWare_GetDiskNumber(&ppszRootName, &nDiskCount);
 	for (int i = 0; i < nDiskCount; i++)
 	{

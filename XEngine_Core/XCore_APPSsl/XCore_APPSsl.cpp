@@ -25,16 +25,16 @@ using namespace std;
 
 void md5cal()
 {
-	UCHAR tszMD5Hex[MAX_PATH];
-	TCHAR tszMD5Str[MAX_PATH];
+	XBYTE tszMD5Hex[MAX_PATH];
+	XCHAR tszMD5Str[MAX_PATH];
 
 	memset(tszMD5Hex, '\0', MAX_PATH);
 	memset(tszMD5Str, '\0', MAX_PATH);
 
 	int nLen = 512;
-	LPCTSTR lpszFile = _T("D:\\XEngine_Storage\\XEngine_Source\\Debug\\XEngine_File2\\a.txt");
+	LPCXSTR lpszFile = _T("D:\\XEngine_Storage\\XEngine_Source\\Debug\\XEngine_File2\\a.txt");
 
-	if (!OPenSsl_Api_Digest(lpszFile, tszMD5Hex, &nLen, TRUE, XENGINE_OPENSSL_API_DIGEST_MD5))
+	if (!OPenSsl_Api_Digest(lpszFile, tszMD5Hex, &nLen, XTRUE, XENGINE_OPENSSL_API_DIGEST_MD5))
 	{
 		return;
 	}
@@ -45,7 +45,7 @@ void md5cal()
 	memset(tszMD5Hex, '\0', MAX_PATH);
 	memset(tszMD5Str, '\0', MAX_PATH);
 
-	if (!OPenSsl_Api_Digest("D:\\xengine_apps\\Debug\\XEngine_BaseLib.dll", tszMD5Hex, NULL, TRUE, XENGINE_OPENSSL_API_DIGEST_SHA1))
+	if (!OPenSsl_Api_Digest("D:\\xengine_apps\\Debug\\XEngine_BaseLib.dll", tszMD5Hex, NULL, XTRUE, XENGINE_OPENSSL_API_DIGEST_SHA1))
 	{
 		return;
 	}
@@ -57,26 +57,26 @@ void md5cal()
 }
 void Cryptto()
 {
-	TCHAR tszSourceBuffer[4096];
+	XCHAR tszSourceBuffer[4096];
 	memset(tszSourceBuffer, '\0', sizeof(tszSourceBuffer));
 	const char* lpszFileName = "E:\\netengineapp\\NetEngine_WINApps\\Debug\\NetEngine_MQService.dat1";
 
 	strcpy(tszSourceBuffer, lpszFileName);
 
-	LPCTSTR lpszKey = _T("123123");
-	UCHAR tszOutString[1024];
-	TCHAR tszDeString[1024];
+	LPCXSTR lpszKey = _T("123123");
+	XBYTE tszOutString[1024];
+	XCHAR tszDeString[1024];
 	int nLen = strlen(lpszFileName);
 	memset(tszDeString, '\0', 1024);
 	memset(tszOutString, '\0', 1024);
 
-	if (!OPenSsl_Api_CryptEncodec(tszSourceBuffer, tszOutString, &nLen, lpszKey, XENGINE_OPENSSL_API_CRYPT_SMCBC))
+	if (!OPenSsl_Api_CryptEncodec(tszSourceBuffer, tszOutString, &nLen, lpszKey, XENGINE_OPENSSL_API_CRYPT_3DES))
 	{
 		return;
 	}
 	printf(_T("加密后的数据长度：%d,数据为：%s\n"), nLen, tszOutString);
 
-	if (!OPenSsl_Api_CryptDecodec(tszOutString, tszDeString, &nLen, lpszKey, XENGINE_OPENSSL_API_CRYPT_SMCBC))
+	if (!OPenSsl_Api_CryptDecodec(tszOutString, tszDeString, &nLen, lpszKey, XENGINE_OPENSSL_API_CRYPT_3DES))
 	{
 		return;
 	}
@@ -86,31 +86,31 @@ void Cryptto()
 }
 void RsaSSL()
 {
-	LPCTSTR lpszPass = "123123";
-	LPCTSTR lpszSource = "Hello World";
+	LPCXSTR lpszPass = "123123";
+	LPCXSTR lpszSource = "Hello World";
 #ifdef _MSC_BUILD
-	LPCTSTR lpszPrivateKey = _T("D:\\XEngine_Apps\\Debug\\test.Key");
-	LPCTSTR lpszPublicKey = _T("D:\\XEngine_Apps\\Debug\\test_pub.Key");
+	LPCXSTR lpszPrivateKey = _T("D:\\xengine_apps\\Debug\\test.Key");
+	LPCXSTR lpszPublicKey = _T("D:\\xengine_apps\\Debug\\test_pub.Key");
 #else
-	LPCTSTR lpszPrivateKey = _T("test.Key");
-	LPCTSTR lpszPublicKey = _T("test_pub.Key");
+	LPCXSTR lpszPrivateKey = _T("test.Key");
+	LPCXSTR lpszPublicKey = _T("test_pub.Key");
 #endif
 
 	if (!OPenSsl_Api_RSACreate(lpszPublicKey, lpszPrivateKey, lpszPass))
 	{
 		return;
 	}
-	int nRsaLen = _tcslen(lpszSource);
-	UCHAR puszRsaEnString[1024];
-	memset(puszRsaEnString, '\0', 1024);
-	if (!OPenSsl_Api_RSAEncodec(lpszPublicKey, lpszSource, &nRsaLen, puszRsaEnString, TRUE, lpszPass))
+	int nRsaLen = strlen(lpszSource);
+	XBYTE puszRsaEnString[1024];
+	memset(puszRsaEnString, '\0', sizeof(puszRsaEnString));
+	if (!OPenSsl_Api_RSAEncodec(lpszPublicKey, lpszSource, &nRsaLen, puszRsaEnString, XTRUE, lpszPass))
 	{
 		return;
 	}
 	printf("RSA:%s\n", puszRsaEnString);
-	TCHAR tszDeString[1024];
+	XCHAR tszDeString[1024];
 	memset(tszDeString, '\0', sizeof(tszDeString));
-	if (!OPenSsl_Api_RSADecodec(lpszPrivateKey, puszRsaEnString, &nRsaLen, tszDeString, FALSE, lpszPass))
+	if (!OPenSsl_Api_RSADecodec(lpszPrivateKey, puszRsaEnString, &nRsaLen, tszDeString, XFALSE, lpszPass))
 	{
 		return;
 	}
@@ -118,21 +118,21 @@ void RsaSSL()
 }
 void SignVer()
 {
-	LPCTSTR lpszSource = _T("Hello World");
-	LPCTSTR lpszPass = _T("123123");
+	LPCXSTR lpszSource = _T("Hello World");
+	LPCXSTR lpszPass = _T("123123");
 
 	int nLen = strlen(lpszSource);
 	int nOLen = 1024;
-	TCHAR tszSource[2048];
+	XCHAR tszSource[2048];
 
 	memset(tszSource, '\0', sizeof(tszSource));
 
 #ifdef _MSC_BUILD
-	LPCTSTR lpszPrivateKey = _T("D:\\XEngine_Apps\\Debug\\test.Key");
-	LPCTSTR lpszPublicKey = _T("D:\\XEngine_Apps\\Debug\\test_pub.Key");
+	LPCXSTR lpszPrivateKey = _T("D:\\xengine_apps\\Debug\\test.Key");
+	LPCXSTR lpszPublicKey = _T("D:\\xengine_apps\\Debug\\test_pub.Key");
 #else
-	LPCTSTR lpszPrivateKey = _T("test.Key");
-	LPCTSTR lpszPublicKey = _T("test_pub.Key");
+	LPCXSTR lpszPrivateKey = _T("test.Key");
+	LPCXSTR lpszPublicKey = _T("test_pub.Key");
 #endif
 
 	if (!OPenSsl_Cert_SignEncoder(lpszSource,nLen, tszSource, &nOLen, lpszPrivateKey, lpszPass))
@@ -148,19 +148,17 @@ void SignVer()
 void VerSign()
 {
 #ifdef _MSC_BUILD
-	LPCTSTR lpszPrivateKey = _T("D:\\XEngine_Apps\\Debug\\test.Key");
-	LPCTSTR lpszPublicKey = _T("D:\\XEngine_Apps\\Debug\\test_pub.Key");
-	LPCTSTR lpszReqFile = _T("D:\\XEngine_Apps\\Debug\\test.csr");
-	LPCTSTR lpszCAFile = _T("D:\\XEngine_Apps\\Debug\\ca.crt");
-	LPCTSTR lpszUserFile = _T("D:\\XEngine_Apps\\Debug\\test.crt");
+	LPCXSTR lpszPrivateKey = _T("D:\\xengine_apps\\Debug\\test.Key");
+	LPCXSTR lpszReqFile = _T("D:\\xengine_apps\\Debug\\test.csr");
+	LPCXSTR lpszCAFile = _T("D:\\xengine_apps\\Debug\\ca.crt");
+	LPCXSTR lpszUserFile = _T("D:\\xengine_apps\\Debug\\test.crt");
 #else
-	LPCTSTR lpszPrivateKey = _T("test.Key");
-	LPCTSTR lpszPublicKey = _T("test_pub.Key");
-	LPCTSTR lpszReqFile = _T("test.csr");
-	LPCTSTR lpszCAFile = _T("ca.crt");
-	LPCTSTR lpszUserFile = _T("test.crt");
+	LPCXSTR lpszPrivateKey = _T("test.Key");
+	LPCXSTR lpszReqFile = _T("test.csr");
+	LPCXSTR lpszCAFile = _T("ca.crt");
+	LPCXSTR lpszUserFile = _T("test.crt");
 #endif
-	LPCTSTR lpszPass = _T("123123");
+	LPCXSTR lpszPass = _T("123123");
 
 	OPENSSL_X509CCINL st_X509Info;
 	memset(&st_X509Info, '\0', sizeof(OPENSSL_X509CCINL));
@@ -180,11 +178,11 @@ void VerSign()
 void CertVer()
 {
 #ifdef _MSC_BUILD
-	LPCTSTR lpszRootKey = _T("D:\\XEngine_Apps\\Debug\\ca.crt");
-	LPCTSTR lpszUserKey = _T("D:\\XEngine_Apps\\Debug\\test.crt");
+	LPCXSTR lpszRootKey = _T("D:\\xengine_apps\\Debug\\ca.crt");
+	LPCXSTR lpszUserKey = _T("D:\\xengine_apps\\Debug\\test.crt");
 #else
-	LPCTSTR lpszRootKey = _T("ca.crt");
-	LPCTSTR lpszUserKey = _T("test.crt");
+	LPCXSTR lpszRootKey = _T("ca.crt");
+	LPCXSTR lpszUserKey = _T("test.crt");
 #endif
 
 	if (!OPenSsl_Cert_X509Verifly(lpszRootKey, lpszUserKey))
@@ -195,9 +193,9 @@ void CertVer()
 void GetCert()
 {
 #ifdef _MSC_BUILD
-	LPCTSTR lpszKey = _T("D:\\XEngine_Apps\\Debug\\test.crt");
+	LPCXSTR lpszKey = _T("D:\\xengine_apps\\Debug\\test.crt");
 #else
-	LPCTSTR lpszKey = _T("test.crt");
+	LPCXSTR lpszKey = _T("test.crt");
 #endif
 	OPENSSL_X509CCINFO st_X509Info;
 	memset(&st_X509Info, '\0', sizeof(OPENSSL_X509CCINFO));
@@ -209,10 +207,14 @@ void GetCert()
 }
 int XCrypto_Test()
 {
-	LPCTSTR lpszFile = _T("K:\\netengineapp\\NetEngine_WINApps\\Debug\\test.Key");
+#ifdef _MSC_BUILD
+	LPCXSTR lpszFile = _T("K:\\netengineapp\\NetEngine_WINApps\\Debug\\test.Key");
+#else
+	LPCXSTR lpszFile = _T("test.Key");
+#endif
 	int nLen = strlen(lpszFile);
-	UCHAR tszEncoder[2048];
-	CHAR tszDecoder[2048];
+	XBYTE tszEncoder[2048];
+	XCHAR tszDecoder[2048];
 
 	memset(tszEncoder, '\0', sizeof(tszEncoder));
 	memset(tszDecoder, '\0', sizeof(tszDecoder));

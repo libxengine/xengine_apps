@@ -16,6 +16,7 @@
 #include <thread>
 using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
@@ -24,16 +25,16 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_OPenSsl/OPenSsl_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_OPenSsl/OPenSsl_Error.h"
 
-//Linux::g++ -std=gnu++17 -Wall -g XCore_APPSsl.cpp -o XCore_APPSsl.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -lXEngine_BaseLib -lXEngine_Core -lXEngine_OPenSsl -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
-//Macos::g++ -std=gnu++17 -Wall -g XCore_APPSsl.cpp -o XCore_APPSsl.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -lXEngine_BaseLib -lXEngine_Core -lXEngine_OPenSsl
+//Linux::g++ -std=gnu++17 -Wall -g XCore_APPSslServer.cpp -o XCore_APPSslServer.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -lXEngine_BaseLib -lXEngine_Core -lXEngine_OPenSsl -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
+//Macos::g++ -std=gnu++17 -Wall -g XCore_APPSslServer.cpp -o XCore_APPSslServer.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -lXEngine_BaseLib -lXEngine_Core -lXEngine_OPenSsl
 
 XHANDLE xhSSL = NULL;
-BOOL CALLBACK TCPSelect_CBLogin(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+XBOOL CALLBACK TCPSelect_CBLogin(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("recv_Login:%s\n", lpszClientAddr);
-	TCHAR tszSubject[2048];
-	TCHAR tszIssus[2048];
-	TCHAR tszAlg[2048];
+	XCHAR tszSubject[2048];
+	XCHAR tszIssus[2048];
+	XCHAR tszAlg[2048];
 
 	memset(tszSubject, '\0', sizeof(tszSubject));
 	memset(tszIssus, '\0', sizeof(tszIssus));
@@ -41,12 +42,12 @@ BOOL CALLBACK TCPSelect_CBLogin(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID 
 
 	OPenSsl_Server_AcceptEx(xhSSL, hSocket, lpszClientAddr, tszSubject, tszIssus, tszAlg);
 	printf("TCPSelect_CBLogin:%s %s %s\n", tszSubject, tszIssus, tszAlg);
-	return TRUE;
+	return XTRUE;
 }
 void CALLBACK TCPSelect_CBRecv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
 	int nLen = 2048;
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	if (OPenSsl_Server_RecvMsgEx(xhSSL, lpszClientAddr, tszMsgBuffer, &nLen, lpszRecvMsg, nMsgLen))
 	{
@@ -59,14 +60,19 @@ void CALLBACK TCPSelect_CBLeave(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID 
 }
 int main()
 {
+#ifdef _MSC_BUILD
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
-	//生成方式参考论坛
-	LPCTSTR lpszCAFile = _T("H:\\XEngine_Apps\\Debug\\ca.crt");
-	LPCTSTR lpszSrvFile = _T("H:\\XEngine_Apps\\Debug\\server.crt");
-	LPCTSTR lpszKeyFile = _T("H:\\XEngine_Apps\\Debug\\server.key");
+	LPCXSTR lpszCAFile = _T("d:\\xengine_apps\\Debug\\root_bundle.crt");
+	LPCXSTR lpszSrvFile = _T("d:\\xengine_apps\\Debug\\test.xyry.org.crt");
+	LPCXSTR lpszKeyFile = _T("d:\\xengine_apps\\Debug\\test.xyry.org.key");
+#else
+	LPCXSTR lpszCAFile = _T("root_bundle.crt");
+	LPCXSTR lpszSrvFile = _T("test.xyry.org.crt");
+	LPCXSTR lpszKeyFile = _T("test.xyry.org.key");
+#endif
 
-	xhSSL = OPenSsl_Server_InitEx(lpszCAFile, lpszSrvFile, lpszKeyFile, TRUE, FALSE);
+	xhSSL = OPenSsl_Server_InitEx(lpszCAFile, lpszSrvFile, lpszKeyFile, XFALSE, XFALSE);
 	if (NULL == xhSSL)
 	{
 		printf("OPenSsl_Server_Init %lX\n", OPenSsl_GetLastError());
@@ -81,10 +87,12 @@ int main()
 	printf("ok\n");
 	while (1)
 	{
-		Sleep(1000);
+		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 
 	NetCore_TCPSelect_Stop();
+#ifdef _MSC_BUILD
 	WSACleanup();
+#endif
 	return 0;
 }

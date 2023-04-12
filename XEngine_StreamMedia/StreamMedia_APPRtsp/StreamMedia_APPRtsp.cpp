@@ -18,9 +18,9 @@
 void TestUDP_RtspProtocol()
 {
 	int nMsgLen = 0;
-	LPCTSTR lpszRTSPUrl = _T("rtsp://127.0.0.1/live/1");
-	LPCTSTR lpszSession = _T("3B2241FA");
-	TCHAR tszMsgBuffer[1024];
+	LPCXSTR lpszRTSPUrl = _T("rtsp://127.0.0.1/live/1");
+	LPCXSTR lpszSession = _T("3B2241FA");
+	XCHAR tszMsgBuffer[1024];
 
 	RTSPPROTOCOL_REQUEST st_RtspRequest;
 	RTSPPROTOCOL_RESPONSE st_RtspResponse;
@@ -47,9 +47,9 @@ void TestUDP_RtspProtocol()
 void TestTCP_RtspProtocol()
 {
 	int nMsgLen = 0;
-	LPCTSTR lpszRTSPUrl = _T("rtsp://127.0.0.1/live/1");
-	LPCTSTR lpszSession = _T("3B2241FA");
-	TCHAR tszMsgBuffer[1024];
+	LPCXSTR lpszRTSPUrl = _T("rtsp://127.0.0.1/live/1");
+	LPCXSTR lpszSession = _T("3B2241FA");
+	XCHAR tszMsgBuffer[1024];
 
 	RTSPPROTOCOL_REQUEST st_RtspRequest;
 	RTSPPROTOCOL_RESPONSE st_RtspResponse;

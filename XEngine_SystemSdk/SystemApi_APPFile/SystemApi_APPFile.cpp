@@ -20,7 +20,7 @@
 //Linux::g++ -std=c++17 -Wall -g SystemApi_APPFile.cpp -o SystemApi_APPFile.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk -lXEngine_BaseLib -lXEngine_SystemApi -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
 //Macos::g++ -std=c++17 -Wall -g SystemApi_APPFile.cpp -o SystemApi_APPFile.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_SystemSdk -lXEngine_BaseLib -lXEngine_SystemApi
 
-BOOL __stdcall EnumFile(LPCXSTR lpFileOrPath, BOOL bFindPath, XPVOID lParam)
+XBOOL CALLBACK EnumFile(LPCXSTR lpFileOrPath, XBOOL bFindPath, XPVOID lParam)
 {
 	if (bFindPath)
 	{
@@ -30,7 +30,7 @@ BOOL __stdcall EnumFile(LPCXSTR lpFileOrPath, BOOL bFindPath, XPVOID lParam)
 	{
 		printf(_T("File %s\r\n"), lpFileOrPath);
 	}
-	return TRUE;
+	return XTRUE;
 	}
 
 int main()
@@ -42,9 +42,9 @@ int main()
 #endif
 
 #ifdef _MSC_BUILD
-	LPCTSTR lpszFile = _T("D:\\xengine_apps\\Debug\\1.txt");
+	LPCXSTR lpszFile = _T("D:\\xengine_apps\\Debug\\1.txt");
 #else
-	LPCTSTR lpszFile = _T("1.txt");
+	LPCXSTR lpszFile = _T("1.txt");
 #endif
 
 	if (!SystemApi_File_CreateSparseFile(lpszFile, 10240))

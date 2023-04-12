@@ -13,6 +13,7 @@
 #include <thread>
 using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
@@ -29,30 +30,10 @@ using namespace std;
 
 XSOCKET hTCPSocket = 0;
 XNETHANDLE xhToken = 0;
-int Test_TCPData()
-{
-	LPCTSTR lpszRegBuffer = "REGISTER sip:xyry.org;transport=tls SIP/2.0\r\n"
-		"Via: SIP/2.0/TLS 192.168.1.104:52400;branch=z9hG4bKccc1e88d4ab68cf2;rport\r\n"
-		"Via: SIP/2.0/UDP 192.168.2.111:52400;branch=z9hG4bKcc35138d4ab68cf2;rport\r\n"
-		"Contact: <sip:1001-0x20d1a38@192.168.1.104:52400;transport=tls>;expires=3600\r\n"
-		"Max-Forwards: 70\r\n"
-		"To: <sip:1001@xyry.org:5061>\r\n"
-		"From: <sip:1001@xyry.org:5061>;tag=24174dec803066c5\r\n"
-		"Call-ID: 8f8e5fb8ce260308\r\n"
-		"CSeq: 62430 REGISTER\r\n"
-		"User-Agent: 1.0.2\r\n"
-		"Allow: INVITE,ACK,BYE,CANCEL,OPTIONS,REFER,NOTIFY,SUBSCRIBE,INFO,MESSAGE\r\n"
-		"Keepalive: 30\r\n"
-		"Content-Length: 11\r\n\r\nhello world";
-
-	int nLen = _tcslen(lpszRegBuffer);
-	XClient_TCPSelect_SendMsg(hTCPSocket, lpszRegBuffer, nLen);
-	return 0;
-}
 
 XHTHREAD CALLBACK XClient_TCPSelect_Thread()
 {
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszMsgBuffer[2048];
 
 	while (1)
 	{
@@ -70,7 +51,7 @@ XHTHREAD CALLBACK XClient_TCPSelect_Thread()
 			{
 				memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 				HttpProtocol_ServerConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
-				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, TRUE);
+				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, XTRUE);
 				XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 				printf("Recv:%d\n,%s\n", nMsgLen, tszMsgBuffer);
 				//处理后的值是180,表示成功,才可以返回
@@ -96,7 +77,7 @@ XHTHREAD CALLBACK XClient_TCPSelect_Thread()
 				printf("挂断\n");
 				memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 				HttpProtocol_ServerConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
-				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, TRUE);
+				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, XTRUE);
 				XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 			}
 			else if (0 == _tcsnicmp(st_SIPProtocol.st_Request.tszMethod, XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_MESSAGE, strlen(XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_MESSAGE)))
@@ -105,13 +86,13 @@ XHTHREAD CALLBACK XClient_TCPSelect_Thread()
 				BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&st_SIPProtocol.st_Context.ptszBodyBuffer);
 				//清理SDP
 				memset(&st_SIPProtocol.st_Context, '\0', sizeof(st_SIPProtocol.st_Context));
-				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, TRUE);
+				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, XTRUE);
 				HttpProtocol_ServerConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
 				XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 			}
 			else if (0 == _tcsnicmp(st_SIPProtocol.st_Request.tszMethod, XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_CANCEL, strlen(XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_CANCEL)))
 			{
-				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, TRUE);
+				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, XTRUE);
 				HttpProtocol_ServerConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
 				XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 
@@ -127,7 +108,7 @@ XHTHREAD CALLBACK XClient_TCPSelect_Thread()
 			else if (0 == _tcsnicmp(st_SIPProtocol.st_Request.tszMethod, XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_OPTIONS, strlen(XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_OPTIONS)))
 			{
 				printf("NEW OPTION %s\n", st_SIPProtocol.st_From.tszName);
-				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, TRUE);
+				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, XTRUE);
 				HttpProtocol_ServerConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
 				XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 			}
@@ -145,7 +126,7 @@ XHTHREAD CALLBACK XClient_TCPSelect_Thread()
 						//对话接受呼叫了,需要发送一个ACK给对面
 						std::this_thread::sleep_for(std::chrono::seconds(1));
 						memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-						RfcComponents_SIPProtocol_PacketRequest(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, TRUE);
+						RfcComponents_SIPProtocol_PacketRequest(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, XTRUE);
 						XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 						//通话5秒后挂断
 						std::this_thread::sleep_for(std::chrono::seconds(5));
@@ -196,13 +177,13 @@ int main(int argc, char* argv[])
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 
-	BOOL bInvite = TRUE;
+	XBOOL bInvite = XFALSE;
 	int nPort = 0;
 	int nMsgLen = 0;
-	TCHAR tszUser[64];
-	TCHAR tszToAddr[64];
-	TCHAR tszToUser[64];
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszUser[64];
+	XCHAR tszToAddr[64];
+	XCHAR tszToUser[64];
+	XCHAR tszMsgBuffer[2048];
 
 	memset(tszUser, '\0', 64);
 	memset(tszToAddr, '\0', 64);
@@ -223,21 +204,16 @@ int main(int argc, char* argv[])
 		strcpy(tszToUser, "bob");
 	}
 
-	LPCTSTR lpszCodeFile = _T("SIPCode.types");
-	HttpProtocol_ServerConfig_InitCode(lpszCodeFile, FALSE);
+	LPCXSTR lpszCodeFile = _T("SIPCode.types");
+	HttpProtocol_ServerConfig_InitCode(lpszCodeFile, XFALSE);
 
 	SIPPROTOCOL_HDRINFO st_SIPProtocol;
 	memset(&st_SIPProtocol, '\0', sizeof(SIPPROTOCOL_HDRINFO));
 
-	if (!XClient_TCPSelect_Create(&hTCPSocket, "127.0.0.1", 5000))
+	if (!XClient_TCPSelect_Create(&hTCPSocket, "10.10.12.114", 5000))
 	{
 		printf("错误\n");
 		return -1;
-	}
-	Test_TCPData();
-	while (1)
-	{
-		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 	std::thread pSTDThread(XClient_TCPSelect_Thread);
 	//注册
@@ -257,7 +233,7 @@ int main(int argc, char* argv[])
 
 		//呼叫
 		//填充SDP
-		st_SIPProtocol.st_Context.ptszBodyBuffer = (CHAR*)malloc(10);
+		st_SIPProtocol.st_Context.ptszBodyBuffer = (XCHAR*)malloc(10);
 		memset(st_SIPProtocol.st_Context.ptszBodyBuffer, '\0', 10);
 		st_SIPProtocol.st_Context.nBodyLen = 3;
 		strcpy(st_SIPProtocol.st_Context.ptszBodyBuffer, "v=0");

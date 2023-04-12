@@ -26,15 +26,15 @@ using namespace std;
 //linux:g++ -std=gnu++17 -Wall -g XCore_APPProtocol.cpp -o XCore_APPProtocol.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -lXEngine_BaseLib -lXEngine_Protocol -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
 //macos:g++ -std=gnu++17 -Wall -g XCore_APPProtocol.cpp -o XCore_APPProtocol.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -lXEngine_BaseLib -lXEngine_Protocol
 
-BOOL CALLBACK XEngine_Protocol_Callback_Trace(LPCTSTR lpszSource, LPCTSTR lpszDestAddr, LPCTSTR lpszRecvAddr, int nTTL, XENGINE_VALTIME st_VALTime, XPVOID lParam)
+XBOOL CALLBACK XEngine_Protocol_Callback_Trace(LPCXSTR lpszSource, LPCXSTR lpszDestAddr, LPCXSTR lpszRecvAddr, int nTTL, XENGINE_VALTIME st_VALTime, XPVOID lParam)
 {
 	printf("Src:%s Dst:%s Rcv:%s TTL:%d Time:%lld.%llu\n", lpszSource, lpszDestAddr, lpszRecvAddr, nTTL, st_VALTime.tv_sec, st_VALTime.tv_usec);
-	return TRUE;
+	return XTRUE;
 }
 int Protocol_TestPing()
 {
-	LPCTSTR lpszSourceAddr = _T("192.168.1.12");
-	LPCTSTR lpszDestAddr = _T("42.194.178.57");
+	LPCXSTR lpszSourceAddr = _T("192.168.252.128");
+	LPCXSTR lpszDestAddr = _T("42.194.178.57");
 	XENGINE_VALTIME st_VALTime;
 
 	memset(&st_VALTime, '\0', sizeof(XENGINE_VALTIME));
@@ -52,8 +52,8 @@ int Protocol_TestPing()
 
 int Protocol_TestTrace()
 {
-	LPCTSTR lpszSourceAddr = _T("192.168.1.12");
-	LPCTSTR lpszDestAddr = _T("42.194.178.57");
+	LPCXSTR lpszSourceAddr = _T("192.168.252.128");
+	LPCXSTR lpszDestAddr = _T("42.194.178.57");
 
 	if (!Protocol_Icmp_Traceroute(lpszSourceAddr, lpszDestAddr, XEngine_Protocol_Callback_Trace))
 	{
@@ -68,7 +68,7 @@ int Protocol_TestTCPRaw()
 {
 	XSOCKET hSDSocket;
 	XSOCKET hRVSocket;
-	LPCTSTR lpszSourceAddr = "192.168.1.8";
+	LPCXSTR lpszSourceAddr = "192.168.1.8";
 
 	if (!Protocol_TCPRaw_Init(&hSDSocket, &hRVSocket))
 	{
@@ -78,7 +78,7 @@ int Protocol_TestTCPRaw()
 	for (int i = 7; i < 255; i++)
 	{
 		int nMsgLen = 2048;
-		TCHAR tszMsgBuffer[1024];
+		XCHAR tszMsgBuffer[1024];
 		PROTOCOL_RAWSOCKET_NETPARAM st_RAWSocket;
 
 		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));

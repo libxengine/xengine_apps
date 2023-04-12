@@ -15,6 +15,7 @@
 #include <thread>
 using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_NetXApi/NetXApi_Define.h"
@@ -28,7 +29,7 @@ static void WINAPI NetXApi_Sniffer_Callback(XHANDLE xhToken, NETXAPI_PROTOCOLINF
 	printf("NetXApi_Sniffer_Callback:Source:%s Dest:%s nHdrLen:%d nMsgLen:%d\n", pSt_ProtoInfo->tszSourceAddr, pSt_ProtoInfo->tszDestAddr, pSt_ProtoInfo->nHdrLen, pSt_ProtoInfo->nMsgLen);
 	for (int i = 0; i < pSt_ProtoInfo->nMsgLen; i++)
 	{
-		printf("%02X ", (UCHAR)lpszMsgBuffer[pSt_ProtoInfo->nHdrLen + i]);
+		printf("%02X ", (XBYTE)lpszMsgBuffer[pSt_ProtoInfo->nHdrLen + i]);
 	}
 	printf("\n\n");
 }
@@ -42,7 +43,7 @@ int Test_NetFlow()
 		memset(&st_FlowState, '\0', sizeof(NETXAPI_FLOWSTATE));
 
 #ifdef _MSC_BUILD
-		NetXApi_NetFlow_GetAll(&st_FlowState, "Realtek PCIe GBE Family Controller");
+		NetXApi_NetFlow_GetAll(&st_FlowState, "Intel(R) Wi-Fi 6E AX211 160MHz");
 		
 #else
 		NetXApi_NetFlow_GetAll(&st_FlowState, "ens33");
@@ -57,7 +58,7 @@ int Test_NetSniffer()
 {
 	//网路嗅探
 #ifdef _MSC_BUILD
-	XHANDLE xhNet = NetXApi_Sniffer_Start(_T("192.168.1.7"), NetXApi_Sniffer_Callback);
+	XHANDLE xhNet = NetXApi_Sniffer_Start(_T("10.10.13.53"), NetXApi_Sniffer_Callback);
 #else
 	XHANDLE xhNet = NetXApi_Sniffer_Start(_T("any"), NetXApi_Sniffer_Callback);
 #endif
@@ -126,7 +127,7 @@ int NetXApi_TestSocket()
 	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListUDPProcess, nUDPCount);
 
 	nListCount = 0;
-	CHAR** ppszListAddr;
+	XCHAR** ppszListAddr;
 	NetXApi_Socket_DomainToAddr("www.baidu.com", &ppszListAddr, &nListCount);
 	for (int i = 0; i < nListCount; i++)
 	{

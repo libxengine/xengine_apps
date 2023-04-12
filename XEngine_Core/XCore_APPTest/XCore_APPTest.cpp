@@ -12,6 +12,7 @@
 #include <sys/socket.h>
 #endif
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Error.h"
@@ -22,8 +23,8 @@
 
 int Test_Anonymous()
 {
-	LPCTSTR lpszPIPName = _T("H:\\XEngine_Apps\\Debug\\Lib_APPAlgorithm.exe");
-	LPCTSTR lpszMsgBuffer = _T("hello");
+	LPCXSTR lpszPIPName = _T("d:\\xengine_apps\\Debug\\Lib_APPAlgorithm.exe");
+	LPCXSTR lpszMsgBuffer = _T("hello");
 	if (!NetCore_PIPAnonymous_Create(lpszPIPName))
 	{
 		printf("%lX", NetCore_GetLastError());
@@ -33,7 +34,7 @@ int Test_Anonymous()
 	NetCore_PIPAnonymous_Write(lpszPIPName, lpszMsgBuffer, _tcslen(lpszMsgBuffer));
 
 	int nLen = 1024;
-	TCHAR tszMsgBuffer[1024];
+	XCHAR tszMsgBuffer[1024];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	NetCore_PIPAnonymous_Read(lpszPIPName, tszMsgBuffer, &nLen);
@@ -44,9 +45,9 @@ int Test_Anonymous()
 int Test_Named()
 {
 #ifdef _MSC_BUILD
-	LPCTSTR lpszPIPName = _T("\\\\.\\pipe\\MyNamedPipeOne");
+	LPCXSTR lpszPIPName = _T("\\\\.\\pipe\\MyNamedPipeOne");
 #else
-	LPCTSTR lpszPIPName = _T("MyNamedPipeOne");
+	LPCXSTR lpszPIPName = _T("MyNamedPipeOne");
 #endif
 	if (!NetCore_PIPNamed_Create(lpszPIPName))
 	{
@@ -58,7 +59,7 @@ int Test_Named()
 #endif
 
 	int nLen = 1024;
-	TCHAR tszMsgBuffer[1024];
+	XCHAR tszMsgBuffer[1024];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	NetCore_PIPNamed_Read(lpszPIPName, tszMsgBuffer, &nLen);
@@ -69,9 +70,9 @@ int Test_Named()
 int Test_MailSlot()
 {
 #ifdef _MSC_BUILD
-	LPCTSTR lpszPIPName = _T("\\\\.\\mailslot\\MyMailSlot");
+	LPCXSTR lpszPIPName = _T("\\\\.\\mailslot\\MyMailSlot");
 #else
-	LPCTSTR lpszPIPName = _T("/MyMailSlot");
+	LPCXSTR lpszPIPName = _T("/MyMailSlot");
 #endif
 	
 #ifndef __APPLE__
@@ -82,7 +83,7 @@ int Test_MailSlot()
 	}
 
 	int nLen = 1024;
-	TCHAR tszMsgBuffer[1024];
+	XCHAR tszMsgBuffer[1024];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	while (1)
@@ -100,17 +101,21 @@ int Test_MailSlot()
 }
 int Test_MMap()
 {
-	LPCTSTR lpszPIPName = _T("xyry");
-	LPCTSTR lpszMsgBuffer = _T("hello");
-	LPCTSTR lpszFileName = _T("1.txt");
+	LPCXSTR lpszPIPName = _T("xyry");
+	LPCXSTR lpszMsgBuffer = _T("hello");
+#ifdef _MSC_BUILD
+	LPCXSTR lpszFileName = _T("D:\\xengine_apps\\Debug\\1.txt");
+#else
+	LPCXSTR lpszFileName = _T("1.txt");
+#endif
 
 	if (!NetCore_PIPMMap_Create(lpszPIPName, lpszFileName))
 	{
 		printf("%lX", NetCore_GetLastError());
 		return -1;
 	}
-	NetCore_PIPMMap_Write(lpszPIPName, (TCHAR*)lpszMsgBuffer, _tcslen(lpszMsgBuffer));
-	NetCore_PIPMMap_Write(lpszPIPName, (TCHAR*)lpszMsgBuffer, _tcslen(lpszMsgBuffer), 5);
+	NetCore_PIPMMap_Write(lpszPIPName, (XCHAR*)lpszMsgBuffer, _tcslen(lpszMsgBuffer));
+	NetCore_PIPMMap_Write(lpszPIPName, (XCHAR*)lpszMsgBuffer, _tcslen(lpszMsgBuffer), 5);
 
 #ifdef _MSC_BUILD
 	XPVOID lPBuffer = NetCore_PIPMMap_GetPointer(lpszPIPName);
@@ -118,7 +123,7 @@ int Test_MMap()
 	NetCore_PIPMMap_FreePointer(lpszPIPName);
 #endif
 
-	TCHAR tszMsgBuffer[1024];
+	XCHAR tszMsgBuffer[1024];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	NetCore_PIPMMap_Read(lpszPIPName, tszMsgBuffer, 10, 0);
 	printf("Test_MMap:%s\n", tszMsgBuffer);
@@ -138,7 +143,7 @@ int Test_MIPC()
 	}
 	printf("Key:%d\n", nKey);
 
-	TCHAR* ptszMsgBuffer = (TCHAR*)NetCore_PIPIpc_Get(nKey);
+	XCHAR* ptszMsgBuffer = (XCHAR*)NetCore_PIPIpc_Get(nKey);
 	_tcscpy(ptszMsgBuffer, "123213");
 	printf("Test_MIPC:%s\n", ptszMsgBuffer);
 	NetCore_PIPIpc_Free(ptszMsgBuffer);

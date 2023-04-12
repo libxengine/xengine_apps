@@ -18,7 +18,7 @@
 //Linux::g++ -std=c++17 -Wall -g RfcComponents_APPSDPProtocol.cpp -o RfcComponents_APPSDPProtocol.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lRfcComponents_SDPProtocol -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents,--disable-new-dtags
 //Macos::g++ -std=c++17 -Wall -g RfcComponents_APPSDPProtocol.cpp -o RfcComponents_APPSDPProtocol.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_RfcComponents -lXEngine_BaseLib -lRfcComponents_SDPProtocol
 
-void CreateSDP(TCHAR* ptszMsgBuffer, int* pInt_Len)
+void CreateSDP(XCHAR* ptszMsgBuffer, int* pInt_Len)
 {
 	XNETHANDLE xhToken = 0;
 	RfcComponents_SDPPacket_Create(&xhToken);
@@ -76,7 +76,7 @@ void CreateSDP(TCHAR* ptszMsgBuffer, int* pInt_Len)
 	RfcComponents_SDPPacket_GetPacket(xhToken, ptszMsgBuffer, pInt_Len);
 	RfcComponents_SDPPacket_Destory(xhToken);
 }
-void CreateSDP265(TCHAR* ptszMsgBuffer, int* pInt_Len)
+void CreateSDP265(XCHAR* ptszMsgBuffer, int* pInt_Len)
 {
 	XNETHANDLE xhToken = 0;
 	RfcComponents_SDPPacket_Create(&xhToken);
@@ -119,7 +119,7 @@ void CreateSDP265(TCHAR* ptszMsgBuffer, int* pInt_Len)
 	RfcComponents_SDPPacket_GetPacket(xhToken, ptszMsgBuffer, pInt_Len);
 	RfcComponents_SDPPacket_Destory(xhToken);
 }
-void ParseSDP(LPCTSTR lpszMsgBuffer, int nLen)
+void ParseSDP(LPCXSTR lpszMsgBuffer, int nLen)
 {
 	XNETHANDLE xhToken = 0;
 	RfcComponents_SDPParse_Create(&xhToken, lpszMsgBuffer, nLen);
@@ -131,8 +131,8 @@ void ParseSDP(LPCTSTR lpszMsgBuffer, int nLen)
 	__int64x nSessionID = 0;
 	__int64x nSessionVer = 0;
 	int nIPVer = 0;
-	TCHAR tszUserName[64];
-	TCHAR tszIPVer[64];
+	XCHAR tszUserName[64];
+	XCHAR tszIPVer[64];
 
 	memset(tszUserName, '\0', sizeof(tszUserName));
 	memset(tszIPVer, '\0', sizeof(tszIPVer));
@@ -142,14 +142,14 @@ void ParseSDP(LPCTSTR lpszMsgBuffer, int nLen)
 	nIPVer = 0;
 	int nTTL = 0;
 	int nCount = 0;
-	TCHAR tszIPAddr[64];
+	XCHAR tszIPAddr[64];
 	memset(tszIPAddr, '\0', sizeof(tszIPAddr));
 
 	RfcComponents_SDPParse_GetConnect(xhToken, &nIPVer, tszIPAddr, &nTTL, &nCount);
 
-	BOOL bVideo = FALSE;
-	TCHAR tszSessionName[64];
-	TCHAR tszSessionValue[64];
+	XBOOL bVideo = XFALSE;
+	XCHAR tszSessionName[64];
+	XCHAR tszSessionValue[64];
 	memset(tszSessionValue, '\0', sizeof(tszSessionValue));
 	memset(tszSessionName, '\0', sizeof(tszSessionName));
 	RfcComponents_SDPParse_GetSession(xhToken, tszSessionValue, tszSessionName, &bVideo);
@@ -175,12 +175,12 @@ void ParseSDP(LPCTSTR lpszMsgBuffer, int nLen)
 	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListVideo, nVCount);
 	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListAudio, nACount);
 
-	TCHAR tszMediaName[64];
+	XCHAR tszMediaName[64];
 	memset(tszMediaName, '\0', sizeof(tszMediaName));
 	RfcComponents_SDPParse_OptionalMediaName(xhToken, tszMediaName);
 
-	TCHAR tszEmailAddr[64];
-	TCHAR tszPhoneNumber[64];
+	XCHAR tszEmailAddr[64];
+	XCHAR tszPhoneNumber[64];
 	memset(tszEmailAddr, '\0', sizeof(tszEmailAddr));
 	memset(tszPhoneNumber, '\0', sizeof(tszPhoneNumber));
 	RfcComponents_SDPParse_OptionalContact(xhToken, tszEmailAddr, tszPhoneNumber);
@@ -198,7 +198,7 @@ void ParseSDP(LPCTSTR lpszMsgBuffer, int nLen)
 int main()
 {
 	int nSDPLen = 0;
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	CreateSDP(tszMsgBuffer, &nSDPLen);

@@ -30,8 +30,8 @@ int main()
 #endif
 	XSOCKET m_Socket;
 	int nMsgLen = 2048;
-	TCHAR tszMsgBuffer[2048];
-	UINT nToken[3];
+	XCHAR tszMsgBuffer[2048];
+	XUINT nToken[3];
 	RFCCOMPONENTS_NATSTUN st_NatClient;
 
 	memset(&st_NatClient, '\0', sizeof(RFCCOMPONENTS_NATSTUN));
@@ -43,7 +43,7 @@ int main()
 		printf("创建套接字失败!,错误:%lX\n", NatProtocol_GetLastError());
 		return -1;
 	}
-	XClient_UDPSelect_Bind(m_Socket, 3478, "159.75.200.173");
+	XClient_UDPSelect_Connect(m_Socket, "42.194.178.57", 3478);
 
 	if (!NatProtocol_StunNat_Request(tszMsgBuffer, &nMsgLen, nToken, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_CLASS_REQUEST, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_ATTR_MAPPED_ADDRESS))
 	{
@@ -58,7 +58,7 @@ int main()
 	//如果服务器正常,但是收不到包,说明你的路由不支持NAT
 	nMsgLen = 2048;
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (!XClient_UDPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nMsgLen, FALSE))
+	if (!XClient_UDPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nMsgLen, XFALSE))
 	{
 		printf("接受数据失败!,错误:%lX\n", XClient_GetLastError());
 		return -1;
@@ -78,7 +78,7 @@ int main()
 		{
 			int nErrorCode = 0;
 			int nMsgLen = 0;
-			TCHAR tszMsgBuffer[2048];
+			XCHAR tszMsgBuffer[2048];
 			memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 			NatProtocol_StunNat_ParseError(ppSt_ListAttr[i], &nErrorCode, tszMsgBuffer, &nMsgLen);
@@ -86,11 +86,11 @@ int main()
 		else if (RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_ATTR_XOR_MAPPED_ADDRESS == ppSt_ListAttr[i]->wAttr)
 		{
 			int nIPVer = 0;
-			WORD wXor = 0;
-			TCHAR tszIPAddr[128];
+			XBYTE wXor = 0;
+			XCHAR tszIPAddr[128];
 			memset(tszIPAddr, '\0', sizeof(tszIPAddr));
 
-			memcpy(&wXor, &st_NatClient.unMagic, sizeof(WORD));
+			memcpy(&wXor, &st_NatClient.unMagic, sizeof(XBYTE));
 
 			NatProtocol_StunNat_ParseAddr(ppSt_ListAttr[i], &nIPVer, tszIPAddr, wXor);
 			printf("%d %s\n", nIPVer, tszIPAddr);
@@ -98,7 +98,7 @@ int main()
 		else if (RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_ATTR_MAPPED_ADDRESS == ppSt_ListAttr[i]->wAttr)
 		{
 			int nIPVer = 0;
-			TCHAR tszIPAddr[128];
+			XCHAR tszIPAddr[128];
 			memset(tszIPAddr, '\0', sizeof(tszIPAddr));
 
 			NatProtocol_StunNat_ParseAddr(ppSt_ListAttr[i], &nIPVer, tszIPAddr);
@@ -107,7 +107,7 @@ int main()
 		else if (RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_ATTR_SERVERADDR == ppSt_ListAttr[i]->wAttr)
 		{
 			int nIPVer = 0;
-			TCHAR tszIPAddr[128];
+			XCHAR tszIPAddr[128];
 			memset(tszIPAddr, '\0', sizeof(tszIPAddr));
 
 			NatProtocol_StunNat_ParseAddr(ppSt_ListAttr[i], &nIPVer, tszIPAddr);
@@ -119,7 +119,7 @@ int main()
 	int nA1Len = 0;
 	int nA2Len = 0;
 	int nA3Len = 0;
-	TCHAR tszAttrBuffer[MAX_PATH];
+	XCHAR tszAttrBuffer[MAX_PATH];
 
 	memset(tszAttrBuffer, '\0', MAX_PATH);
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
@@ -142,7 +142,7 @@ int main()
 	//如果服务器正常,但是收不到包,说明你的路由不支持NAT
 	nMsgLen = 2048;
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (!XClient_UDPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nMsgLen, FALSE))
+	if (!XClient_UDPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nMsgLen, XFALSE))
 	{
 		printf("接受数据失败!,错误:%lX\n", XClient_GetLastError());
 		return -1;

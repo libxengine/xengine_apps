@@ -17,8 +17,8 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_Authorize/Authorize_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_Authorize/Authorize_Error.h"
 
-//Linux::g++ -std=c++17 -Wall -g HelpComponents_APPAuthorize.cpp -o HelpComponents_APPAuthorize.exe -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Core -L /usr/local/lib/XEngine_Release/XEngine_SystemSdk -L /usr/local/lib/XEngine_Release/XEngine_HelpComponents -lXEngine_BaseLib -lXEngine_OPenSsl -lXEngine_SystemApi -lHelpComponents_Authorize
-//Macos::g++ -std=c++17 -Wall -g HelpComponents_APPAuthorize.cpp -o HelpComponents_APPAuthorize.exe  -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_HelpComponents -lXEngine_BaseLib -lHelpComponents_Authorize
+//Linux::g++ -std=c++17 -Wall -g HelpComponents_APPAuthorize.cpp -o HelpComponents_APPAuthorize.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents -lXEngine_BaseLib -lXEngine_OPenSsl -lXEngine_SystemApi -lHelpComponents_Authorize -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents,--disable-new-dtags
+//Macos::g++ -std=c++17 -Wall -g HelpComponents_APPAuthorize.cpp -o HelpComponents_APPAuthorize.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_SystemSdk -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_HelpComponents -lXEngine_BaseLib -lXEngine_OPenSsl -lXEngine_SystemApi -lHelpComponents_Authorize
 
 //#define _ENCRYPTO 1
 
@@ -30,7 +30,7 @@ int Authorize_APPSerial()
 
 	st_LibTimer.wFlags = 10;
 
-	TCHAR** pptszSerial;
+	XCHAR** pptszSerial;
 
 	if (!Authorize_Serial_Creator(&pptszSerial, "XAUTH", nCardCount, 8, &st_LibTimer, ENUM_HELPCOMPONENTS_AUTHORIZE_SERIAL_TYPE_TIME))
 	{
@@ -82,13 +82,13 @@ int Authorize_APPSerial()
 int Authorize_APPLocal()
 {
 #ifdef _MSC_BUILD
-	LPCTSTR lpszFile = _T("D:\\XEngine_Apps\\Debug\\XEngine_Authorize.key");
+	LPCXSTR lpszFile = _T("D:\\xengine_apps\\Debug\\XEngine_Authorize.key");
 #else
-	LPCTSTR lpszFile = _T("XEngine_Authorize.key");
+	LPCXSTR lpszFile = _T("XEngine_Authorize.key");
 #endif
 	//////////////////////////////////////////////////////////////////////////生成CDKEY
-	UCHAR tszEnBuffer[2048];
-	TCHAR tszDeBuffer[2048];
+	XBYTE tszEnBuffer[2048];
+	XCHAR tszDeBuffer[2048];
 	XENGINE_AUTHORIZE_LOCAL st_AuthLocal;
 
 	memset(tszDeBuffer, '\0', sizeof(tszDeBuffer));
@@ -181,7 +181,7 @@ int Authorize_APPLocal()
 	Authorize_Local_GetLeftTimer(&st_AuthLocal, "WADN21-E21DDN0N2-21D21NI-312D1ED-AWD21");
 
 	int nListCount = 0;
-	TCHAR** pptszTimeList;
+	XCHAR** pptszTimeList;
 	Authorize_Local_ReadTime(lpszFile, &pptszTimeList, &nListCount);
 	for (int i = 0; i < nListCount; i++)
 	{
@@ -198,13 +198,13 @@ int Authorize_APPLocal()
 int Authorize_APPMemory()
 {
 #ifdef _MSC_BUILD
-	LPCTSTR lpszFile = _T("D:\\XEngine_Apps\\Debug\\XEngine_Authorize.txt");
+	LPCXSTR lpszFile = _T("D:\\xengine_apps\\Debug\\XEngine_Authorize.txt");
 #else
-	LPCTSTR lpszFile = _T("XEngine_Authorize.txt");
+	LPCXSTR lpszFile = _T("XEngine_Authorize.txt");
 #endif
 	//////////////////////////////////////////////////////////////////////////生成CDKEY
 	int nMsgLen = 2048;
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszMsgBuffer[2048];
 	XENGINE_AUTHORIZE_LOCAL st_AuthLocal;
 
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
@@ -229,7 +229,7 @@ int Authorize_APPMemory()
 	{
 		return -1;
 	}
-	FILE* pSt_File = _tfopen(lpszFile, _T("wb"));
+	FILE* pSt_File = fopen(lpszFile, _T("wb"));
 	fwrite(tszMsgBuffer, 1, nMsgLen, pSt_File);
 	fclose(pSt_File);
 	//////////////////////////////////////////////////////////////////////////验证CDKEY

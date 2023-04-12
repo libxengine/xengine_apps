@@ -25,18 +25,18 @@ using namespace std;
 //Linux::g++ -std=c++17 -Wall -g RfcComponents_APPHttp.cpp -o RfcComponents_APPHttp.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lXEngine_OPenSsl -lRfcComponents_HttpProtocol -lpthread -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
 //Macos::g++ -std=c++17 -Wall -g RfcComponents_APPHttp.cpp -o RfcComponents_APPHttp.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lXEngine_OPenSsl -lRfcComponents_HttpProtocol -lpthread
 
-BOOL bIsRun = FALSE;
+XBOOL bIsRun = XFALSE;
 int nRVMode = 0;
 XHANDLE xhToken = NULL;
 XHANDLE xhHttp = NULL;
 FILE* pSt_File = NULL;
 
-BOOL CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+XBOOL CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("NetCore_CB_Login:%s\n", lpszClientAddr);
 	HttpProtocol_Server_CreateClientEx(xhHttp, lpszClientAddr, 0);
 	HttpProtocol_Server_SetRecvModeEx(xhHttp, lpszClientAddr, nRVMode);
-	return TRUE;
+	return XTRUE;
 }
 void CALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
@@ -65,7 +65,7 @@ XHTHREAD CALLBACK NetCore_Thread()
 				for (int i = 0; i < nListCount; i++)
 				{
 					int nMsgLen = 0;
-					TCHAR* ptszMsgBuffer = NULL;
+					XCHAR* ptszMsgBuffer = NULL;
 					RFCCOMPONENTS_HTTP_REQPARAM st_ReqParam;
 
 					memset(&st_ReqParam, '\0', sizeof(RFCCOMPONENTS_HTTP_REQPARAM));
@@ -84,7 +84,7 @@ XHTHREAD CALLBACK NetCore_Thread()
 								RFCCOMPONENTS_HTTP_HDRPARAM st_HdrParam;
 								memset(&st_HdrParam, '\0', sizeof(RFCCOMPONENTS_HTTP_HDRPARAM));
 
-								st_HdrParam.bIsClose = TRUE;
+								st_HdrParam.bIsClose = XTRUE;
 								st_HdrParam.nHttpCode = 200;
 								nMsgLen = 2048;
 								HttpProtocol_Server_SendMsgEx(xhHttp, ptszMsgBuffer, &nMsgLen, &st_HdrParam);
@@ -97,13 +97,13 @@ XHTHREAD CALLBACK NetCore_Thread()
 						else
 						{
 							printf("%s %d:%s\n", ppSt_ListClient[i]->tszClientAddr, nMsgLen, ptszMsgBuffer);
-							TCHAR tszMsgBuffer[1024];
+							XCHAR tszMsgBuffer[1024];
 							RFCCOMPONENTS_HTTP_HDRPARAM st_HdrParam;
 
 							memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 							memset(&st_HdrParam, '\0', sizeof(RFCCOMPONENTS_HTTP_HDRPARAM));
 
-							st_HdrParam.bIsClose = TRUE;
+							st_HdrParam.bIsClose = XTRUE;
 							st_HdrParam.nHttpCode = 200;
 							nMsgLen = 2048;
 							HttpProtocol_Server_SendMsgEx(xhHttp, tszMsgBuffer, &nMsgLen, &st_HdrParam, "123456789", 9);
@@ -124,18 +124,18 @@ int main()
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 
-	LPCTSTR lpszWFile = _T("D:\\xengine_apps\\Debug\\2.png");
-	LPCTSTR lpszMiniFile = _T("D:\\xengine_apps\\Debug\\HttpMime.types");
-	LPCTSTR lpszCodeFile = _T("D:\\xengine_apps\\Debug\\HttpCode.types");
+	LPCXSTR lpszWFile = _T("D:\\xengine_apps\\Debug\\2.png");
+	LPCXSTR lpszMiniFile = _T("D:\\xengine_apps\\Debug\\HttpMime.types");
+	LPCXSTR lpszCodeFile = _T("D:\\xengine_apps\\Debug\\HttpCode.types");
 #else
-	LPCTSTR lpszWFile = _T("2.png");
-	LPCTSTR lpszMiniFile = _T("HttpMime.types");
-	LPCTSTR lpszCodeFile = _T("HttpCode.types");
+	LPCXSTR lpszWFile = _T("2.png");
+	LPCXSTR lpszMiniFile = _T("HttpMime.types");
+	LPCXSTR lpszCodeFile = _T("HttpCode.types");
 #endif
-	LPCTSTR lpszUrl = _T("http://bbs.xyry.org/forum.php?mod=viewthread&tid=2&extra=page%3D1");
+	LPCXSTR lpszUrl = _T("http://bbs.xyry.org/forum.php?mod=viewthread&tid=2&extra=page%3D1");
 	int nListCount = 0;
-	TCHAR** pptszListParam;
-	TCHAR tszUrlAddr[MAX_PATH];
+	XCHAR** pptszListParam;
+	XCHAR tszUrlAddr[MAX_PATH];
 	HttpProtocol_ServerHelp_GetParament(lpszUrl, &pptszListParam, &nListCount, tszUrlAddr);
 	for (int i = 0; i < nListCount; i++)
 	{
@@ -145,8 +145,8 @@ int main()
 
 	for (int i = 0; i < 10; i++)
 	{
-		TCHAR tszDomainUrl[MAX_PATH];
-		TCHAR tszDomainKey[MAX_PATH];
+		XCHAR tszDomainUrl[MAX_PATH];
+		XCHAR tszDomainKey[MAX_PATH];
 
 		memset(tszDomainUrl, '\0', MAX_PATH);
 		memset(tszDomainKey, '\0', MAX_PATH);
@@ -154,7 +154,7 @@ int main()
 		printf("%s %s\n", tszDomainUrl, tszDomainKey);
 	}
 
-	bIsRun = TRUE;
+	bIsRun = XTRUE;
 	if (1 == nRVMode)
 	{
 		pSt_File = fopen(lpszWFile, _T("wb"));
@@ -181,7 +181,7 @@ int main()
 	std::thread pSTDThread(NetCore_Thread);
 
 	std::this_thread::sleep_for(std::chrono::seconds(10));
-	bIsRun = FALSE;
+	bIsRun = XFALSE;
 	HttpProtocol_Server_DestroyEx(xhHttp);
 	pSTDThread.join();
 

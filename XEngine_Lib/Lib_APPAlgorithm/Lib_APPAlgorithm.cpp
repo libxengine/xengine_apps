@@ -14,6 +14,7 @@
 #include <thread>
 using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_Algorithm/Algorithm_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_Algorithm/Algorithm_Error.h"
 
@@ -21,10 +22,10 @@ using namespace std;
 //Macos:g++ -std=gnu++11 -Wall -g Lib_APPAlgorithm.cpp -o Lib_APPAlgorithm.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -lXEngine_Algorithm 
 void CALLBACK Test_CBPassive(XHANDLE xhToken, __int64u nAvgSDFlow, __int64u nAvgRVFlow, __int64u nAvgTime, XPVOID lParam)
 {
-	TCHAR tszClientAddr[128];
+	XCHAR tszClientAddr[128];
 	memset(tszClientAddr, '\0', 128);
 
-	_tcscpy(tszClientAddr, (LPCTSTR)lParam);
+	_tcscpy(tszClientAddr, (LPCXSTR)lParam);
 	_tprintf(_T("%s: AVG_Flow:%llu\n"), tszClientAddr, nAvgSDFlow);
 }
 
@@ -54,12 +55,12 @@ int Test_Calulation()
 		std::this_thread::sleep_for(std::chrono::seconds(2));
 		Algorithm_Calculation_GetRVFlow(xhToken, &nFlow);
 		_tprintf(_T("%llu\n"), nFlow);
-		Algorithm_Calculation_GetRVFlow(xhToken, &nFlow, TRUE);
+		Algorithm_Calculation_GetRVFlow(xhToken, &nFlow, XTRUE);
 		_tprintf(_T("%llu\n"), nFlow);
 	}
 
 	Algorithm_Calculation_Reset(xhToken);
-	TCHAR* ptszMsgBuffer = (TCHAR*)malloc(128);
+	XCHAR* ptszMsgBuffer = (XCHAR*)malloc(128);
 	memset(ptszMsgBuffer, '\0', 128);
 
 	_tcscpy(ptszMsgBuffer, _T("127.0.0.1"));
@@ -81,13 +82,13 @@ int main()
 	Test_Calulation();
 	int nIntA = 0;
 	int nIntB = 0;
-	LPCTSTR lpszIntBuffer = _T("123456798");
+	LPCXSTR lpszIntBuffer = _T("123456798");
 	Algorithm_String_GetMemoryInt(lpszIntBuffer, 3, 4, &nIntA);
 	Algorithm_String_GetMemoryInt(lpszIntBuffer, 4, 6, &nIntB);
 
 	int nPos = 0;
-	LPCTSTR lpszSourceStr = _T("123hel54124hello666");
-	LPCTSTR lpszFindStr = _T("hell");
+	LPCXSTR lpszSourceStr = _T("123hel54124hello666");
+	LPCXSTR lpszFindStr = _T("hell");
 	if (Algorithm_String_XFastMatch(lpszSourceStr, lpszFindStr, &nPos))
 	{
 		_tprintf(_T("Algorithm_String_XFastMatch:%d\n"), nPos);

@@ -11,21 +11,22 @@
 #include <sys/socket.h>
 #endif
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Error.h"
 
-//Linux::g++ -std=gnu++17 -Wall -g XCore_PIPClient.cpp -o XCore_PIPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_ManagePool -lXEngine_Core -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
-//Macos::g++ -std=gnu++17 -Wall -g XCore_PIPClient.cpp -o XCore_PIPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_ManagePool -lXEngine_Core 
+//Linux::g++ -std=gnu++17 -Wall -g XCore_APPTest.cpp -o XCore_APPTest.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_ManagePool -lXEngine_Core -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
+//Macos::g++ -std=gnu++17 -Wall -g XCore_APPTest.cpp -o XCore_APPTest.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_ManagePool -lXEngine_Core 
 
 int Test_PIPNamed()
 {
 #ifdef _MSC_BUILD
-	LPCTSTR lpszPIPName = _T("\\\\.\\pipe\\MyNamedPipeOne");
+	LPCXSTR lpszPIPName = _T("\\\\.\\pipe\\MyNamedPipeOne");
 #else
-	LPCTSTR lpszPIPName = _T("MyNamedPipeOne");
+	LPCXSTR lpszPIPName = _T("MyNamedPipeOne");
 #endif
-	LPCTSTR lpszMsgBuffer = _T("hello");
+	LPCXSTR lpszMsgBuffer = _T("hello");
 	if (!NetCore_PIPNamed_OPen(lpszPIPName))
 	{
 		printf("%lX", NetCore_GetLastError());
@@ -39,13 +40,13 @@ int Test_PIPNamed()
 int Test_PIPMailSlot()
 {
 #ifdef _MSC_BUILD
-	LPCTSTR lpszPIPName = _T("\\\\.\\mailslot\\MyMailSlot");
+	LPCXSTR lpszPIPName = _T("\\\\.\\mailslot\\MyMailSlot");
 #else
-	LPCTSTR lpszPIPName = _T("/MyMailSlot");
+	LPCXSTR lpszPIPName = _T("/MyMailSlot");
 #endif
 	
 #ifndef __APPLE__
-	LPCTSTR lpszMsgBuffer = _T("hello");
+	LPCXSTR lpszMsgBuffer = _T("hello");
 	if (!NetCore_PIPMailSlot_OPen(lpszPIPName))
 	{
 		printf("%lX", NetCore_GetLastError());

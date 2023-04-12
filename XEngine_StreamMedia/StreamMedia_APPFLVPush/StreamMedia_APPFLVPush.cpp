@@ -27,18 +27,18 @@
 FILE* pSt_VFile;
 FILE* pSt_AFile;
 #ifdef _MSC_BUILD
-LPCTSTR lpszVFile = _T("D:\\h264 file\\480p.264");
-LPCTSTR lpszAFile = _T("D:\\h264 file\\test.aac");
+LPCXSTR lpszVFile = _T("D:\\h264 file\\480p.264");
+LPCXSTR lpszAFile = _T("D:\\h264 file\\test.aac");
 #else
-LPCTSTR lpszVFile = _T("480p.264");
-LPCTSTR lpszAFile = _T("test.aac");
+LPCXSTR lpszVFile = _T("480p.264");
+LPCXSTR lpszAFile = _T("test.aac");
 #endif
 
 void fread_video(XHANDLE xhToken)
 {
 	for (int i = 0; i < 20; i++)
 	{
-		TCHAR tszMsgBuffer[40960];
+		XCHAR tszMsgBuffer[40960];
 		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 		int nRet = fread(tszMsgBuffer, 1, sizeof(tszMsgBuffer), pSt_VFile);
@@ -50,7 +50,7 @@ void fread_video(XHANDLE xhToken)
 		}
 		while (1)
 		{
-			if (XClient_FilePush_Push(xhToken, tszMsgBuffer, nRet, 0))
+			if (XStream_FilePush_Push(xhToken, tszMsgBuffer, nRet, 0))
 			{
 				break;
 			}
@@ -61,7 +61,7 @@ void fread_audio(XHANDLE xhToken)
 {
 	while (1)
 	{
-		TCHAR tszMsgBuffer[4096];
+		XCHAR tszMsgBuffer[4096];
 		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 		int nRet = fread(tszMsgBuffer, 1, sizeof(tszMsgBuffer), pSt_AFile);
@@ -73,7 +73,7 @@ void fread_audio(XHANDLE xhToken)
 		}
 		while (1)
 		{
-			if (XClient_FilePush_Push(xhToken, tszMsgBuffer, nRet, 1))
+			if (XStream_FilePush_Push(xhToken, tszMsgBuffer, nRet, 1))
 			{
 				break;
 			}
@@ -84,8 +84,8 @@ void fread_audio(XHANDLE xhToken)
 int Test_RTMPPush()
 {
 	XHANDLE xhStream = NULL;
-	LPCTSTR lpszUrl = _T("rtmp://app.xyry.org/live/qyt");
-	BOOL bMemory = TRUE;
+	LPCXSTR lpszUrl = _T("rtmp://app.xyry.org/live/qyt");
+	XBOOL bMemory = XFALSE;
 
 	if (bMemory)
 	{
@@ -102,65 +102,65 @@ int Test_RTMPPush()
 			return -1;
 		}
 
-		xhStream = XClient_FilePush_Init();
+		xhStream = XStream_FilePush_Init();
 		if (NULL == xhStream)
 		{
-			printf("XClient_FilePush_Push:%lX\n", StreamClient_GetLastError());
+			printf("XStream_FilePush_Push:%lX\n", XStream_GetLastError());
 			return -1;
 		}
 		std::thread m_ThreadVideo(fread_video, xhStream);
-		//std::thread m_ThreadAudio(fread_audio, xhStream);
+		std::thread m_ThreadAudio(fread_audio, xhStream);
 
 		m_ThreadVideo.detach();
-		//m_ThreadAudio.detach();
-		Sleep(3000);
-		if (!XClient_FilePush_Input(xhStream))
+		m_ThreadAudio.detach();
+		std::this_thread::sleep_for(std::chrono::seconds(3));
+		if (!XStream_FilePush_Input(xhStream))
 		{
-			printf("XClient_FilePush_Input:%lX\n", StreamClient_GetLastError());
+			printf("XStream_FilePush_Input:%lX\n", XStream_GetLastError());
 			return -1;
 		}
-		if (!XClient_FilePush_Output(xhStream, lpszUrl))
+		if (!XStream_FilePush_Output(xhStream, lpszUrl))
 		{
-			printf("XClient_FilePush_Output:%lX\n", StreamClient_GetLastError());
+			printf("XStream_FilePush_Output:%lX\n", XStream_GetLastError());
 			return -1;
 		}
-		if (!XClient_FilePush_Start(xhStream))
+		if (!XStream_FilePush_Start(xhStream))
 		{
-			printf("XClient_FilePush_Output:%lX\n", StreamClient_GetLastError());
+			printf("XStream_FilePush_Output:%lX\n", XStream_GetLastError());
 			return -1;
 		}
 	}
 	else
 	{
-		xhStream = XClient_FilePush_Init();
+		xhStream = XStream_FilePush_Init();
 		if (NULL == xhStream)
 		{
-			printf("XClient_FilePush_Push:%lX\n", StreamClient_GetLastError());
+			printf("XStream_FilePush_Push:%lX\n", XStream_GetLastError());
 			return -1;
 		}
-		if (!XClient_FilePush_Input(xhStream, lpszVFile, lpszAFile))
+		if (!XStream_FilePush_Input(xhStream, lpszVFile, lpszAFile))
 		{
-			printf("XClient_FilePush_Input:%lX\n", StreamClient_GetLastError());
+			printf("XStream_FilePush_Input:%lX\n", XStream_GetLastError());
 			return -1;
 		}
-		if (!XClient_FilePush_Output(xhStream, lpszUrl))
+		if (!XStream_FilePush_Output(xhStream, lpszUrl))
 		{
-			printf("XClient_FilePush_Output:%lX\n", StreamClient_GetLastError());
+			printf("XStream_FilePush_Output:%lX\n", XStream_GetLastError());
 			return -1;
 		}
-		if (!XClient_FilePush_Start(xhStream))
+		if (!XStream_FilePush_Start(xhStream))
 		{
-			printf("XClient_FilePush_Output:%lX\n", StreamClient_GetLastError());
+			printf("XStream_FilePush_Output:%lX\n", XStream_GetLastError());
 			return -1;
 		}
 	}
 
-	BOOL bIsPush = TRUE;
+	XBOOL bIsPush = XTRUE;
 	while (bIsPush)
 	{
-		XClient_FilePush_GetStatus(xhStream, &bIsPush);
+		XStream_FilePush_GetStatus(xhStream, &bIsPush);
 	}
-	XClient_FilePush_Close(xhStream);
+	XStream_FilePush_Close(xhStream);
 	return 1;
 }
 
@@ -169,15 +169,15 @@ int Test_LivePush()
 	XHANDLE xhStream = NULL;
 	FILE* pSt_VFile = NULL;
 	FILE* pSt_AFile = NULL;
-	LPCTSTR lpszUrl = _T("rtmp://app.xyry.org/live/qyt");
+	LPCXSTR lpszUrl = _T("rtmp://app.xyry.org/live/qyt");
 
 	int nPos = 0;
 	int nVLen = 0;
 	int nALen = 0;
-	TCHAR tszVBuffer[8096];
-	TCHAR tszABuffer[8096];
-	UCHAR tszSPSBuffer[MAX_PATH];
-	UCHAR tszPPSBuffer[MAX_PATH];
+	XCHAR tszVBuffer[8096];
+	XCHAR tszABuffer[8096];
+	XBYTE tszSPSBuffer[MAX_PATH];
+	XBYTE tszPPSBuffer[MAX_PATH];
 	XENGINE_PROTOCOL_AVINFO st_MediaStream;
 
 	memset(tszVBuffer, '\0', sizeof(tszVBuffer));
@@ -186,7 +186,7 @@ int Test_LivePush()
 	memset(tszPPSBuffer, '\0', MAX_PATH);
 	memset(&st_MediaStream, '\0', sizeof(XENGINE_PROTOCOL_AVINFO));
 
-	st_MediaStream.st_VideoInfo.bEnable = TRUE;
+	st_MediaStream.st_VideoInfo.bEnable = XTRUE;
 	st_MediaStream.st_VideoInfo.nBitRate = 64000;
 	st_MediaStream.st_VideoInfo.nFrameRate = 24;
 	st_MediaStream.st_VideoInfo.nWidth = 720;
@@ -207,7 +207,7 @@ int Test_LivePush()
 		memcpy(st_MediaStream.st_VideoInfo.tszVInfo, tszVBuffer, nPos);
 	}
 
-	st_MediaStream.st_AudioInfo.bEnable = TRUE;
+	st_MediaStream.st_AudioInfo.bEnable = XTRUE;
 	st_MediaStream.st_AudioInfo.nChannel = 2;
 	st_MediaStream.st_AudioInfo.nBitRate = 64000;
 	st_MediaStream.st_AudioInfo.nSampleRate = 44100;
@@ -225,7 +225,7 @@ int Test_LivePush()
 		nALen = fread(tszABuffer, 1, sizeof(tszABuffer), pSt_AFile);
 		int nProfile = 0;
 		int nConfig = 0;
-		AVHelp_Parse_AACInfo((const UCHAR*)tszABuffer, nALen, &st_MediaStream.st_AudioInfo.nChannel, &st_MediaStream.st_AudioInfo.nSampleRate, &nProfile, &nConfig);
+		AVHelp_Parse_AACInfo((const XBYTE*)tszABuffer, nALen, &st_MediaStream.st_AudioInfo.nChannel, &st_MediaStream.st_AudioInfo.nSampleRate, &nProfile, &nConfig);
 	}
 
 	XNETHANDLE xhAParse = 0;
@@ -233,10 +233,10 @@ int Test_LivePush()
 	AVHelp_Parse_FrameInit(&xhAParse, ENUM_AVCODEC_AUDIO_TYPE_AAC);
 	AVHelp_Parse_FrameInit(&xhVParse, ENUM_ENTENGINE_AVCODEC_VEDIO_TYPE_H264);
 
-	xhStream = XClient_CodecPush_Init(lpszUrl, &st_MediaStream);
-	XClient_CodecPush_WriteHdr(xhStream);
+	xhStream = XStream_CodecPush_Init(lpszUrl, &st_MediaStream);
+	XStream_CodecPush_WriteHdr(xhStream);
 
-	while (TRUE)
+	while (XTRUE)
 	{
 		if (st_MediaStream.st_VideoInfo.bEnable)
 		{
@@ -245,7 +245,7 @@ int Test_LivePush()
 			AVHelp_Parse_FrameGet(xhVParse, tszVBuffer, nVLen, &ppSt_Frame, &nListCount);
 			for (int i = 0; i < nListCount; i++)
 			{
-				XClient_CodecPush_PushVideo(xhStream, ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen);
+				XStream_CodecPush_PushVideo(xhStream, ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen);
 			}
 			memset(tszVBuffer, '\0', sizeof(tszVBuffer));
 			nVLen = fread(tszVBuffer, 1, sizeof(tszVBuffer), pSt_VFile);
@@ -263,7 +263,7 @@ int Test_LivePush()
 			for (int i = 0; i < nListCount; i++)
 			{
 				//不需要AAC头
-				XClient_CodecPush_PushAudio(xhStream, ppSt_Frame[i]->ptszMsgBuffer + 7, ppSt_Frame[i]->nMsgLen - 7);
+				XStream_CodecPush_PushAudio(xhStream, ppSt_Frame[i]->ptszMsgBuffer + 7, ppSt_Frame[i]->nMsgLen - 7);
 			}
 			memset(tszABuffer, '\0', sizeof(tszABuffer));
 			nALen = fread(tszABuffer, 1, sizeof(tszABuffer), pSt_AFile);
@@ -277,7 +277,7 @@ int Test_LivePush()
 	}
 	AVHelp_Parse_FrameClose(xhVParse);
 	AVHelp_Parse_FrameClose(xhAParse);
-	XClient_CodecPush_Close(xhStream);
+	XStream_CodecPush_Close(xhStream);
 	return 0;
 }
 
@@ -287,8 +287,8 @@ int main()
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
-	Test_LivePush();
-	//Test_RTMPPush();
+	//Test_LivePush();
+	Test_RTMPPush();
 	
 #ifdef _MSC_BUILD
 	WSACleanup();

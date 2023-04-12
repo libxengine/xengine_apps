@@ -15,21 +15,21 @@
 //Macos::clang++ -std=gnu++17 -Wall -g HelpComponents_APPBinPack.cpp -o HelpComponents_APPBinPack.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_HelpComponents -lXEngine_BaseLib -lHelpComponents_BINPack
 
 #ifdef _MSC_BUILD
-LPCTSTR lpszFile = _T("D:\\xengine_apps\\Debug\\Pics.xBin");
-LPCTSTR lpszPacket1 = _T("D:\\xengine_apps\\Debug\\1.png");
-LPCTSTR lpszPacket2 = _T("D:\\xengine_apps\\Debug\\2.png");
-LPCTSTR lpszPacket3 = _T("D:\\xengine_apps\\Debug\\3.png");
-LPCTSTR lpszUNPack1 = _T("D:\\xengine_apps\\Debug\\4.png");
-LPCTSTR lpszUNPack2 = _T("D:\\xengine_apps\\Debug\\5.png");
-LPCTSTR lpszUNPack3 = _T("D:\\xengine_apps\\Debug\\6.png");
+LPCXSTR lpszFile = _T("D:\\xengine_apps\\Debug\\Pics.xBin");
+LPCXSTR lpszPacket1 = _T("D:\\xengine_apps\\Debug\\1.png");
+LPCXSTR lpszPacket2 = _T("D:\\xengine_apps\\Debug\\2.png");
+LPCXSTR lpszPacket3 = _T("D:\\xengine_apps\\Debug\\3.png");
+LPCXSTR lpszUNPack1 = _T("D:\\xengine_apps\\Debug\\4.png");
+LPCXSTR lpszUNPack2 = _T("D:\\xengine_apps\\Debug\\5.png");
+LPCXSTR lpszUNPack3 = _T("D:\\xengine_apps\\Debug\\6.png");
 #else
-LPCTSTR lpszFile = _T("./Pics.xBin");
-LPCTSTR lpszPacket1 = _T("./1.png");
-LPCTSTR lpszPacket2 = _T("./2.png");
-LPCTSTR lpszPacket3 = _T("./3.png");
-LPCTSTR lpszUNPack1 = _T("./4.png");
-LPCTSTR lpszUNPack2 = _T("./5.png");
-LPCTSTR lpszUNPack3 = _T("./6.png");
+LPCXSTR lpszFile = _T("./Pics.xBin");
+LPCXSTR lpszPacket1 = _T("./1.png");
+LPCXSTR lpszPacket2 = _T("./2.png");
+LPCXSTR lpszPacket3 = _T("./3.png");
+LPCXSTR lpszUNPack1 = _T("./4.png");
+LPCXSTR lpszUNPack2 = _T("./5.png");
+LPCXSTR lpszUNPack3 = _T("./6.png");
 #endif
 
 void BINTest_Packet()
@@ -94,7 +94,7 @@ void BINTest_UNPack()
 		return;
 	}
 	int nLen = 4095;
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	if (!BINPack_UnPack_Get(xhFile, NULL, tszMsgBuffer, &nLen))

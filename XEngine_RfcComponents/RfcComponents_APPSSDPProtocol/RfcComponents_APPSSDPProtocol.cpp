@@ -37,22 +37,22 @@ int main()
 #endif
 	XSOCKET hSocket;
 	//准备
-	if (!NetCore_GroupCast_Create(&hSocket, 1900, _T("239.255.255.250"), _T("192.168.1.8")))
+	if (!NetCore_GroupCast_Create(&hSocket, 1900, _T("239.255.255.250"), _T("192.168.252.128")))
 	{
 		printf("NetCore_GroupCast_Create:%lX\n", NetCore_GetLastError());
 		return -1;
 	}
 	int nMsgLen = 0;
-	TCHAR tszMsgBuffer[1024];
+	XCHAR tszMsgBuffer[1024];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	SSDPProtocol_Packet_REQSearch(tszMsgBuffer, &nMsgLen, XENGINE_RFCCOMPONENTS_SSDP_PROTOCOL_ST_ALL, "XEngine RFCComponents_SSDPProtocol/V7.45 PCWindows");
 	NetCore_GroupCast_Send(hSocket, tszMsgBuffer, nMsgLen);
 
-	while (TRUE)
+	while (XTRUE)
 	{
 		nMsgLen = 1024;
-		TCHAR tszClientAddr[128];
+		XCHAR tszClientAddr[128];
 
 		memset(tszClientAddr, '\0', sizeof(tszClientAddr));
 		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
@@ -60,8 +60,8 @@ int main()
 		if (NetCore_GroupCast_Recv(hSocket, tszMsgBuffer, &nMsgLen, tszClientAddr))
 		{
 			int nListCount = 0;
-			TCHAR** pptszHDRList;
-			TCHAR tszValueStr[MAX_PATH];
+			XCHAR** pptszHDRList;
+			XCHAR tszValueStr[MAX_PATH];
 			RFCCOMPONENTS_SSDP_HDRPARAM st_SSDPHdr;
 
 			memset(tszValueStr, '\0', MAX_PATH);
@@ -74,7 +74,7 @@ int main()
 				printf("%s:Location:%s\n", tszClientAddr, tszValueStr);
 
 				int nBLen = 0;
-				CHAR* ptszMsgBuffer = NULL;
+				XCHAR* ptszMsgBuffer = NULL;
 				APIClient_Http_Request("GET", tszValueStr, NULL, NULL, &ptszMsgBuffer, &nBLen);
 				printf("%s\n", ptszMsgBuffer);
 				BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);

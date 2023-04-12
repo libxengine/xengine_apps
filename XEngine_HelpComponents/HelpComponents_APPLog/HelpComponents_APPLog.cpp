@@ -11,8 +11,8 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_XLog/XLog_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_XLog/XLog_Error.h"
 
-//Linux::g++ -std=gnu++17 -Wall -g HelpComponents_APPLog.cpp -o HelpComponents_APPLog.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents -lXEngine_BaseLib -lHelpComponents_XLog -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents,--disable-new-dtags
-//Macos;:g++ -std=gnu++17 -Wall -g HelpComponents_APPLog.cpp -o HelpComponents_APPLog.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_HelpComponents -lXEngine_BaseLib -lHelpComponents_XLog 
+//Linux::g++ -std=gnu++17 -Wall -g HelpComponents_APPLog.cpp -o HelpComponents_APPLog.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents -lXEngine_BaseLib -lXEngine_SystemApi -lHelpComponents_XLog -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents,--disable-new-dtags
+//Macos;:g++ -std=gnu++17 -Wall -g HelpComponents_APPLog.cpp -o HelpComponents_APPLog.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_SystemSdk -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_HelpComponents -lXEngine_BaseLib -lXEngine_SystemApi -lHelpComponents_XLog 
 
 
 int main()

@@ -21,14 +21,13 @@
 
 int Test_Cache()
 {
-	XSOCKET hSocket = 100;
 	XHANDLE xhPacket = HelpComponents_Cache_InitEx();
 	if (NULL == xhPacket)
 	{
 		printf("HelpComponents_Packets_Init:%lX\n", Packets_GetLastError());
 		return -1;
 	}
-	LPCTSTR lpszMsgBuffer = _T("hello");
+	LPCXSTR lpszMsgBuffer = _T("hello");
 	int nLen = strlen(lpszMsgBuffer);
 
 	HelpComponents_Cache_PostEx(xhPacket, lpszMsgBuffer, nLen);
@@ -38,7 +37,7 @@ int Test_Cache()
 	HelpComponents_Cache_WaitEventEx(xhPacket);
 
 	int nMsgLen = 0;
-	TCHAR* ptszMsgBuffer = NULL;
+	XCHAR* ptszMsgBuffer = NULL;
 	HelpComponents_Cache_GetMemoryEx(xhPacket, &ptszMsgBuffer, &nMsgLen);
 	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 	HelpComponents_Cache_GetMemoryEx(xhPacket, &ptszMsgBuffer, &nMsgLen);
@@ -63,8 +62,8 @@ int Test_Packets()
 		return -1;
 	}
 
-	TCHAR tszMsgBuffer[2048];
-	LPCTSTR lpszMsgBuffer = _T("hello");
+	XCHAR tszMsgBuffer[2048];
+	LPCXSTR lpszMsgBuffer = _T("hello");
 	XENGINE_PROTOCOLHDREX st_ProtocolHdr;
 	XENGINE_PROTOCOLTAILEX st_ProtocolTail;
 	int nLen = strlen(lpszMsgBuffer);
@@ -82,7 +81,7 @@ int Test_Packets()
 	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_NORMAL;
 	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_ISOK;
 	st_ProtocolHdr.unPacketSize = 5;
-	st_ProtocolHdr.wIsReply = FALSE;
+	st_ProtocolHdr.wIsReply = XFALSE;
 
 	st_ProtocolTail.wCheckSum = HelpComponents_Help_CheckSum(lpszMsgBuffer, nLen);
 	st_ProtocolTail.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
@@ -111,7 +110,7 @@ int Test_Packets()
 }
 int Test_Datas()
 {
-	LPCTSTR lpszClientAddr = _T("127.0.0.1");
+	LPCXSTR lpszClientAddr = _T("127.0.0.1");
 	XHANDLE xhPacket = HelpComponents_Datas_Init(10000, 4);
 	
 	if (NULL == xhPacket)
@@ -125,11 +124,10 @@ int Test_Datas()
 		return -1;
 	}
 
-	TCHAR tszMsgBuffer[2048];
-	LPCTSTR lpszMsgBuffer = _T("hello");
+	XCHAR tszMsgBuffer[2048];
+	LPCXSTR lpszMsgBuffer = _T("hello");
 	XENGINE_PROTOCOLHDR st_ProtocolHdr;
 	int nLen = strlen(lpszMsgBuffer);
-	int nMsgLen = 0;
 
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
@@ -147,7 +145,7 @@ int Test_Datas()
 	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
 	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), lpszMsgBuffer, nLen);
 
-	nMsgLen = sizeof(XENGINE_PROTOCOLHDR) + nLen;
+	int nMsgLen = sizeof(XENGINE_PROTOCOLHDR) + nLen;
 
 	HelpComponents_Datas_PostEx(xhPacket, lpszClientAddr, tszMsgBuffer, 10);
 	HelpComponents_Datas_PostEx(xhPacket, lpszClientAddr, tszMsgBuffer + 10, 15);
@@ -166,7 +164,7 @@ int Test_Datas()
 		for (int j = 0; j < ppSst_ListAddr[i]->nPktCount; j++)
 		{
 			int nMsgLen = 0;                             //客户端发送的数据大小,不包括头
-			TCHAR* ptszMsgBuffer = NULL;                 //客户端发送的数据
+			XCHAR* ptszMsgBuffer = NULL;                 //客户端发送的数据
 			XENGINE_PROTOCOLHDR st_ProtocolHdr;          //客户端发送的数据的协议头
 			//得到一个指定客户端的完整数据包
 			if (HelpComponents_Datas_GetMemoryEx(xhPacket, ppSst_ListAddr[i]->tszClientAddr, &ptszMsgBuffer, &nMsgLen, &st_ProtocolHdr))
@@ -185,7 +183,7 @@ int Test_Datas()
 }
 int Test_PacketPool()
 {
-	LPCTSTR lpszClientAddr = _T("127.0.0.1");
+	LPCXSTR lpszClientAddr = _T("127.0.0.1");
 	XHANDLE xhPacket = HelpComponents_Datas_Init(10000, 4);
 	if (NULL == xhPacket)
 	{
@@ -198,8 +196,8 @@ int Test_PacketPool()
 		return -1;
 	}
 
-	TCHAR tszMsgBuffer[2048];
-	LPCTSTR lpszMsgBuffer = _T("hello");
+	XCHAR tszMsgBuffer[2048];
+	LPCXSTR lpszMsgBuffer = _T("hello");
 	XENGINE_PROTOCOLHDR st_ProtocolHdr;
 	int nLen = strlen(lpszMsgBuffer);
 	int nMsgLen = 0;
@@ -232,7 +230,7 @@ int Test_PacketPool()
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
 
-	TCHAR tszClientAddr[64];
+	XCHAR tszClientAddr[64];
 	memset(tszClientAddr, '\0', sizeof(tszClientAddr));
 	HelpComponents_Datas_WaitEventEx(xhPacket, 1);
 
@@ -255,14 +253,14 @@ int Test_PacketPool()
 
 typedef struct
 {
-	BYTE byStart;
-	BYTE byCode;
-	WORD wLen;
+	XBYTE byStart;
+	XBYTE byCode;
+	XBYTE wLen;
 }HELPCOMONENTS_CUSTOMHDR;
 typedef struct
 {
-	BYTE byCheck;
-	BYTE byEnd;
+	XBYTE byCheck;
+	XBYTE byEnd;
 }HELPCOMONENTS_CUSTOMTAIL;
 
 int Test_PacketCustom()
@@ -274,7 +272,7 @@ int Test_PacketCustom()
 		printf("HelpComponents_PKTCustom_Init:%lX\n", Packets_GetLastError());
 		return -1;
 	}
-	HelpComponents_PKTCustom_SetHdrEx(xhPacket, 2, 4, sizeof(HELPCOMONENTS_CUSTOMHDR), FALSE);
+	HelpComponents_PKTCustom_SetHdrEx(xhPacket, 2, 4, sizeof(HELPCOMONENTS_CUSTOMHDR), XFALSE);
 	HelpComponents_PKTCustom_SetTailEx(xhPacket, sizeof(HELPCOMONENTS_CUSTOMTAIL));
 
 	if (!HelpComponents_PKTCustom_CreateEx(xhPacket, hSocket, 1))
@@ -283,8 +281,8 @@ int Test_PacketCustom()
 		return -1;
 	}
 
-	TCHAR tszMsgBuffer[2048];
-	LPCTSTR lpszMsgBuffer = _T("hello");
+	XCHAR tszMsgBuffer[2048];
+	LPCXSTR lpszMsgBuffer = _T("hello");
 	HELPCOMONENTS_CUSTOMHDR st_ProtocolHdr;
 	HELPCOMONENTS_CUSTOMTAIL st_ProtocolTail;
 
@@ -323,7 +321,7 @@ int Test_PacketCustom()
 	HelpComponents_PKTCustom_GetPoolEx(xhPacket, 1, &ppSt_ListAddr, &nListCount);
 	for (int i = 0; i < nListCount; i++)
 	{
-		TCHAR* ptszMsgBuffer;
+		XCHAR* ptszMsgBuffer;
 		int nHDRLen = 0;
 		HelpComponents_PKTCustom_GetMemoryEx(xhPacket, ppSt_ListAddr[i]->hSocket, &ptszMsgBuffer, &nMsgLen, &st_ProtocolHdr, &nHDRLen, &st_ProtocolTail);
 		printf("Test_PacketCustom:%d=%s\n", nMsgLen, tszMsgBuffer);
@@ -336,25 +334,25 @@ int Test_PacketCustom()
 }
 typedef struct
 {
-	BYTE byFlags[4];
+	XBYTE byFlags[4];
 
-	BYTE byCC : 4;
-	BYTE byX : 1;
-	BYTE byP : 1;
-	BYTE byV : 2;
+	XBYTE byCC : 4;
+	XBYTE byX : 1;
+	XBYTE byP : 1;
+	XBYTE byV : 2;
 
-	BYTE byPT : 7;
-	BYTE byM : 1;
+	XBYTE byPT : 7;
+	XBYTE byM : 1;
 
-	WORD wSerial;
-	BYTE bySIMNumber[6];
-	BYTE byChannel;
+	XBYTE wSerial;
+	XBYTE bySIMNumber[6];
+	XBYTE byChannel;
 
-	BYTE byPacket : 4;
-	BYTE byType : 4;
+	XBYTE byPacket : 4;
+	XBYTE byType : 4;
 
-	BYTE byTime[8];
-	WORD wLen;
+	XBYTE byTime[8];
+	XBYTE wLen;
 }XENGINE_RTPPACKETHDR;
 int Test_PacketCustom2()
 {
@@ -367,10 +365,10 @@ int Test_PacketCustom2()
 	}
 	HelpComponents_PKTCustom_SetHdrEx(xhPacket, 24, 26, sizeof(XENGINE_RTPPACKETHDR));
 	
-	HelpComponents_PKTCustom_SetConditionsEx(xhPacket, 15, 4, 4, -8, TRUE, TRUE);
-	HelpComponents_PKTCustom_SetConditionsEx(xhPacket, 15, 4, 0, 4, TRUE, TRUE);
-	HelpComponents_PKTCustom_SetConditionsEx(xhPacket, 15, 4, 1, 4, TRUE, TRUE);
-	HelpComponents_PKTCustom_SetConditionsEx(xhPacket, 15, 4, 2, 4, TRUE, TRUE);
+	HelpComponents_PKTCustom_SetConditionsEx(xhPacket, 15, 4, 4, -8, XTRUE, XTRUE);
+	HelpComponents_PKTCustom_SetConditionsEx(xhPacket, 15, 4, 0, 4, XTRUE, XTRUE);
+	HelpComponents_PKTCustom_SetConditionsEx(xhPacket, 15, 4, 1, 4, XTRUE, XTRUE);
+	HelpComponents_PKTCustom_SetConditionsEx(xhPacket, 15, 4, 2, 4, XTRUE, XTRUE);
 
 	if (!HelpComponents_PKTCustom_CreateEx(xhPacket, hSocket))
 	{
@@ -379,18 +377,18 @@ int Test_PacketCustom2()
 	}
 
 #ifdef _MSC_BUILD
-	LPCTSTR lpszFile = _T("D:\\XEngine_JT1078\\XEngine_APPClient\\Debug\\1.rtp");
+	LPCXSTR lpszFile = _T("D:\\XEngine_JT1078\\XEngine_APPClient\\Debug\\1.rtp");
 #else
-	LPCTSTR lpszFile = _T("1.rtp");
+	LPCXSTR lpszFile = _T("1.rtp");
 #endif
-	FILE* pSt_File = _tfopen(lpszFile, _T("rb"));
+	FILE* pSt_File = fopen(lpszFile, _T("rb"));
 	if (NULL == pSt_File)
 	{
 		return -1;
 	}
-	while (TRUE)
+	while (XTRUE)
 	{
-		TCHAR tszMsgBuffer[2048];
+		XCHAR tszMsgBuffer[2048];
 		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 		int nRet = fread(tszMsgBuffer, 1, sizeof(tszMsgBuffer), pSt_File);
 		if (nRet <= 0)
@@ -399,12 +397,12 @@ int Test_PacketCustom2()
 		}
 		HelpComponents_PKTCustom_PostEx(xhPacket, hSocket, tszMsgBuffer, nRet);
 
-		while (TRUE)
+		while (XTRUE)
 		{
 			int nHDRLen = 0;
 			int nMsgLen = 0;
-			TCHAR* ptszMsgBuffer;
-			TCHAR tszHDRBuffer[MAX_PATH];
+			XCHAR* ptszMsgBuffer;
+			XCHAR tszHDRBuffer[MAX_PATH];
 			XENGINE_RTPPACKETHDR st_RTPPacket;
 
 			memset(&st_RTPPacket, '\0', sizeof(XENGINE_RTPPACKETHDR));
@@ -430,8 +428,8 @@ void CALLBACK Packet_CBChunk(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int 
 }
 int Test_DataChunk()
 {
-	LPCTSTR lpszFile = _T("D:\\xmaster\\Debug\\XEngine_RecordMaster.exe");
-	LPCTSTR lpszClientID = _T("192.168.1.5:3301");
+	LPCXSTR lpszFile = _T("D:\\xmaster\\Debug\\XEngine_RecordMaster.exe");
+	LPCXSTR lpszClientID = _T("192.168.1.5:3301");
 	XENGINE_PROTOCOLHDR st_ProtocolHdr;
 	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
 
@@ -440,18 +438,18 @@ int Test_DataChunk()
 	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_CHUNKED_START;
 	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
 
-	//XHANDLE xhPacket = HelpComponents_Datas_Init(10000, 0, 1, FALSE, FALSE, FALSE, Packet_CBChunk);
+	//XHANDLE xhPacket = HelpComponents_Datas_Init(10000, 0, 1, XFALSE, XFALSE, XFALSE, Packet_CBChunk);
 	XHANDLE xhPacket = HelpComponents_Datas_Init();
 	HelpComponents_Datas_CreateEx(xhPacket, lpszClientID, 0);
-	HelpComponents_Datas_PostEx(xhPacket, lpszClientID, (LPCTSTR)&st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
-	FILE* pSt_File = _tfopen(lpszFile, _T("rb"));
+	HelpComponents_Datas_PostEx(xhPacket, lpszClientID, (LPCXSTR)&st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
+	FILE* pSt_File = fopen(lpszFile, _T("rb"));
 	if (NULL == pSt_File)
 	{
 		return -1;
 	}
 	while (1)
 	{
-		TCHAR tszMsgBuffer[4096];
+		XCHAR tszMsgBuffer[4096];
 		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 		int nRet = fread(tszMsgBuffer, 1, sizeof(tszMsgBuffer), pSt_File);
@@ -463,7 +461,7 @@ int Test_DataChunk()
 	}
 	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_CHUNKED_END;
 
-	TCHAR tszMsgBuffer[4096];
+	XCHAR tszMsgBuffer[4096];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
 
@@ -474,7 +472,7 @@ int Test_DataChunk()
 	HelpComponents_Datas_PostEx(xhPacket, lpszClientID, tszMsgBuffer, sizeof(XENGINE_PROTOCOLHDR) * 2);
 	fclose(pSt_File);
 
-	pSt_File = _tfopen("D:\\xmaster\\Debug\\XEngine_RecordMaster1.exe", _T("wb"));
+	pSt_File = fopen("D:\\xmaster\\Debug\\XEngine_RecordMaster1.exe", _T("wb"));
 	while (1)
 	{
 		int nMsgLen = 4096;

@@ -12,6 +12,7 @@
 #include <string.h>
 #include <thread>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 
@@ -35,8 +36,8 @@ void TimeSpanTest()
 {
 	__int64x nDayTTime = 0;
 	__int64x nHourTTime = 0;
-	LPCTSTR lpszStartTime = _T("2019-11-01 12:31:10");
-	LPCTSTR lpszEndTime = _T("2020-10-02 12:31:10");
+	LPCXSTR lpszStartTime = _T("2019-11-01 12:31:10");
+	LPCXSTR lpszEndTime = _T("2020-10-02 12:31:10");
 	XENGINE_LIBTIMER st_LibTimer;
 	memset(&st_LibTimer, '\0', sizeof(XENGINE_LIBTIMER));
 
@@ -44,10 +45,10 @@ void TimeSpanTest()
 	BaseLib_OperatorTimeSpan_GetForStr(lpszStartTime, lpszEndTime, &nHourTTime, 1);
 	_tprintf(_T("\n跨了：%lld天 %lld小时\n"), nDayTTime, nHourTTime);
 
-	BaseLib_OperatorTimeSpan_CalForStr(lpszStartTime, lpszEndTime, &st_LibTimer, TRUE);
+	BaseLib_OperatorTimeSpan_CalForStr(lpszStartTime, lpszEndTime, &st_LibTimer, XTRUE);
 	_tprintf(_T("%d/%d/%d-%d:%d:%d\n"), st_LibTimer.wYear, st_LibTimer.wMonth, st_LibTimer.wDay, st_LibTimer.wHour, st_LibTimer.wMinute, st_LibTimer.wSecond);
 
-	BaseLib_OperatorTimeSpan_CalForStr(lpszStartTime, lpszEndTime, &st_LibTimer, FALSE);
+	BaseLib_OperatorTimeSpan_CalForStr(lpszStartTime, lpszEndTime, &st_LibTimer, XFALSE);
 	_tprintf(_T("%d/%d/%d-%d:%d:%d\n"), st_LibTimer.wYear, st_LibTimer.wMonth, st_LibTimer.wDay, st_LibTimer.wHour, st_LibTimer.wMinute, st_LibTimer.wSecond);
 }
 void TimeTest()
@@ -60,8 +61,8 @@ void TimeTest()
 	BaseLib_OperatorTime_TTimeToStuTime(nTime, &st_LibTimer);
 
 	__int64x nTTime = 0;
-	TCHAR tszTimeStr[128] = {0};
-	LPCTSTR lpszTimeStr = _T("2022-08-01 10:22:01");
+	XCHAR tszTimeStr[128] = {0};
+	LPCXSTR lpszTimeStr = _T("2022-08-01 10:22:01");
 	BaseLib_OperatorTime_StrToInt(lpszTimeStr, &nTTime);
 	BaseLib_OperatorTime_IntToStr(nTTime, tszTimeStr);
 
@@ -71,10 +72,9 @@ void StringTest()
 {
 	int nHdrLen = 0;
 	int nBodyLen = 0;
-	int nDelLen = 0;
-	TCHAR tszKey[64];
-	TCHAR tszValue[64];
-	TCHAR tszMsgBuffer[1024];
+	XCHAR tszKey[64];
+	XCHAR tszValue[64];
+	XCHAR tszMsgBuffer[1024];
 
 	memset(tszKey, '\0', sizeof(tszKey));
 	memset(tszValue, '\0', sizeof(tszValue));
@@ -84,16 +84,16 @@ void StringTest()
 
 	BaseLib_OperatorString_DelSub(tszMsgBuffer, _T("9"));
 
-	BaseLib_OperatorString_GetKeyValue(tszMsgBuffer, _T(":"), tszKey, tszValue, TRUE, &nHdrLen, &nBodyLen);
-	LPCTSTR lpszFile1 = _T("./adadad/file.txt");
-	LPCTSTR lpszFile2 = _T("D:\\adadad\\file.txt");
-	LPCTSTR lpszFile3 = _T("./file.txt");
-	LPCTSTR lpszFile4 = _T("file.txt");
+	BaseLib_OperatorString_GetKeyValue(tszMsgBuffer, _T(":"), tszKey, tszValue, XTRUE, &nHdrLen, &nBodyLen);
+	LPCXSTR lpszFile1 = _T("./adadad/file.txt");
+	LPCXSTR lpszFile2 = _T("D:\\adadad\\file.txt");
+	LPCXSTR lpszFile3 = _T("./file.txt");
+	LPCXSTR lpszFile4 = _T("file.txt");
 
-	TCHAR tszFileDir[MAX_PATH];
-	TCHAR tszFileName[MAX_PATH];
-	TCHAR tszFileDrive[MAX_PATH];
-	TCHAR tszFileExt[MAX_PATH];
+	XCHAR tszFileDir[MAX_PATH];
+	XCHAR tszFileName[MAX_PATH];
+	XCHAR tszFileDrive[MAX_PATH];
+	XCHAR tszFileExt[MAX_PATH];
 
 	memset(tszFileDir, '\0', MAX_PATH);
 	memset(tszFileName, '\0', MAX_PATH);
@@ -118,7 +118,7 @@ void StringTest()
 
 void GMTTimeTest()
 {
-	TCHAR tszGMTTime[128];
+	XCHAR tszGMTTime[128];
 	memset(tszGMTTime, '\0', sizeof(tszGMTTime));
 	BaseLib_OperatorTime_GMTTime(tszGMTTime);
 
@@ -128,15 +128,15 @@ void GMTTimeTest()
 int TestAddrLib()
 {
 	int nPort = 0;
-	LPCTSTR lpszIPV4Convert = _T("192.168.*.10");
+	LPCXSTR lpszIPV4Convert = _T("192.168.*.10");
 	
-	LPCTSTR lpszIPV61 = _T("2031:0010:1F1F:0200:*:0100:11A0:ADDF");
-	LPCTSTR lpszIPV62 = _T("1254:1800:200C::417A:AC11");
-	LPCTSTR lpszIPV63 = _T("1080::8:800:200C:417A");
-	LPCTSTR lpszIPV64 = _T("ACC::1101");
-	LPCTSTR lpszIPV65 = _T("::1");
-	LPCTSTR lpszIPV66 = _T("::192:168:1:54");
-	TCHAR tszIPV6Addr[] = _T("1080:0:0:0:8:800:200C:5000");
+	LPCXSTR lpszIPV61 = _T("2031:0010:1F1F:0200:*:0100:11A0:ADDF");
+	LPCXSTR lpszIPV62 = _T("1254:1800:200C::417A:AC11");
+	LPCXSTR lpszIPV63 = _T("1080::8:800:200C:417A");
+	LPCXSTR lpszIPV64 = _T("ACC::1101");
+	LPCXSTR lpszIPV65 = _T("::1");
+	LPCXSTR lpszIPV66 = _T("::192:168:1:54");
+	XCHAR tszIPV6Addr[] = _T("1080:0:0:0:8:800:200C:5000");
 
 	ENUM_XENGINE_BASELIB_IPADDR_TYPE enIPType;
 	XENGINE_LIBADDR st_LibAddr;
@@ -157,7 +157,7 @@ int TestAddrLib()
 	memset(&st_LibAddr, '\0', sizeof(XENGINE_LIBADDR));
 	BaseLib_OperatorIPAddr_IsIPV6Addr(lpszIPV64, &st_LibAddr);
 
-	TCHAR tszIPAddr[128];
+	XCHAR tszIPAddr[128];
 	memset(tszIPAddr, '\0', sizeof(tszIPAddr));
 	BaseLib_OperatorIPAddr_ExpIPV6Addr(&st_LibAddr, tszIPAddr);
 	memset(tszIPAddr, '\0', sizeof(tszIPAddr));
@@ -174,7 +174,7 @@ int TestAddrLib()
 }
 int test_Mutex()
 {
-	LPCTSTR lpszName = _T("xyry");
+	LPCXSTR lpszName = _T("xyry");
 	XEVENT xhEvent = BaseLib_OperatorSemaphore_Create(lpszName);
 	if (NULL == xhEvent)
 	{
@@ -210,8 +210,8 @@ int test_Memory()
 	}
 	BaseLib_OperatorMemory_Free((void***)&ppIntArray, 3);
 
-	TCHAR** ppszStr;
-	if (!BaseLib_OperatorMemory_Malloc((void***)&ppszStr, 3, sizeof(TCHAR) * 6))
+	XCHAR** ppszStr;
+	if (!BaseLib_OperatorMemory_Malloc((void***)&ppszStr, 3, sizeof(XCHAR) * 6))
 	{
 		return -1;
 	}
@@ -267,7 +267,7 @@ void Test_GetTimeofday()
 {
 	XENGINE_VALTIME st_Timeval;
 	XENGINE_LIBTIMER st_LibTime;
-	TCHAR tszMsgTimer[128];
+	XCHAR tszMsgTimer[128];
 
 	memset(&st_Timeval, '\0', sizeof(XENGINE_VALTIME));
 	memset(&st_LibTime, '\0', sizeof(XENGINE_LIBTIMER));
@@ -303,7 +303,7 @@ int profiletest()
 	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test", "b", "b2");
 	BaseLib_OperatorFile_WriteProfileFromFile(lpszFile, "test2", "2", "2b");
 
-	CHAR tszValue[64];
+	XCHAR tszValue[64];
 	memset(tszValue, '\0', sizeof(tszValue));
 
 	BaseLib_OperatorFile_ReadProfileFromFile(lpszFile, "test", "a", tszValue);

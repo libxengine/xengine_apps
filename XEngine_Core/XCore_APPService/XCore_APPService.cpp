@@ -14,6 +14,7 @@
 #include <thread>
 using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Error.h"
@@ -24,13 +25,13 @@ using namespace std;
 XHANDLE xhTCPCore = NULL;
 XHANDLE xhUDPCore = NULL;
 XHANDLE xhUDX = NULL;
-TCHAR tszClientAddr[64];
+XCHAR tszClientAddr[64];
 
-BOOL CALLBACK TCPOverlapped_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+XBOOL CALLBACK TCPOverlapped_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	strcpy(tszClientAddr, lpszClientAddr);
 	printf("TCPOverlapped_Login:%s = %d\n", lpszClientAddr, hSocket);
-	return TRUE;
+	return XTRUE;
 }
 void CALLBACK TCPOverlapped_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
@@ -62,7 +63,7 @@ int test_tcpxpoll()
 }
 int test_tcpxcore()
 {
-	xhTCPCore = NetCore_TCPXCore_StartEx(5002);
+	xhTCPCore = NetCore_TCPXCore_StartEx(5000);
 	if (NULL != xhTCPCore)
 	{
 		printf(_T("NetCore_TCPXCore_StartEx Start Is Ok!\n"));
@@ -93,7 +94,7 @@ int test_udpxcore()
 int test_unixdomain()
 {
 #ifdef _MSC_BUILD
-	LPCXSTR lpszUnixName = _T("H:\\XEngine_Apps\\Debug\\unix.socket");
+	LPCXSTR lpszUnixName = _T("d:\\xengine_apps\\Debug\\unix.socket");
 #else
 	LPCXSTR lpszUnixName = "/tmp/unix.socket";
 #endif
@@ -112,9 +113,9 @@ int test_unixdomain()
 int test_udx()
 {
 #ifdef _MSC_BUILD
-	LPCTSTR lpszFile = _T("H:\\XEngine_Apps\\Debug\\2.exe");
+	LPCXSTR lpszFile = _T("d:\\xengine_apps\\Debug\\2.exe");
 #else
-	LPCTSTR lpszFile = _T("2.exe");
+	LPCXSTR lpszFile = _T("2.exe");
 #endif
 	NETCORE_UDXCONFIG st_UDXConfig;
 	FILE* pSt_File = fopen(lpszFile, "wb");
@@ -123,9 +124,9 @@ int test_udx()
 		return 0;
 	}
 
-	st_UDXConfig.bEnableLogin = TRUE;
-	st_UDXConfig.bEnableReorder = TRUE;
-	st_UDXConfig.bEnableRryTime = TRUE;
+	st_UDXConfig.bEnableLogin = XTRUE;
+	st_UDXConfig.bEnableReorder = XTRUE;
+	st_UDXConfig.bEnableRryTime = XTRUE;
 	st_UDXConfig.nWindowSize = 1000000;
 
 	memset(tszClientAddr, '\0', sizeof(tszClientAddr));
@@ -141,7 +142,7 @@ int test_udx()
 	NetCore_UDXSocket_CBSetEx(xhUDX, TCPOverlapped_Login, TCPOverlapped_Leave);
 
 	int nMsgLen = 2048;
-	TCHAR tszMsgBuffer[2048];
+	XCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	if (NetCore_UDXSocket_RecvEx(xhUDX, tszClientAddr, tszMsgBuffer, &nMsgLen))
 	{

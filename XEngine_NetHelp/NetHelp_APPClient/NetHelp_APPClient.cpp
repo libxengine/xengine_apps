@@ -13,8 +13,8 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_APIClient/APIClient_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_APIClient/APIClient_Error.h"
 
-//Linux::g++ -std=c++17 -Wall -g NetHelp_APPClient.cpp -o NetHelp_APPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp -lXEngine_BaseLib -lNetHelp_APIClient -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/NetHelp_APIClient,--disable-new-dtags
-//Macos::g++ -std=c++17 -Wall -g NetHelp_APPClient.cpp -o NetHelp_APPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/NetHelp_APIClient -lXEngine_BaseLib -lNetHelp_APIClient
+//Linux::g++ -std=c++17 -Wall -g NetHelp_APPClient.cpp -o NetHelp_APPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp -lXEngine_BaseLib -lNetHelp_APIClient -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp,--disable-new-dtags
+//Macos::g++ -std=c++17 -Wall -g NetHelp_APPClient.cpp -o NetHelp_APPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_NetHelp -lXEngine_BaseLib -lNetHelp_APIClient
 
 void CALLBACK NetHelp_APPClient_CBRecv(XHANDLE xhToken, LPCXSTR lpszMsgBuffer, int nMsgLen, XPVOID lParam)
 {
@@ -26,7 +26,7 @@ void CALLBACK NetHelp_APPClient_CBRecv(XHANDLE xhToken, LPCXSTR lpszMsgBuffer, i
 }
 void CALLBACK NetHelp_HttpGet_Chunked(XNETHANDLE xhToken, XPVOID lpszMsgBuffer, int nMsgLen, XPVOID lParam)
 {
-	printf("%d\n%s\n", nMsgLen, (LPCTSTR)lpszMsgBuffer);
+	printf("%d\n%s\n", nMsgLen, (LPCXSTR)lpszMsgBuffer);
 }
 
 int NetHelp_APPClient_EMailPop3()
@@ -36,7 +36,7 @@ int NetHelp_APPClient_EMailPop3()
 
 	strcpy(st_EMailClient.tszServiceAddr, _T("pop3s://pop.exmail.qq.com:995"));
 	strcpy(st_EMailClient.tszUserName, _T("qyt@xyry.org"));
-	strcpy(st_EMailClient.tszPassWord, _T("123123Qa"));
+	strcpy(st_EMailClient.tszPassWord, _T("111"));
 
 	XHANDLE xhPop3 = APIClient_EMail_Init(&st_EMailClient);
 	if (NULL == xhPop3)
@@ -59,7 +59,7 @@ int NetHelp_APPClient_EMailSmtp()
 
 	strcpy(st_EMailClient.tszServiceAddr, _T("smtps://smtp.exmail.qq.com:465"));
 	strcpy(st_EMailClient.tszUserName, _T("qyt@xyry.org"));
-	strcpy(st_EMailClient.tszPassWord, _T("123123Qa"));
+	strcpy(st_EMailClient.tszPassWord, _T("111"));
 	strcpy(st_EMailClient.tszFromAddr, _T("qyt@xyry.org"));
 
 	XHANDLE xhSmtp = APIClient_EMail_Init(&st_EMailClient);
@@ -80,13 +80,13 @@ int NetHelp_APPClient_EMailSmtp()
 
 int Test_Http2Request()
 {
-	LPCTSTR lpszUrl = _T("http://www.nghttp2.org/");
-	CHAR* ptszMsgBuffer = NULL;
+	LPCXSTR lpszUrl = _T("http://www.nghttp2.org/");
+	XCHAR* ptszMsgBuffer = NULL;
 	int nLen = 0;
 	NETHELP_HTTPCLIENT st_HTTPParam;
 	memset(&st_HTTPParam, '\0', sizeof(NETHELP_HTTPCLIENT));
 
-	st_HTTPParam.bHTTP2Enable = TRUE;
+	st_HTTPParam.bHTTP2Enable = XTRUE;
 
 	APIClient_Http_Request(_T("GET"), lpszUrl, NULL, NULL, &ptszMsgBuffer, &nLen, NULL, NULL, &st_HTTPParam);
 	printf("%s\n", ptszMsgBuffer);
@@ -95,8 +95,8 @@ int Test_Http2Request()
 }
 int Test_HttpRequest()
 {
-	LPCTSTR lpszUrl = _T("http://www.baidu.com");
-	CHAR* ptszMsgBuffer = NULL;
+	LPCXSTR lpszUrl = _T("http://www.baidu.com");
+	XCHAR* ptszMsgBuffer = NULL;
 
 	APIClient_Http_Request(_T("GET"), lpszUrl, NULL, NULL, &ptszMsgBuffer);
 	printf("%s\n", ptszMsgBuffer);
@@ -106,7 +106,7 @@ int Test_HttpRequest()
 int Test_HttpCreate()
 {
 	XNETHANDLE xhToken = 0;
-	CHAR* ptszMsgBuffer = NULL;
+	XCHAR* ptszMsgBuffer = NULL;
 
 	APIClient_Http_Create(&xhToken, NetHelp_HttpGet_Chunked);
 	APIClient_Http_SetUrl(xhToken, "www.xyry.org", "GET");
@@ -118,7 +118,7 @@ int Test_HttpCreate()
 }
 
 bool bRun = false;
-void __stdcall Download_Progress(XHANDLE xhToken, double dlTotal, double dlNow, double ulTotal, double ulNow, ENUM_NETHELP_APICLIENT_FILE_STATUS en_DownHttpStatus, XPVOID lParam)
+void CALLBACK Download_Progress(XHANDLE xhToken, double dlTotal, double dlNow, double ulTotal, double ulNow, ENUM_NETHELP_APICLIENT_FILE_STATUS en_DownHttpStatus, XPVOID lParam)
 {
 	printf("下载任务：%p,总大小：%lf，已经下载大小：%lf，下载标识符：%d\n", xhToken, dlTotal, dlNow, en_DownHttpStatus);
 
@@ -129,21 +129,21 @@ void __stdcall Download_Progress(XHANDLE xhToken, double dlTotal, double dlNow, 
 }
 int download_http()
 {
-	LPCTSTR lpszHttpAddr = _T("https://webcdn.m.qq.com/spcmgr/download/QQ9.7.1.28940.exe");
-	//LPCTSTR lpszHttpAddr = _T("http://192.168.1.7:5101/QQ.exe");
+	LPCXSTR lpszHttpAddr = _T("https://webcdn.m.qq.com/spcmgr/download/QQ9.7.1.28940.exe");
+	//LPCXSTR lpszHttpAddr = _T("http://192.168.1.7:5101/QQ.exe");
 #ifdef _MSC_BUILD
-	LPCTSTR lpszFileAddr = _T("D:\\xengine_apps\\Debug\\QQ.exe");
+	LPCXSTR lpszFileAddr = _T("D:\\xengine_apps\\Debug\\QQ.exe");
 #else
-	LPCTSTR lpszFileAddr = _T("QQ.exe");
+	LPCXSTR lpszFileAddr = _T("QQ.exe");
 #endif
 
-	XHANDLE xhDownCall = APIClient_File_Create(lpszHttpAddr, lpszFileAddr, TRUE, NULL, Download_Progress);
+	XHANDLE xhDownCall = APIClient_File_Create(lpszHttpAddr, lpszFileAddr, XTRUE, NULL, Download_Progress);
 	if (NULL == xhDownCall)
 	{
 		printf("下载失败！");
 		return -1;
 	}
-	bRun = TRUE;
+	bRun = XTRUE;
 	APIClient_File_Start(xhDownCall);
 
 	while (bRun)
@@ -165,20 +165,20 @@ int download_http()
 }
 int upload_http()
 {
-	LPCTSTR lpszHttpAddr = _T("http://192.168.1.7:5102/QQ.exe");
+	LPCXSTR lpszHttpAddr = _T("http://192.168.1.7:5102/QQ.exe");
 #ifdef _MSC_BUILD
-	LPCTSTR lpszFileAddr = _T("D:\\xengine_apps\\Debug\\QQ.exe");
+	LPCXSTR lpszFileAddr = _T("D:\\xengine_apps\\Debug\\QQ.exe");
 #else
-	LPCTSTR lpszFileAddr = _T("QQ.exe");
+	LPCXSTR lpszFileAddr = _T("QQ.exe");
 #endif
 
-	XHANDLE xhUPLoad = APIClient_File_Create(lpszHttpAddr, lpszFileAddr, FALSE);
+	XHANDLE xhUPLoad = APIClient_File_Create(lpszHttpAddr, lpszFileAddr, XFALSE);
 	if (NULL == xhUPLoad)
 	{
 		printf("下载失败！");
 		return -1;
 	}
-	APIClient_File_Start(xhUPLoad, FALSE, "PUT");
+	APIClient_File_Start(xhUPLoad, XFALSE, "PUT");
 	while (1)
 	{
 		NETHELP_FILEINFO st_TaskInfo;
@@ -201,7 +201,7 @@ int upload_http()
 int main()
 {
 	//upload_http();
-	download_http();
+	//download_http();
 
 	Test_Http2Request();
 	Test_HttpRequest();

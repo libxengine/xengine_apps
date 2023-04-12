@@ -16,7 +16,7 @@
 
 int Test_Domain()
 {
-	TCHAR tszUrlPath[MAX_PATH];
+	XCHAR tszUrlPath[MAX_PATH];
 	APIHELP_DOMAIN st_APIDomain;
 	ENUM_APIHELP_DOMAINTYPE enAPIDomain;
 

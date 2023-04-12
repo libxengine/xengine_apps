@@ -30,19 +30,19 @@ using namespace std;
 
 XHANDLE xhToken = NULL;
 XHANDLE xhWBPacket = NULL;
-TCHAR tszClientAddr[64];
+XCHAR tszClientAddr[64];
 
-BOOL CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+XBOOL CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	strcpy(tszClientAddr, lpszClientAddr);
 	printf("NetCore_CB_Login:%s\n", lpszClientAddr);
 	RfcComponents_WSPacket_CreateEx(xhWBPacket, lpszClientAddr, 1);
-	return TRUE;
+	return XTRUE;
 }
 void CALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
 	printf("NetCore_CB_Recv:%s-%d\n", lpszClientAddr, nMsgLen);
-	BOOL bLogin = FALSE;
+	XBOOL bLogin = XFALSE;
 	RfcComponents_WSPacket_GetLoginEx(xhWBPacket, lpszClientAddr, &bLogin);
 	if (bLogin)
 	{
@@ -54,7 +54,7 @@ void CALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR l
 	else
 	{
 		int nSDLen = nMsgLen;
-		TCHAR tszHandsBuffer[1024];
+		XCHAR tszHandsBuffer[1024];
 		memset(tszHandsBuffer, '\0', sizeof(tszHandsBuffer));
 
 		RfcComponents_WSConnector_HandShake(lpszRecvMsg, &nSDLen, tszHandsBuffer);
@@ -72,7 +72,7 @@ void CALLBACK NetCore_CB_Close(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID l
 XHTHREAD CALLBACK NetCore_Thread()
 {
 	int i = 0;
-	while (TRUE)
+	while (XTRUE)
 	{
 		if (RfcComponents_WSPacket_WaitEventEx(xhWBPacket, 1))
 		{
@@ -85,7 +85,7 @@ XHTHREAD CALLBACK NetCore_Thread()
 				for (int j = 0; j < ppSt_ListClient[i]->nPktCount; j++)
 				{
 					int nMsgLen = 8192;
-					TCHAR tszMsgBuffer[8192];
+					XCHAR tszMsgBuffer[8192];
 					ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE enOPCode;
 
 					memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
@@ -94,7 +94,7 @@ XHTHREAD CALLBACK NetCore_Thread()
 						printf("RfcComponents_WSPacket_GetEx:%s %d:%s\n", ppSt_ListClient[i]->tszClientAddr, nMsgLen, tszMsgBuffer);
 
 						int nSDLen = 0;
-						TCHAR tszSendBuffer[2048];
+						XCHAR tszSendBuffer[2048];
 						memset(tszSendBuffer, '\0', sizeof(tszSendBuffer));
 
 						nSDLen = strlen(tszMsgBuffer);
@@ -119,7 +119,7 @@ int main()
 
 	memset(tszClientAddr, '\0', sizeof(tszClientAddr));
 
-	xhToken = NetCore_TCPXCore_StartEx(5000, 100, 2, FALSE, TRUE);
+	xhToken = NetCore_TCPXCore_StartEx(5000, 100, 2, XFALSE, XTRUE);
 	if (NULL == xhToken)
 	{
 		printf("%lX\n", NetCore_GetLastError());
@@ -137,7 +137,7 @@ int main()
 	return 0;
 }
 
-int main_client()
+int mainc()
 {
 #ifdef _MSC_BUILD
 	WSADATA st_WSAData;
@@ -145,8 +145,8 @@ int main_client()
 #endif
 
 	int nLen = 0;
-	TCHAR tszKeyBuffer[1024];
-	TCHAR tszMsgBuffer[1024];
+	XCHAR tszKeyBuffer[1024];
+	XCHAR tszMsgBuffer[1024];
 
 	memset(tszKeyBuffer, '\0', sizeof(tszKeyBuffer));
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
@@ -158,7 +158,7 @@ int main_client()
 	}
 
 	XSOCKET hSocket = 0;
-	if (!XClient_TCPSelect_Create(&hSocket, _T("127.0.0.1"), 5000))
+	if (!XClient_TCPSelect_Create(&hSocket, _T("10.10.12.114"), 5000))
 	{
 		printf("NetClient_TCPSelect_Create:%lX", XClient_GetLastError());
 		return -1;
@@ -189,19 +189,19 @@ int main_client()
 		printf("%s\n", tszMsgBuffer + nPos);
 	}
 	int nRVLen = 6;
-	TCHAR tszRecvBuffer[2048];
+	XCHAR tszRecvBuffer[2048];
 
 	memset(tszRecvBuffer, '\0', sizeof(tszRecvBuffer));
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
-	if (RfcComponents_WSCodec_EncodeMsg("123456", tszMsgBuffer, &nRVLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_TEXT, TRUE))
+	if (RfcComponents_WSCodec_EncodeMsg("123456", tszMsgBuffer, &nRVLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_TEXT, XTRUE))
 	{
 		if (XClient_TCPSelect_SendMsg(hSocket, tszMsgBuffer, nRVLen))
 		{
 			printf("NetClient_TCPSelect_SendMsg:%d\n", nRVLen);
 		}
 	}
-	xhWBPacket = RfcComponents_WSPacket_InitEx(10000, FALSE, 4);
+	xhWBPacket = RfcComponents_WSPacket_InitEx(10000, XFALSE, 4);
 	RfcComponents_WSPacket_CreateEx(xhWBPacket, "ClientToken", 1);
 
 	std::thread pSTDThread(NetCore_Thread);

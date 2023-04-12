@@ -1,5 +1,5 @@
 @echo Off
-del /s /a *.ncb *.so *.o *.db *.exe *.dylib *.plist
+del /s /a *.ncb *.so *.o *.db *.exe *.dylib *.plist *.aac *.pcm *.264
 FOR /R . %%d IN (.) DO rd /s /q "%%d\Release" 2>nul
 FOR /R . %%d IN (.) DO rd /s /q "%%d\x64" 2>nul
 FOR /R . %%d IN (.) DO rd /s /q "%%d\Debug" 2>nul

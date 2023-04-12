@@ -23,37 +23,37 @@ int Test_SQLite()
 	{
 		if (!DataBase_SQLite_Open(&xhData, _T("SQLUser.db")))
 		{
-			return FALSE;
+			return XFALSE;
 		}
-		LPCTSTR lpszSQLTable = _T("create table AuthReg_User(ID INTEGER PRIMARY KEY,UserName TEXT,Password TEXT,RegData TEXT,LeftTime TEXT,HardCode TEXT,QQNumber integer,IDCard integer)");
-		LPCTSTR lpszSQLSerial = _T("create table AuthReg_Serial(ID INTEGER PRIMARY KEY,UserName TEXT,SerialNumber TEXT,UsedTime TEXT,nMaxTime integer,bIsUsed boolean)");
-		LPCTSTR lpszSQLInsert = _T("INSERT INTO AuthReg_User values('0','123123aa','123123','2011/1/2-12:33:22','0','FF01X0F012','486179','511025198807018792')");
-		LPCTSTR lpszSQLInsertO = _T("INSERT INTO AuthReg_User values(NULL,'aaadddzxc','123123','2012/3/2-01:44:22','0','AFAFAWFAFAF4124AA','22222','515325325235325235')");
+		LPCXSTR lpszSQLTable = _T("create table AuthReg_User(ID INTEGER PRIMARY KEY,UserName TEXT,Password TEXT,RegData TEXT,LeftTime TEXT,HardCode TEXT,QQNumber integer,IDCard integer)");
+		LPCXSTR lpszSQLSerial = _T("create table AuthReg_Serial(ID INTEGER PRIMARY KEY,UserName TEXT,SerialNumber TEXT,UsedTime TEXT,nMaxTime integer,bIsUsed boolean)");
+		LPCXSTR lpszSQLInsert = _T("INSERT INTO AuthReg_User values('0','123123aa','123123','2011/1/2-12:33:22','0','FF01X0F012','486179','511025198807018792')");
+		LPCXSTR lpszSQLInsertO = _T("INSERT INTO AuthReg_User values(NULL,'aaadddzxc','123123','2012/3/2-01:44:22','0','AFAFAWFAFAF4124AA','22222','515325325235325235')");
 		if (!DataBase_SQLite_Exec(xhData, lpszSQLTable))
 		{
-			return FALSE;
+			return XFALSE;
 		}
 		if (!DataBase_SQLite_Exec(xhData, lpszSQLSerial))
 		{
-			return FALSE;
+			return XFALSE;
 		}
 		if (!DataBase_SQLite_Exec(xhData, lpszSQLInsert))
 		{
-			return FALSE;
+			return XFALSE;
 		}
 		if (!DataBase_SQLite_Exec(xhData, lpszSQLInsertO))
 		{
-			return FALSE;
+			return XFALSE;
 		}
 	}
-	LPCTSTR lpszSQLQuery = _T("select * from AuthReg_User where UserName='123123aa'");
+	LPCXSTR lpszSQLQuery = _T("select * from AuthReg_User where UserName='123123aa'");
 	char** pszResult;
 	int nRow = 0;
 	int nColume = 0;
 	int nIndex = 0;
 	if (!DataBase_SQLite_GetTable(xhData, lpszSQLQuery, &pszResult, &nRow, &nColume))
 	{
-		return FALSE;
+		return XFALSE;
 	}
 	nIndex = nColume;
 	for (int i = 0; i < nRow; i++)
@@ -81,15 +81,15 @@ int mysql_test()
 	strcpy(st_ConnectInfo.tszSQLName, _T("ruiyue"));
 	strcpy(st_ConnectInfo.tszSQLPass, _T("123123Ruiyue"));
 
-	if (!DataBase_MySQL_Connect(&xhDBDay, &st_ConnectInfo, 5, TRUE, _T("utf8")))
+	if (!DataBase_MySQL_Connect(&xhDBDay, &st_ConnectInfo, 5, XTRUE, _T("utf8")))
 	{
-		return FALSE;
+		return XFALSE;
 	}
 
 	__int64u dwLine = 0;
 	__int64u dwField = 0;
 	XNETHANDLE xhTableResult;
-	TCHAR tszSQLQuery[2048];
+	XCHAR tszSQLQuery[2048];
 
 	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
 	sprintf(tszSQLQuery, _T("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='XEngine_ListInfo' AND TABLE_TYPE='BASE TABLE'"));
@@ -97,7 +97,7 @@ int mysql_test()
 	{
 		for (__int64u i = 0; i < dwLine; i++)
 		{
-			TCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBDay, xhTableResult);
+			XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBDay, xhTableResult);
 			if (NULL == pptszResult[0])
 			{
 				continue;
@@ -113,14 +113,14 @@ int mongodb_test()
 {
 	XNETHANDLE xhToken;
 
-	LPCTSTR lpszConnectName = _T("mongodb://root:11@192.168.1.110/?authSource=admin");
+	LPCXSTR lpszConnectName = _T("mongodb://root:11@192.168.1.110/?authSource=admin");
 	if (!DataBase_Mongo_Connect(&xhToken, lpszConnectName))
 	{
 		return -1;
 	}
 
 	int nListCount = 0;
-	TCHAR** ppszResult = NULL;
+	XCHAR** ppszResult = NULL;
 	if (!DataBase_Mongo_FindJson(xhToken, _T("xyry"), _T("test"), NULL, NULL, &ppszResult, &nListCount))
 	{
 		return -2;
@@ -181,8 +181,8 @@ int main()
 {
 	Test_SQLite();
 	//postgredb_test();
-	mysql_test();
+	//mysql_test();
 	//mongodb_test();
 
-	return TRUE;
+	return XTRUE;
 }

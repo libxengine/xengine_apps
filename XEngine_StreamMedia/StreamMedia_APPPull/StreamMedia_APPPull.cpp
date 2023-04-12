@@ -24,45 +24,45 @@ void CBStream_Pull(uint8_t* puszMsgBuffer, int nSize, int nAVType, __int64x nPts
 }
 int Test_RTMPPull()
 {
-	LPCTSTR lpszPullUrl = _T("http://app.xyry.org:8088/live/qyt.flv");
-	LPCTSTR lpszPushUrl = _T("rtmp://app.xyry.org/live/123");
+	LPCXSTR lpszPullUrl = _T("http://app.xyry.org:8088/live/qyt.flv");
+	LPCXSTR lpszPushUrl = _T("rtmp://app.xyry.org/live/123");
 	int nStreamCount = 0;
 	STREAMMEDIA_PULLSTREAM** ppSt_PullStream;
 
-	XHANDLE xhStream = XClient_StreamPull_Init(lpszPullUrl, &ppSt_PullStream, &nStreamCount, CBStream_Pull);
+	XHANDLE xhStream = XStream_StreamPull_Init(lpszPullUrl, &ppSt_PullStream, &nStreamCount, CBStream_Pull);
 	if (NULL == xhStream)
 	{
-		printf("XClient_FilePush_Push:%lX\n", StreamClient_GetLastError());
+		printf("XStream_FilePush_Push:%lX\n", XStream_GetLastError());
 		return -1;
 	}
 
 	for (int i = 0; i < nStreamCount; i++)
 	{
-		if (ppSt_PullStream[i]->enStreamType == ENUM_STREAMMEIDA_XCLIENT_STREAM_TYPE_VIDEO)
+		if (ppSt_PullStream[i]->enStreamType == ENUM_STREAMMEIDA_XSTREAM_STREAM_TYPE_VIDEO)
 		{
-			ppSt_PullStream[i]->bEnable = TRUE;
+			ppSt_PullStream[i]->bEnable = XTRUE;
 		}
 		else
 		{
-			ppSt_PullStream[i]->bEnable = FALSE;
+			ppSt_PullStream[i]->bEnable = XFALSE;
 		}
 	}
-	if (!XClient_StreamPull_PushStream(xhStream, lpszPushUrl, &ppSt_PullStream, nStreamCount))
+	if (!XStream_StreamPull_PushStream(xhStream, lpszPushUrl, &ppSt_PullStream, nStreamCount))
 	{
-		printf("XClient_StreamPull_PushStream:%lX\n", StreamClient_GetLastError());
+		printf("XStream_StreamPull_PushStream:%lX\n", XStream_GetLastError());
 		return -1;
 	}
 	XENGINE_PROTOCOL_AVINFO st_MediaStream;
 	memset(&st_MediaStream, '\0', sizeof(XENGINE_PROTOCOL_AVINFO));
 
-	XClient_StreamPull_Start(xhStream);
-	BOOL bPull = TRUE;
+	XStream_StreamPull_Start(xhStream);
+	XBOOL bPull = XTRUE;
 
 	while (bPull)
 	{
-		XClient_StreamPull_GetStatus(xhStream, &bPull);
+		XStream_StreamPull_GetStatus(xhStream, &bPull);
 	}
-	XClient_StreamPull_Close(xhStream);
+	XStream_StreamPull_Close(xhStream);
 	return 1;
 }
 int main()
