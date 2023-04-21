@@ -51,7 +51,7 @@ XHTHREAD CALLBACK XClient_TCPSelect_Thread()
 			{
 				memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 				HttpProtocol_ServerConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
-				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, XTRUE);
+				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, true);
 				XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 				printf("Recv:%d\n,%s\n", nMsgLen, tszMsgBuffer);
 				//处理后的值是180,表示成功,才可以返回
@@ -77,7 +77,7 @@ XHTHREAD CALLBACK XClient_TCPSelect_Thread()
 				printf("挂断\n");
 				memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 				HttpProtocol_ServerConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
-				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, XTRUE);
+				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, true);
 				XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 			}
 			else if (0 == _tcsnicmp(st_SIPProtocol.st_Request.tszMethod, XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_MESSAGE, strlen(XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_MESSAGE)))
@@ -86,13 +86,13 @@ XHTHREAD CALLBACK XClient_TCPSelect_Thread()
 				BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&st_SIPProtocol.st_Context.ptszBodyBuffer);
 				//清理SDP
 				memset(&st_SIPProtocol.st_Context, '\0', sizeof(st_SIPProtocol.st_Context));
-				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, XTRUE);
+				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, true);
 				HttpProtocol_ServerConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
 				XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 			}
 			else if (0 == _tcsnicmp(st_SIPProtocol.st_Request.tszMethod, XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_CANCEL, strlen(XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_CANCEL)))
 			{
-				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, XTRUE);
+				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, true);
 				HttpProtocol_ServerConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
 				XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 
@@ -108,7 +108,7 @@ XHTHREAD CALLBACK XClient_TCPSelect_Thread()
 			else if (0 == _tcsnicmp(st_SIPProtocol.st_Request.tszMethod, XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_OPTIONS, strlen(XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_OPTIONS)))
 			{
 				printf("NEW OPTION %s\n", st_SIPProtocol.st_From.tszName);
-				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, XTRUE);
+				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, true);
 				HttpProtocol_ServerConfig_GetCode(st_SIPProtocol.st_Response.nCode, st_SIPProtocol.st_Response.tszMethod);
 				XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 			}
@@ -126,7 +126,7 @@ XHTHREAD CALLBACK XClient_TCPSelect_Thread()
 						//对话接受呼叫了,需要发送一个ACK给对面
 						std::this_thread::sleep_for(std::chrono::seconds(1));
 						memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-						RfcComponents_SIPProtocol_PacketRequest(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, XTRUE);
+						RfcComponents_SIPProtocol_PacketRequest(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, true);
 						XClient_TCPSelect_SendMsg(hTCPSocket, tszMsgBuffer, nMsgLen);
 						//通话5秒后挂断
 						std::this_thread::sleep_for(std::chrono::seconds(5));
@@ -177,7 +177,7 @@ int main(int argc, char* argv[])
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 
-	XBOOL bInvite = XFALSE;
+	bool bInvite = false;
 	int nPort = 0;
 	int nMsgLen = 0;
 	XCHAR tszUser[64];
@@ -204,8 +204,8 @@ int main(int argc, char* argv[])
 		strcpy(tszToUser, "bob");
 	}
 
-	LPCXSTR lpszCodeFile = _T("SIPCode.types");
-	HttpProtocol_ServerConfig_InitCode(lpszCodeFile, XFALSE);
+	LPCXSTR lpszCodeFile = _X("SIPCode.types");
+	HttpProtocol_ServerConfig_InitCode(lpszCodeFile, false);
 
 	SIPPROTOCOL_HDRINFO st_SIPProtocol;
 	memset(&st_SIPProtocol, '\0', sizeof(SIPPROTOCOL_HDRINFO));

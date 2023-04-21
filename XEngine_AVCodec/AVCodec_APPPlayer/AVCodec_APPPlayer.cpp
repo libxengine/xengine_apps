@@ -18,7 +18,7 @@ using namespace std;
 
 int Player_Video()
 {
-	LPCXSTR lpszName = _T("test");
+	LPCXSTR lpszName = _X("test");
 
 	XHANDLE xhPlayer = AVPlayer_Video_Create(NULL, lpszName, 720, 480);
 	if (NULL == xhPlayer)
@@ -26,9 +26,9 @@ int Player_Video()
 		return -1;
 	}
 #ifdef _MSC_BUILD
-	LPCXSTR lpszFile = _T("D:\\h264 file\\ds.yuv");
+	LPCXSTR lpszFile = _X("D:\\h264 file\\ds.yuv");
 #else
-	LPCXSTR lpszFile = _T("./ds.yuv");
+	LPCXSTR lpszFile = _X("./ds.yuv");
 #endif
 	int nSize = 720 * 480 * 3 / 2;
 	XCHAR* ptszBuffer = new XCHAR[nSize];

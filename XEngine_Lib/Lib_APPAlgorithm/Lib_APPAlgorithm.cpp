@@ -26,7 +26,7 @@ void CALLBACK Test_CBPassive(XHANDLE xhToken, __int64u nAvgSDFlow, __int64u nAvg
 	memset(tszClientAddr, '\0', 128);
 
 	_tcscpy(tszClientAddr, (LPCXSTR)lParam);
-	_tprintf(_T("%s: AVG_Flow:%llu\n"), tszClientAddr, nAvgSDFlow);
+	_tprintf(_X("%s: AVG_Flow:%llu\n"), tszClientAddr, nAvgSDFlow);
 }
 
 int Test_Calulation()
@@ -43,7 +43,7 @@ int Test_Calulation()
 	std::this_thread::sleep_for(std::chrono::seconds(2));
 	__int64u nTime = 0;
 	Algorithm_Calculation_GetTime(xhToken, &nTime);
-	_tprintf(_T("%llu\n"), nTime);
+	_tprintf(_X("%llu\n"), nTime);
 
 	Algorithm_Calculation_Reset(xhToken);
 
@@ -54,16 +54,16 @@ int Test_Calulation()
 		Algorithm_Calculation_ADDRVFlow(xhToken, rand());
 		std::this_thread::sleep_for(std::chrono::seconds(2));
 		Algorithm_Calculation_GetRVFlow(xhToken, &nFlow);
-		_tprintf(_T("%llu\n"), nFlow);
-		Algorithm_Calculation_GetRVFlow(xhToken, &nFlow, XTRUE);
-		_tprintf(_T("%llu\n"), nFlow);
+		_tprintf(_X("%llu\n"), nFlow);
+		Algorithm_Calculation_GetRVFlow(xhToken, &nFlow, true);
+		_tprintf(_X("%llu\n"), nFlow);
 	}
 
 	Algorithm_Calculation_Reset(xhToken);
 	XCHAR* ptszMsgBuffer = (XCHAR*)malloc(128);
 	memset(ptszMsgBuffer, '\0', 128);
 
-	_tcscpy(ptszMsgBuffer, _T("127.0.0.1"));
+	_tcscpy(ptszMsgBuffer, _X("127.0.0.1"));
 	Algorithm_Calculation_PassiveOPen(xhToken, Test_CBPassive, 1024, 0, 0, ptszMsgBuffer);
 	for (int i = 0; i < 500; i++)
 	{
@@ -82,23 +82,23 @@ int main()
 	Test_Calulation();
 	int nIntA = 0;
 	int nIntB = 0;
-	LPCXSTR lpszIntBuffer = _T("123456798");
+	LPCXSTR lpszIntBuffer = _X("123456798");
 	Algorithm_String_GetMemoryInt(lpszIntBuffer, 3, 4, &nIntA);
 	Algorithm_String_GetMemoryInt(lpszIntBuffer, 4, 6, &nIntB);
 
 	int nPos = 0;
-	LPCXSTR lpszSourceStr = _T("123hel54124hello666");
-	LPCXSTR lpszFindStr = _T("hell");
+	LPCXSTR lpszSourceStr = _X("123hel54124hello666");
+	LPCXSTR lpszFindStr = _X("hell");
 	if (Algorithm_String_XFastMatch(lpszSourceStr, lpszFindStr, &nPos))
 	{
-		_tprintf(_T("Algorithm_String_XFastMatch:%d\n"), nPos);
+		_tprintf(_X("Algorithm_String_XFastMatch:%d\n"), nPos);
 	}
 
 	int nSwapA = 100;
 	int nSwapB = 200;
 	if (Algorithm_Math_Swap(&nSwapA, &nSwapB))
 	{
-		_tprintf(_T("%d = %d\n"), nSwapA, nSwapB);
+		_tprintf(_X("%d = %d\n"), nSwapA, nSwapB);
 	}
 
 	int nCount = 0;
@@ -108,7 +108,7 @@ int main()
 	{
 		for (int i = 0; i < nCount; i++)
 		{
-			_tprintf(_T("%lld\n"), nArrayValue[i]);
+			_tprintf(_X("%lld\n"), nArrayValue[i]);
 		}
 	}
 
@@ -116,12 +116,12 @@ int main()
 	int nOutBit = 0;
 	if (Algorithm_Math_GetBit(&nInBit, 3, &nOutBit))
 	{
-		_tprintf(_T("%d\n"), nOutBit);
+		_tprintf(_X("%d\n"), nOutBit);
 	}
 
 	if (Algorithm_Math_SetBit(&nInBit, 4, 7))
 	{
-		_tprintf(_T("%d\n"), nInBit);
+		_tprintf(_X("%d\n"), nInBit);
 	}
 
 	return 0;

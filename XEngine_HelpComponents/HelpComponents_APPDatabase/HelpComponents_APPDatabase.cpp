@@ -19,41 +19,41 @@
 int Test_SQLite()
 {
 	XNETHANDLE xhData = 0;
-	if (DataBase_SQLite_Create(_T("SQLUser.db")))
+	if (DataBase_SQLite_Create(_X("SQLUser.db")))
 	{
-		if (!DataBase_SQLite_Open(&xhData, _T("SQLUser.db")))
+		if (!DataBase_SQLite_Open(&xhData, _X("SQLUser.db")))
 		{
-			return XFALSE;
+			return false;
 		}
-		LPCXSTR lpszSQLTable = _T("create table AuthReg_User(ID INTEGER PRIMARY KEY,UserName TEXT,Password TEXT,RegData TEXT,LeftTime TEXT,HardCode TEXT,QQNumber integer,IDCard integer)");
-		LPCXSTR lpszSQLSerial = _T("create table AuthReg_Serial(ID INTEGER PRIMARY KEY,UserName TEXT,SerialNumber TEXT,UsedTime TEXT,nMaxTime integer,bIsUsed boolean)");
-		LPCXSTR lpszSQLInsert = _T("INSERT INTO AuthReg_User values('0','123123aa','123123','2011/1/2-12:33:22','0','FF01X0F012','486179','511025198807018792')");
-		LPCXSTR lpszSQLInsertO = _T("INSERT INTO AuthReg_User values(NULL,'aaadddzxc','123123','2012/3/2-01:44:22','0','AFAFAWFAFAF4124AA','22222','515325325235325235')");
+		LPCXSTR lpszSQLTable = _X("create table AuthReg_User(ID INTEGER PRIMARY KEY,UserName TEXT,Password TEXT,RegData TEXT,LeftTime TEXT,HardCode TEXT,QQNumber integer,IDCard integer)");
+		LPCXSTR lpszSQLSerial = _X("create table AuthReg_Serial(ID INTEGER PRIMARY KEY,UserName TEXT,SerialNumber TEXT,UsedTime TEXT,nMaxTime integer,bIsUsed boolean)");
+		LPCXSTR lpszSQLInsert = _X("INSERT INTO AuthReg_User values('0','123123aa','123123','2011/1/2-12:33:22','0','FF01X0F012','486179','511025198807018792')");
+		LPCXSTR lpszSQLInsertO = _X("INSERT INTO AuthReg_User values(NULL,'aaadddzxc','123123','2012/3/2-01:44:22','0','AFAFAWFAFAF4124AA','22222','515325325235325235')");
 		if (!DataBase_SQLite_Exec(xhData, lpszSQLTable))
 		{
-			return XFALSE;
+			return false;
 		}
 		if (!DataBase_SQLite_Exec(xhData, lpszSQLSerial))
 		{
-			return XFALSE;
+			return false;
 		}
 		if (!DataBase_SQLite_Exec(xhData, lpszSQLInsert))
 		{
-			return XFALSE;
+			return false;
 		}
 		if (!DataBase_SQLite_Exec(xhData, lpszSQLInsertO))
 		{
-			return XFALSE;
+			return false;
 		}
 	}
-	LPCXSTR lpszSQLQuery = _T("select * from AuthReg_User where UserName='123123aa'");
+	LPCXSTR lpszSQLQuery = _X("select * from AuthReg_User where UserName='123123aa'");
 	char** pszResult;
 	int nRow = 0;
 	int nColume = 0;
 	int nIndex = 0;
 	if (!DataBase_SQLite_GetTable(xhData, lpszSQLQuery, &pszResult, &nRow, &nColume))
 	{
-		return XFALSE;
+		return false;
 	}
 	nIndex = nColume;
 	for (int i = 0; i < nRow; i++)
@@ -76,14 +76,14 @@ int mysql_test()
 	memset(&st_ConnectInfo, '\0', sizeof(DATABASE_MYSQL_CONNECTINFO));
 
 	//连接数据库
-	strcpy(st_ConnectInfo.tszDBName, _T("XEngine_ListInfo"));
-	strcpy(st_ConnectInfo.tszSQLAddr, _T("192.168.1.12"));
-	strcpy(st_ConnectInfo.tszSQLName, _T("ruiyue"));
-	strcpy(st_ConnectInfo.tszSQLPass, _T("123123Ruiyue"));
+	strcpy(st_ConnectInfo.tszDBName, _X("XEngine_ListInfo"));
+	strcpy(st_ConnectInfo.tszSQLAddr, _X("192.168.1.12"));
+	strcpy(st_ConnectInfo.tszSQLName, _X("ruiyue"));
+	strcpy(st_ConnectInfo.tszSQLPass, _X("123123Ruiyue"));
 
-	if (!DataBase_MySQL_Connect(&xhDBDay, &st_ConnectInfo, 5, XTRUE, _T("utf8")))
+	if (!DataBase_MySQL_Connect(&xhDBDay, &st_ConnectInfo, 5, true, _X("utf8")))
 	{
-		return XFALSE;
+		return false;
 	}
 
 	__int64u dwLine = 0;
@@ -92,7 +92,7 @@ int mysql_test()
 	XCHAR tszSQLQuery[2048];
 
 	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
-	sprintf(tszSQLQuery, _T("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='XEngine_ListInfo' AND TABLE_TYPE='BASE TABLE'"));
+	sprintf(tszSQLQuery, _X("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='XEngine_ListInfo' AND TABLE_TYPE='BASE TABLE'"));
 	if (DataBase_MySQL_ExecuteQuery(xhDBDay, &xhTableResult, tszSQLQuery, &dwLine, &dwField))
 	{
 		for (__int64u i = 0; i < dwLine; i++)
@@ -113,7 +113,7 @@ int mongodb_test()
 {
 	XNETHANDLE xhToken;
 
-	LPCXSTR lpszConnectName = _T("mongodb://root:11@192.168.1.110/?authSource=admin");
+	LPCXSTR lpszConnectName = _X("mongodb://root:11@192.168.1.110/?authSource=admin");
 	if (!DataBase_Mongo_Connect(&xhToken, lpszConnectName))
 	{
 		return -1;
@@ -121,7 +121,7 @@ int mongodb_test()
 
 	int nListCount = 0;
 	XCHAR** ppszResult = NULL;
-	if (!DataBase_Mongo_FindJson(xhToken, _T("xyry"), _T("test"), NULL, NULL, &ppszResult, &nListCount))
+	if (!DataBase_Mongo_FindJson(xhToken, _X("xyry"), _X("test"), NULL, NULL, &ppszResult, &nListCount))
 	{
 		return -2;
 	}
@@ -143,10 +143,10 @@ int postgredb_test()
 
 	//连接数据库
 	st_ConnectInfo.nPort = 5432;
-	strcpy(st_ConnectInfo.tszDBName, _T("xengine"));
-	strcpy(st_ConnectInfo.tszSQLAddr, _T("192.168.1.9"));
-	strcpy(st_ConnectInfo.tszSQLName, _T("xyry"));
-	strcpy(st_ConnectInfo.tszSQLPass, _T("123123"));
+	strcpy(st_ConnectInfo.tszDBName, _X("xengine"));
+	strcpy(st_ConnectInfo.tszSQLAddr, _X("192.168.1.9"));
+	strcpy(st_ConnectInfo.tszSQLName, _X("xyry"));
+	strcpy(st_ConnectInfo.tszSQLPass, _X("123123"));
 
 	if (!DataBase_Postgre_ConnectWithStruct(&xhToken, &st_ConnectInfo))
 	{
@@ -156,7 +156,7 @@ int postgredb_test()
 	int nRecordCount = 0;
 	int nFieldCount = 0;
 	
-	if (!DataBase_Postgre_QueryResult(xhToken, &xhTable, _T("SELECT * FROM \"List\""), &nRecordCount, &nFieldCount))
+	if (!DataBase_Postgre_QueryResult(xhToken, &xhTable, _X("SELECT * FROM \"List\""), &nRecordCount, &nFieldCount))
 	{
 		return -2;
 	}
@@ -184,5 +184,5 @@ int main()
 	//mysql_test();
 	//mongodb_test();
 
-	return XTRUE;
+	return true;
 }

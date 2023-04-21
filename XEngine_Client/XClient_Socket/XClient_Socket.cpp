@@ -21,7 +21,7 @@
 
 int XClient_ProxyClient()
 {
-	LPCXSTR lpszRequestMsg = _T("CONNECT 42.194.178.57:80 HTTP/1.1\r\n"
+	LPCXSTR lpszRequestMsg = _X("CONNECT 42.194.178.57:80 HTTP/1.1\r\n"
 		"Proxy-Connection: Keep-Alive\r\n"
 		"Content-Length: 0\r\n"
 		"Host: 42.194.178.57\r\n"
@@ -32,9 +32,9 @@ int XClient_ProxyClient()
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	XSOCKET m_Socket;
-	if (!XClient_TCPSelect_Create(&m_Socket, _T("192.168.1.8"), 5401))
+	if (!XClient_TCPSelect_Create(&m_Socket, _X("192.168.1.8"), 5401))
 	{
-		printf(_T("连接失败！\n"));
+		printf(_X("连接失败！\n"));
 		return -1;
 	}
 	
@@ -49,7 +49,7 @@ int XClient_ProxyClient()
 		printf("XClient_TCPSelect_RecvMsg:%s\n", tszMsgBuffer);
 	}
 
-	LPCXSTR lpszRequestMsg2 = _T("GET / HTTP/1.1\r\n"
+	LPCXSTR lpszRequestMsg2 = _X("GET / HTTP/1.1\r\n"
 		"Content-Length: 0\r\n"
 		"Host: xyry.org\r\n"
 		"User-Agent: XClient V7 - HTTP C Client Module.Windows 10 2004\r\n\r\n");
@@ -81,9 +81,9 @@ int TCPTest()
 	memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
 
 	XSOCKET m_Socket;
-	if (!XClient_TCPSelect_Create(&m_Socket, _T("10.10.13.53"), 5000))
+	if (!XClient_TCPSelect_Create(&m_Socket, _X("10.10.13.53"), 5000))
 	{
-		printf(_T("连接失败！\n"));
+		printf(_X("连接失败！\n"));
 		return -1;
 	}
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
@@ -97,7 +97,7 @@ int TCPTest()
 	st_ProtocolHdr.unOperatorCode = 0x2001;
 	st_ProtocolHdr.unPacketSize = 0;
 	st_ProtocolHdr.byVersion = 1;
-	st_ProtocolHdr.byIsReply = XTRUE;
+	st_ProtocolHdr.byIsReply = true;
 	st_ProtocolHdr.wReserve = 0;
 	st_ProtocolHdr.wPacketSerial = 0;
 	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
@@ -135,7 +135,7 @@ int TCPTestEx()
 	XClient_TCPSelect_HBStartEx(xhToken, 2);
 	for (int i = 0; i < 4; i++)
 	{
-		XClient_TCPSelect_InsertEx(xhToken, &xhClient[i], _T("10.10.13.53"), 5000);
+		XClient_TCPSelect_InsertEx(xhToken, &xhClient[i], _X("10.10.13.53"), 5000);
 	}
 	std::this_thread::sleep_for(std::chrono::seconds(10));
 	for (int i = 0; i < 4; i++)
@@ -173,18 +173,18 @@ int Test_Unix()
 {
 	int nMsgLen = 1024;
 #ifdef _MSC_BUILD
-	LPCXSTR lpszUnixName = _T("d:\\xengine_apps\\Debug\\unix.socket");
+	LPCXSTR lpszUnixName = _X("d:\\xengine_apps\\Debug\\unix.socket");
 #else
-	LPCXSTR lpszUnixName = _T("/tmp/unix.socket");
+	LPCXSTR lpszUnixName = _X("/tmp/unix.socket");
 #endif
 
 	XSOCKET m_Socket;
 	if (!XClient_UnixDomain_Connect(lpszUnixName, &m_Socket))
 	{
-		printf(_T("连接失败！\n"));
+		printf(_X("连接失败！\n"));
 		return -1;
 	}
-	LPCXSTR lpszMsgBuffer = _T("hello");
+	LPCXSTR lpszMsgBuffer = _X("hello");
 	if (XClient_UnixDomain_SendMsg(m_Socket, lpszMsgBuffer, strlen(lpszMsgBuffer)))
 	{
 		printf("NetClient_UnixDomain_SendMsg:%d\n", nMsgLen);
@@ -196,31 +196,31 @@ int Test_Unix()
 int udx_test()
 {
 #ifdef _MSC_BUILD
-	LPCXSTR lpszFile = _T("d:\\xengine_apps\\Debug\\Lib_APPBaselib.exe");
+	LPCXSTR lpszFile = _X("d:\\xengine_apps\\Debug\\Lib_APPBaselib.exe");
 #else
-	LPCXSTR lpszFile = _T("Lib_APPBaselib.exe");
+	LPCXSTR lpszFile = _X("Lib_APPBaselib.exe");
 #endif
 	FILE* pSt_File = fopen(lpszFile, "rb");
 	if (NULL == pSt_File)
 	{
-		printf(_T("打开文件失败\n"));
+		printf(_X("打开文件失败\n"));
 		return -1;
 	}
 	XCLIENT_UDXCONFIG st_UDXConfig;
 	memset(&st_UDXConfig, '\0', sizeof(XCLIENT_UDXCONFIG));
 
-	st_UDXConfig.bEnableLogin = XTRUE;
-	st_UDXConfig.bEnableReorder = XTRUE;
-	st_UDXConfig.bEnableRryTime = XTRUE;
+	st_UDXConfig.bEnableLogin = true;
+	st_UDXConfig.bEnableReorder = true;
+	st_UDXConfig.bEnableRryTime = true;
 	st_UDXConfig.nWindowSize = 1000;
 
 	XHANDLE xhNet = XClient_UDXSocket_InitEx(&st_UDXConfig, "10.10.13.53", 11339);
 	if (NULL == xhNet)
 	{
-		printf(_T("初始化失败,启动错误:%lX\n"), XClient_GetLastError());
+		printf(_X("初始化失败,启动错误:%lX\n"), XClient_GetLastError());
 		return -1;
 	}
-	printf(_T("登录成功\n"));
+	printf(_X("登录成功\n"));
 
 	while (1)
 	{

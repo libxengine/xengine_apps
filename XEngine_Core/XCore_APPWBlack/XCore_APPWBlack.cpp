@@ -27,22 +27,22 @@ using namespace std;
 int Test_IPV4BlackList()
 {
 	XNETHANDLE xhNet;
-	LPCXSTR lpszStartAddr1 = _T("192.168.1.115");
-	LPCXSTR lpszStartAddr2 = _T("192.168.2.2");
-	LPCXSTR lpszEndAddr2 = _T("192.168.2.115");
-	LPCXSTR lpszExist1 = _T("192.168.2.2");
-	LPCXSTR lpszExist2 = _T("192.168.2.118");
+	LPCXSTR lpszStartAddr1 = _X("192.168.1.115");
+	LPCXSTR lpszStartAddr2 = _X("192.168.2.2");
+	LPCXSTR lpszEndAddr2 = _X("192.168.2.115");
+	LPCXSTR lpszExist1 = _X("192.168.2.2");
+	LPCXSTR lpszExist2 = _X("192.168.2.118");
 
 	if (!WBlackList_IPV4Addr_Init(&xhNet))
 	{
 		return -1;
 	}
 	WBlackList_IPV4Addr_Add(xhNet, lpszStartAddr1);
-	WBlackList_IPV4Addr_Add(xhNet, lpszStartAddr2, lpszEndAddr2, XTRUE);
-	WBlackList_IPV4Addr_Add(xhNet, lpszExist1, lpszExist2, XTRUE);
-	WBlackList_IPV4Addr_Add(xhNet, "192.168.1.1", "192.168.2.255", XTRUE);
-	WBlackList_IPV4Addr_Add(xhNet, "1.1.1.1", "195.222.2.255", XFALSE);
-	WBlackList_IPV4Addr_Add(xhNet, "200.1.2.2", "200.1.10.255", XTRUE);
+	WBlackList_IPV4Addr_Add(xhNet, lpszStartAddr2, lpszEndAddr2, true);
+	WBlackList_IPV4Addr_Add(xhNet, lpszExist1, lpszExist2, true);
+	WBlackList_IPV4Addr_Add(xhNet, "192.168.1.1", "192.168.2.255", true);
+	WBlackList_IPV4Addr_Add(xhNet, "1.1.1.1", "195.222.2.255", false);
+	WBlackList_IPV4Addr_Add(xhNet, "200.1.2.2", "200.1.10.255", true);
 	WBlackList_IPV4Addr_Add(xhNet, "200.1.-1.2");
 
 	int nBlackCount = 0;
@@ -78,12 +78,12 @@ int Test_IPV4BlackList()
 int Test_DomainBlackList()
 {
 	XNETHANDLE xhNet;
-	LPCXSTR lpszDomain1 = _T("http://www.xyry.org");
-	LPCXSTR lpszDomain2 = _T("*.*.cctv.org");
-	LPCXSTR lpszDomain3 = _T("http://*.cctv.org/1.html");
-	LPCXSTR lpszDomain4 = _T("*.*.*.cctv.org");
-	LPCXSTR lpszDomain5 = _T("*.app.cctv.org");
-	LPCXSTR lpszDomainExist = _T("app.cctv.org");
+	LPCXSTR lpszDomain1 = _X("http://www.xyry.org");
+	LPCXSTR lpszDomain2 = _X("*.*.cctv.org");
+	LPCXSTR lpszDomain3 = _X("http://*.cctv.org/1.html");
+	LPCXSTR lpszDomain4 = _X("*.*.*.cctv.org");
+	LPCXSTR lpszDomain5 = _X("*.app.cctv.org");
+	LPCXSTR lpszDomainExist = _X("app.cctv.org");
 
 	if (!WBlackList_Domain_Init(&xhNet))
 	{
@@ -128,20 +128,20 @@ int Test_DomainBlackList()
 int Test_IPV6BlackList()
 {
 	XNETHANDLE xhNet;
-	LPCXSTR lpszStartAddr1 = _T("FF01:0:0:0:1:0:0:1");
-	LPCXSTR lpszStartAddr2 = _T("FF01:0:0:0:0:0:2:1");
-	LPCXSTR lpszEndAddr2 = _T("FF01:0:0:0:0:0:2:222");
-	LPCXSTR lpszExist1 = _T("FF01:0:0:0:0:0:-1:1");
-	LPCXSTR lpszExist2 = _T("FF01:0:0:0:0:0:3:1101");
+	LPCXSTR lpszStartAddr1 = _X("FF01:0:0:0:1:0:0:1");
+	LPCXSTR lpszStartAddr2 = _X("FF01:0:0:0:0:0:2:1");
+	LPCXSTR lpszEndAddr2 = _X("FF01:0:0:0:0:0:2:222");
+	LPCXSTR lpszExist1 = _X("FF01:0:0:0:0:0:-1:1");
+	LPCXSTR lpszExist2 = _X("FF01:0:0:0:0:0:3:1101");
 
 	if (!WBlackList_IPV6Addr_Init(&xhNet))
 	{
 		return -1;
 	}
 	WBlackList_IPV6Addr_Add(xhNet, lpszStartAddr1);
-	WBlackList_IPV6Addr_Add(xhNet, lpszStartAddr2, lpszEndAddr2, XFALSE);
-	WBlackList_IPV6Addr_Add(xhNet, lpszExist1, lpszExist2, XFALSE);
-	WBlackList_IPV6Addr_Add(xhNet, "FF01:0:0:0:0:0:0:1", "FF01:0:0:0:0:0:0:FF", XFALSE);
+	WBlackList_IPV6Addr_Add(xhNet, lpszStartAddr2, lpszEndAddr2, false);
+	WBlackList_IPV6Addr_Add(xhNet, lpszExist1, lpszExist2, false);
+	WBlackList_IPV6Addr_Add(xhNet, "FF01:0:0:0:0:0:0:1", "FF01:0:0:0:0:0:0:FF", false);
 
 	int nListCount = 0;
 	BLACKLIST_IPV6ADDR** ppSt_BlackList;

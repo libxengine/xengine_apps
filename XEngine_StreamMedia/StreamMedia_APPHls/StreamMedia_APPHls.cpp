@@ -23,21 +23,21 @@ XNETHANDLE xhHigh;
 void CALLBACK HLSProtocol_CBNotify(XHANDLE xhToken, LPCXSTR lpszFileName, double dlTime, int nIndex, XPVOID lParam)
 {
 	printf("File:%s,Index:%d,Time:%lf\n", lpszFileName, nIndex, dlTime);
-	HLSProtocol_M3u8File_AddFile(xhRoot, xhNormal, lpszFileName, dlTime, XFALSE);
+	HLSProtocol_M3u8File_AddFile(xhRoot, xhNormal, lpszFileName, dlTime, false);
 }
 
 int main()
 {
 #ifdef _MSC_BUILD
-	LPCXSTR lpszVideoFile = _T("D:\\h264 file\\480p.264");
+	LPCXSTR lpszVideoFile = _X("D:\\h264 file\\480p.264");
 #else
-	LPCXSTR lpszVideoFile = _T("480p.264");
+	LPCXSTR lpszVideoFile = _X("480p.264");
 #endif
-	LPCXSTR lpszDstFile = _T("./live/normal/480p-");
-	LPCXSTR lpszRootFile = _T("./live/live.m3u8");
-	LPCXSTR lpszLowFile = _T("./live/low/live.m3u8");
-	LPCXSTR lpszNormalFile = _T("./live/normal/live.m3u8");
-	LPCXSTR lpszHighFile = _T("./live/high/live.m3u8");
+	LPCXSTR lpszDstFile = _X("./live/normal/480p-");
+	LPCXSTR lpszRootFile = _X("./live/live.m3u8");
+	LPCXSTR lpszLowFile = _X("./live/low/live.m3u8");
+	LPCXSTR lpszNormalFile = _X("./live/normal/live.m3u8");
+	LPCXSTR lpszHighFile = _X("./live/high/live.m3u8");
 
 	if (!HLSProtocol_M3u8File_Create(&xhRoot, lpszRootFile))
 	{
@@ -61,7 +61,7 @@ int main()
 		return -1;
 	}
 
-	XHANDLE xhToken = HLSProtocol_Section_Init(12, XTRUE, XFALSE, HLSProtocol_CBNotify);
+	XHANDLE xhToken = HLSProtocol_Section_Init(12, true, false, HLSProtocol_CBNotify);
 	if (NULL == xhToken)
 	{
 		printf("HLSProtocol_Section_Init:%lX\n", HLSProtocol_GetLastError());
@@ -83,7 +83,7 @@ int main()
 		return -1;
 	}
 
-	XBOOL bRun = XTRUE;
+	bool bRun = true;
 	while (bRun)
 	{
 		if (!HLSProtocol_Section_GetStatus(xhToken, &bRun))

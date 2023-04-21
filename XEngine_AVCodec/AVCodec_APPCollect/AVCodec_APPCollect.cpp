@@ -50,17 +50,17 @@ int main()
 #endif
 	if (NULL == xhVideo)
 	{
-		printf(_T("初始化失败"));
+		printf(_X("初始化失败"));
 		return -1;
 	}
 	AVCollect_Video_GetInfo(xhVideo, &st_AVInfo);
 	printf("AVCollect_Screen_GetInfo:%d %d %lld\n", st_AVInfo.st_VideoInfo.nWidth, st_AVInfo.st_VideoInfo.nHeight, st_AVInfo.st_VideoInfo.nBitRate);
 	AVCollect_Video_Start(xhVideo);
 	/*
-	XHANDLE xhAudio = AVCollect_Audio_Init("dshow", _T("audio=virtual-audio-capturer"), XEngine_AVCollect_CBAudio);
+	XHANDLE xhAudio = AVCollect_Audio_Init("dshow", _X("audio=virtual-audio-capturer"), XEngine_AVCollect_CBAudio);
 	if (NULL == xhAudio)
 	{
-		printf(_T("初始化失败"));
+		printf(_X("初始化失败"));
 		return -1;
 	}
 	AVCollect_Audio_GetInfo(xhAudio, &st_AVInfo);

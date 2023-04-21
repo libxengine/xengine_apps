@@ -21,7 +21,7 @@ void CALLBACK NetHelp_APPClient_CBRecv(XHANDLE xhToken, LPCXSTR lpszMsgBuffer, i
 	printf("NetHelp_APPClient_CBRecv:%d,%s\n", nMsgLen, lpszMsgBuffer);
 	if (-1 == nMsgLen)
 	{
-		printf(_T("接受完毕！\n"));
+		printf(_X("接受完毕！\n"));
 	}
 }
 void CALLBACK NetHelp_HttpGet_Chunked(XNETHANDLE xhToken, XPVOID lpszMsgBuffer, int nMsgLen, XPVOID lParam)
@@ -34,19 +34,19 @@ int NetHelp_APPClient_EMailPop3()
 	NETHELP_EMAILCLIENT st_EMailClient;
 	memset(&st_EMailClient, '\0', sizeof(NETHELP_EMAILCLIENT));
 
-	strcpy(st_EMailClient.tszServiceAddr, _T("pop3s://pop.exmail.qq.com:995"));
-	strcpy(st_EMailClient.tszUserName, _T("qyt@xyry.org"));
-	strcpy(st_EMailClient.tszPassWord, _T("111"));
+	strcpy(st_EMailClient.tszServiceAddr, _X("pop3s://pop.exmail.qq.com:995"));
+	strcpy(st_EMailClient.tszUserName, _X("qyt@xyry.org"));
+	strcpy(st_EMailClient.tszPassWord, _X("111"));
 
 	XHANDLE xhPop3 = APIClient_EMail_Init(&st_EMailClient);
 	if (NULL == xhPop3)
 	{
-		printf(_T("初始化失败！\r\n"));
+		printf(_X("初始化失败！\r\n"));
 		return -1;
 	}
 	if (!APIClient_EMail_Recv(xhPop3, NetHelp_APPClient_CBRecv))
 	{
-		printf(_T("接受邮件失败！\r\n"));
+		printf(_X("接受邮件失败！\r\n"));
 		return -1;
 	}
 	APIClient_EMail_Close(xhPop3);
@@ -57,48 +57,48 @@ int NetHelp_APPClient_EMailSmtp()
 	NETHELP_EMAILCLIENT st_EMailClient;
 	memset(&st_EMailClient, '\0', sizeof(NETHELP_EMAILCLIENT));
 
-	strcpy(st_EMailClient.tszServiceAddr, _T("smtps://smtp.exmail.qq.com:465"));
-	strcpy(st_EMailClient.tszUserName, _T("qyt@xyry.org"));
-	strcpy(st_EMailClient.tszPassWord, _T("111"));
-	strcpy(st_EMailClient.tszFromAddr, _T("qyt@xyry.org"));
+	strcpy(st_EMailClient.tszServiceAddr, _X("smtps://smtp.exmail.qq.com:465"));
+	strcpy(st_EMailClient.tszUserName, _X("qyt@xyry.org"));
+	strcpy(st_EMailClient.tszPassWord, _X("111"));
+	strcpy(st_EMailClient.tszFromAddr, _X("qyt@xyry.org"));
 
 	XHANDLE xhSmtp = APIClient_EMail_Init(&st_EMailClient);
 	if (NULL == xhSmtp)
 	{
-		printf(_T("初始化失败！\r\n"));
+		printf(_X("初始化失败！\r\n"));
 		return -1;
 	}
-	if (!APIClient_EMail_Send(xhSmtp, "<486179@qq.com>", _T("找回密码"), _T("你的密码")))
+	if (!APIClient_EMail_Send(xhSmtp, "<486179@qq.com>", _X("找回密码"), _X("你的密码")))
 	{
-		printf(_T("发送失败！\r\n"));
+		printf(_X("发送失败！\r\n"));
 		return -3;
 	}
-	printf(_T("发送成功！\r\n"));
+	printf(_X("发送成功！\r\n"));
 	APIClient_EMail_Close(xhSmtp);
 	return 0;
 }
 
 int Test_Http2Request()
 {
-	LPCXSTR lpszUrl = _T("http://www.nghttp2.org/");
+	LPCXSTR lpszUrl = _X("http://www.nghttp2.org/");
 	XCHAR* ptszMsgBuffer = NULL;
 	int nLen = 0;
 	NETHELP_HTTPCLIENT st_HTTPParam;
 	memset(&st_HTTPParam, '\0', sizeof(NETHELP_HTTPCLIENT));
 
-	st_HTTPParam.bHTTP2Enable = XTRUE;
+	st_HTTPParam.bHTTP2Enable = true;
 
-	APIClient_Http_Request(_T("GET"), lpszUrl, NULL, NULL, &ptszMsgBuffer, &nLen, NULL, NULL, &st_HTTPParam);
+	APIClient_Http_Request(_X("GET"), lpszUrl, NULL, NULL, &ptszMsgBuffer, &nLen, NULL, NULL, &st_HTTPParam);
 	printf("%s\n", ptszMsgBuffer);
 	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 	return 0;
 }
 int Test_HttpRequest()
 {
-	LPCXSTR lpszUrl = _T("http://www.baidu.com");
+	LPCXSTR lpszUrl = _X("http://www.baidu.com");
 	XCHAR* ptszMsgBuffer = NULL;
 
-	APIClient_Http_Request(_T("GET"), lpszUrl, NULL, NULL, &ptszMsgBuffer);
+	APIClient_Http_Request(_X("GET"), lpszUrl, NULL, NULL, &ptszMsgBuffer);
 	printf("%s\n", ptszMsgBuffer);
 	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 	return 0;
@@ -129,21 +129,21 @@ void CALLBACK Download_Progress(XHANDLE xhToken, double dlTotal, double dlNow, d
 }
 int download_http()
 {
-	LPCXSTR lpszHttpAddr = _T("https://webcdn.m.qq.com/spcmgr/download/QQ9.7.1.28940.exe");
-	//LPCXSTR lpszHttpAddr = _T("http://192.168.1.7:5101/QQ.exe");
+	LPCXSTR lpszHttpAddr = _X("https://webcdn.m.qq.com/spcmgr/download/QQ9.7.1.28940.exe");
+	//LPCXSTR lpszHttpAddr = _X("http://192.168.1.7:5101/QQ.exe");
 #ifdef _MSC_BUILD
-	LPCXSTR lpszFileAddr = _T("D:\\xengine_apps\\Debug\\QQ.exe");
+	LPCXSTR lpszFileAddr = _X("D:\\xengine_apps\\Debug\\QQ.exe");
 #else
-	LPCXSTR lpszFileAddr = _T("QQ.exe");
+	LPCXSTR lpszFileAddr = _X("QQ.exe");
 #endif
 
-	XHANDLE xhDownCall = APIClient_File_Create(lpszHttpAddr, lpszFileAddr, XTRUE, NULL, Download_Progress);
+	XHANDLE xhDownCall = APIClient_File_Create(lpszHttpAddr, lpszFileAddr, true, NULL, Download_Progress);
 	if (NULL == xhDownCall)
 	{
 		printf("下载失败！");
 		return -1;
 	}
-	bRun = XTRUE;
+	bRun = true;
 	APIClient_File_Start(xhDownCall);
 
 	while (bRun)
@@ -165,20 +165,20 @@ int download_http()
 }
 int upload_http()
 {
-	LPCXSTR lpszHttpAddr = _T("http://192.168.1.7:5102/QQ.exe");
+	LPCXSTR lpszHttpAddr = _X("http://192.168.1.7:5102/QQ.exe");
 #ifdef _MSC_BUILD
-	LPCXSTR lpszFileAddr = _T("D:\\xengine_apps\\Debug\\QQ.exe");
+	LPCXSTR lpszFileAddr = _X("D:\\xengine_apps\\Debug\\QQ.exe");
 #else
-	LPCXSTR lpszFileAddr = _T("QQ.exe");
+	LPCXSTR lpszFileAddr = _X("QQ.exe");
 #endif
 
-	XHANDLE xhUPLoad = APIClient_File_Create(lpszHttpAddr, lpszFileAddr, XFALSE);
+	XHANDLE xhUPLoad = APIClient_File_Create(lpszHttpAddr, lpszFileAddr, false);
 	if (NULL == xhUPLoad)
 	{
 		printf("下载失败！");
 		return -1;
 	}
-	APIClient_File_Start(xhUPLoad, XFALSE, "PUT");
+	APIClient_File_Start(xhUPLoad, false, "PUT");
 	while (1)
 	{
 		NETHELP_FILEINFO st_TaskInfo;

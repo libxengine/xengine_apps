@@ -2,7 +2,7 @@
 #include <Windows.h>
 #include <tchar.h>
 #pragma comment(lib,"Ws2_32.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/StreamMedia_XClient.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/StreamMedia_StreamClient.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
 #endif
 #include <stdio.h>
@@ -18,20 +18,20 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_XClient/XStream_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_XClient/XStream_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_StreamClient/StreamClient_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_StreamClient/StreamClient_Error.h"
 
-//Linux::g++ -std=c++17 -Wall -g StreamMedia_APPFLVPush.cpp -o StreamMedia_APPFLVPush.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia -lXEngine_BaseLib -lXEngine_AVHelp -lStreamMedia_XClient -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia,--disable-new-dtags
-//Macos::g++ -std=c++17 -Wall -g StreamMedia_APPFLVPush.cpp -o StreamMedia_APPFLVPush.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCodec -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_StreamMedia -lXEngine_BaseLib -lXEngine_AVHelp -lStreamMedia_XClient 
+//Linux::g++ -std=c++17 -Wall -g StreamMedia_APPFLVPush.cpp -o StreamMedia_APPFLVPush.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia -lXEngine_BaseLib -lXEngine_AVHelp -lStreamMedia_StreamClient -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia,--disable-new-dtags
+//Macos::g++ -std=c++17 -Wall -g StreamMedia_APPFLVPush.cpp -o StreamMedia_APPFLVPush.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCodec -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_StreamMedia -lXEngine_BaseLib -lXEngine_AVHelp -lStreamMedia_StreamClient
 
 FILE* pSt_VFile;
 FILE* pSt_AFile;
 #ifdef _MSC_BUILD
-LPCXSTR lpszVFile = _T("D:\\h264 file\\480p.264");
-LPCXSTR lpszAFile = _T("D:\\h264 file\\test.aac");
+LPCXSTR lpszVFile = _X("D:\\h264 file\\480p.264");
+LPCXSTR lpszAFile = _X("D:\\h264 file\\test.aac");
 #else
-LPCXSTR lpszVFile = _T("480p.264");
-LPCXSTR lpszAFile = _T("test.aac");
+LPCXSTR lpszVFile = _X("480p.264");
+LPCXSTR lpszAFile = _X("test.aac");
 #endif
 
 void fread_video(XHANDLE xhToken)
@@ -50,7 +50,7 @@ void fread_video(XHANDLE xhToken)
 		}
 		while (1)
 		{
-			if (XStream_FilePush_Push(xhToken, tszMsgBuffer, nRet, 0))
+			if (StreamClient_FilePush_Push(xhToken, tszMsgBuffer, nRet, 0))
 			{
 				break;
 			}
@@ -73,7 +73,7 @@ void fread_audio(XHANDLE xhToken)
 		}
 		while (1)
 		{
-			if (XStream_FilePush_Push(xhToken, tszMsgBuffer, nRet, 1))
+			if (StreamClient_FilePush_Push(xhToken, tszMsgBuffer, nRet, 1))
 			{
 				break;
 			}
@@ -84,8 +84,8 @@ void fread_audio(XHANDLE xhToken)
 int Test_RTMPPush()
 {
 	XHANDLE xhStream = NULL;
-	LPCXSTR lpszUrl = _T("rtmp://app.xyry.org/live/qyt");
-	XBOOL bMemory = XFALSE;
+	LPCXSTR lpszUrl = _X("rtmp://app.xyry.org/live/qyt");
+	bool bMemory = false;
 
 	if (bMemory)
 	{
@@ -102,10 +102,10 @@ int Test_RTMPPush()
 			return -1;
 		}
 
-		xhStream = XStream_FilePush_Init();
+		xhStream = StreamClient_FilePush_Init();
 		if (NULL == xhStream)
 		{
-			printf("XStream_FilePush_Push:%lX\n", XStream_GetLastError());
+			printf("StreamClient_FilePush_Push:%lX\n", StreamClient_GetLastError());
 			return -1;
 		}
 		std::thread m_ThreadVideo(fread_video, xhStream);
@@ -114,53 +114,53 @@ int Test_RTMPPush()
 		m_ThreadVideo.detach();
 		m_ThreadAudio.detach();
 		std::this_thread::sleep_for(std::chrono::seconds(3));
-		if (!XStream_FilePush_Input(xhStream))
+		if (!StreamClient_FilePush_Input(xhStream))
 		{
-			printf("XStream_FilePush_Input:%lX\n", XStream_GetLastError());
+			printf("StreamClient_FilePush_Input:%lX\n", StreamClient_GetLastError());
 			return -1;
 		}
-		if (!XStream_FilePush_Output(xhStream, lpszUrl))
+		if (!StreamClient_FilePush_Output(xhStream, lpszUrl))
 		{
-			printf("XStream_FilePush_Output:%lX\n", XStream_GetLastError());
+			printf("StreamClient_FilePush_Output:%lX\n", StreamClient_GetLastError());
 			return -1;
 		}
-		if (!XStream_FilePush_Start(xhStream))
+		if (!StreamClient_FilePush_Start(xhStream))
 		{
-			printf("XStream_FilePush_Output:%lX\n", XStream_GetLastError());
+			printf("StreamClient_FilePush_Output:%lX\n", StreamClient_GetLastError());
 			return -1;
 		}
 	}
 	else
 	{
-		xhStream = XStream_FilePush_Init();
+		xhStream = StreamClient_FilePush_Init();
 		if (NULL == xhStream)
 		{
-			printf("XStream_FilePush_Push:%lX\n", XStream_GetLastError());
+			printf("StreamClient_FilePush_Push:%lX\n", StreamClient_GetLastError());
 			return -1;
 		}
-		if (!XStream_FilePush_Input(xhStream, lpszVFile, lpszAFile))
+		if (!StreamClient_FilePush_Input(xhStream, lpszVFile, lpszAFile))
 		{
-			printf("XStream_FilePush_Input:%lX\n", XStream_GetLastError());
+			printf("StreamClient_FilePush_Input:%lX\n", StreamClient_GetLastError());
 			return -1;
 		}
-		if (!XStream_FilePush_Output(xhStream, lpszUrl))
+		if (!StreamClient_FilePush_Output(xhStream, lpszUrl))
 		{
-			printf("XStream_FilePush_Output:%lX\n", XStream_GetLastError());
+			printf("StreamClient_FilePush_Output:%lX\n", StreamClient_GetLastError());
 			return -1;
 		}
-		if (!XStream_FilePush_Start(xhStream))
+		if (!StreamClient_FilePush_Start(xhStream))
 		{
-			printf("XStream_FilePush_Output:%lX\n", XStream_GetLastError());
+			printf("StreamClient_FilePush_Output:%lX\n", StreamClient_GetLastError());
 			return -1;
 		}
 	}
 
-	XBOOL bIsPush = XTRUE;
+	bool bIsPush = true;
 	while (bIsPush)
 	{
-		XStream_FilePush_GetStatus(xhStream, &bIsPush);
+		StreamClient_FilePush_GetStatus(xhStream, &bIsPush);
 	}
-	XStream_FilePush_Close(xhStream);
+	StreamClient_FilePush_Close(xhStream);
 	return 1;
 }
 
@@ -169,7 +169,7 @@ int Test_LivePush()
 	XHANDLE xhStream = NULL;
 	FILE* pSt_VFile = NULL;
 	FILE* pSt_AFile = NULL;
-	LPCXSTR lpszUrl = _T("rtmp://app.xyry.org/live/qyt");
+	LPCXSTR lpszUrl = _X("rtmp://app.xyry.org/live/qyt");
 
 	int nPos = 0;
 	int nVLen = 0;
@@ -186,7 +186,7 @@ int Test_LivePush()
 	memset(tszPPSBuffer, '\0', MAX_PATH);
 	memset(&st_MediaStream, '\0', sizeof(XENGINE_PROTOCOL_AVINFO));
 
-	st_MediaStream.st_VideoInfo.bEnable = XTRUE;
+	st_MediaStream.st_VideoInfo.bEnable = true;
 	st_MediaStream.st_VideoInfo.nBitRate = 64000;
 	st_MediaStream.st_VideoInfo.nFrameRate = 24;
 	st_MediaStream.st_VideoInfo.nWidth = 720;
@@ -207,7 +207,7 @@ int Test_LivePush()
 		memcpy(st_MediaStream.st_VideoInfo.tszVInfo, tszVBuffer, nPos);
 	}
 
-	st_MediaStream.st_AudioInfo.bEnable = XTRUE;
+	st_MediaStream.st_AudioInfo.bEnable = true;
 	st_MediaStream.st_AudioInfo.nChannel = 2;
 	st_MediaStream.st_AudioInfo.nBitRate = 64000;
 	st_MediaStream.st_AudioInfo.nSampleRate = 44100;
@@ -233,10 +233,10 @@ int Test_LivePush()
 	AVHelp_Parse_FrameInit(&xhAParse, ENUM_AVCODEC_AUDIO_TYPE_AAC);
 	AVHelp_Parse_FrameInit(&xhVParse, ENUM_ENTENGINE_AVCODEC_VEDIO_TYPE_H264);
 
-	xhStream = XStream_CodecPush_Init(lpszUrl, &st_MediaStream);
-	XStream_CodecPush_WriteHdr(xhStream);
+	xhStream = StreamClient_CodecPush_Init(lpszUrl, &st_MediaStream);
+	StreamClient_CodecPush_WriteHdr(xhStream);
 
-	while (XTRUE)
+	while (true)
 	{
 		if (st_MediaStream.st_VideoInfo.bEnable)
 		{
@@ -245,7 +245,7 @@ int Test_LivePush()
 			AVHelp_Parse_FrameGet(xhVParse, tszVBuffer, nVLen, &ppSt_Frame, &nListCount);
 			for (int i = 0; i < nListCount; i++)
 			{
-				XStream_CodecPush_PushVideo(xhStream, ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen);
+				StreamClient_CodecPush_PushVideo(xhStream, ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen);
 			}
 			memset(tszVBuffer, '\0', sizeof(tszVBuffer));
 			nVLen = fread(tszVBuffer, 1, sizeof(tszVBuffer), pSt_VFile);
@@ -263,7 +263,7 @@ int Test_LivePush()
 			for (int i = 0; i < nListCount; i++)
 			{
 				//不需要AAC头
-				XStream_CodecPush_PushAudio(xhStream, ppSt_Frame[i]->ptszMsgBuffer + 7, ppSt_Frame[i]->nMsgLen - 7);
+				StreamClient_CodecPush_PushAudio(xhStream, ppSt_Frame[i]->ptszMsgBuffer + 7, ppSt_Frame[i]->nMsgLen - 7);
 			}
 			memset(tszABuffer, '\0', sizeof(tszABuffer));
 			nALen = fread(tszABuffer, 1, sizeof(tszABuffer), pSt_AFile);
@@ -277,7 +277,7 @@ int Test_LivePush()
 	}
 	AVHelp_Parse_FrameClose(xhVParse);
 	AVHelp_Parse_FrameClose(xhAParse);
-	XStream_CodecPush_Close(xhStream);
+	StreamClient_CodecPush_Close(xhStream);
 	return 0;
 }
 

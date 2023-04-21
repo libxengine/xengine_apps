@@ -82,9 +82,9 @@ int Authorize_APPSerial()
 int Authorize_APPLocal()
 {
 #ifdef _MSC_BUILD
-	LPCXSTR lpszFile = _T("D:\\xengine_apps\\Debug\\XEngine_Authorize.key");
+	LPCXSTR lpszFile = _X("D:\\xengine_apps\\Debug\\XEngine_Authorize.key");
 #else
-	LPCXSTR lpszFile = _T("XEngine_Authorize.key");
+	LPCXSTR lpszFile = _X("XEngine_Authorize.key");
 #endif
 	//////////////////////////////////////////////////////////////////////////生成CDKEY
 	XBYTE tszEnBuffer[2048];
@@ -95,7 +95,7 @@ int Authorize_APPLocal()
 	memset(tszEnBuffer, '\0', sizeof(tszEnBuffer));
 	memset(&st_AuthLocal, '\0', sizeof(XENGINE_AUTHORIZE_LOCAL));
 
-	strcpy(st_AuthLocal.tszAddr, _T("127.0.0.1"));
+	strcpy(st_AuthLocal.tszAddr, _X("127.0.0.1"));
 	st_AuthLocal.nPort = 5000;
 
 	strcpy(st_AuthLocal.st_AuthAppInfo.tszAppName, "XEngine");
@@ -168,12 +168,12 @@ int Authorize_APPLocal()
 	}
 	if (0 != strncmp("CPUSERIAL001", st_AuthLocal.st_AuthRegInfo.tszHardware, strlen(st_AuthLocal.st_AuthRegInfo.tszHardware)))
 	{
-		printf(_T("序列号不匹配"));
+		printf(_X("序列号不匹配"));
 		return -1;
 	}
 	if (ENUM_HELPCOMPONENTS_AUTHORIZE_HW_TYPE_CPU != st_AuthLocal.st_AuthRegInfo.enHWType)
 	{
-		printf(_T("注册硬件序列不匹配"));
+		printf(_X("注册硬件序列不匹配"));
 		return -1;
 	}
 	Authorize_Local_GetLeftTimer(&st_AuthLocal);
@@ -198,9 +198,9 @@ int Authorize_APPLocal()
 int Authorize_APPMemory()
 {
 #ifdef _MSC_BUILD
-	LPCXSTR lpszFile = _T("D:\\xengine_apps\\Debug\\XEngine_Authorize.txt");
+	LPCXSTR lpszFile = _X("D:\\xengine_apps\\Debug\\XEngine_Authorize.txt");
 #else
-	LPCXSTR lpszFile = _T("XEngine_Authorize.txt");
+	LPCXSTR lpszFile = _X("XEngine_Authorize.txt");
 #endif
 	//////////////////////////////////////////////////////////////////////////生成CDKEY
 	int nMsgLen = 2048;
@@ -210,7 +210,7 @@ int Authorize_APPMemory()
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	memset(&st_AuthLocal, '\0', sizeof(XENGINE_AUTHORIZE_LOCAL));
 
-	strcpy(st_AuthLocal.tszAddr, _T("127.0.0.1"));
+	strcpy(st_AuthLocal.tszAddr, _X("127.0.0.1"));
 	st_AuthLocal.nPort = 5000;
 
 	strcpy(st_AuthLocal.st_AuthAppInfo.tszAppName, "XEngine");
@@ -229,7 +229,7 @@ int Authorize_APPMemory()
 	{
 		return -1;
 	}
-	FILE* pSt_File = fopen(lpszFile, _T("wb"));
+	FILE* pSt_File = fopen(lpszFile, _X("wb"));
 	fwrite(tszMsgBuffer, 1, nMsgLen, pSt_File);
 	fclose(pSt_File);
 	//////////////////////////////////////////////////////////////////////////验证CDKEY

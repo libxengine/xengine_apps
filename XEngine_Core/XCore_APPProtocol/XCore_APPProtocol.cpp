@@ -26,15 +26,15 @@ using namespace std;
 //linux:g++ -std=gnu++17 -Wall -g XCore_APPProtocol.cpp -o XCore_APPProtocol.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -lXEngine_BaseLib -lXEngine_Protocol -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core,--disable-new-dtags
 //macos:g++ -std=gnu++17 -Wall -g XCore_APPProtocol.cpp -o XCore_APPProtocol.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -lXEngine_BaseLib -lXEngine_Protocol
 
-XBOOL CALLBACK XEngine_Protocol_Callback_Trace(LPCXSTR lpszSource, LPCXSTR lpszDestAddr, LPCXSTR lpszRecvAddr, int nTTL, XENGINE_VALTIME st_VALTime, XPVOID lParam)
+bool CALLBACK XEngine_Protocol_Callback_Trace(LPCXSTR lpszSource, LPCXSTR lpszDestAddr, LPCXSTR lpszRecvAddr, int nTTL, XENGINE_VALTIME st_VALTime, XPVOID lParam)
 {
 	printf("Src:%s Dst:%s Rcv:%s TTL:%d Time:%lld.%llu\n", lpszSource, lpszDestAddr, lpszRecvAddr, nTTL, st_VALTime.tv_sec, st_VALTime.tv_usec);
-	return XTRUE;
+	return true;
 }
 int Protocol_TestPing()
 {
-	LPCXSTR lpszSourceAddr = _T("192.168.252.128");
-	LPCXSTR lpszDestAddr = _T("42.194.178.57");
+	LPCXSTR lpszSourceAddr = _X("192.168.252.128");
+	LPCXSTR lpszDestAddr = _X("42.194.178.57");
 	XENGINE_VALTIME st_VALTime;
 
 	memset(&st_VALTime, '\0', sizeof(XENGINE_VALTIME));
@@ -52,8 +52,8 @@ int Protocol_TestPing()
 
 int Protocol_TestTrace()
 {
-	LPCXSTR lpszSourceAddr = _T("192.168.252.128");
-	LPCXSTR lpszDestAddr = _T("42.194.178.57");
+	LPCXSTR lpszSourceAddr = _X("192.168.252.128");
+	LPCXSTR lpszDestAddr = _X("42.194.178.57");
 
 	if (!Protocol_Icmp_Traceroute(lpszSourceAddr, lpszDestAddr, XEngine_Protocol_Callback_Trace))
 	{

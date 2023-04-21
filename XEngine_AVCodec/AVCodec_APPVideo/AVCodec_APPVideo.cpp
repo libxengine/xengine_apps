@@ -21,7 +21,7 @@
 //MacOS::g++ -std=c++17 -Wall -g AVCodec_APPVideo.cpp -o AVCodec_APPVideo.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_VideoCodec
 
 int i = 0;
-XBOOL bKeyFrame = XTRUE;
+bool bKeyFrame = true;
 XNETHANDLE xhDeVideo;
 XNETHANDLE xhEnVideo;
 XNETHANDLE xhFilterVideo;
@@ -55,7 +55,7 @@ void CALLBACK VideoCodec_Stream_Callback(XNETHANDLE xhVideo, uint8_t* pszYBuffer
 		{
 			fwrite(ptszEnBuffer, 1, nLen, pSt_264File);
 		}
-		bKeyFrame = XFALSE;
+		bKeyFrame = false;
 	}
 	free(ptszEnBuffer);
 	free(ptszFilterBuffer);

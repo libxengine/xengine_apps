@@ -37,7 +37,7 @@ int main()
 #endif
 	XSOCKET hSocket;
 	//准备
-	if (!NetCore_GroupCast_Create(&hSocket, 1900, _T("239.255.255.250"), _T("192.168.252.128")))
+	if (!NetCore_GroupCast_Create(&hSocket, 1900, _X("239.255.255.250"), _X("192.168.252.128")))
 	{
 		printf("NetCore_GroupCast_Create:%lX\n", NetCore_GetLastError());
 		return -1;
@@ -49,7 +49,7 @@ int main()
 	SSDPProtocol_Packet_REQSearch(tszMsgBuffer, &nMsgLen, XENGINE_RFCCOMPONENTS_SSDP_PROTOCOL_ST_ALL, "XEngine RFCComponents_SSDPProtocol/V7.45 PCWindows");
 	NetCore_GroupCast_Send(hSocket, tszMsgBuffer, nMsgLen);
 
-	while (XTRUE)
+	while (true)
 	{
 		nMsgLen = 1024;
 		XCHAR tszClientAddr[128];

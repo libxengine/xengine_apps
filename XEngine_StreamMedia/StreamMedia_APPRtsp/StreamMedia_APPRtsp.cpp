@@ -18,8 +18,8 @@
 void TestUDP_RtspProtocol()
 {
 	int nMsgLen = 0;
-	LPCXSTR lpszRTSPUrl = _T("rtsp://127.0.0.1/live/1");
-	LPCXSTR lpszSession = _T("3B2241FA");
+	LPCXSTR lpszRTSPUrl = _X("rtsp://127.0.0.1/live/1");
+	LPCXSTR lpszSession = _X("3B2241FA");
 	XCHAR tszMsgBuffer[1024];
 
 	RTSPPROTOCOL_REQUEST st_RtspRequest;
@@ -37,8 +37,8 @@ void TestUDP_RtspProtocol()
 
 	st_RtspSetup.nServerRTPPort = 10001;
 	st_RtspSetup.nServerRTCPPort = 10002;
-	strcpy(st_RtspSetup.tszDestAddr, _T("192.168.1.108"));
-	strcpy(st_RtspSetup.tszSourceAddr, _T("192.168.1.115"));
+	strcpy(st_RtspSetup.tszDestAddr, _X("192.168.1.108"));
+	strcpy(st_RtspSetup.tszSourceAddr, _X("192.168.1.115"));
 
 	RTSPProtocol_CorePacket_Setup(tszMsgBuffer, &nMsgLen, lpszSession, &st_RtspSetup, st_RtspRequest.nCseq);
 	RTSPProtocol_ClientParse_Parse(&st_RtspResponse, tszMsgBuffer, nMsgLen);
@@ -47,8 +47,8 @@ void TestUDP_RtspProtocol()
 void TestTCP_RtspProtocol()
 {
 	int nMsgLen = 0;
-	LPCXSTR lpszRTSPUrl = _T("rtsp://127.0.0.1/live/1");
-	LPCXSTR lpszSession = _T("3B2241FA");
+	LPCXSTR lpszRTSPUrl = _X("rtsp://127.0.0.1/live/1");
+	LPCXSTR lpszSession = _X("3B2241FA");
 	XCHAR tszMsgBuffer[1024];
 
 	RTSPPROTOCOL_REQUEST st_RtspRequest;

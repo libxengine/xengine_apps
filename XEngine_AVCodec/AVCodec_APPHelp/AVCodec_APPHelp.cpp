@@ -67,7 +67,7 @@ void Test_Parse()
 
 	AVHelp_Parse_FrameInit(&xhToken, ENUM_ENTENGINE_AVCODEC_VEDIO_TYPE_H264);
 
-	while (XTRUE)
+	while (true)
 	{
 		XCHAR tszMsgBuffer[2048];
 		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));

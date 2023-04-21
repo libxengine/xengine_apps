@@ -191,9 +191,9 @@ void Audio_Mix()
 		printf("AudioCodec_Help_FilterInit\n");
 		return;
 	}
-	FILE* pSt_File1 = fopen(lpszAudioFile1, _T("rb"));
-	FILE* pSt_File2 = fopen(lpszAudioFile2, _T("rb"));
-	FILE* pSt_FileAac = fopen(lpszDstFile, _T("wb"));
+	FILE* pSt_File1 = fopen(lpszAudioFile1, _X("rb"));
+	FILE* pSt_File2 = fopen(lpszAudioFile2, _X("rb"));
+	FILE* pSt_FileAac = fopen(lpszDstFile, _X("wb"));
 	while (1)
 	{
 		XCHAR tszEnBuffer1[4608];

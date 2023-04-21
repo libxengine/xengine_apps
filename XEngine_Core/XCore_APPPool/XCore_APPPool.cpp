@@ -23,7 +23,7 @@ using namespace std;
 XHTHREAD CALLBACK ManagePool_ThreadPool(XPVOID lParam)
 {
 	int *pInt_Number = (int*)lParam;
-	printf(_T("%d\n"), *pInt_Number);
+	printf(_X("%d\n"), *pInt_Number);
 
 	free(pInt_Number);
 	pInt_Number = NULL;

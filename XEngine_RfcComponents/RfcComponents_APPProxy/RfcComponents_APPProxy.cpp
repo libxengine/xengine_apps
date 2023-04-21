@@ -34,7 +34,7 @@ typedef struct
 	ENUM_RFCCOMPONENTS_PROXY_STATUS enStatus;
 	XNETHANDLE xhClient;
 	XSOCKET hSocket;
-	XBOOL bClose;
+	bool bClose;
 }PROXYPROTOCOL_CLIENTINFO;
 
 int main()
@@ -55,13 +55,13 @@ int main()
 	ProxyProtocol_TunnelCore_Create(lpszClient1);
 	ProxyProtocol_TunnelCore_Create(lpszClient2);
 	
-	st_Client1.bClose = XFALSE;
+	st_Client1.bClose = false;
 	st_Client1.hSocket = 12;
 	st_Client1.xhClient = 13;
 	st_Client1.enStatus = ENUM_RFCCOMPONENTS_PROXY_STATUS_CREATE;
 	strcpy(st_Client1.tszIPAddr, "dwaodnwaodn");
 	
-	st_Client2.bClose = XTRUE;
+	st_Client2.bClose = true;
 	st_Client2.hSocket = 14;
 	st_Client2.xhClient = 15;
 	st_Client2.enStatus = ENUM_RFCCOMPONENTS_PROXY_STATUS_FORWARD;

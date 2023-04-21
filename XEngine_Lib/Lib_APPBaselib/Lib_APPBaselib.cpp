@@ -36,20 +36,20 @@ void TimeSpanTest()
 {
 	__int64x nDayTTime = 0;
 	__int64x nHourTTime = 0;
-	LPCXSTR lpszStartTime = _T("2019-11-01 12:31:10");
-	LPCXSTR lpszEndTime = _T("2020-10-02 12:31:10");
+	LPCXSTR lpszStartTime = _X("2019-11-01 12:31:10");
+	LPCXSTR lpszEndTime = _X("2020-10-02 12:31:10");
 	XENGINE_LIBTIMER st_LibTimer;
 	memset(&st_LibTimer, '\0', sizeof(XENGINE_LIBTIMER));
 
 	BaseLib_OperatorTimeSpan_GetForStr(lpszStartTime, lpszEndTime, &nDayTTime, 0);
 	BaseLib_OperatorTimeSpan_GetForStr(lpszStartTime, lpszEndTime, &nHourTTime, 1);
-	_tprintf(_T("\n跨了：%lld天 %lld小时\n"), nDayTTime, nHourTTime);
+	_tprintf(_X("\n跨了：%lld天 %lld小时\n"), nDayTTime, nHourTTime);
 
-	BaseLib_OperatorTimeSpan_CalForStr(lpszStartTime, lpszEndTime, &st_LibTimer, XTRUE);
-	_tprintf(_T("%d/%d/%d-%d:%d:%d\n"), st_LibTimer.wYear, st_LibTimer.wMonth, st_LibTimer.wDay, st_LibTimer.wHour, st_LibTimer.wMinute, st_LibTimer.wSecond);
+	BaseLib_OperatorTimeSpan_CalForStr(lpszStartTime, lpszEndTime, &st_LibTimer, true);
+	_tprintf(_X("%d/%d/%d-%d:%d:%d\n"), st_LibTimer.wYear, st_LibTimer.wMonth, st_LibTimer.wDay, st_LibTimer.wHour, st_LibTimer.wMinute, st_LibTimer.wSecond);
 
-	BaseLib_OperatorTimeSpan_CalForStr(lpszStartTime, lpszEndTime, &st_LibTimer, XFALSE);
-	_tprintf(_T("%d/%d/%d-%d:%d:%d\n"), st_LibTimer.wYear, st_LibTimer.wMonth, st_LibTimer.wDay, st_LibTimer.wHour, st_LibTimer.wMinute, st_LibTimer.wSecond);
+	BaseLib_OperatorTimeSpan_CalForStr(lpszStartTime, lpszEndTime, &st_LibTimer, false);
+	_tprintf(_X("%d/%d/%d-%d:%d:%d\n"), st_LibTimer.wYear, st_LibTimer.wMonth, st_LibTimer.wDay, st_LibTimer.wHour, st_LibTimer.wMinute, st_LibTimer.wSecond);
 }
 void TimeTest()
 {
@@ -62,7 +62,7 @@ void TimeTest()
 
 	__int64x nTTime = 0;
 	XCHAR tszTimeStr[128] = {0};
-	LPCXSTR lpszTimeStr = _T("2022-08-01 10:22:01");
+	LPCXSTR lpszTimeStr = _X("2022-08-01 10:22:01");
 	BaseLib_OperatorTime_StrToInt(lpszTimeStr, &nTTime);
 	BaseLib_OperatorTime_IntToStr(nTTime, tszTimeStr);
 
@@ -80,15 +80,15 @@ void StringTest()
 	memset(tszValue, '\0', sizeof(tszValue));
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
-	_tcscpy(tszMsgBuffer, _T("123456789 : abcd"));
+	_tcscpy(tszMsgBuffer, _X("123456789 : abcd"));
 
-	BaseLib_OperatorString_DelSub(tszMsgBuffer, _T("9"));
+	BaseLib_OperatorString_DelSub(tszMsgBuffer, _X("9"));
 
-	BaseLib_OperatorString_GetKeyValue(tszMsgBuffer, _T(":"), tszKey, tszValue, XTRUE, &nHdrLen, &nBodyLen);
-	LPCXSTR lpszFile1 = _T("./adadad/file.txt");
-	LPCXSTR lpszFile2 = _T("D:\\adadad\\file.txt");
-	LPCXSTR lpszFile3 = _T("./file.txt");
-	LPCXSTR lpszFile4 = _T("file.txt");
+	BaseLib_OperatorString_GetKeyValue(tszMsgBuffer, _X(":"), tszKey, tszValue, true, &nHdrLen, &nBodyLen);
+	LPCXSTR lpszFile1 = _X("./adadad/file.txt");
+	LPCXSTR lpszFile2 = _X("D:\\adadad\\file.txt");
+	LPCXSTR lpszFile3 = _X("./file.txt");
+	LPCXSTR lpszFile4 = _X("file.txt");
 
 	XCHAR tszFileDir[MAX_PATH];
 	XCHAR tszFileName[MAX_PATH];
@@ -122,21 +122,21 @@ void GMTTimeTest()
 	memset(tszGMTTime, '\0', sizeof(tszGMTTime));
 	BaseLib_OperatorTime_GMTTime(tszGMTTime);
 
-	_tprintf(_T("%s\n"), tszGMTTime);
+	_tprintf(_X("%s\n"), tszGMTTime);
 }
 
 int TestAddrLib()
 {
 	int nPort = 0;
-	LPCXSTR lpszIPV4Convert = _T("192.168.*.10");
+	LPCXSTR lpszIPV4Convert = _X("192.168.*.10");
 	
-	LPCXSTR lpszIPV61 = _T("2031:0010:1F1F:0200:*:0100:11A0:ADDF");
-	LPCXSTR lpszIPV62 = _T("1254:1800:200C::417A:AC11");
-	LPCXSTR lpszIPV63 = _T("1080::8:800:200C:417A");
-	LPCXSTR lpszIPV64 = _T("ACC::1101");
-	LPCXSTR lpszIPV65 = _T("::1");
-	LPCXSTR lpszIPV66 = _T("::192:168:1:54");
-	XCHAR tszIPV6Addr[] = _T("1080:0:0:0:8:800:200C:5000");
+	LPCXSTR lpszIPV61 = _X("2031:0010:1F1F:0200:*:0100:11A0:ADDF");
+	LPCXSTR lpszIPV62 = _X("1254:1800:200C::417A:AC11");
+	LPCXSTR lpszIPV63 = _X("1080::8:800:200C:417A");
+	LPCXSTR lpszIPV64 = _X("ACC::1101");
+	LPCXSTR lpszIPV65 = _X("::1");
+	LPCXSTR lpszIPV66 = _X("::192:168:1:54");
+	XCHAR tszIPV6Addr[] = _X("1080:0:0:0:8:800:200C:5000");
 
 	ENUM_XENGINE_BASELIB_IPADDR_TYPE enIPType;
 	XENGINE_LIBADDR st_LibAddr;
@@ -174,21 +174,21 @@ int TestAddrLib()
 }
 int test_Mutex()
 {
-	LPCXSTR lpszName = _T("xyry");
+	LPCXSTR lpszName = _X("xyry");
 	XEVENT xhEvent = BaseLib_OperatorSemaphore_Create(lpszName);
 	if (NULL == xhEvent)
 	{
-		_tprintf(_T("失败\n"));
+		_tprintf(_X("失败\n"));
 		return 0;
 	}
 
 	if (BaseLib_OperatorSemaphore_IsExist(lpszName))
 	{
-		_tprintf(_T("存在\n"));
+		_tprintf(_X("存在\n"));
 	}
 	else
 	{
-		_tprintf(_T("不存在\n"));
+		_tprintf(_X("不存在\n"));
 	}
 	BaseLib_OperatorSemaphore_Delete(xhEvent);
 	return 0;
@@ -206,7 +206,7 @@ int test_Memory()
 	}
 	for (int i = 0; i < 3; i++)
 	{
-		_tprintf(_T("%d\n"), *(ppIntArray[i]));
+		_tprintf(_X("%d\n"), *(ppIntArray[i]));
 	}
 	BaseLib_OperatorMemory_Free((void***)&ppIntArray, 3);
 
@@ -217,11 +217,11 @@ int test_Memory()
 	}
 	for (int i = 0; i < 3; i++)
 	{
-		_tcscpy(ppszStr[i], _T("hello"));
+		_tcscpy(ppszStr[i], _X("hello"));
 	}
 	for (int i = 0; i < 3; i++)
 	{
-		_tprintf(_T("%s\n"), ppszStr[i]);
+		_tprintf(_X("%s\n"), ppszStr[i]);
 	}
 	BaseLib_OperatorMemory_Free((void***)&ppszStr, 3);
 
@@ -239,7 +239,7 @@ int test_Memory()
 	}
 	for (int i = 0; i < 3; i++)
 	{
-		_tprintf(_T("%d %d\n"), ppSt_Memory[i]->a, ppSt_Memory[i]->b);
+		_tprintf(_X("%d %d\n"), ppSt_Memory[i]->a, ppSt_Memory[i]->b);
 	}
 	BaseLib_OperatorMemory_Free((void***)&ppSt_Memory, 3);
 	return 0;
@@ -278,7 +278,7 @@ void Test_GetTimeofday()
 	BaseLib_OperatorTime_TimeToStr(tszMsgTimer, NULL, NULL, &st_LibTime);
 
 #ifdef _MSC_BUILD
-	_tprintf(_T("%lld %lld %llu %llu  %s\n"), time(NULL), st_Timeval.tv_sec, st_Timeval.tv_value, st_Timeval.tv_usec, tszMsgTimer);
+	_tprintf(_X("%lld %lld %llu %llu  %s\n"), time(NULL), st_Timeval.tv_sec, st_Timeval.tv_value, st_Timeval.tv_usec, tszMsgTimer);
 #else
 	_tprintf("%ld %ld %llu %llu  %s\n", time(NULL), st_Timeval.tv_sec, st_Timeval.tv_value, st_Timeval.tv_usec, tszMsgTimer);
 #endif
@@ -341,7 +341,7 @@ int test_handle()
 	{
 		XNETHANDLE xhToken = 0;
 		BaseLib_OperatorHandle_Create(&xhToken);
-		_tprintf(_T("%lld\n"), xhToken);
+		_tprintf(_X("%lld\n"), xhToken);
 	}
 	return 0;
 }

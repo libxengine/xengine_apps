@@ -29,7 +29,7 @@ void TestPacket_RTP264()
 {
 	XNETHANDLE xhSsrc = 0;
 	XNETHANDLE xhFrame = 0;
-	if (!RTPProtocol_Packet_Init(&xhSsrc, ENUM_STREAMMEDIA_RTPPROTOCOL_PAYLOAD_TYPE_H264, XFALSE))
+	if (!RTPProtocol_Packet_Init(&xhSsrc, ENUM_STREAMMEDIA_RTPPROTOCOL_PAYLOAD_TYPE_H264, false))
 	{
 		printf("errrno");
 		return;
@@ -38,15 +38,15 @@ void TestPacket_RTP264()
 	RTPProtocol_Packet_SetInfo(xhSsrc);
 
 #ifdef _MSC_BUILD
-	LPCXSTR lpsz264File = _T("D:\\h264 file\\480p.264");
-	LPCXSTR lpszRTPFile = _T("D:\\h264 file\\480p.RTP");
+	LPCXSTR lpsz264File = _X("D:\\h264 file\\480p.264");
+	LPCXSTR lpszRTPFile = _X("D:\\h264 file\\480p.RTP");
 #else
-	LPCXSTR lpsz264File = _T("480p.264");
-	LPCXSTR lpszRTPFile = _T("480p.RTP");
+	LPCXSTR lpsz264File = _X("480p.264");
+	LPCXSTR lpszRTPFile = _X("480p.RTP");
 #endif
 
-	FILE* pSt_264File = fopen(lpsz264File, _T("rb"));
-	FILE* pSt_RTPFile = fopen(lpszRTPFile, _T("wb"));
+	FILE* pSt_264File = fopen(lpsz264File, _X("rb"));
+	FILE* pSt_RTPFile = fopen(lpszRTPFile, _X("wb"));
 	XCHAR tszMsgBuffer[10240];
 
 	while (1)
@@ -83,22 +83,22 @@ void TestPacket_RTP264()
 void TestParse_RTP264()
 {
 	XNETHANDLE xhSsrc = 0;
-	if (!RTPProtocol_Parse_Init(&xhSsrc, ENUM_STREAMMEDIA_RTPPROTOCOL_PAYLOAD_TYPE_H264, XFALSE))
+	if (!RTPProtocol_Parse_Init(&xhSsrc, ENUM_STREAMMEDIA_RTPPROTOCOL_PAYLOAD_TYPE_H264, false))
 	{
 		printf("errrno");
 		return;
 	}
 	
 #ifdef _MSC_BUILD
-	LPCXSTR lpsz264File = _T("D:\\h264 file\\480p_1.264");
-	LPCXSTR lpszRTPFile = _T("D:\\h264 file\\480p.RTP");
+	LPCXSTR lpsz264File = _X("D:\\h264 file\\480p_1.264");
+	LPCXSTR lpszRTPFile = _X("D:\\h264 file\\480p.RTP");
 #else
-	LPCXSTR lpsz264File = _T("480p_1.264");
-	LPCXSTR lpszRTPFile = _T("480p.RTP");
+	LPCXSTR lpsz264File = _X("480p_1.264");
+	LPCXSTR lpszRTPFile = _X("480p.RTP");
 #endif
 
-	FILE* pSt_264File = fopen(lpsz264File, _T("wb"));
-	FILE* pSt_RTPFile = fopen(lpszRTPFile, _T("rb"));
+	FILE* pSt_264File = fopen(lpsz264File, _X("wb"));
+	FILE* pSt_RTPFile = fopen(lpszRTPFile, _X("rb"));
 	XCHAR tszMsgBuffer[10240];
 	int i = 0;
 
@@ -140,7 +140,7 @@ void TestPacket_RTP265()
 {
 	XNETHANDLE xhSsrc = 0;
 	XNETHANDLE xhFrame = 0;
-	if (!RTPProtocol_Packet_Init(&xhSsrc, ENUM_STREAMMEDIA_RTPPROTOCOL_PAYLOAD_TYPE_H265, XFALSE))
+	if (!RTPProtocol_Packet_Init(&xhSsrc, ENUM_STREAMMEDIA_RTPPROTOCOL_PAYLOAD_TYPE_H265, false))
 	{
 		printf("errrno");
 		return;
@@ -149,15 +149,15 @@ void TestPacket_RTP265()
 	RTPProtocol_Packet_SetInfo(xhSsrc);
 
 #ifdef _MSC_BUILD
-	LPCXSTR lpsz264File = _T("D:\\h264 file\\2.hevc");
-	LPCXSTR lpszRTPFile = _T("D:\\h264 file\\hevc.RTP");
+	LPCXSTR lpsz264File = _X("D:\\h264 file\\2.hevc");
+	LPCXSTR lpszRTPFile = _X("D:\\h264 file\\hevc.RTP");
 #else
-	LPCXSTR lpsz264File = _T("2.hevc");
-	LPCXSTR lpszRTPFile = _T("hevc.RTP");
+	LPCXSTR lpsz264File = _X("2.hevc");
+	LPCXSTR lpszRTPFile = _X("hevc.RTP");
 #endif
 
-	FILE* pSt_264File = fopen(lpsz264File, _T("rb"));
-	FILE* pSt_RTPFile = fopen(lpszRTPFile, _T("wb"));
+	FILE* pSt_264File = fopen(lpsz264File, _X("rb"));
+	FILE* pSt_RTPFile = fopen(lpszRTPFile, _X("wb"));
 	XCHAR tszMsgBuffer[10240];
 
 	while (1)
@@ -194,22 +194,22 @@ void TestPacket_RTP265()
 void TestParse_RTP265()
 {
 	XNETHANDLE xhSsrc = 0;
-	if (!RTPProtocol_Parse_Init(&xhSsrc, ENUM_STREAMMEDIA_RTPPROTOCOL_PAYLOAD_TYPE_H265, XFALSE))
+	if (!RTPProtocol_Parse_Init(&xhSsrc, ENUM_STREAMMEDIA_RTPPROTOCOL_PAYLOAD_TYPE_H265, false))
 	{
 		printf("errrno");
 		return;
 	}
 
 #ifdef _MSC_BUILD
-	LPCXSTR lpsz264File = _T("D:\\h264 file\\2_1.hevc");
-	LPCXSTR lpszRTPFile = _T("D:\\h264 file\\hevc.RTP");
+	LPCXSTR lpsz264File = _X("D:\\h264 file\\2_1.hevc");
+	LPCXSTR lpszRTPFile = _X("D:\\h264 file\\hevc.RTP");
 #else
-	LPCXSTR lpsz264File = _T("2_1.hevc");
-	LPCXSTR lpszRTPFile = _T("hevc.RTP");
+	LPCXSTR lpsz264File = _X("2_1.hevc");
+	LPCXSTR lpszRTPFile = _X("hevc.RTP");
 #endif
 
-	FILE* pSt_264File = fopen(lpsz264File, _T("wb"));
-	FILE* pSt_RTPFile = fopen(lpszRTPFile, _T("rb"));
+	FILE* pSt_264File = fopen(lpsz264File, _X("wb"));
+	FILE* pSt_RTPFile = fopen(lpszRTPFile, _X("rb"));
 	XCHAR tszMsgBuffer[10240];
 	int i = 0;
 
@@ -251,7 +251,7 @@ void TestPacket_RTPAAC()
 {
 	XNETHANDLE xhSsrc = 0;
 	XNETHANDLE xhFrame = 0;
-	if (!RTPProtocol_Packet_Init(&xhSsrc, ENUM_STREAMMEDIA_RTPPROTOCOL_PAYLOAD_TYPE_AAC, XFALSE))
+	if (!RTPProtocol_Packet_Init(&xhSsrc, ENUM_STREAMMEDIA_RTPPROTOCOL_PAYLOAD_TYPE_AAC, false))
 	{
 		printf("errrno");
 		return;
@@ -260,15 +260,15 @@ void TestPacket_RTPAAC()
 	RTPProtocol_Packet_SetInfo(xhSsrc, 1024, 44100);
 
 #ifdef _MSC_BUILD
-	LPCXSTR lpszAACFile = _T("D:\\h264 file\\test.aac");
-	LPCXSTR lpszRTPFile = _T("D:\\h264 file\\test.RTP");
+	LPCXSTR lpszAACFile = _X("D:\\h264 file\\test.aac");
+	LPCXSTR lpszRTPFile = _X("D:\\h264 file\\test.RTP");
 #else
-	LPCXSTR lpszAACFile = _T("test.aac");
-	LPCXSTR lpszRTPFile = _T("test.RTP");
+	LPCXSTR lpszAACFile = _X("test.aac");
+	LPCXSTR lpszRTPFile = _X("test.RTP");
 #endif
 
-	FILE* pSt_264File = fopen(lpszAACFile, _T("rb"));
-	FILE* pSt_RTPFile = fopen(lpszRTPFile, _T("wb"));
+	FILE* pSt_264File = fopen(lpszAACFile, _X("rb"));
+	FILE* pSt_RTPFile = fopen(lpszRTPFile, _X("wb"));
 	XCHAR tszMsgBuffer[10240];
 
 	while (1)
@@ -305,7 +305,7 @@ void TestPacket_RTPAAC()
 void TestParse_RTPAAC()
 {
 	XNETHANDLE xhSsrc = 0;
-	if (!RTPProtocol_Parse_Init(&xhSsrc, ENUM_STREAMMEDIA_RTPPROTOCOL_PAYLOAD_TYPE_AAC, XFALSE))
+	if (!RTPProtocol_Parse_Init(&xhSsrc, ENUM_STREAMMEDIA_RTPPROTOCOL_PAYLOAD_TYPE_AAC, false))
 	{
 		printf("errrno");
 		return;
@@ -313,15 +313,15 @@ void TestParse_RTPAAC()
 	RTPProtocol_Packet_SetInfo(xhSsrc, 1024, 44100);
 
 #ifdef _MSC_BUILD
-	LPCXSTR lpsz264File = _T("D:\\h264 file\\test_1.aac");
-	LPCXSTR lpszRTPFile = _T("D:\\h264 file\\test.RTP");
+	LPCXSTR lpsz264File = _X("D:\\h264 file\\test_1.aac");
+	LPCXSTR lpszRTPFile = _X("D:\\h264 file\\test.RTP");
 #else
-	LPCXSTR lpsz264File = _T("test_1.aac");
-	LPCXSTR lpszRTPFile = _T("test.RTP");
+	LPCXSTR lpsz264File = _X("test_1.aac");
+	LPCXSTR lpszRTPFile = _X("test.RTP");
 #endif
 
-	FILE* pSt_264File = fopen(lpsz264File, _T("wb"));
-	FILE* pSt_RTPFile = fopen(lpszRTPFile, _T("rb"));
+	FILE* pSt_264File = fopen(lpsz264File, _X("wb"));
+	FILE* pSt_RTPFile = fopen(lpszRTPFile, _X("rb"));
 	XCHAR tszMsgBuffer[10240];
 	int i = 0;
 

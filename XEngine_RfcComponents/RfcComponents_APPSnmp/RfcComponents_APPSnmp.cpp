@@ -67,7 +67,7 @@ int main()
 	nMsgLen = sizeof(tszMsgBuffer);
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	memset(&st_SNMPProtocol, '\0', sizeof(RFCSNMP_PROTOCOL));
-	if (!XClient_UDPSelect_RecvMsg(hSocket, tszMsgBuffer, &nMsgLen, NULL, XFALSE))
+	if (!XClient_UDPSelect_RecvMsg(hSocket, tszMsgBuffer, &nMsgLen, NULL, false))
 	{
 		printf("XClient_UDPSelect_RecvMsg:%lX\n", XClient_GetLastError());
 		return -1;

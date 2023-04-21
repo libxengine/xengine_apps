@@ -1,12 +1,12 @@
 # XEngine_Apps
 
-XEngine V7 Version example
+XEngine V8 Version example
 
 #### Engine Example
 The example code of the engine contains the following examples, and the corresponding component module examples can be found through the following directory structure as needed  
 please use vs2022 open it,and use x86 and debug mode.  
 
-1. XEngine_AVCoder                  audio and video   
+1. XEngine_AVCodec                  audio and video   
 2. XEngine_Client                   client  
 3. XEngine_Core                     service  
 5. XEngine_HelpComponents           help  

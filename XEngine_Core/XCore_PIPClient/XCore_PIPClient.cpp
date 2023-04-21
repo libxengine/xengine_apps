@@ -22,11 +22,11 @@
 int Test_PIPNamed()
 {
 #ifdef _MSC_BUILD
-	LPCXSTR lpszPIPName = _T("\\\\.\\pipe\\MyNamedPipeOne");
+	LPCXSTR lpszPIPName = _X("\\\\.\\pipe\\MyNamedPipeOne");
 #else
-	LPCXSTR lpszPIPName = _T("MyNamedPipeOne");
+	LPCXSTR lpszPIPName = _X("MyNamedPipeOne");
 #endif
-	LPCXSTR lpszMsgBuffer = _T("hello");
+	LPCXSTR lpszMsgBuffer = _X("hello");
 	if (!NetCore_PIPNamed_OPen(lpszPIPName))
 	{
 		printf("%lX", NetCore_GetLastError());
@@ -40,13 +40,13 @@ int Test_PIPNamed()
 int Test_PIPMailSlot()
 {
 #ifdef _MSC_BUILD
-	LPCXSTR lpszPIPName = _T("\\\\.\\mailslot\\MyMailSlot");
+	LPCXSTR lpszPIPName = _X("\\\\.\\mailslot\\MyMailSlot");
 #else
-	LPCXSTR lpszPIPName = _T("/MyMailSlot");
+	LPCXSTR lpszPIPName = _X("/MyMailSlot");
 #endif
 	
 #ifndef __APPLE__
-	LPCXSTR lpszMsgBuffer = _T("hello");
+	LPCXSTR lpszMsgBuffer = _X("hello");
 	if (!NetCore_PIPMailSlot_OPen(lpszPIPName))
 	{
 		printf("%lX", NetCore_GetLastError());

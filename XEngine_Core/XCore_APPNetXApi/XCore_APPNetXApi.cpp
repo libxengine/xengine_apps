@@ -58,9 +58,9 @@ int Test_NetSniffer()
 {
 	//网路嗅探
 #ifdef _MSC_BUILD
-	XHANDLE xhNet = NetXApi_Sniffer_Start(_T("10.10.13.53"), NetXApi_Sniffer_Callback);
+	XHANDLE xhNet = NetXApi_Sniffer_Start(_X("10.10.13.53"), NetXApi_Sniffer_Callback);
 #else
-	XHANDLE xhNet = NetXApi_Sniffer_Start(_T("any"), NetXApi_Sniffer_Callback);
+	XHANDLE xhNet = NetXApi_Sniffer_Start(_X("any"), NetXApi_Sniffer_Callback);
 #endif
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 	NetXApi_Sniffer_Stop(xhNet);

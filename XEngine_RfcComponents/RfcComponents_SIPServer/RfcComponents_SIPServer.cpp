@@ -30,7 +30,7 @@ using namespace std;
 //Linux::g++ -std=c++17 -Wall -g RfcComponents_SIPServer.cpp -o RfcComponents_SIPServer.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lRfcComponents_HttpProtocol -lRfcComponents_SIPPorotocol -lpthread -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
 //Macos::g++ -std=c++17 -Wall -g RfcComponents_SIPServer.cpp -o RfcComponents_SIPServer.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lRfcComponents_HttpProtocol -lRfcComponents_SIPPorotocol -lpthread 
 
-XBOOL bIsRun = XFALSE;
+bool bIsRun = false;
 XHANDLE xhHttp = NULL;
 XHANDLE xhToken = NULL;
 int Test_SIPRegister()
@@ -67,7 +67,7 @@ int Test_SIPRegister()
 	return 0;
 }
 
-XBOOL CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+bool CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	HttpProtocol_Server_CreateClientEx(xhHttp, lpszClientAddr, 0);
 	if (!RfcComponents_SIPServer_Exist(lpszClientAddr))
@@ -75,7 +75,7 @@ XBOOL CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID 
 		RfcComponents_SIPServer_Create(lpszClientAddr);
 		printf("用户进入:%s\n", lpszClientAddr);
 	}
-	return XTRUE;
+	return true;
 }
 void CALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
@@ -192,16 +192,16 @@ int main()
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 
-	LPCXSTR lpszWFile = _T("D:\\xengine_apps\\Debug\\2.png");
-	LPCXSTR lpszMiniFile = _T("D:\\xengine_apps\\Debug\\HttpMime.types");
-	LPCXSTR lpszCodeFile = _T("D:\\xengine_apps\\Debug\\SIPCode.types");
+	LPCXSTR lpszWFile = _X("D:\\xengine_apps\\Debug\\2.png");
+	LPCXSTR lpszMiniFile = _X("D:\\xengine_apps\\Debug\\HttpMime.types");
+	LPCXSTR lpszCodeFile = _X("D:\\xengine_apps\\Debug\\SIPCode.types");
 #else
-	LPCXSTR lpszWFile = _T("2.png");
-	LPCXSTR lpszMiniFile = _T("HttpMime.types");
-	LPCXSTR lpszCodeFile = _T("SIPCode.types");
+	LPCXSTR lpszWFile = _X("2.png");
+	LPCXSTR lpszMiniFile = _X("HttpMime.types");
+	LPCXSTR lpszCodeFile = _X("SIPCode.types");
 #endif
 	Test_SIPRegister();
-	bIsRun = XTRUE;
+	bIsRun = true;
 	xhHttp = HttpProtocol_Server_InitEx(lpszCodeFile, lpszMiniFile, 1);
 	if (NULL == xhHttp)
 	{
@@ -217,13 +217,13 @@ int main()
 
 	NetCore_TCPXCore_RegisterCallBackEx(xhToken, NetCore_CB_Login, NetCore_CB_Recv, NetCore_CB_Close);
 
-	RfcComponents_SIPServer_Init("xyry.org", XTRUE);
+	RfcComponents_SIPServer_Init("xyry.org", true);
 	printf("启动服务成功\n");
 	std::thread pSTDThread(NetCore_Thread);
 
 	std::this_thread::sleep_for(std::chrono::seconds(100000));
 
-	bIsRun = XFALSE;
+	bIsRun = false;
 	HttpProtocol_Server_DestroyEx(xhHttp);
 	pSTDThread.join();
 	std::this_thread::sleep_for(std::chrono::seconds(1));

@@ -58,7 +58,7 @@ int main()
 	//如果服务器正常,但是收不到包,说明你的路由不支持NAT
 	nMsgLen = 2048;
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (!XClient_UDPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nMsgLen, XFALSE))
+	if (!XClient_UDPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nMsgLen))
 	{
 		printf("接受数据失败!,错误:%lX\n", XClient_GetLastError());
 		return -1;
@@ -142,7 +142,7 @@ int main()
 	//如果服务器正常,但是收不到包,说明你的路由不支持NAT
 	nMsgLen = 2048;
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (!XClient_UDPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nMsgLen, XFALSE))
+	if (!XClient_UDPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nMsgLen))
 	{
 		printf("接受数据失败!,错误:%lX\n", XClient_GetLastError());
 		return -1;

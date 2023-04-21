@@ -1,12 +1,12 @@
 # XEngine_Apps
 
-xengine 例子代码
+xengine v8 例子代码
 
 # 引擎例子
 引擎的例子代码包含下面的例子,可以根据需要通过下面的目录结构找到相应的组件模块例子.  
 请使用vs2022打开,并且使用 x86和debug模式
 
-1. XEngine_AVCoder                  音视频组件  
+1. XEngine_AVCodec                  音视频组件  
 2. XEngine_Client                   客户端组件  
 3. XEngine_Core                     核心服务组件  
 5. XEngine_HelpComponents           帮助组件  

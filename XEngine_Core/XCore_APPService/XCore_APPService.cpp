@@ -27,11 +27,11 @@ XHANDLE xhUDPCore = NULL;
 XHANDLE xhUDX = NULL;
 XCHAR tszClientAddr[64];
 
-XBOOL CALLBACK TCPOverlapped_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+bool CALLBACK TCPOverlapped_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	strcpy(tszClientAddr, lpszClientAddr);
 	printf("TCPOverlapped_Login:%s = %d\n", lpszClientAddr, hSocket);
-	return XTRUE;
+	return true;
 }
 void CALLBACK TCPOverlapped_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
@@ -52,11 +52,11 @@ int test_tcpxpoll()
 {
 	if (NetCore_TCPXPoll_Start(5001))
 	{
-		printf(_T("test_tcpxpoll Start Is Ok!\n"));
+		printf(_X("test_tcpxpoll Start Is Ok!\n"));
 	}
 	else
 	{
-		printf(_T("test_tcpxpoll Start Is Failed!\n"));
+		printf(_X("test_tcpxpoll Start Is Failed!\n"));
 	}
 	NetCore_TCPXPoll_RegisterCallBack(TCPOverlapped_Login, TCPOverlapped_Recv, TCPOverlapped_Leave);
 	return 0;
@@ -66,11 +66,11 @@ int test_tcpxcore()
 	xhTCPCore = NetCore_TCPXCore_StartEx(5000);
 	if (NULL != xhTCPCore)
 	{
-		printf(_T("NetCore_TCPXCore_StartEx Start Is Ok!\n"));
+		printf(_X("NetCore_TCPXCore_StartEx Start Is Ok!\n"));
 	}
 	else
 	{
-		printf(_T("NetCore_TCPXCore_StartEx Start Is Failed!\n"));
+		printf(_X("NetCore_TCPXCore_StartEx Start Is Failed!\n"));
 	}
 	NetCore_TCPXCore_RegisterCallBackEx(xhTCPCore,TCPOverlapped_Login, TCPOverlapped_Recv, TCPOverlapped_Leave);
 	std::this_thread::sleep_for(std::chrono::milliseconds(10000));
@@ -82,11 +82,11 @@ int test_udpxcore()
 	xhUDPCore = NetCore_UDPXCore_StartEx(5002);
 	if (NULL != xhUDPCore)
 	{
-		printf(_T("NetCore_UDPXCore_StartEx Start Is Ok!\n"));
+		printf(_X("NetCore_UDPXCore_StartEx Start Is Ok!\n"));
 	}
 	else
 	{
-		printf(_T("NetCore_UDPXCore_StartEx Start Is Failed!\n"));
+		printf(_X("NetCore_UDPXCore_StartEx Start Is Failed!\n"));
 	}
 	NetCore_UDPXCore_RegisterCallBackEx(xhUDPCore, Callback_UDPRecv);
 	return 0;
@@ -94,17 +94,17 @@ int test_udpxcore()
 int test_unixdomain()
 {
 #ifdef _MSC_BUILD
-	LPCXSTR lpszUnixName = _T("d:\\xengine_apps\\Debug\\unix.socket");
+	LPCXSTR lpszUnixName = _X("d:\\xengine_apps\\Debug\\unix.socket");
 #else
 	LPCXSTR lpszUnixName = "/tmp/unix.socket";
 #endif
 	if (NetCore_UnixDomain_Start(lpszUnixName))
 	{
-		printf(_T("NetCore_UnixDomain_Start Start Is Ok!\n"));
+		printf(_X("NetCore_UnixDomain_Start Start Is Ok!\n"));
 	}
 	else
 	{
-		printf(_T("NetCore_UnixDomain_Start Start Is Failed!\n"));
+		printf(_X("NetCore_UnixDomain_Start Start Is Failed!\n"));
 	}
 	NetCore_UnixDomain_SetCallback(TCPOverlapped_Login, TCPOverlapped_Recv, TCPOverlapped_Leave);
 
@@ -113,9 +113,9 @@ int test_unixdomain()
 int test_udx()
 {
 #ifdef _MSC_BUILD
-	LPCXSTR lpszFile = _T("d:\\xengine_apps\\Debug\\2.exe");
+	LPCXSTR lpszFile = _X("d:\\xengine_apps\\Debug\\2.exe");
 #else
-	LPCXSTR lpszFile = _T("2.exe");
+	LPCXSTR lpszFile = _X("2.exe");
 #endif
 	NETCORE_UDXCONFIG st_UDXConfig;
 	FILE* pSt_File = fopen(lpszFile, "wb");
@@ -124,9 +124,9 @@ int test_udx()
 		return 0;
 	}
 
-	st_UDXConfig.bEnableLogin = XTRUE;
-	st_UDXConfig.bEnableReorder = XTRUE;
-	st_UDXConfig.bEnableRryTime = XTRUE;
+	st_UDXConfig.bEnableLogin = true;
+	st_UDXConfig.bEnableReorder = true;
+	st_UDXConfig.bEnableRryTime = true;
 	st_UDXConfig.nWindowSize = 1000000;
 
 	memset(tszClientAddr, '\0', sizeof(tszClientAddr));
@@ -137,7 +137,7 @@ int test_udx()
 		printf("启动UDX服务失败");
 		return -1;
 	}
-	printf(_T("NetCore_UDXSocket_InitEx Start Is Ok!\n"));
+	printf(_X("NetCore_UDXSocket_InitEx Start Is Ok!\n"));
 
 	NetCore_UDXSocket_CBSetEx(xhUDX, TCPOverlapped_Login, TCPOverlapped_Leave);
 

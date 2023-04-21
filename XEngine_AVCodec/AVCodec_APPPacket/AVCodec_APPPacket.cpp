@@ -66,7 +66,7 @@ int AVPacket_Test_FileLink()
 	}
 	while (1)
 	{
-		XBOOL bIsRun = XFALSE;
+		bool bIsRun = false;
 		if (AVPacket_FileLink_GetStatus(xhAVFile, &bIsRun))
 		{
 			if (!bIsRun)
@@ -114,7 +114,7 @@ int AVPacket_Test_FileConvert()
 	}
 	while (1)
 	{
-		XBOOL bIsRun = XFALSE;
+		bool bIsRun = false;
 		if (AVPacket_FileConvert_GetStatus(xhAVFile, &bIsRun))
 		{
 			if (!bIsRun)
@@ -176,7 +176,7 @@ int AVPacket_Test_FilePacket()
 
 	while (1)
 	{
-		XBOOL bIsRun = XFALSE;
+		bool bIsRun = false;
 		if (AVPacket_FilePacket_GetStatus(xhAVFile, &bIsRun))
 		{
 			if (!bIsRun)
@@ -242,7 +242,7 @@ int AVPacket_Test_UNPacket()
 	}
 	while (1)
 	{
-		XBOOL bIsRun = XFALSE;
+		bool bIsRun = false;
 		if (AVPacket_FileUNPack_GetStatus(xhAVFile, &bIsRun))
 		{
 			if (!bIsRun)

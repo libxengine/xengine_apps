@@ -23,18 +23,18 @@ void CreateSDP(XCHAR* ptszMsgBuffer, int* pInt_Len)
 	XNETHANDLE xhToken = 0;
 	RfcComponents_SDPPacket_Create(&xhToken);
 
-	RfcComponents_SDPPacket_Owner(xhToken, _T("qyt"), 123456789, _T("192.168.1.101"));
-	RfcComponents_SDPPacket_Session(xhToken, _T("video.h264"));
+	RfcComponents_SDPPacket_Owner(xhToken, _X("qyt"), 123456789, _X("192.168.1.101"));
+	RfcComponents_SDPPacket_Session(xhToken, _X("video.h264"));
 	RfcComponents_SDPPacket_KeepTime(xhToken);
 	//配置视频属性
-	RfcComponents_SDPPacket_AddMedia(xhToken, _T("video"), 96);
+	RfcComponents_SDPPacket_AddMedia(xhToken, _X("video"), 96);
 	RFCCOMPONENTS_SDPPROTOCOL_MEDIAVIDEO st_SDPMediaVideo;
 	memset(&st_SDPMediaVideo, '\0', sizeof(RFCCOMPONENTS_SDPPROTOCOL_MEDIAVIDEO));
 
 	st_SDPMediaVideo.nTrackID = 1;
 	st_SDPMediaVideo.st_RTPMap.nCodecNumber = 96;
 	st_SDPMediaVideo.st_RTPMap.nSampleRate = 90000;
-	strcpy(st_SDPMediaVideo.st_RTPMap.tszCodecName, _T("H264"));
+	strcpy(st_SDPMediaVideo.st_RTPMap.tszCodecName, _X("H264"));
 
 	st_SDPMediaVideo.st_FmtpVideo.nFrameRate = 25;
 	st_SDPMediaVideo.st_FmtpVideo.nPacketMode = 1;
@@ -44,12 +44,12 @@ void CreateSDP(XCHAR* ptszMsgBuffer, int* pInt_Len)
 	st_SDPMediaVideo.st_FmtpVideo.nFrameXSize = 1080;
 	st_SDPMediaVideo.st_FmtpVideo.nFrameYSize = 720;
 
-	strcpy(st_SDPMediaVideo.st_FmtpVideo.tszPPSBase, _T("aO48gA"));
-	strcpy(st_SDPMediaVideo.st_FmtpVideo.tszSPSBase, _T("Z01AM5p0FCNCAAEEugA9CQEeMGVA"));
+	strcpy(st_SDPMediaVideo.st_FmtpVideo.tszPPSBase, _X("aO48gA"));
+	strcpy(st_SDPMediaVideo.st_FmtpVideo.tszSPSBase, _X("Z01AM5p0FCNCAAEEugA9CQEeMGVA"));
 
 	RfcComponents_SDPPacket_AttrVideo(xhToken, &st_SDPMediaVideo);
 	//配置音频属性
-	RfcComponents_SDPPacket_AddMedia(xhToken, _T("audio"), 97);
+	RfcComponents_SDPPacket_AddMedia(xhToken, _X("audio"), 97);
 
 	RFCCOMPONENTS_SDPPROTOCOL_MEDIAAUDIO st_SDPMediaAudio;
 	memset(&st_SDPMediaAudio, '\0', sizeof(RFCCOMPONENTS_SDPPROTOCOL_MEDIAAUDIO));
@@ -57,7 +57,7 @@ void CreateSDP(XCHAR* ptszMsgBuffer, int* pInt_Len)
 	st_SDPMediaAudio.st_RTPMap.nChannel = 2;
 	st_SDPMediaAudio.st_RTPMap.nCodecNumber = 97;
 	st_SDPMediaAudio.st_RTPMap.nSampleRate = 80000;
-	strcpy(st_SDPMediaAudio.st_RTPMap.tszCodecName, _T("mpeg4-generic"));
+	strcpy(st_SDPMediaAudio.st_RTPMap.tszCodecName, _X("mpeg4-generic"));
 
 	st_SDPMediaAudio.st_FmtpAudio.nConfig = 1400;
 	st_SDPMediaAudio.st_FmtpAudio.nDeltaLen = 3;
@@ -81,18 +81,18 @@ void CreateSDP265(XCHAR* ptszMsgBuffer, int* pInt_Len)
 	XNETHANDLE xhToken = 0;
 	RfcComponents_SDPPacket_Create(&xhToken);
 
-	RfcComponents_SDPPacket_Owner(xhToken, _T("qyt"), 123456789, _T("192.168.1.101"));
-	RfcComponents_SDPPacket_Session(xhToken, _T("video.h265"));
+	RfcComponents_SDPPacket_Owner(xhToken, _X("qyt"), 123456789, _X("192.168.1.101"));
+	RfcComponents_SDPPacket_Session(xhToken, _X("video.h265"));
 	RfcComponents_SDPPacket_KeepTime(xhToken);
 	//配置视频属性
-	RfcComponents_SDPPacket_AddMedia(xhToken, _T("video"), 96);
+	RfcComponents_SDPPacket_AddMedia(xhToken, _X("video"), 96);
 	RFCCOMPONENTS_SDPPROTOCOL_MEDIAVIDEO st_SDPMediaVideo;
 	memset(&st_SDPMediaVideo, '\0', sizeof(RFCCOMPONENTS_SDPPROTOCOL_MEDIAVIDEO));
 
 	st_SDPMediaVideo.nTrackID = 1;
 	st_SDPMediaVideo.st_RTPMap.nCodecNumber = 96;
 	st_SDPMediaVideo.st_RTPMap.nSampleRate = 90000;
-	strcpy(st_SDPMediaVideo.st_RTPMap.tszCodecName, _T("H265"));
+	strcpy(st_SDPMediaVideo.st_RTPMap.tszCodecName, _X("H265"));
 
 	st_SDPMediaVideo.st_FmtpVideo.nFrameXSize = 1920;
 	st_SDPMediaVideo.st_FmtpVideo.nFrameYSize = 1080;
@@ -103,10 +103,10 @@ void CreateSDP265(XCHAR* ptszMsgBuffer, int* pInt_Len)
 	st_SDPMediaVideo.st_FmtpVideo.nFlags = 0;
 	st_SDPMediaVideo.st_FmtpVideo.nLevelID = 0;
 
-	strcpy(st_SDPMediaVideo.st_FmtpVideo.tszICStr, _T("000000000000"));
-	strcpy(st_SDPMediaVideo.st_FmtpVideo.tszLeaveId, _T("QAEMAf//AWAAAAMAAAMAAAMAAAMAAJSQJA=="));
-	strcpy(st_SDPMediaVideo.st_FmtpVideo.tszPPSBase, _T("RAHBpXwIkA=="));
-	strcpy(st_SDPMediaVideo.st_FmtpVideo.tszSPSBase, _T("QgEBAWAAAAMAAAMAAAMAAAMAAKAB4CACHH+WUmSRthpYiqkxMMvs+vN+WfXhRGJy7ZA="));
+	strcpy(st_SDPMediaVideo.st_FmtpVideo.tszICStr, _X("000000000000"));
+	strcpy(st_SDPMediaVideo.st_FmtpVideo.tszLeaveId, _X("QAEMAf//AWAAAAMAAAMAAAMAAAMAAJSQJA=="));
+	strcpy(st_SDPMediaVideo.st_FmtpVideo.tszPPSBase, _X("RAHBpXwIkA=="));
+	strcpy(st_SDPMediaVideo.st_FmtpVideo.tszSPSBase, _X("QgEBAWAAAAMAAAMAAAMAAAMAAKAB4CACHH+WUmSRthpYiqkxMMvs+vN+WfXhRGJy7ZA="));
 
 	RfcComponents_SDPPacket_AttrVideo(xhToken, &st_SDPMediaVideo);
 	//附加信息
@@ -147,7 +147,7 @@ void ParseSDP(LPCXSTR lpszMsgBuffer, int nLen)
 
 	RfcComponents_SDPParse_GetConnect(xhToken, &nIPVer, tszIPAddr, &nTTL, &nCount);
 
-	XBOOL bVideo = XFALSE;
+	bool bVideo = false;
 	XCHAR tszSessionName[64];
 	XCHAR tszSessionValue[64];
 	memset(tszSessionValue, '\0', sizeof(tszSessionValue));

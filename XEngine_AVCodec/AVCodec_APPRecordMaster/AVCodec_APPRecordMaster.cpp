@@ -30,7 +30,7 @@ using namespace std;
 
 //Linux::g++ -std=c++17 -Wall -g AVCodec_APPRecordMaster.cpp -o AVCodec_APPRecordMaster.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_AVCollect -lXEngine_VideoCodec -lXEngine_AudioCodec -lXEngine_AVHelp -lXEngine_AVPacket -lpthread -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec,--disable-new-dtags
 //MacOS::g++ -std=c++17 -Wall -g AVCodec_APPRecordMaster.cpp -o AVCodec_APPRecordMaster.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_AVCollect -lXEngine_VideoCodec -lXEngine_AudioCodec -lXEngine_AVHelp -lXEngine_AVPacket -lpthread
-XBOOL bAudio = XFALSE;
+bool bAudio = false;
 XNETHANDLE xhVideo = 0;
 XNETHANDLE xhAudio = 0;
 XNETHANDLE xhFilter = 0;
@@ -95,13 +95,13 @@ void CALLBACK XEngine_AVCollect_CBAudio(uint8_t* punStringAudio, int nVLen, XPVO
 
 void CALLBACK XEngine_AVPacket_Callback(XHANDLE xhNet, int nCvtType, int nCvtFrame, double dlTime, XPVOID lParam)
 {
-	printf(_T("提示:正在打包...第 %d 个%s,当前时间:%lf\r\n"), nCvtFrame, nCvtType == 1 ? _T("视频帧") : _T("音频帧"), dlTime);
+	printf(_X("提示:正在打包...第 %d 个%s,当前时间:%lf\r\n"), nCvtFrame, nCvtType == 1 ? _X("视频帧") : _X("音频帧"), dlTime);
 }
 void XEngine_AVPacket_Thread()
 {
 	while (1)
 	{
-		XBOOL bIsRun = XFALSE;
+		bool bIsRun = false;
 		if (AVPacket_FilePacket_GetStatus(xhPacket, &bIsRun))
 		{
 			if (!bIsRun)
@@ -140,24 +140,24 @@ int main()
 		xhSound = AVCollect_Audio_Init("dshow", "audio=virtual-audio-capturer", XEngine_AVCollect_CBAudio);
 		if (NULL == xhSound)
 		{
-			printf(_T("初始化音频采集器失败"));
+			printf(_X("初始化音频采集器失败"));
 			return -1;
 		}
 		AVCollect_Audio_GetInfo(xhSound, &st_AVInfo);
 		//文件保存需要的属性
 		if (!AudioCodec_Stream_EnInit(&xhAudio, ENUM_AVCODEC_AUDIO_TYPE_AAC, st_AVInfo.st_AudioInfo.nSampleRate, st_AVInfo.st_AudioInfo.nChannel, st_AVInfo.st_AudioInfo.nBitRate, 0, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP))
 		{
-			printf(_T("初始化编码器失败"));
+			printf(_X("初始化编码器失败"));
 			return -1;
 		}
 		int nLen = 0;
 		if (!AudioCodec_Stream_SetResample(xhAudio, &nLen, st_AVInfo.st_AudioInfo.nSampleRate, st_AVInfo.st_AudioInfo.nSampleRate, (ENUM_AVCOLLECT_AUDIOSAMPLEFORMAT)st_AVInfo.st_AudioInfo.nSampleFmt, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP, st_AVInfo.st_AudioInfo.nChannel, st_AVInfo.st_AudioInfo.nChannel))
 		{
-			printf(_T("初始化重采样工具失败"));
+			printf(_X("初始化重采样工具失败"));
 			return -1;
 		}
 		//是否需要保存为文件
-		pSt_AudioFile = fopen(lpszAudioFile, _T("wb"));
+		pSt_AudioFile = fopen(lpszAudioFile, _X("wb"));
 		AVCollect_Audio_Start(xhSound);
 	}
 	//屏幕采集
@@ -176,23 +176,23 @@ int main()
 #endif
 	if (NULL == xhScreen)
 	{
-		printf(_T("初始化屏幕采集失败"));
+		printf(_X("初始化屏幕采集失败"));
 		return -1;
 	}
 	AVCollect_Video_GetInfo(xhScreen, &st_AVInfo);
 	//视频编码
 	if (!VideoCodec_Stream_EnInit(&xhVideo, st_AVInfo.st_VideoInfo.nWidth, st_AVInfo.st_VideoInfo.nHeight, ENUM_ENTENGINE_AVCODEC_VEDIO_TYPE_H264, st_AVInfo.st_VideoInfo.nBitRate))
 	{
-		printf(_T("初始化失败"));
+		printf(_X("初始化失败"));
 		return -1;
 	}
 	XCHAR tszFilterStr[MAX_PATH];
 	memset(tszFilterStr, '\0', MAX_PATH);
 
-	sprintf(tszFilterStr, _T("drawtext=fontfile=Arial.ttf:fontcolor=green:fontsize=30:x=100:y=10:text='www.xyry.org'"));
+	sprintf(tszFilterStr, _X("drawtext=fontfile=Arial.ttf:fontcolor=green:fontsize=30:x=100:y=10:text='www.xyry.org'"));
 	if (!VideoCodec_Help_FilterInit(&xhFilter, tszFilterStr, st_AVInfo.st_VideoInfo.nWidth, st_AVInfo.st_VideoInfo.nHeight, ENUM_AVCOLLECT_VIDEO_FMT_YUV420P, 24))
 	{
-		printf(_T("初始化过滤器失败"));
+		printf(_X("初始化过滤器失败"));
 		return -1;
 	}
 	//获得路径名
@@ -223,7 +223,7 @@ int main()
 	xhPacket = AVPacket_FilePacket_Init(XEngine_AVPacket_Callback);
 	if (NULL == xhPacket)
 	{
-		printf(_T("初始化打包工具失败"));
+		printf(_X("初始化打包工具失败"));
 		return -1;
 	}
 
@@ -235,12 +235,12 @@ int main()
 
 	if (!AVPacket_FilePacket_Output(xhPacket, lpszMP4File))
 	{
-		printf(_T("设置输出失败"));
+		printf(_X("设置输出失败"));
 		return -1;
 	}
 	if (!AVPacket_FilePacket_Start(xhPacket))
 	{
-		printf(_T("开始打包失败"));
+		printf(_X("开始打包失败"));
 		return -1;
 	}
 	thread m_AVThread(XEngine_AVPacket_Thread);

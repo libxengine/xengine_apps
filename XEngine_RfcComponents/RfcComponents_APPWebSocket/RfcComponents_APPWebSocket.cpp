@@ -32,17 +32,17 @@ XHANDLE xhToken = NULL;
 XHANDLE xhWBPacket = NULL;
 XCHAR tszClientAddr[64];
 
-XBOOL CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+bool CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	strcpy(tszClientAddr, lpszClientAddr);
 	printf("NetCore_CB_Login:%s\n", lpszClientAddr);
 	RfcComponents_WSPacket_CreateEx(xhWBPacket, lpszClientAddr, 1);
-	return XTRUE;
+	return true;
 }
 void CALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
 	printf("NetCore_CB_Recv:%s-%d\n", lpszClientAddr, nMsgLen);
-	XBOOL bLogin = XFALSE;
+	bool bLogin = false;
 	RfcComponents_WSPacket_GetLoginEx(xhWBPacket, lpszClientAddr, &bLogin);
 	if (bLogin)
 	{
@@ -72,7 +72,7 @@ void CALLBACK NetCore_CB_Close(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID l
 XHTHREAD CALLBACK NetCore_Thread()
 {
 	int i = 0;
-	while (XTRUE)
+	while (true)
 	{
 		if (RfcComponents_WSPacket_WaitEventEx(xhWBPacket, 1))
 		{
@@ -119,7 +119,7 @@ int main()
 
 	memset(tszClientAddr, '\0', sizeof(tszClientAddr));
 
-	xhToken = NetCore_TCPXCore_StartEx(5000, 100, 2, XFALSE, XTRUE);
+	xhToken = NetCore_TCPXCore_StartEx(5000, 100, 2, false, true);
 	if (NULL == xhToken)
 	{
 		printf("%lX\n", NetCore_GetLastError());
@@ -158,7 +158,7 @@ int mainc()
 	}
 
 	XSOCKET hSocket = 0;
-	if (!XClient_TCPSelect_Create(&hSocket, _T("10.10.12.114"), 5000))
+	if (!XClient_TCPSelect_Create(&hSocket, _X("10.10.12.114"), 5000))
 	{
 		printf("NetClient_TCPSelect_Create:%lX", XClient_GetLastError());
 		return -1;
@@ -194,14 +194,14 @@ int mainc()
 	memset(tszRecvBuffer, '\0', sizeof(tszRecvBuffer));
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
-	if (RfcComponents_WSCodec_EncodeMsg("123456", tszMsgBuffer, &nRVLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_TEXT, XTRUE))
+	if (RfcComponents_WSCodec_EncodeMsg("123456", tszMsgBuffer, &nRVLen, ENUM_XENGINE_RFCOMPONENTS_WEBSOCKET_OPCODE_TEXT, true))
 	{
 		if (XClient_TCPSelect_SendMsg(hSocket, tszMsgBuffer, nRVLen))
 		{
 			printf("NetClient_TCPSelect_SendMsg:%d\n", nRVLen);
 		}
 	}
-	xhWBPacket = RfcComponents_WSPacket_InitEx(10000, XFALSE, 4);
+	xhWBPacket = RfcComponents_WSPacket_InitEx(10000, false, 4);
 	RfcComponents_WSPacket_CreateEx(xhWBPacket, "ClientToken", 1);
 
 	std::thread pSTDThread(NetCore_Thread);

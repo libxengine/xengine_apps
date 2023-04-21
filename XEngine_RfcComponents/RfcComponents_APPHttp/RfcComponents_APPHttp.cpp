@@ -25,18 +25,18 @@ using namespace std;
 //Linux::g++ -std=c++17 -Wall -g RfcComponents_APPHttp.cpp -o RfcComponents_APPHttp.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lXEngine_OPenSsl -lRfcComponents_HttpProtocol -lpthread -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_RfcComponents:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
 //Macos::g++ -std=c++17 -Wall -g RfcComponents_APPHttp.cpp -o RfcComponents_APPHttp.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_RfcComponents -lXEngine_BaseLib -lXEngine_Core -lXEngine_OPenSsl -lRfcComponents_HttpProtocol -lpthread
 
-XBOOL bIsRun = XFALSE;
+bool bIsRun = false;
 int nRVMode = 0;
 XHANDLE xhToken = NULL;
 XHANDLE xhHttp = NULL;
 FILE* pSt_File = NULL;
 
-XBOOL CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+bool CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("NetCore_CB_Login:%s\n", lpszClientAddr);
 	HttpProtocol_Server_CreateClientEx(xhHttp, lpszClientAddr, 0);
 	HttpProtocol_Server_SetRecvModeEx(xhHttp, lpszClientAddr, nRVMode);
-	return XTRUE;
+	return true;
 }
 void CALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
@@ -84,7 +84,7 @@ XHTHREAD CALLBACK NetCore_Thread()
 								RFCCOMPONENTS_HTTP_HDRPARAM st_HdrParam;
 								memset(&st_HdrParam, '\0', sizeof(RFCCOMPONENTS_HTTP_HDRPARAM));
 
-								st_HdrParam.bIsClose = XTRUE;
+								st_HdrParam.bIsClose = true;
 								st_HdrParam.nHttpCode = 200;
 								nMsgLen = 2048;
 								HttpProtocol_Server_SendMsgEx(xhHttp, ptszMsgBuffer, &nMsgLen, &st_HdrParam);
@@ -103,7 +103,7 @@ XHTHREAD CALLBACK NetCore_Thread()
 							memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 							memset(&st_HdrParam, '\0', sizeof(RFCCOMPONENTS_HTTP_HDRPARAM));
 
-							st_HdrParam.bIsClose = XTRUE;
+							st_HdrParam.bIsClose = true;
 							st_HdrParam.nHttpCode = 200;
 							nMsgLen = 2048;
 							HttpProtocol_Server_SendMsgEx(xhHttp, tszMsgBuffer, &nMsgLen, &st_HdrParam, "123456789", 9);
@@ -124,15 +124,15 @@ int main()
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 
-	LPCXSTR lpszWFile = _T("D:\\xengine_apps\\Debug\\2.png");
-	LPCXSTR lpszMiniFile = _T("D:\\xengine_apps\\Debug\\HttpMime.types");
-	LPCXSTR lpszCodeFile = _T("D:\\xengine_apps\\Debug\\HttpCode.types");
+	LPCXSTR lpszWFile = _X("D:\\xengine_apps\\Debug\\2.png");
+	LPCXSTR lpszMiniFile = _X("D:\\xengine_apps\\Debug\\HttpMime.types");
+	LPCXSTR lpszCodeFile = _X("D:\\xengine_apps\\Debug\\HttpCode.types");
 #else
-	LPCXSTR lpszWFile = _T("2.png");
-	LPCXSTR lpszMiniFile = _T("HttpMime.types");
-	LPCXSTR lpszCodeFile = _T("HttpCode.types");
+	LPCXSTR lpszWFile = _X("2.png");
+	LPCXSTR lpszMiniFile = _X("HttpMime.types");
+	LPCXSTR lpszCodeFile = _X("HttpCode.types");
 #endif
-	LPCXSTR lpszUrl = _T("http://bbs.xyry.org/forum.php?mod=viewthread&tid=2&extra=page%3D1");
+	LPCXSTR lpszUrl = _X("http://bbs.xyry.org/forum.php?mod=viewthread&tid=2&extra=page%3D1");
 	int nListCount = 0;
 	XCHAR** pptszListParam;
 	XCHAR tszUrlAddr[MAX_PATH];
@@ -154,10 +154,10 @@ int main()
 		printf("%s %s\n", tszDomainUrl, tszDomainKey);
 	}
 
-	bIsRun = XTRUE;
+	bIsRun = true;
 	if (1 == nRVMode)
 	{
-		pSt_File = fopen(lpszWFile, _T("wb"));
+		pSt_File = fopen(lpszWFile, _X("wb"));
 		if (NULL == pSt_File)
 		{
 			printf("errno open file\n");
@@ -181,7 +181,7 @@ int main()
 	std::thread pSTDThread(NetCore_Thread);
 
 	std::this_thread::sleep_for(std::chrono::seconds(10));
-	bIsRun = XFALSE;
+	bIsRun = false;
 	HttpProtocol_Server_DestroyEx(xhHttp);
 	pSTDThread.join();
 

@@ -23,8 +23,8 @@
 
 int Test_Anonymous()
 {
-	LPCXSTR lpszPIPName = _T("d:\\xengine_apps\\Debug\\Lib_APPAlgorithm.exe");
-	LPCXSTR lpszMsgBuffer = _T("hello");
+	LPCXSTR lpszPIPName = _X("d:\\xengine_apps\\Debug\\Lib_APPAlgorithm.exe");
+	LPCXSTR lpszMsgBuffer = _X("hello");
 	if (!NetCore_PIPAnonymous_Create(lpszPIPName))
 	{
 		printf("%lX", NetCore_GetLastError());
@@ -45,9 +45,9 @@ int Test_Anonymous()
 int Test_Named()
 {
 #ifdef _MSC_BUILD
-	LPCXSTR lpszPIPName = _T("\\\\.\\pipe\\MyNamedPipeOne");
+	LPCXSTR lpszPIPName = _X("\\\\.\\pipe\\MyNamedPipeOne");
 #else
-	LPCXSTR lpszPIPName = _T("MyNamedPipeOne");
+	LPCXSTR lpszPIPName = _X("MyNamedPipeOne");
 #endif
 	if (!NetCore_PIPNamed_Create(lpszPIPName))
 	{
@@ -70,9 +70,9 @@ int Test_Named()
 int Test_MailSlot()
 {
 #ifdef _MSC_BUILD
-	LPCXSTR lpszPIPName = _T("\\\\.\\mailslot\\MyMailSlot");
+	LPCXSTR lpszPIPName = _X("\\\\.\\mailslot\\MyMailSlot");
 #else
-	LPCXSTR lpszPIPName = _T("/MyMailSlot");
+	LPCXSTR lpszPIPName = _X("/MyMailSlot");
 #endif
 	
 #ifndef __APPLE__
@@ -101,12 +101,12 @@ int Test_MailSlot()
 }
 int Test_MMap()
 {
-	LPCXSTR lpszPIPName = _T("xyry");
-	LPCXSTR lpszMsgBuffer = _T("hello");
+	LPCXSTR lpszPIPName = _X("xyry");
+	LPCXSTR lpszMsgBuffer = _X("hello");
 #ifdef _MSC_BUILD
-	LPCXSTR lpszFileName = _T("D:\\xengine_apps\\Debug\\1.txt");
+	LPCXSTR lpszFileName = _X("D:\\xengine_apps\\Debug\\1.txt");
 #else
-	LPCXSTR lpszFileName = _T("1.txt");
+	LPCXSTR lpszFileName = _X("1.txt");
 #endif
 
 	if (!NetCore_PIPMMap_Create(lpszPIPName, lpszFileName))
@@ -119,7 +119,7 @@ int Test_MMap()
 
 #ifdef _MSC_BUILD
 	XPVOID lPBuffer = NetCore_PIPMMap_GetPointer(lpszPIPName);
-	memcpy(lPBuffer, _T("123123"), 6);
+	memcpy(lPBuffer, _X("123123"), 6);
 	NetCore_PIPMMap_FreePointer(lpszPIPName);
 #endif
 

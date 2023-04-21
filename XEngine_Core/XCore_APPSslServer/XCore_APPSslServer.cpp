@@ -29,7 +29,7 @@ using namespace std;
 //Macos::g++ -std=gnu++17 -Wall -g XCore_APPSslServer.cpp -o XCore_APPSslServer.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_Core -lXEngine_BaseLib -lXEngine_Core -lXEngine_OPenSsl
 
 XHANDLE xhSSL = NULL;
-XBOOL CALLBACK TCPSelect_CBLogin(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+bool CALLBACK TCPSelect_CBLogin(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("recv_Login:%s\n", lpszClientAddr);
 	XCHAR tszSubject[2048];
@@ -42,7 +42,7 @@ XBOOL CALLBACK TCPSelect_CBLogin(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID
 
 	OPenSsl_Server_AcceptEx(xhSSL, hSocket, lpszClientAddr, tszSubject, tszIssus, tszAlg);
 	printf("TCPSelect_CBLogin:%s %s %s\n", tszSubject, tszIssus, tszAlg);
-	return XTRUE;
+	return true;
 }
 void CALLBACK TCPSelect_CBRecv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
@@ -63,16 +63,16 @@ int main()
 #ifdef _MSC_BUILD
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
-	LPCXSTR lpszCAFile = _T("d:\\xengine_apps\\Debug\\root_bundle.crt");
-	LPCXSTR lpszSrvFile = _T("d:\\xengine_apps\\Debug\\test.xyry.org.crt");
-	LPCXSTR lpszKeyFile = _T("d:\\xengine_apps\\Debug\\test.xyry.org.key");
+	LPCXSTR lpszCAFile = _X("d:\\xengine_apps\\Debug\\root_bundle.crt");
+	LPCXSTR lpszSrvFile = _X("d:\\xengine_apps\\Debug\\test.xyry.org.crt");
+	LPCXSTR lpszKeyFile = _X("d:\\xengine_apps\\Debug\\test.xyry.org.key");
 #else
-	LPCXSTR lpszCAFile = _T("root_bundle.crt");
-	LPCXSTR lpszSrvFile = _T("test.xyry.org.crt");
-	LPCXSTR lpszKeyFile = _T("test.xyry.org.key");
+	LPCXSTR lpszCAFile = _X("root_bundle.crt");
+	LPCXSTR lpszSrvFile = _X("test.xyry.org.crt");
+	LPCXSTR lpszKeyFile = _X("test.xyry.org.key");
 #endif
 
-	xhSSL = OPenSsl_Server_InitEx(lpszCAFile, lpszSrvFile, lpszKeyFile, XFALSE, XFALSE);
+	xhSSL = OPenSsl_Server_InitEx(lpszCAFile, lpszSrvFile, lpszKeyFile, false, false);
 	if (NULL == xhSSL)
 	{
 		printf("OPenSsl_Server_Init %lX\n", OPenSsl_GetLastError());

@@ -15,21 +15,21 @@
 //Macos::clang++ -std=gnu++17 -Wall -g HelpComponents_APPBinPack.cpp -o HelpComponents_APPBinPack.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_HelpComponents -lXEngine_BaseLib -lHelpComponents_BINPack
 
 #ifdef _MSC_BUILD
-LPCXSTR lpszFile = _T("D:\\xengine_apps\\Debug\\Pics.xBin");
-LPCXSTR lpszPacket1 = _T("D:\\xengine_apps\\Debug\\1.png");
-LPCXSTR lpszPacket2 = _T("D:\\xengine_apps\\Debug\\2.png");
-LPCXSTR lpszPacket3 = _T("D:\\xengine_apps\\Debug\\3.png");
-LPCXSTR lpszUNPack1 = _T("D:\\xengine_apps\\Debug\\4.png");
-LPCXSTR lpszUNPack2 = _T("D:\\xengine_apps\\Debug\\5.png");
-LPCXSTR lpszUNPack3 = _T("D:\\xengine_apps\\Debug\\6.png");
+LPCXSTR lpszFile = _X("D:\\xengine_apps\\Debug\\Pics.xBin");
+LPCXSTR lpszPacket1 = _X("D:\\xengine_apps\\Debug\\1.png");
+LPCXSTR lpszPacket2 = _X("D:\\xengine_apps\\Debug\\2.png");
+LPCXSTR lpszPacket3 = _X("D:\\xengine_apps\\Debug\\3.png");
+LPCXSTR lpszUNPack1 = _X("D:\\xengine_apps\\Debug\\4.png");
+LPCXSTR lpszUNPack2 = _X("D:\\xengine_apps\\Debug\\5.png");
+LPCXSTR lpszUNPack3 = _X("D:\\xengine_apps\\Debug\\6.png");
 #else
-LPCXSTR lpszFile = _T("./Pics.xBin");
-LPCXSTR lpszPacket1 = _T("./1.png");
-LPCXSTR lpszPacket2 = _T("./2.png");
-LPCXSTR lpszPacket3 = _T("./3.png");
-LPCXSTR lpszUNPack1 = _T("./4.png");
-LPCXSTR lpszUNPack2 = _T("./5.png");
-LPCXSTR lpszUNPack3 = _T("./6.png");
+LPCXSTR lpszFile = _X("./Pics.xBin");
+LPCXSTR lpszPacket1 = _X("./1.png");
+LPCXSTR lpszPacket2 = _X("./2.png");
+LPCXSTR lpszPacket3 = _X("./3.png");
+LPCXSTR lpszUNPack1 = _X("./4.png");
+LPCXSTR lpszUNPack2 = _X("./5.png");
+LPCXSTR lpszUNPack3 = _X("./6.png");
 #endif
 
 void BINTest_Packet()
@@ -38,32 +38,32 @@ void BINTest_Packet()
 	XNETHANDLE xhFile;
 	if (!BINPack_Packet_Init(&xhFile, lpszFile))
 	{
-		printf(_T("初始化失败"));
+		printf(_X("初始化失败"));
 		return;
 	}
 	if (!BINPack_Packet_Push(xhFile, lpszPacket1, NULL, 0, ENUM_XENGINE_PROTOCOLHDR_CRYPTO_TYPE_UNKNOW, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_PIC))
 	{
-		printf(_T("打包失败1"));
+		printf(_X("打包失败1"));
 		return;
 	}
 	if (!BINPack_Packet_Push(xhFile, lpszPacket2, NULL, 0, ENUM_XENGINE_PROTOCOLHDR_CRYPTO_TYPE_UNKNOW, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_PIC))
 	{
-		printf(_T("打包失败2"));
+		printf(_X("打包失败2"));
 		return;
 	}
 	if (!BINPack_Packet_Push(xhFile, lpszPacket3, NULL, 0, ENUM_XENGINE_PROTOCOLHDR_CRYPTO_TYPE_UNKNOW, ENUM_XENGINE_PROTOCOLHDR_PAYLOAD_TYPE_PIC))
 	{
-		printf(_T("打包失败3"));
+		printf(_X("打包失败3"));
 		return;
 	}
-	if (!BINPack_Packet_Push(xhFile, NULL, _T("hello"), 5))
+	if (!BINPack_Packet_Push(xhFile, NULL, _X("hello"), 5))
 	{
-		printf(_T("打包失败4"));
+		printf(_X("打包失败4"));
 		return;
 	}
 	BINPack_Packet_Package(xhFile);
 	BINPack_Packet_Close(xhFile);
-	printf(_T("打包成功"));
+	printf(_X("打包成功"));
 }
 void BINTest_UNPack()
 {
@@ -71,7 +71,7 @@ void BINTest_UNPack()
 	XNETHANDLE xhFile;
 	if (!BINPack_UnPack_Init(&xhFile, lpszFile))
 	{
-		printf(_T("初始化失败"));
+		printf(_X("初始化失败"));
 		return;
 	}
 	ENUM_XENGINE_PROTOCOLHDR_CRYPTO_TYPE enEncrypto;
@@ -80,17 +80,17 @@ void BINTest_UNPack()
 	BINPack_UnPack_GetType(xhFile, &enEncrypto, &enPAYLoad);
 	if (!BINPack_UnPack_Get(xhFile, lpszUNPack1))
 	{
-		printf(_T("解包失败1"));
+		printf(_X("解包失败1"));
 		return;
 	}
 	if (!BINPack_UnPack_Get(xhFile, lpszUNPack2))
 	{
-		printf(_T("解包失败2"));
+		printf(_X("解包失败2"));
 		return;
 	}
 	if (!BINPack_UnPack_Get(xhFile, lpszUNPack3))
 	{
-		printf(_T("解包失败3"));
+		printf(_X("解包失败3"));
 		return;
 	}
 	int nLen = 4095;
@@ -99,11 +99,11 @@ void BINTest_UNPack()
 
 	if (!BINPack_UnPack_Get(xhFile, NULL, tszMsgBuffer, &nLen))
 	{
-		printf(_T("解包失败4"));
+		printf(_X("解包失败4"));
 		return;
 	}
 	BINPack_UnPack_Close(xhFile);
-	printf(_T("解包成功"));
+	printf(_X("解包成功"));
 }
 
 int main()

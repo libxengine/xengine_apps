@@ -27,7 +27,7 @@ int Test_Cache()
 		printf("HelpComponents_Packets_Init:%lX\n", Packets_GetLastError());
 		return -1;
 	}
-	LPCXSTR lpszMsgBuffer = _T("hello");
+	LPCXSTR lpszMsgBuffer = _X("hello");
 	int nLen = strlen(lpszMsgBuffer);
 
 	HelpComponents_Cache_PostEx(xhPacket, lpszMsgBuffer, nLen);
@@ -63,7 +63,7 @@ int Test_Packets()
 	}
 
 	XCHAR tszMsgBuffer[2048];
-	LPCXSTR lpszMsgBuffer = _T("hello");
+	LPCXSTR lpszMsgBuffer = _X("hello");
 	XENGINE_PROTOCOLHDREX st_ProtocolHdr;
 	XENGINE_PROTOCOLTAILEX st_ProtocolTail;
 	int nLen = strlen(lpszMsgBuffer);
@@ -81,7 +81,7 @@ int Test_Packets()
 	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_NORMAL;
 	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_ISOK;
 	st_ProtocolHdr.unPacketSize = 5;
-	st_ProtocolHdr.wIsReply = XFALSE;
+	st_ProtocolHdr.wIsReply = false;
 
 	st_ProtocolTail.wCheckSum = HelpComponents_Help_CheckSum(lpszMsgBuffer, nLen);
 	st_ProtocolTail.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
@@ -110,7 +110,7 @@ int Test_Packets()
 }
 int Test_Datas()
 {
-	LPCXSTR lpszClientAddr = _T("127.0.0.1");
+	LPCXSTR lpszClientAddr = _X("127.0.0.1");
 	XHANDLE xhPacket = HelpComponents_Datas_Init(10000, 4);
 	
 	if (NULL == xhPacket)
@@ -125,7 +125,7 @@ int Test_Datas()
 	}
 
 	XCHAR tszMsgBuffer[2048];
-	LPCXSTR lpszMsgBuffer = _T("hello");
+	LPCXSTR lpszMsgBuffer = _X("hello");
 	XENGINE_PROTOCOLHDR st_ProtocolHdr;
 	int nLen = strlen(lpszMsgBuffer);
 
@@ -183,7 +183,7 @@ int Test_Datas()
 }
 int Test_PacketPool()
 {
-	LPCXSTR lpszClientAddr = _T("127.0.0.1");
+	LPCXSTR lpszClientAddr = _X("127.0.0.1");
 	XHANDLE xhPacket = HelpComponents_Datas_Init(10000, 4);
 	if (NULL == xhPacket)
 	{
@@ -197,7 +197,7 @@ int Test_PacketPool()
 	}
 
 	XCHAR tszMsgBuffer[2048];
-	LPCXSTR lpszMsgBuffer = _T("hello");
+	LPCXSTR lpszMsgBuffer = _X("hello");
 	XENGINE_PROTOCOLHDR st_ProtocolHdr;
 	int nLen = strlen(lpszMsgBuffer);
 	int nMsgLen = 0;
@@ -272,7 +272,7 @@ int Test_PacketCustom()
 		printf("HelpComponents_PKTCustom_Init:%lX\n", Packets_GetLastError());
 		return -1;
 	}
-	HelpComponents_PKTCustom_SetHdrEx(xhPacket, 2, 4, sizeof(HELPCOMONENTS_CUSTOMHDR), XFALSE);
+	HelpComponents_PKTCustom_SetHdrEx(xhPacket, 2, 4, sizeof(HELPCOMONENTS_CUSTOMHDR), false);
 	HelpComponents_PKTCustom_SetTailEx(xhPacket, sizeof(HELPCOMONENTS_CUSTOMTAIL));
 
 	if (!HelpComponents_PKTCustom_CreateEx(xhPacket, hSocket, 1))
@@ -282,7 +282,7 @@ int Test_PacketCustom()
 	}
 
 	XCHAR tszMsgBuffer[2048];
-	LPCXSTR lpszMsgBuffer = _T("hello");
+	LPCXSTR lpszMsgBuffer = _X("hello");
 	HELPCOMONENTS_CUSTOMHDR st_ProtocolHdr;
 	HELPCOMONENTS_CUSTOMTAIL st_ProtocolTail;
 
@@ -365,10 +365,10 @@ int Test_PacketCustom2()
 	}
 	HelpComponents_PKTCustom_SetHdrEx(xhPacket, 24, 26, sizeof(XENGINE_RTPPACKETHDR));
 	
-	HelpComponents_PKTCustom_SetConditionsEx(xhPacket, 15, 4, 4, -8, XTRUE, XTRUE);
-	HelpComponents_PKTCustom_SetConditionsEx(xhPacket, 15, 4, 0, 4, XTRUE, XTRUE);
-	HelpComponents_PKTCustom_SetConditionsEx(xhPacket, 15, 4, 1, 4, XTRUE, XTRUE);
-	HelpComponents_PKTCustom_SetConditionsEx(xhPacket, 15, 4, 2, 4, XTRUE, XTRUE);
+	HelpComponents_PKTCustom_SetConditionsEx(xhPacket, 15, 4, 4, -8, true, true);
+	HelpComponents_PKTCustom_SetConditionsEx(xhPacket, 15, 4, 0, 4, true, true);
+	HelpComponents_PKTCustom_SetConditionsEx(xhPacket, 15, 4, 1, 4, true, true);
+	HelpComponents_PKTCustom_SetConditionsEx(xhPacket, 15, 4, 2, 4, true, true);
 
 	if (!HelpComponents_PKTCustom_CreateEx(xhPacket, hSocket))
 	{
@@ -377,16 +377,16 @@ int Test_PacketCustom2()
 	}
 
 #ifdef _MSC_BUILD
-	LPCXSTR lpszFile = _T("D:\\XEngine_JT1078\\XEngine_APPClient\\Debug\\1.rtp");
+	LPCXSTR lpszFile = _X("D:\\XEngine_JT1078\\XEngine_APPClient\\Debug\\1.rtp");
 #else
-	LPCXSTR lpszFile = _T("1.rtp");
+	LPCXSTR lpszFile = _X("1.rtp");
 #endif
-	FILE* pSt_File = fopen(lpszFile, _T("rb"));
+	FILE* pSt_File = fopen(lpszFile, _X("rb"));
 	if (NULL == pSt_File)
 	{
 		return -1;
 	}
-	while (XTRUE)
+	while (true)
 	{
 		XCHAR tszMsgBuffer[2048];
 		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
@@ -397,7 +397,7 @@ int Test_PacketCustom2()
 		}
 		HelpComponents_PKTCustom_PostEx(xhPacket, hSocket, tszMsgBuffer, nRet);
 
-		while (XTRUE)
+		while (true)
 		{
 			int nHDRLen = 0;
 			int nMsgLen = 0;
@@ -428,8 +428,8 @@ void CALLBACK Packet_CBChunk(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int 
 }
 int Test_DataChunk()
 {
-	LPCXSTR lpszFile = _T("D:\\xmaster\\Debug\\XEngine_RecordMaster.exe");
-	LPCXSTR lpszClientID = _T("192.168.1.5:3301");
+	LPCXSTR lpszFile = _X("D:\\xmaster\\Debug\\XEngine_RecordMaster.exe");
+	LPCXSTR lpszClientID = _X("192.168.1.5:3301");
 	XENGINE_PROTOCOLHDR st_ProtocolHdr;
 	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDR));
 
@@ -438,11 +438,11 @@ int Test_DataChunk()
 	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_CHUNKED_START;
 	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
 
-	//XHANDLE xhPacket = HelpComponents_Datas_Init(10000, 0, 1, XFALSE, XFALSE, XFALSE, Packet_CBChunk);
+	//XHANDLE xhPacket = HelpComponents_Datas_Init(10000, 0, 1, false, false, false, Packet_CBChunk);
 	XHANDLE xhPacket = HelpComponents_Datas_Init();
 	HelpComponents_Datas_CreateEx(xhPacket, lpszClientID, 0);
 	HelpComponents_Datas_PostEx(xhPacket, lpszClientID, (LPCXSTR)&st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
-	FILE* pSt_File = fopen(lpszFile, _T("rb"));
+	FILE* pSt_File = fopen(lpszFile, _X("rb"));
 	if (NULL == pSt_File)
 	{
 		return -1;
@@ -472,7 +472,7 @@ int Test_DataChunk()
 	HelpComponents_Datas_PostEx(xhPacket, lpszClientID, tszMsgBuffer, sizeof(XENGINE_PROTOCOLHDR) * 2);
 	fclose(pSt_File);
 
-	pSt_File = fopen("D:\\xmaster\\Debug\\XEngine_RecordMaster1.exe", _T("wb"));
+	pSt_File = fopen("D:\\xmaster\\Debug\\XEngine_RecordMaster1.exe", _X("wb"));
 	while (1)
 	{
 		int nMsgLen = 4096;
