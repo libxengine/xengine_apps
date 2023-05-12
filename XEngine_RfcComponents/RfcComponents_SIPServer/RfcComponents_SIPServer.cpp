@@ -53,7 +53,7 @@ int Test_SIPRegister()
 
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	memset(&st_SIPProtocol, '\0', sizeof(SIPPROTOCOL_HDRINFO));
-	_tcscpy(tszMsgBuffer, lpszRegBuffer);
+	_tcsxcpy(tszMsgBuffer, lpszRegBuffer);
 	int nLen = _tcslen(lpszRegBuffer);
 	int nMsgLen = 2048;
 

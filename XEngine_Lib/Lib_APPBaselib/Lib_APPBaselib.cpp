@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <thread>
+#include <locale.h>
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
@@ -80,7 +81,7 @@ void StringTest()
 	memset(tszValue, '\0', sizeof(tszValue));
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
-	_tcscpy(tszMsgBuffer, _X("123456789 : abcd"));
+	_tcsxcpy(tszMsgBuffer, _X("123456789 : abcd"));
 
 	BaseLib_OperatorString_DelSub(tszMsgBuffer, _X("9"));
 
@@ -89,6 +90,12 @@ void StringTest()
 	LPCXSTR lpszFile2 = _X("D:\\adadad\\file.txt");
 	LPCXSTR lpszFile3 = _X("./file.txt");
 	LPCXSTR lpszFile4 = _X("file.txt");
+
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	int nLen = _xstprintf(tszMsgBuffer, "123456abc123765cd123ddd321");
+
+	BaseLib_OperatorString_GetStartEnd(tszMsgBuffer, tszValue, "123", "321", true);
+	BaseLib_OperatorString_Change(tszMsgBuffer, &nLen, "123", "321", "ccccc", false);
 
 	XCHAR tszFileDir[MAX_PATH];
 	XCHAR tszFileName[MAX_PATH];
@@ -217,7 +224,7 @@ int test_Memory()
 	}
 	for (int i = 0; i < 3; i++)
 	{
-		_tcscpy(ppszStr[i], _X("hello"));
+		_tcsxcpy(ppszStr[i], _X("hello"));
 	}
 	for (int i = 0; i < 3; i++)
 	{
@@ -345,7 +352,7 @@ int test_handle()
 	}
 	return 0;
 }
-#include <locale.h>
+
 int main()
 {
 	setlocale(LC_ALL, "");

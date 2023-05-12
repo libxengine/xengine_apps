@@ -19,12 +19,12 @@
 
 void CBStream_Pull(uint8_t* puszMsgBuffer, int nSize, int nAVType, __int64x nPts, __int64x nDts, __int64x nDuration, double dlTime, XPVOID lParam)
 {
-	//printf("Size:%d,AV:%d,Time:%lf\n", nSize, nAVType, dlTime);
+	printf("Size:%d,AV:%d,Time:%lf\n", nSize, nAVType, dlTime);
 	return ;
 }
 int Test_RTMPPull()
 {
-	LPCXSTR lpszPullUrl = _X("http://app.xyry.org:8088/live/qyt.flv");
+	LPCXSTR lpszPullUrl = _X("rtmp://ys.uavebit.com:1935/live/4TADKCF001002E");
 	LPCXSTR lpszPushUrl = _X("rtmp://app.xyry.org/live/123");
 	int nStreamCount = 0;
 	STREAMMEDIA_PULLSTREAM** ppSt_PullStream;

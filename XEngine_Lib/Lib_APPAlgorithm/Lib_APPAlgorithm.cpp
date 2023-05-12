@@ -25,7 +25,7 @@ void CALLBACK Test_CBPassive(XHANDLE xhToken, __int64u nAvgSDFlow, __int64u nAvg
 	XCHAR tszClientAddr[128];
 	memset(tszClientAddr, '\0', 128);
 
-	_tcscpy(tszClientAddr, (LPCXSTR)lParam);
+	_tcsxcpy(tszClientAddr, (LPCXSTR)lParam);
 	_tprintf(_X("%s: AVG_Flow:%llu\n"), tszClientAddr, nAvgSDFlow);
 }
 
@@ -63,7 +63,7 @@ int Test_Calulation()
 	XCHAR* ptszMsgBuffer = (XCHAR*)malloc(128);
 	memset(ptszMsgBuffer, '\0', 128);
 
-	_tcscpy(ptszMsgBuffer, _X("127.0.0.1"));
+	_tcsxcpy(ptszMsgBuffer, _X("127.0.0.1"));
 	Algorithm_Calculation_PassiveOPen(xhToken, Test_CBPassive, 1024, 0, 0, ptszMsgBuffer);
 	for (int i = 0; i < 500; i++)
 	{

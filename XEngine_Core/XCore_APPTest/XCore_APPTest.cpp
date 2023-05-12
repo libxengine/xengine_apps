@@ -144,7 +144,7 @@ int Test_MIPC()
 	printf("Key:%d\n", nKey);
 
 	XCHAR* ptszMsgBuffer = (XCHAR*)NetCore_PIPIpc_Get(nKey);
-	_tcscpy(ptszMsgBuffer, "123213");
+	_tcsxcpy(ptszMsgBuffer, "123213");
 	printf("Test_MIPC:%s\n", ptszMsgBuffer);
 	NetCore_PIPIpc_Free(ptszMsgBuffer);
 	NetCore_PIPIpc_Close(nKey);

@@ -27,9 +27,10 @@ void CALLBACK AVPacket_Pack_CBNotify(XHANDLE xhNet, int nCvtType, int nCvtFrame,
 int AVPacket_Test_FileLink()
 {
 #ifdef _MSC_BUILD
-	LPCXSTR lpszSrcFile1 = "D:\\h264 file\\480p.flv";
-	LPCXSTR lpszSrcFile2 = "D:\\h264 file\\480p1.flv";
-	LPCXSTR lpszDstFile = "D:\\h264 file\\480m.flv";
+	LPCXSTR lpszSrcFile1 = "D:\\h264 file\\1.mp4";
+	LPCXSTR lpszSrcFile2 = "D:\\h264 file\\2.mp4";
+	LPCXSTR lpszSrcFile3 = "D:\\h264 file\\3.mp4";
+	LPCXSTR lpszDstFile = "D:\\h264 file\\out.mp4";
 #else
 	LPCXSTR lpszSrcFile1 = "480p.flv";
 	LPCXSTR lpszSrcFile2 = "480p1.flv";
@@ -42,23 +43,28 @@ int AVPacket_Test_FileLink()
 		printf("AVPacket_FileConvert_Init:%lX\n", AVPacket_GetLastError());
 		return -1;
 	}
-	if (!AVPacket_FileLink_Input(xhAVFile, lpszSrcFile1))
-	{
-		printf("AVPacket_FileConvert_Input:%lX\n", AVPacket_GetLastError());
-		return -1;
-	}
-
-	if (!AVPacket_FileLink_Input(xhAVFile, lpszSrcFile2))
-	{
-		printf("AVPacket_FileConvert_Input:%lX\n", AVPacket_GetLastError());
-		return -1;
-	}
-
 	if (!AVPacket_FileLink_Output(xhAVFile, lpszDstFile))
 	{
 		printf("AVPacket_FileConvert_Output:%lX\n", AVPacket_GetLastError());
 		return -1;
 	}
+	if (!AVPacket_FileLink_Input(xhAVFile, lpszSrcFile1))
+	{
+		printf("AVPacket_FileConvert_Input:%lX\n", AVPacket_GetLastError());
+		return -1;
+	}
+	if (!AVPacket_FileLink_Input(xhAVFile, lpszSrcFile2))
+	{
+		printf("AVPacket_FileConvert_Input:%lX\n", AVPacket_GetLastError());
+		return -1;
+	}
+	if (!AVPacket_FileLink_Input(xhAVFile, lpszSrcFile3))
+	{
+		printf("AVPacket_FileConvert_Input:%lX\n", AVPacket_GetLastError());
+		return -1;
+	}
+
+	
 	if (!AVPacket_FileLink_Start(xhAVFile))
 	{
 		printf("AVPacket_FileConvert_Start:%lX\n", AVPacket_GetLastError());
@@ -96,17 +102,19 @@ int AVPacket_Test_FileConvert()
 		printf("AVPacket_FileConvert_Init:%lX\n", AVPacket_GetLastError());
 		return -1;
 	}
+	if (!AVPacket_FileConvert_Output(xhAVFile, lpszDstFile))
+	{
+		printf("AVPacket_FileConvert_Output:%lX\n", AVPacket_GetLastError());
+		return -1;
+	}
+
 	if (!AVPacket_FileConvert_Input(xhAVFile, lpszSrcFile, &nTotalAVTime))
 	{
 		printf("AVPacket_FileConvert_Input:%lX\n", AVPacket_GetLastError());
 		return -1;
 	}
 	printf("AVTime:%lf\n", nTotalAVTime);
-	if (!AVPacket_FileConvert_Output(xhAVFile, lpszDstFile))
-	{
-		printf("AVPacket_FileConvert_Output:%lX\n", AVPacket_GetLastError());
-		return -1;
-	}
+	
 	if (!AVPacket_FileConvert_Start(xhAVFile))
 	{
 		printf("AVPacket_FileConvert_Start:%lX\n", AVPacket_GetLastError());
@@ -147,6 +155,12 @@ int AVPacket_Test_FilePacket()
 		printf("AVPacket_FileUNPack_Init:%lX\n", AVPacket_GetLastError());
 		return -1;
 	}
+
+	if (!AVPacket_FilePacket_Output(xhAVFile, lpszDstFile))
+	{
+		printf("AVPacket_FileUNPack_Output:%lX\n", AVPacket_GetLastError());
+		return -1;
+	}
 	if (!AVPacket_FilePacket_Input(xhAVFile, lpszVideoFile))
 	{
 		printf("AVPacket_FileUNPack_Input:%lX\n", AVPacket_GetLastError());
@@ -163,11 +177,7 @@ int AVPacket_Test_FilePacket()
 		return -1;
 	}
 
-	if (!AVPacket_FilePacket_Output(xhAVFile, lpszDstFile))
-	{
-		printf("AVPacket_FileUNPack_Output:%lX\n", AVPacket_GetLastError());
-		return -1;
-	}
+	
 	if (!AVPacket_FilePacket_Start(xhAVFile))
 	{
 		printf("AVPacket_FileUNPack_Start:%lX\n", AVPacket_GetLastError());
@@ -259,8 +269,8 @@ int main()
 {
 	//AVPacket_Test_FileLink();
 	//AVPacket_Test_FileConvert();
-	//AVPacket_Test_FilePacket();
-	AVPacket_Test_UNPacket();
+	AVPacket_Test_FilePacket();
+	//AVPacket_Test_UNPacket();
 
 	return 1;
 }

@@ -35,7 +35,7 @@ int main()
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	memset(&st_SNMPProtocol, '\0', sizeof(RFCSNMP_PROTOCOL));
 
-	st_SNMPProtocol.byVersion = XENGINE_RFCCOMPONENTS_SNMP_PROTOCOL_V1;
+	st_SNMPProtocol.byVersion = XENGINE_RFCCOMPONENTS_SNMP_PROTOCOL_V3;
 	st_SNMPProtocol.byOPCode = XENGINE_SNMP_PROTOCOL_BER_TYPE_GETNEXT;
 	strcpy(st_SNMPProtocol.tszCommname, "public");
 
