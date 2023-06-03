@@ -54,7 +54,7 @@ void Audio_ListCodec()
 void Audio_Encode()
 {
 	XNETHANDLE xhCoder;
-	if (!AudioCodec_Stream_EnInit(&xhCoder, ENUM_AVCODEC_AUDIO_TYPE_AAC, 44100, 2, 64000, 0, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP))
+	if (!AudioCodec_Stream_EnInit(&xhCoder, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC, 44100, 2, 64000, 0, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP))
 	{
 		printf("AudioCodec_Stream_EnInit\n");
 		return;
@@ -127,7 +127,7 @@ void Audio_DeCodec()
 	st_AudioInfo.nChannle = 2;
 	st_AudioInfo.enSampleFmt = ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP;
 
-	if (!AudioCodec_Stream_DeInit(&xhCoder, ENUM_AVCODEC_AUDIO_TYPE_AAC, AudioCodec_Stream_Callback, pSt_FileDeCodec, &st_AudioInfo))
+	if (!AudioCodec_Stream_DeInit(&xhCoder, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC, AudioCodec_Stream_Callback, pSt_FileDeCodec, &st_AudioInfo))
 	{
 		printf("AudioCodec_Stream_DeInit\n");
 		return;

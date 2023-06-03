@@ -113,6 +113,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVCodec_APPRecordMaster", "
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVCodec_APPVideo", "XEngine_AVCodec\AVCodec_APPVideo\AVCodec_APPVideo.vcxproj", "{590C48E1-4C73-40E4-B584-6765C51E62A2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StreamMedia_APPFlv", "XEngine_StreamMedia\StreamMedia_APPFlv\StreamMedia_APPFlv.vcxproj", "{39797600-EB4F-48A9-B5BA-2B47B16A63D6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StreamMedia_APPRtmp", "XEngine_StreamMedia\StreamMedia_APPRtmp\StreamMedia_APPRtmp.vcxproj", "{22C64D10-6A6F-44B0-851E-0CBD3017ADCE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决方案项", "{B8D1DB00-9F01-41E6-BF3C-9C3E4BB17BA1}"
+	ProjectSection(SolutionItems) = preProject
+		XEngine_ExampleHdr.h = XEngine_ExampleHdr.h
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -489,6 +498,22 @@ Global
 		{590C48E1-4C73-40E4-B584-6765C51E62A2}.Release|x64.Build.0 = Release|x64
 		{590C48E1-4C73-40E4-B584-6765C51E62A2}.Release|x86.ActiveCfg = Release|Win32
 		{590C48E1-4C73-40E4-B584-6765C51E62A2}.Release|x86.Build.0 = Release|Win32
+		{39797600-EB4F-48A9-B5BA-2B47B16A63D6}.Debug|x64.ActiveCfg = Debug|x64
+		{39797600-EB4F-48A9-B5BA-2B47B16A63D6}.Debug|x64.Build.0 = Debug|x64
+		{39797600-EB4F-48A9-B5BA-2B47B16A63D6}.Debug|x86.ActiveCfg = Debug|Win32
+		{39797600-EB4F-48A9-B5BA-2B47B16A63D6}.Debug|x86.Build.0 = Debug|Win32
+		{39797600-EB4F-48A9-B5BA-2B47B16A63D6}.Release|x64.ActiveCfg = Release|x64
+		{39797600-EB4F-48A9-B5BA-2B47B16A63D6}.Release|x64.Build.0 = Release|x64
+		{39797600-EB4F-48A9-B5BA-2B47B16A63D6}.Release|x86.ActiveCfg = Release|Win32
+		{39797600-EB4F-48A9-B5BA-2B47B16A63D6}.Release|x86.Build.0 = Release|Win32
+		{22C64D10-6A6F-44B0-851E-0CBD3017ADCE}.Debug|x64.ActiveCfg = Debug|x64
+		{22C64D10-6A6F-44B0-851E-0CBD3017ADCE}.Debug|x64.Build.0 = Debug|x64
+		{22C64D10-6A6F-44B0-851E-0CBD3017ADCE}.Debug|x86.ActiveCfg = Debug|Win32
+		{22C64D10-6A6F-44B0-851E-0CBD3017ADCE}.Debug|x86.Build.0 = Debug|Win32
+		{22C64D10-6A6F-44B0-851E-0CBD3017ADCE}.Release|x64.ActiveCfg = Release|x64
+		{22C64D10-6A6F-44B0-851E-0CBD3017ADCE}.Release|x64.Build.0 = Release|x64
+		{22C64D10-6A6F-44B0-851E-0CBD3017ADCE}.Release|x86.ActiveCfg = Release|Win32
+		{22C64D10-6A6F-44B0-851E-0CBD3017ADCE}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -540,6 +565,8 @@ Global
 		{83CC39D4-25F3-48AC-B6CD-7A1228316692} = {99B8C535-9BF4-44F2-96FB-04DE9C68D1D7}
 		{DF138BF9-A930-45C6-82F1-5A2B7AF2DA2B} = {99B8C535-9BF4-44F2-96FB-04DE9C68D1D7}
 		{590C48E1-4C73-40E4-B584-6765C51E62A2} = {99B8C535-9BF4-44F2-96FB-04DE9C68D1D7}
+		{39797600-EB4F-48A9-B5BA-2B47B16A63D6} = {54FEE2BB-EBE2-4F7B-9A24-BF6D3CD2FD79}
+		{22C64D10-6A6F-44B0-851E-0CBD3017ADCE} = {54FEE2BB-EBE2-4F7B-9A24-BF6D3CD2FD79}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7DA25D94-055D-4CEF-BDCD-F7BD3315697C}

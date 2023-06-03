@@ -29,13 +29,13 @@ void Test_MetaInfo()
 	AVHELP_METAINFO** ppSt_MetaList;
 
 #ifdef _MSC_BUILD
-	LPCXSTR lpszSrcFile = "D:\\audio\\1.mp3";
+	LPCXSTR lpszFile = _X("D:\\h264 file\\480p.flv");
 #else
-	LPCXSTR lpszSrcFile = "1.mp3";
+	LPCXSTR lpszFile = _X("480p.flv");
 #endif
 
 	memset(&st_AVMetaData, '\0', sizeof(AVHELP_METADATA));
-	if (!AVHelp_MetaInfo_Get(lpszSrcFile, &st_AVMetaData, &ppSt_MetaList, &nListCount))
+	if (!AVHelp_MetaInfo_Get(lpszFile, &st_AVMetaData, &ppSt_MetaList, &nListCount))
 	{
 		return;
 	}
@@ -65,7 +65,7 @@ void Test_Parse()
 	FILE* pSt_File = fopen("480p.264", "rb");
 #endif
 
-	AVHelp_Parse_FrameInit(&xhToken, ENUM_ENTENGINE_AVCODEC_VEDIO_TYPE_H264);
+	AVHelp_Parse_FrameInit(&xhToken, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
 
 	while (true)
 	{

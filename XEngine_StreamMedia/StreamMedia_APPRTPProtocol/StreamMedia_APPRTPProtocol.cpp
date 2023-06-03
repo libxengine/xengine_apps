@@ -34,7 +34,7 @@ void TestPacket_RTP264()
 		printf("errrno");
 		return;
 	}
-	AVHelp_Parse_FrameInit(&xhFrame, ENUM_ENTENGINE_AVCODEC_VEDIO_TYPE_H264);
+	AVHelp_Parse_FrameInit(&xhFrame, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
 	RTPProtocol_Packet_SetInfo(xhSsrc);
 
 #ifdef _MSC_BUILD
@@ -145,7 +145,7 @@ void TestPacket_RTP265()
 		printf("errrno");
 		return;
 	}
-	AVHelp_Parse_FrameInit(&xhFrame, ENUM_ENTENGINE_AVCODEC_VEDIO_TYPE_H265);
+	AVHelp_Parse_FrameInit(&xhFrame, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H265);
 	RTPProtocol_Packet_SetInfo(xhSsrc);
 
 #ifdef _MSC_BUILD
@@ -256,7 +256,7 @@ void TestPacket_RTPAAC()
 		printf("errrno");
 		return;
 	}
-	AVHelp_Parse_FrameInit(&xhFrame, ENUM_AVCODEC_AUDIO_TYPE_AAC);
+	AVHelp_Parse_FrameInit(&xhFrame, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC);
 	RTPProtocol_Packet_SetInfo(xhSsrc, 1024, 44100);
 
 #ifdef _MSC_BUILD

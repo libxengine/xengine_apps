@@ -72,12 +72,12 @@ int Test_CodecFilter()
 	pSt_YUVFile = fopen("ds.yuv", "wb");
 #endif
 
-	if (!VideoCodec_Stream_EnInit(&xhEnVideo, 720, 480, ENUM_ENTENGINE_AVCODEC_VEDIO_TYPE_H264, 400000))
+	if (!VideoCodec_Stream_EnInit(&xhEnVideo, 720, 480, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264, 400000))
 	{
 		printf("VideoCodec_Stream_EnInit\n");
 		return -1;
 	}
-	if (!VideoCodec_Stream_DeInit(&xhDeVideo, ENUM_ENTENGINE_AVCODEC_VEDIO_TYPE_H264, VideoCodec_Stream_Callback))
+	if (!VideoCodec_Stream_DeInit(&xhDeVideo, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264, VideoCodec_Stream_Callback))
 	{
 		printf("VideoCodec_Stream_DeInit\n");
 		return -1;

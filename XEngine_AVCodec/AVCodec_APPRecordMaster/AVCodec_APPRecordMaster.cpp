@@ -145,7 +145,7 @@ int main()
 		}
 		AVCollect_Audio_GetInfo(xhSound, &st_AVInfo);
 		//文件保存需要的属性
-		if (!AudioCodec_Stream_EnInit(&xhAudio, ENUM_AVCODEC_AUDIO_TYPE_AAC, st_AVInfo.st_AudioInfo.nSampleRate, st_AVInfo.st_AudioInfo.nChannel, st_AVInfo.st_AudioInfo.nBitRate, 0, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP))
+		if (!AudioCodec_Stream_EnInit(&xhAudio, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC, st_AVInfo.st_AudioInfo.nSampleRate, st_AVInfo.st_AudioInfo.nChannel, st_AVInfo.st_AudioInfo.nBitRate, 0, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP))
 		{
 			printf(_X("初始化编码器失败"));
 			return -1;
@@ -181,7 +181,7 @@ int main()
 	}
 	AVCollect_Video_GetInfo(xhScreen, &st_AVInfo);
 	//视频编码
-	if (!VideoCodec_Stream_EnInit(&xhVideo, st_AVInfo.st_VideoInfo.nWidth, st_AVInfo.st_VideoInfo.nHeight, ENUM_ENTENGINE_AVCODEC_VEDIO_TYPE_H264, st_AVInfo.st_VideoInfo.nBitRate))
+	if (!VideoCodec_Stream_EnInit(&xhVideo, st_AVInfo.st_VideoInfo.nWidth, st_AVInfo.st_VideoInfo.nHeight, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264, st_AVInfo.st_VideoInfo.nBitRate))
 	{
 		printf(_X("初始化失败"));
 		return -1;

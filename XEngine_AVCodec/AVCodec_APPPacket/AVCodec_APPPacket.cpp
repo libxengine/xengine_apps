@@ -141,7 +141,7 @@ int AVPacket_Test_FilePacket()
 	LPCXSTR lpszVideoFile = "D:\\h264 file\\480p.264";
 	LPCXSTR lpszAudioFile1 = "D:\\h264 file\\1.aac";
 	LPCXSTR lpszAudioFile2 = "D:\\h264 file\\test.aac";
-	LPCXSTR lpszDstFile = "D:\\h264 file\\480p.mp4";
+	LPCXSTR lpszDstFile = "D:\\h264 file\\480p.flv";
 #else
 	LPCXSTR lpszVideoFile = "480p.264";
 	LPCXSTR lpszAudioFile1 = "1.aac";
@@ -171,12 +171,13 @@ int AVPacket_Test_FilePacket()
 		printf("AVPacket_FileUNPack_Input:%lX\n", AVPacket_GetLastError());
 		return -1;
 	}
+	/*
 	if (!AVPacket_FilePacket_Input(xhAVFile, lpszAudioFile2))
 	{
 		printf("AVPacket_FileUNPack_Input:%lX\n", AVPacket_GetLastError());
 		return -1;
 	}
-
+	*/
 	
 	if (!AVPacket_FilePacket_Start(xhAVFile))
 	{

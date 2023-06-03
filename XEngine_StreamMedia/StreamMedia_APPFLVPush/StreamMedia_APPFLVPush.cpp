@@ -191,7 +191,7 @@ int Test_LivePush()
 	st_MediaStream.st_VideoInfo.nFrameRate = 24;
 	st_MediaStream.st_VideoInfo.nWidth = 720;
 	st_MediaStream.st_VideoInfo.nHeight = 480;
-	st_MediaStream.st_VideoInfo.enAVCodec = ENUM_ENTENGINE_AVCODEC_VEDIO_TYPE_H264;
+	st_MediaStream.st_VideoInfo.enAVCodec = ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264;
 	if (st_MediaStream.st_VideoInfo.bEnable)
 	{
 		pSt_VFile = fopen(lpszVFile, "rb");
@@ -213,7 +213,7 @@ int Test_LivePush()
 	st_MediaStream.st_AudioInfo.nSampleRate = 44100;
 	st_MediaStream.st_AudioInfo.nFrameSize = 1024; //aac frame size
 	st_MediaStream.st_AudioInfo.nSampleFmt = ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP;
-	st_MediaStream.st_AudioInfo.enAVCodec = ENUM_AVCODEC_AUDIO_TYPE_AAC;
+	st_MediaStream.st_AudioInfo.enAVCodec = ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC;
 	if (st_MediaStream.st_AudioInfo.bEnable)
 	{
 		pSt_AFile = fopen(lpszAFile, "rb");
@@ -230,8 +230,8 @@ int Test_LivePush()
 
 	XNETHANDLE xhAParse = 0;
 	XNETHANDLE xhVParse = 0;
-	AVHelp_Parse_FrameInit(&xhAParse, ENUM_AVCODEC_AUDIO_TYPE_AAC);
-	AVHelp_Parse_FrameInit(&xhVParse, ENUM_ENTENGINE_AVCODEC_VEDIO_TYPE_H264);
+	AVHelp_Parse_FrameInit(&xhAParse, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC);
+	AVHelp_Parse_FrameInit(&xhVParse, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
 
 	xhStream = StreamClient_CodecPush_Init(lpszUrl, &st_MediaStream);
 	StreamClient_CodecPush_WriteHdr(xhStream);
