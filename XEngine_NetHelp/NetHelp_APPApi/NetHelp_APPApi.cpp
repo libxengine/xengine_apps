@@ -32,6 +32,12 @@ int main()
 {
 	Test_Domain();
 
+	double nValue64 = 1920;
+	XCHAR tszMsgBuffer[MAX_PATH];
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+
+	APIHelp_NetWork_ToHexW64((XBYTE*)tszMsgBuffer, *(__int64u*)&nValue64, true);
+
 	return 0;
 }
 

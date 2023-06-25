@@ -245,7 +245,7 @@ int Test_LivePush()
 			AVHelp_Parse_FrameGet(xhVParse, tszVBuffer, nVLen, &ppSt_Frame, &nListCount);
 			for (int i = 0; i < nListCount; i++)
 			{
-				StreamClient_CodecPush_PushVideo(xhStream, ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen);
+				StreamClient_CodecPush_PushVideo(xhStream, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen);
 			}
 			memset(tszVBuffer, '\0', sizeof(tszVBuffer));
 			nVLen = fread(tszVBuffer, 1, sizeof(tszVBuffer), pSt_VFile);
@@ -263,7 +263,7 @@ int Test_LivePush()
 			for (int i = 0; i < nListCount; i++)
 			{
 				//不需要AAC头
-				StreamClient_CodecPush_PushAudio(xhStream, ppSt_Frame[i]->ptszMsgBuffer + 7, ppSt_Frame[i]->nMsgLen - 7);
+				StreamClient_CodecPush_PushAudio(xhStream, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer + 7, ppSt_Frame[i]->nMsgLen - 7);
 			}
 			memset(tszABuffer, '\0', sizeof(tszABuffer));
 			nALen = fread(tszABuffer, 1, sizeof(tszABuffer), pSt_AFile);

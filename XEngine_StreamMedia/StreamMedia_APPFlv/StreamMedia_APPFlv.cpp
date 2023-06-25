@@ -50,7 +50,7 @@ using namespace std;
 bool FLV_Parse()
 {
 #ifdef _MSC_BUILD
-	LPCXSTR lpszFile = _X("D:\\h264 file\\480p.flv");
+	LPCXSTR lpszFile = _X("D:\\h264 file\\1.flv");
 #else
 	LPCXSTR lpszFile = _X("480p.flv");
 #endif
@@ -192,7 +192,7 @@ bool FLV_PacketVideo()
 		for (int i = 0; i < nListCount; i++)
 		{
 			XCHAR tszMsgBuffer[102400];
-			FLVProtocol_Packet_FrameVideo(xhToken, tszMsgBuffer, &nWBLen, nTimeStamp, ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen);
+			FLVProtocol_Packet_FrameVideo(xhToken, tszMsgBuffer, &nWBLen, nTimeStamp, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen);
 			fwrite(tszMsgBuffer, 1, nWBLen, pSt_FLVFile);
 			nTimeStamp += 42; //每秒24帧
 		}
@@ -288,7 +288,7 @@ bool FLV_PacketAudio()
 		for (int i = 0; i < nListCount; i++)
 		{
 			XCHAR tszMsgBuffer[102400];
-			FLVProtocol_Packet_FrameAudio(xhToken, tszMsgBuffer, &nWBLen, nTimeStamp, ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen);
+			FLVProtocol_Packet_FrameAudio(xhToken, tszMsgBuffer, &nWBLen, nTimeStamp, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen);
 			fwrite(tszMsgBuffer, 1, nWBLen, pSt_FLVFile);
 			nTimeStamp += 93;
 		}

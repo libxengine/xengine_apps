@@ -54,28 +54,26 @@ void CALLBACK XEngine_AVCollect_CBScreen(uint8_t* punStringY, int nYLen, uint8_t
 {
 	int nFLen = 1024 * 1024 * 10;
 	int nELen = 1024 * 1024 * 10;
-	XCHAR* ptszFilterBuffer = (XCHAR*)malloc(nFLen);
-	XCHAR* ptszEncodeBuffer = (XCHAR*)malloc(nELen);
-	if ((NULL == ptszFilterBuffer) || (NULL == ptszEncodeBuffer))
+	XBYTE* ptszFilterBuffer = (XBYTE*)malloc(nFLen);
+	if (NULL == ptszFilterBuffer)
 	{
 		return;
 	}
 	memset(ptszFilterBuffer, '\0', nFLen);
-	memset(ptszEncodeBuffer, '\0', nELen);
 
 	if (VideoCodec_Help_FilterCvt(xhFilter, punStringY, punStringU, punStringV, nYLen, nULen, nVLen, (uint8_t*)ptszFilterBuffer, &nFLen))
 	{
-		VideoCodec_Stream_EnCodec(xhVideo, (uint8_t*)ptszFilterBuffer, NULL, NULL, nFLen, 0, 0, (uint8_t*)ptszEncodeBuffer, &nELen);
-		if (nELen > 0)
+		int nListCount = 0;
+		AVCODEC_VIDEO_MSGBUFFER** ppSt_MSGBuffer;
+		VideoCodec_Stream_EnCodec(xhVideo, ptszFilterBuffer, NULL, NULL, nFLen, 0, 0, &ppSt_MSGBuffer, &nListCount);
+		for (int i = 0; i < nListCount; i++)
 		{
-			fwrite(ptszEncodeBuffer, 1, nELen, pSt_VideoFile);
+			fwrite(ppSt_MSGBuffer[i]->ptszYBuffer, 1, ppSt_MSGBuffer[i]->nYLen, pSt_VideoFile);
 		}
+		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
 	}
 	free(ptszFilterBuffer);
-	free(ptszEncodeBuffer);
-
 	ptszFilterBuffer = NULL;
-	ptszEncodeBuffer = NULL;
 }
 void CALLBACK XEngine_AVCollect_CBAudio(uint8_t* punStringAudio, int nVLen, XPVOID lParam)
 {
@@ -88,7 +86,8 @@ void CALLBACK XEngine_AVCollect_CBAudio(uint8_t* punStringAudio, int nVLen, XPVO
 		AVHelp_Packet_AACHdr(byAACHdr, st_AVInfo.st_AudioInfo.nSampleRate, st_AVInfo.st_AudioInfo.nChannel, ppSt_ListMsgBuffer[i]->nMsgLen);
 
 		fwrite(byAACHdr, 1, 7, pSt_AudioFile);
-		fwrite(ppSt_ListMsgBuffer[i]->pbyMsgBuffer, 1, ppSt_ListMsgBuffer[i]->nMsgLen, pSt_AudioFile);
+		fwrite(ppSt_ListMsgBuffer[i]->ptszMsgBuffer, 1, ppSt_ListMsgBuffer[i]->nMsgLen, pSt_AudioFile);
+		BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_ListMsgBuffer[i]->ptszMsgBuffer);
 	}
 	BaseLib_OperatorMemory_Free((void***)&ppSt_ListMsgBuffer, nListCount);
 }
@@ -145,7 +144,10 @@ int main()
 		}
 		AVCollect_Audio_GetInfo(xhSound, &st_AVInfo);
 		//文件保存需要的属性
-		if (!AudioCodec_Stream_EnInit(&xhAudio, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC, st_AVInfo.st_AudioInfo.nSampleRate, st_AVInfo.st_AudioInfo.nChannel, st_AVInfo.st_AudioInfo.nBitRate, 0, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP))
+		st_AVInfo.st_AudioInfo.enAVCodec = ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC;
+		st_AVInfo.st_AudioInfo.nSampleFmt = ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP;
+
+		if (!AudioCodec_Stream_EnInit(&xhAudio, &st_AVInfo.st_AudioInfo))
 		{
 			printf(_X("初始化编码器失败"));
 			return -1;
@@ -181,7 +183,8 @@ int main()
 	}
 	AVCollect_Video_GetInfo(xhScreen, &st_AVInfo);
 	//视频编码
-	if (!VideoCodec_Stream_EnInit(&xhVideo, st_AVInfo.st_VideoInfo.nWidth, st_AVInfo.st_VideoInfo.nHeight, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264, st_AVInfo.st_VideoInfo.nBitRate))
+	st_AVInfo.st_VideoInfo.enAVCodec = ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264;
+	if (!VideoCodec_Stream_EnInit(&xhVideo, &st_AVInfo.st_VideoInfo))
 	{
 		printf(_X("初始化失败"));
 		return -1;

@@ -3,6 +3,7 @@
 #include <tchar.h>
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_VideoCodec.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,15 +17,16 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVCollect/AVCollect_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
 
 //Linux::g++ -std=c++17 -Wall -g AVCodec_APPVideo.cpp -o AVCodec_APPVideo.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_VideoCodec -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec,--disable-new-dtags
 //MacOS::g++ -std=c++17 -Wall -g AVCodec_APPVideo.cpp -o AVCodec_APPVideo.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_VideoCodec
 
-int i = 0;
-bool bKeyFrame = true;
 XNETHANDLE xhDeVideo;
 XNETHANDLE xhEnVideo;
 XNETHANDLE xhFilterVideo;
+XNETHANDLE xhParse;
 FILE* pSt_YUVFile;
 FILE* pSt_264File;
 
@@ -34,30 +36,26 @@ void CALLBACK VideoCodec_Stream_Callback(XNETHANDLE xhVideo, uint8_t* pszYBuffer
 	//fwrite(pszYBuffer, 1, nYLen, pSt_YUVFile);
 	//fwrite(pszUBuffer, 1, nULen, pSt_YUVFile);
 	//fwrite(pszVBuffer, 1, nVLen, pSt_YUVFile);
-	
-	int nLen = 720 * 108 * 3;
 	int nFilterLen = 1920 * 1080 * 3;
-	uint8_t* ptszEnBuffer = (uint8_t*)malloc(nLen);
 	uint8_t* ptszFilterBuffer = (uint8_t*)malloc(nFilterLen);
 
-	memset(ptszEnBuffer, '\0', nLen);
 	memset(ptszFilterBuffer, '\0', nFilterLen);
-
-	nLen = 0;
 
 	if (VideoCodec_Help_FilterCvt(xhFilterVideo, pszYBuffer, pszUBuffer, pszVBuffer, nYLen, nULen, nVLen, ptszFilterBuffer, &nFilterLen))
 	{
 		int nRet = fwrite(ptszFilterBuffer, 1, nFilterLen, pSt_YUVFile);
-		printf("%d:%d == %d\n", i++, nFilterLen, nRet);
+		printf("%d == %d\n", nFilterLen, nRet);
 
-		VideoCodec_Stream_EnCodec(xhEnVideo, ptszFilterBuffer, NULL, NULL, nFilterLen, 0, 0, ptszEnBuffer, &nLen, bKeyFrame);
-		if (nLen > 0)
+		int nListCount = 0;
+		AVCODEC_VIDEO_MSGBUFFER** ppSt_MSGBuffer;
+		VideoCodec_Stream_EnCodec(xhEnVideo, ptszFilterBuffer, NULL, NULL, nFilterLen, 0, 0, &ppSt_MSGBuffer, &nListCount);
+		for (int i = 0; i < nListCount; i++)
 		{
-			fwrite(ptszEnBuffer, 1, nLen, pSt_264File);
+			fwrite(ppSt_MSGBuffer[i]->ptszYBuffer, 1, ppSt_MSGBuffer[i]->nYLen, pSt_264File);
+			BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_MSGBuffer[i]->ptszYBuffer);
 		}
-		bKeyFrame = false;
+		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
 	}
-	free(ptszEnBuffer);
 	free(ptszFilterBuffer);
 }
 int Test_CodecFilter()
@@ -71,8 +69,17 @@ int Test_CodecFilter()
 	pSt_264File = fopen("en.h264", "wb");
 	pSt_YUVFile = fopen("ds.yuv", "wb");
 #endif
+	AVCODEC_VIDEO_INFO st_VideoInfo;
+	memset(&st_VideoInfo, '\0', sizeof(AVCODEC_VIDEO_INFO));
 
-	if (!VideoCodec_Stream_EnInit(&xhEnVideo, 720, 480, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264, 400000))
+	st_VideoInfo.nWidth = 720;
+	st_VideoInfo.nHeight = 480;
+	st_VideoInfo.nBitRate = 400000;
+	st_VideoInfo.nFrameRate = 24;
+	st_VideoInfo.enAVCodec = ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264;
+	
+	AVHelp_Parse_FrameInit(&xhParse, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
+	if (!VideoCodec_Stream_EnInit(&xhEnVideo, &st_VideoInfo))
 	{
 		printf("VideoCodec_Stream_EnInit\n");
 		return -1;
@@ -93,14 +100,24 @@ int Test_CodecFilter()
 		{
 			break;
 		}
-		if (!VideoCodec_Stream_DeCodec(xhDeVideo, (uint8_t*)tszBuffer, nRet))
+
+		int nListCount = 0;
+		AVHELP_FRAMEDATA** ppSt_Frame;
+		AVHelp_Parse_FrameGet(xhParse, tszBuffer, nRet, &ppSt_Frame, &nListCount);
+		for (int i = 0; i < nListCount; i++)
 		{
-			printf("VideoCodec_Stream_DeCodec\n");
+			if (!VideoCodec_Stream_DeCodec(xhDeVideo, ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen))
+			{
+				printf("VideoCodec_Stream_DeCodec\n");
+			}
+			BaseLib_OperatorMemory_FreeCStyle((XPPMEM)ppSt_Frame[i]->ptszMsgBuffer);
 		}
+		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_Frame, nListCount);
 	}
 	VideoCodec_Stream_DeCodec(xhDeVideo, NULL, 0);
 	VideoCodec_Stream_Destroy(xhDeVideo);
 	VideoCodec_Stream_Destroy(xhEnVideo);
+	AVHelp_Parse_FrameClose(xhParse);
 	return 0;
 }
 int main()

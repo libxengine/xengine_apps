@@ -65,7 +65,7 @@ void TestPacket_RTP264()
 		AVHelp_Parse_FrameGet(xhFrame, tszMsgBuffer, nRet, &ppSt_Frame, &nFrameCount);
 		for (int i = 0; i < nFrameCount; i++)
 		{
-			RTPProtocol_Packet_Packet(xhSsrc, ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen, &ppSt_RTPPacket, &nPacketCount);
+			RTPProtocol_Packet_Packet(xhSsrc, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen, &ppSt_RTPPacket, &nPacketCount);
 			for (int j = 0; j < nPacketCount; j++)
 			{
 				printf("%d=%d\n", j, ppSt_RTPPacket[j]->nMsgLen);
@@ -176,7 +176,7 @@ void TestPacket_RTP265()
 		AVHelp_Parse_FrameGet(xhFrame, tszMsgBuffer, nRet, &ppSt_Frame, &nFrameCount);
 		for (int i = 0; i < nFrameCount; i++)
 		{
-			RTPProtocol_Packet_Packet(xhSsrc, ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen, &ppSt_RTPPacket, &nPacketCount);
+			RTPProtocol_Packet_Packet(xhSsrc, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen, &ppSt_RTPPacket, &nPacketCount);
 			for (int j = 0; j < nPacketCount; j++)
 			{
 				printf("%d=%d\n", j, ppSt_RTPPacket[j]->nMsgLen);
@@ -287,7 +287,7 @@ void TestPacket_RTPAAC()
 		AVHelp_Parse_FrameGet(xhFrame, tszMsgBuffer, nRet, &ppSt_Frame, &nFrameCount);
 		for (int i = 0; i < nFrameCount; i++)
 		{
-			RTPProtocol_Packet_Packet(xhSsrc, ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen, &ppSt_RTPPacket, &nPacketCount);
+			RTPProtocol_Packet_Packet(xhSsrc, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen, &ppSt_RTPPacket, &nPacketCount);
 			for (int j = 0; j < nPacketCount; j++)
 			{
 				printf("%d=%d\n", j, ppSt_RTPPacket[j]->nMsgLen);

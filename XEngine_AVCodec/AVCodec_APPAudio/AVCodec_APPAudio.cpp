@@ -54,7 +54,16 @@ void Audio_ListCodec()
 void Audio_Encode()
 {
 	XNETHANDLE xhCoder;
-	if (!AudioCodec_Stream_EnInit(&xhCoder, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC, 44100, 2, 64000, 0, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP))
+	AVCODEC_AUDIO_INFO st_AudioInfo;
+	
+	memset(&st_AudioInfo, '\0', sizeof(AVCODEC_AUDIO_INFO));
+
+	st_AudioInfo.nChannel = 2;
+	st_AudioInfo.nSampleRate = 44100;
+	st_AudioInfo.nBitRate = 64000;
+	st_AudioInfo.nSampleFmt = ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP;
+	st_AudioInfo.enAVCodec = ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC;
+	if (!AudioCodec_Stream_EnInit(&xhCoder, &st_AudioInfo))
 	{
 		printf("AudioCodec_Stream_EnInit\n");
 		return;
@@ -96,7 +105,8 @@ void Audio_Encode()
 				AVHelp_Packet_AACHdr(byAACHdr, 44100, 2, ppSt_ListAudio[i]->nMsgLen);
 
 				fwrite(byAACHdr, 1, 7, pSt_FileAac);
-				fwrite(ppSt_ListAudio[i]->pbyMsgBuffer, 1, ppSt_ListAudio[i]->nMsgLen, pSt_FileAac);
+				fwrite(ppSt_ListAudio[i]->ptszMsgBuffer, 1, ppSt_ListAudio[i]->nMsgLen, pSt_FileAac);
+				BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_ListAudio[i]->ptszMsgBuffer);
 			}
 		}
 		AudioCodec_Stream_Free(&ppSt_ListAudio, nListCount);
@@ -119,13 +129,14 @@ void Audio_DeCodec()
 #endif
 
 	int nLen = 2048;
+	XNETHANDLE xhParse = 0;
 	AVCODEC_AUDIO_INFO st_AudioInfo;
 	memset(&st_AudioInfo, '\0', sizeof(AVCODEC_AUDIO_INFO));
 
 	st_AudioInfo.nSampleRate = 44100;
-	st_AudioInfo.nNBSample = 1124;
-	st_AudioInfo.nChannle = 2;
-	st_AudioInfo.enSampleFmt = ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP;
+	st_AudioInfo.nFrameSize = 1124;
+	st_AudioInfo.nChannel = 2;
+	st_AudioInfo.nSampleFmt = ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP;
 
 	if (!AudioCodec_Stream_DeInit(&xhCoder, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC, AudioCodec_Stream_Callback, pSt_FileDeCodec, &st_AudioInfo))
 	{
@@ -137,6 +148,7 @@ void Audio_DeCodec()
 		printf("AudioCodec_Stream_ResamplerInit\n");
 		return;
 	}
+	AVHelp_Parse_FrameInit(&xhParse, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC);
 
 	while (1)
 	{
@@ -148,11 +160,21 @@ void Audio_DeCodec()
 		{
 			break;
 		}
-		AudioCodec_Stream_DeCodec(xhCoder, (uint8_t*)tszEnBuffer, nRet);
+		int nListCount = 0;
+		AVHELP_FRAMEDATA** ppSt_Frame;
+		AVHelp_Parse_FrameGet(xhParse, tszEnBuffer, nRet, &ppSt_Frame, &nListCount);
+		for (int i = 0; i < nListCount; i++)
+		{
+			AudioCodec_Stream_DeCodec(xhCoder, (uint8_t*)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen);
+			BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->ptszMsgBuffer);
+		}
+		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_Frame, nListCount);
+		
 	}
 	fclose(pSt_FileEnCode);
 	fclose(pSt_FileDeCodec);
 	AudioCodec_Stream_Destroy(xhCoder);
+	AVHelp_Parse_FrameClose(xhParse);
 }
 void Audio_Mix()
 {

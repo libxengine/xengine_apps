@@ -82,7 +82,7 @@ void Test_Parse()
 		for (int i = 0; i < nListCount; i++)
 		{
 			XENGINE_AVCODEC_VIDEOFRAMETYPE enVideoFrame;
-			AVHelp_Parse_H264NaluType(ppSt_Frame[i]->ptszMsgBuffer, &enVideoFrame);
+			AVHelp_Parse_H264NaluType((LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, &enVideoFrame);
 		}
 	}
 	AVHelp_Parse_FrameClose(xhToken);

@@ -111,7 +111,18 @@ int Test_HttpCreate()
 	APIClient_Http_Create(&xhToken, NetHelp_HttpGet_Chunked);
 	APIClient_Http_SetUrl(xhToken, "www.xyry.org", "GET");
 
-	APIClient_Http_Excute(xhToken, &ptszMsgBuffer);
+	APIClient_Http_Excute(xhToken);
+
+	while (true)
+	{
+		bool bComplete = false;
+		APIClient_Http_GetResult(xhToken, &bComplete);
+
+		if (bComplete)
+		{
+			break;
+		}
+	}
 	APIClient_Http_Close(xhToken);
 	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 	return 0;
@@ -203,8 +214,8 @@ int main()
 	//upload_http();
 	//download_http();
 
-	Test_Http2Request();
-	Test_HttpRequest();
+	//Test_Http2Request();
+	//Test_HttpRequest();
 	Test_HttpCreate();
 
 	NetHelp_APPClient_EMailPop3();
