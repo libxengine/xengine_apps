@@ -1,17 +1,26 @@
-﻿#ifdef _MSC_BUILD
+﻿#include "../../XEngine_ExampleHdr.h"
+#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVCollect.lib")
 #endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <thread>
 using namespace std;
+#ifdef _XENGINE_USER_DIR_SYSTEM
+#include <XEngine_Include/XEngine_CommHdr.h>
+#include <XEngine_Include/XEngine_ProtocolHdr.h>
+#include <XEngine_Include/XEngine_AVCodec/AVCollect_Define.h>
+#include <XEngine_Include/XEngine_AVCodec/AVCollect_Error.h>
+#pragma comment(lib,"XEngine_AVCodec/XEngine_AVCollect.lib")
+#else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVCollect/AVCollect_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVCollect/AVCollect_Error.h"
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVCollect.lib")
+#endif
 
 //Linux::g++ -std=c++17 -Wall -g AVCodec_APPCollect.cpp -o AVCodec_APPCollect.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_AVCollect -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec,--disable-new-dtags
 //MacOS::g++ -std=c++17 -Wall -g AVCodec_APPCollect.cpp -o AVCodec_APPCollect.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_AVCollect

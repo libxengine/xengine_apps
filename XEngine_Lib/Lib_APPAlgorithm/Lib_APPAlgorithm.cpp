@@ -1,22 +1,28 @@
-﻿#ifdef _MSC_BUILD
+﻿#include "../../XEngine_ExampleHdr.h"
+#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
 #include <time.h>
-#ifdef _WIN64
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_Algorithm.lib")
-#else
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_Algorithm.lib")
-#endif
 #endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <thread>
 using namespace std;
+#ifdef _XENGINE_USER_DIR_SYSTEM
+#include <XEngine_Include/XEngine_CommHdr.h>
+#include <XEngine_Include/XEngine_Types.h>
+#include <XEngine_Include/XEngine_BaseLib/Algorithm_Define.h>
+#include <XEngine_Include/XEngine_BaseLib/Algorithm_Error.h>
+#pragma comment(lib,"XEngine_BaseLib/XEngine_Algorithm.lib")
+#else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_Algorithm/Algorithm_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_Algorithm/Algorithm_Error.h"
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_Algorithm.lib")
+#endif
+
 
 //Linux:g++ -std=gnu++11 -Wall -g Lib_APPAlgorithm.cpp -o Lib_APPAlgorithm.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -lXEngine_Algorithm -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib
 //Macos:g++ -std=gnu++11 -Wall -g Lib_APPAlgorithm.cpp -o Lib_APPAlgorithm.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -lXEngine_Algorithm 

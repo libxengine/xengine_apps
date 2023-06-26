@@ -1,21 +1,27 @@
-﻿#ifdef _MSC_BUILD
+﻿#include "../../XEngine_ExampleHdr.h"
+#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
-#ifdef _WIN64
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_BaseLib.lib")
-#else
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
-#endif
 #endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <thread>
 #include <locale.h>
+#ifdef _XENGINE_USER_DIR_SYSTEM
+#include <XEngine_Include/XEngine_CommHdr.h>
+#include <XEngine_Include/XEngine_Types.h>
+#include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
+#include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
+#pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
+#else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
+#endif
+
 
 //Linux:g++ -std=c++17 -Wall -g Lib_APPBaselib.cpp -o Lib_APPBaselib.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -lXEngine_BaseLib -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -lpthread
 //Macos:g++ -std=c++17 -Wall -g Lib_APPBaselib.cpp -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -lXEngine_BaseLib -lpthread -Wl,-rpath,@loader_path=/../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib/  -o Lib_APPBaselib.exe

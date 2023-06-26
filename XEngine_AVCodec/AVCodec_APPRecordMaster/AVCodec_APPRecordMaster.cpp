@@ -1,18 +1,35 @@
-﻿#ifdef _MSC_BUILD
+﻿#include "../../XEngine_ExampleHdr.h"
+#ifdef _MSC_BUILD
 #include <Windows.h>
 #include <tchar.h>
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVCollect.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_VideoCodec.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AudioCodec.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVPacket.lib")
 #endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <thread>
 using namespace std;
+#ifdef _XENGINE_USER_DIR_SYSTEM
+#include <XEngine_Include/XEngine_CommHdr.h>
+#include <XEngine_Include/XEngine_ProtocolHdr.h>
+#include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
+#include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
+#include <XEngine_Include/XEngine_AVCodec/AVCollect_Define.h>
+#include <XEngine_Include/XEngine_AVCodec/AVCollect_Error.h>
+#include <XEngine_Include/XEngine_AVCodec/VideoCodec_Define.h>
+#include <XEngine_Include/XEngine_AVCodec/VideoCodec_Error.h>
+#include <XEngine_Include/XEngine_AVCodec/AudioCodec_Define.h>
+#include <XEngine_Include/XEngine_AVCodec/AudioCodec_Error.h>
+#include <XEngine_Include/XEngine_AVCodec/AVHelp_Define.h>
+#include <XEngine_Include/XEngine_AVCodec/AVHelp_Error.h>
+#include <XEngine_Include/XEngine_AVCodec/AVPacket_Define.h>
+#include <XEngine_Include/XEngine_AVCodec/AVPacket_Error.h>
+#pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
+#pragma comment(lib,"XEngine_AVCodec/XEngine_AVCollect.lib")
+#pragma comment(lib,"XEngine_AVCodec/XEngine_VideoCodec.lib")
+#pragma comment(lib,"XEngine_AVCodec/XEngine_AudioCodec.lib")
+#pragma comment(lib,"XEngine_AVCodec/XEngine_AVHelp.lib")
+#pragma comment(lib,"XEngine_AVCodec/XEngine_AVPacket.lib")
+#else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
@@ -27,6 +44,13 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVPacket/AVPacket_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVPacket/AVPacket_Error.h"
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVCollect.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_VideoCodec.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AudioCodec.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVPacket.lib")
+#endif
 
 //Linux::g++ -std=c++17 -Wall -g AVCodec_APPRecordMaster.cpp -o AVCodec_APPRecordMaster.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_AVCollect -lXEngine_VideoCodec -lXEngine_AudioCodec -lXEngine_AVHelp -lXEngine_AVPacket -lpthread -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec,--disable-new-dtags
 //MacOS::g++ -std=c++17 -Wall -g AVCodec_APPRecordMaster.cpp -o AVCodec_APPRecordMaster.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_AVCollect -lXEngine_VideoCodec -lXEngine_AudioCodec -lXEngine_AVHelp -lXEngine_AVPacket -lpthread
