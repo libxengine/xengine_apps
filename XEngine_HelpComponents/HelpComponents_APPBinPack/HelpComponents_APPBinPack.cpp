@@ -12,13 +12,17 @@
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
 #include <XEngine_Include/XEngine_HelpComponents/BINPack_Define.h>
 #include <XEngine_Include/XEngine_HelpComponents/BINPack_Error.h>
+#ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_HelpComponents/HelpComponents_BINPack.lib")
+#endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_BINPack/BINPack_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_BINPack/BINPack_Error.h"
+#ifdef _MSC_BUILD
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/HelpComponents_BINPack.lib")
+#endif
 #endif
 
 //Linux::g++ -std=gnu++17 -Wall -g HelpComponents_APPBinPack.cpp -o HelpComponents_APPBinPack.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents -lXEngine_BaseLib -lHelpComponents_BINPack -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents,--disable-new-dtags

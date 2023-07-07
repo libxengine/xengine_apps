@@ -23,8 +23,10 @@
 #include <XEngine_Include/XEngine_AVCodec/AVHelp_Error.h>
 #include <XEngine_Include/XEngine_StreamMedia/StreamClient_Define.h>
 #include <XEngine_Include/XEngine_StreamMedia/StreamClient_Error.h>
+#ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_StreamMedia/StreamMedia_StreamClient.lib")
 #pragma comment(lib,"XEngine_AVCodec/XEngine_AVHelp.lib")
+#endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
@@ -35,8 +37,10 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_StreamClient/StreamClient_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_StreamClient/StreamClient_Error.h"
+#ifdef _MSC_BUILD
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/StreamMedia_StreamClient.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
+#endif
 #endif
 
 

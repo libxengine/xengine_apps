@@ -13,12 +13,16 @@
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_StreamMedia/RTSPProtocol_Define.h>
 #include <XEngine_Include/XEngine_StreamMedia/RTSPProtocol_Error.h>
+#ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_StreamMedia/StreamMedia_RTSPProtocol.lib")
+#endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_RTSPProtocol/RTSPProtocol_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_RTSPProtocol/RTSPProtocol_Error.h"
+#ifdef _MSC_BUILD
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/StreamMedia_RTSPProtocol.lib")
+#endif
 #endif
 //Linux::g++ -std=c++17 -Wall -g StreamMedia_APPRtsp.cpp -o StreamMedia_APPRtsp.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia -lXEngine_BaseLib -lStreamMedia_RTSPProtocol -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia,--disable-new-dtags
 //Macos::g++ -std=c++17 -Wall -g StreamMedia_APPRtsp.cpp -o StreamMedia_APPRtsp.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_StreamMedia -lXEngine_BaseLib -lStreamMedia_RTSPProtocol

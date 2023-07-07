@@ -13,18 +13,24 @@
 #include <XEngine_Include/XEngine_Types.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
+#ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
+#endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
+#ifdef _MSC_BUILD
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #endif
+#endif
 
+//Linux:g++ -std=c++17 -Wall -g Lib_APPBaselib.cpp -o Lib_APPBaselib.exe -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -lXEngine_BaseLib
+//Macos:g++ -std=c++17 -Wall -g Lib_APPBaselib.cpp -o Lib_APPBaselib.exe -lXEngine_BaseLib
 
-//Linux:g++ -std=c++17 -Wall -g Lib_APPBaselib.cpp -o Lib_APPBaselib.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -lXEngine_BaseLib -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -lpthread
-//Macos:g++ -std=c++17 -Wall -g Lib_APPBaselib.cpp -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -lXEngine_BaseLib -lpthread -Wl,-rpath,@loader_path=/../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib/  -o Lib_APPBaselib.exe
+//Linux:g++ -std=c++17 -Wall -g Lib_APPBaselib.cpp -o Lib_APPBaselib.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -lXEngine_BaseLib -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib
+//Macos:g++ -std=c++17 -Wall -g Lib_APPBaselib.cpp -o Lib_APPBaselib.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -lXEngine_BaseLib -lpthread -Wl,-rpath,@loader_path=/../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib/
 
 void EventTest()
 {
@@ -50,13 +56,13 @@ void TimeSpanTest()
 
 	BaseLib_OperatorTimeSpan_GetForStr(lpszStartTime, lpszEndTime, &nDayTTime, 0);
 	BaseLib_OperatorTimeSpan_GetForStr(lpszStartTime, lpszEndTime, &nHourTTime, 1);
-	_tprintf(_X("\n跨了：%lld天 %lld小时\n"), nDayTTime, nHourTTime);
+	_xtprintf(_X("\n跨了：%lld天 %lld小时\n"), nDayTTime, nHourTTime);
 
 	BaseLib_OperatorTimeSpan_CalForStr(lpszStartTime, lpszEndTime, &st_LibTimer, true);
-	_tprintf(_X("%d/%d/%d-%d:%d:%d\n"), st_LibTimer.wYear, st_LibTimer.wMonth, st_LibTimer.wDay, st_LibTimer.wHour, st_LibTimer.wMinute, st_LibTimer.wSecond);
+	_xtprintf(_X("%d/%d/%d-%d:%d:%d\n"), st_LibTimer.wYear, st_LibTimer.wMonth, st_LibTimer.wDay, st_LibTimer.wHour, st_LibTimer.wMinute, st_LibTimer.wSecond);
 
 	BaseLib_OperatorTimeSpan_CalForStr(lpszStartTime, lpszEndTime, &st_LibTimer, false);
-	_tprintf(_X("%d/%d/%d-%d:%d:%d\n"), st_LibTimer.wYear, st_LibTimer.wMonth, st_LibTimer.wDay, st_LibTimer.wHour, st_LibTimer.wMinute, st_LibTimer.wSecond);
+	_xtprintf(_X("%d/%d/%d-%d:%d:%d\n"), st_LibTimer.wYear, st_LibTimer.wMonth, st_LibTimer.wDay, st_LibTimer.wHour, st_LibTimer.wMinute, st_LibTimer.wSecond);
 }
 void TimeTest()
 {
@@ -135,7 +141,7 @@ void GMTTimeTest()
 	memset(tszGMTTime, '\0', sizeof(tszGMTTime));
 	BaseLib_OperatorTime_GMTTime(tszGMTTime);
 
-	_tprintf(_X("%s\n"), tszGMTTime);
+	_xtprintf(_X("%s\n"), tszGMTTime);
 }
 
 int TestAddrLib()
@@ -191,17 +197,17 @@ int test_Mutex()
 	XEVENT xhEvent = BaseLib_OperatorSemaphore_Create(lpszName);
 	if (NULL == xhEvent)
 	{
-		_tprintf(_X("失败\n"));
+		_xtprintf(_X("失败\n"));
 		return 0;
 	}
 
 	if (BaseLib_OperatorSemaphore_IsExist(lpszName))
 	{
-		_tprintf(_X("存在\n"));
+		_xtprintf(_X("存在\n"));
 	}
 	else
 	{
-		_tprintf(_X("不存在\n"));
+		_xtprintf(_X("不存在\n"));
 	}
 	BaseLib_OperatorSemaphore_Delete(xhEvent);
 	return 0;
@@ -219,7 +225,7 @@ int test_Memory()
 	}
 	for (int i = 0; i < 3; i++)
 	{
-		_tprintf(_X("%d\n"), *(ppIntArray[i]));
+		_xtprintf(_X("%d\n"), *(ppIntArray[i]));
 	}
 	BaseLib_OperatorMemory_Free((void***)&ppIntArray, 3);
 
@@ -234,7 +240,7 @@ int test_Memory()
 	}
 	for (int i = 0; i < 3; i++)
 	{
-		_tprintf(_X("%s\n"), ppszStr[i]);
+		_xtprintf(_X("%s\n"), ppszStr[i]);
 	}
 	BaseLib_OperatorMemory_Free((void***)&ppszStr, 3);
 
@@ -252,7 +258,7 @@ int test_Memory()
 	}
 	for (int i = 0; i < 3; i++)
 	{
-		_tprintf(_X("%d %d\n"), ppSt_Memory[i]->a, ppSt_Memory[i]->b);
+		_xtprintf(_X("%d %d\n"), ppSt_Memory[i]->a, ppSt_Memory[i]->b);
 	}
 	BaseLib_OperatorMemory_Free((void***)&ppSt_Memory, 3);
 	return 0;
@@ -291,9 +297,9 @@ void Test_GetTimeofday()
 	BaseLib_OperatorTime_TimeToStr(tszMsgTimer, NULL, NULL, &st_LibTime);
 
 #ifdef _MSC_BUILD
-	_tprintf(_X("%lld %lld %llu %llu  %s\n"), time(NULL), st_Timeval.tv_sec, st_Timeval.tv_value, st_Timeval.tv_usec, tszMsgTimer);
+	_xtprintf(_X("%lld %lld %llu %llu  %s\n"), time(NULL), st_Timeval.tv_sec, st_Timeval.tv_value, st_Timeval.tv_usec, tszMsgTimer);
 #else
-	_tprintf("%ld %ld %llu %llu  %s\n", time(NULL), st_Timeval.tv_sec, st_Timeval.tv_value, st_Timeval.tv_usec, tszMsgTimer);
+	_xtprintf("%ld %ld %llu %llu  %s\n", time(NULL), st_Timeval.tv_sec, st_Timeval.tv_value, st_Timeval.tv_usec, tszMsgTimer);
 #endif
 }
 int profiletest()
@@ -354,7 +360,7 @@ int test_handle()
 	{
 		XNETHANDLE xhToken = 0;
 		BaseLib_OperatorHandle_Create(&xhToken);
-		_tprintf(_X("%lld\n"), xhToken);
+		_xtprintf(_X("%lld\n"), xhToken);
 	}
 	return 0;
 }

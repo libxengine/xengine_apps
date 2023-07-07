@@ -14,13 +14,17 @@ using namespace std;
 #include <XEngine_Include/XEngine_Types.h>
 #include <XEngine_Include/XEngine_BaseLib/Algorithm_Define.h>
 #include <XEngine_Include/XEngine_BaseLib/Algorithm_Error.h>
+#ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_Algorithm.lib")
+#endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Types.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_Algorithm/Algorithm_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_Algorithm/Algorithm_Error.h"
+#ifdef _MSC_BUILD
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_Algorithm.lib")
+#endif
 #endif
 
 
@@ -32,7 +36,7 @@ void CALLBACK Test_CBPassive(XHANDLE xhToken, __int64u nAvgSDFlow, __int64u nAvg
 	memset(tszClientAddr, '\0', 128);
 
 	_tcsxcpy(tszClientAddr, (LPCXSTR)lParam);
-	_tprintf(_X("%s: AVG_Flow:%llu\n"), tszClientAddr, nAvgSDFlow);
+	_xtprintf(_X("%s: AVG_Flow:%llu\n"), tszClientAddr, nAvgSDFlow);
 }
 
 int Test_Calulation()
@@ -49,7 +53,7 @@ int Test_Calulation()
 	std::this_thread::sleep_for(std::chrono::seconds(2));
 	__int64u nTime = 0;
 	Algorithm_Calculation_GetTime(xhToken, &nTime);
-	_tprintf(_X("%llu\n"), nTime);
+	_xtprintf(_X("%llu\n"), nTime);
 
 	Algorithm_Calculation_Reset(xhToken);
 
@@ -60,9 +64,9 @@ int Test_Calulation()
 		Algorithm_Calculation_ADDRVFlow(xhToken, rand());
 		std::this_thread::sleep_for(std::chrono::seconds(2));
 		Algorithm_Calculation_GetRVFlow(xhToken, &nFlow);
-		_tprintf(_X("%llu\n"), nFlow);
+		_xtprintf(_X("%llu\n"), nFlow);
 		Algorithm_Calculation_GetRVFlow(xhToken, &nFlow, true);
-		_tprintf(_X("%llu\n"), nFlow);
+		_xtprintf(_X("%llu\n"), nFlow);
 	}
 
 	Algorithm_Calculation_Reset(xhToken);
@@ -97,14 +101,14 @@ int main()
 	LPCXSTR lpszFindStr = _X("hell");
 	if (Algorithm_String_XFastMatch(lpszSourceStr, lpszFindStr, &nPos))
 	{
-		_tprintf(_X("Algorithm_String_XFastMatch:%d\n"), nPos);
+		_xtprintf(_X("Algorithm_String_XFastMatch:%d\n"), nPos);
 	}
 
 	int nSwapA = 100;
 	int nSwapB = 200;
 	if (Algorithm_Math_Swap(&nSwapA, &nSwapB))
 	{
-		_tprintf(_X("%d = %d\n"), nSwapA, nSwapB);
+		_xtprintf(_X("%d = %d\n"), nSwapA, nSwapB);
 	}
 
 	int nCount = 0;
@@ -114,7 +118,7 @@ int main()
 	{
 		for (int i = 0; i < nCount; i++)
 		{
-			_tprintf(_X("%lld\n"), nArrayValue[i]);
+			_xtprintf(_X("%lld\n"), nArrayValue[i]);
 		}
 	}
 
@@ -122,12 +126,12 @@ int main()
 	int nOutBit = 0;
 	if (Algorithm_Math_GetBit(&nInBit, 3, &nOutBit))
 	{
-		_tprintf(_X("%d\n"), nOutBit);
+		_xtprintf(_X("%d\n"), nOutBit);
 	}
 
 	if (Algorithm_Math_SetBit(&nInBit, 4, 7))
 	{
-		_tprintf(_X("%d\n"), nInBit);
+		_xtprintf(_X("%d\n"), nInBit);
 	}
 
 	return 0;
