@@ -258,7 +258,7 @@ bool FLV_PacketAudio()
 	st_AVInfo.st_AudioInfo.bEnable = true;
 	st_AVInfo.st_AudioInfo.nBitRate = 62;
 	st_AVInfo.st_AudioInfo.nSampleRate = 11025;
-	st_AVInfo.st_AudioInfo.nFrameSize = 16;
+	st_AVInfo.st_AudioInfo.nSampleFmt = 16;
 	st_AVInfo.st_AudioInfo.nChannel = 1;
 	st_AVInfo.st_AudioInfo.enAVCodec = 10;
 
@@ -308,8 +308,8 @@ bool FLV_PacketAudio()
 
 int main()
 {
-	FLV_Parse();
+	//FLV_Parse();
 	//FLV_PacketVideo();
-	//FLV_PacketAudio();
+	FLV_PacketAudio();
 	return 0;
 }

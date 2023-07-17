@@ -278,7 +278,7 @@ void Audio_Mix()
 }
 int main()
 {
-	Audio_ListCodec();
+	//Audio_ListCodec();
 	Audio_Encode();
 	Audio_DeCodec();
 	Audio_Mix();

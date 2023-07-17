@@ -226,6 +226,12 @@ void Test_AudioInfo()
 	{
 		return;
 	}
+	memset(uszFileBuffer, '\0', sizeof(uszFileBuffer));
+	AVHelp_Packet_AACHdr(uszFileBuffer, nSample, nChannel, 0);
+	if (!AVHelp_Parse_AACInfo(uszFileBuffer, 7, &nChannel, &nSample, &nProfile, &nConfig))
+	{
+		return;
+	}
 
 	printf("Test_AudioInfo:%d %d %d %d\n", nChannel, nSample, nProfile, nConfig);
 }
@@ -252,10 +258,10 @@ void Test_AVList()
 
 int main()
 {
-	Test_MetaInfo();
-	Test_Parse();
-	Test_PPS264Info();
-	Test_PPS265Info();
+	//Test_MetaInfo();
+	//Test_Parse();
+	//Test_PPS264Info();
+	//Test_PPS265Info();
 	Test_AudioInfo();
 	Test_AVList();
 
