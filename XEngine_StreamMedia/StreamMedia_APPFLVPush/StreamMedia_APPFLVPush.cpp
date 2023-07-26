@@ -58,125 +58,31 @@ LPCXSTR lpszVFile = _X("480p.264");
 LPCXSTR lpszAFile = _X("test.aac");
 #endif
 
-void fread_video(XHANDLE xhToken)
-{
-	for (int i = 0; i < 20; i++)
-	{
-		XCHAR tszMsgBuffer[40960];
-		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-
-		int nRet = fread(tszMsgBuffer, 1, sizeof(tszMsgBuffer), pSt_VFile);
-		if (nRet <= 0)
-		{
-			fclose(pSt_VFile);
-			pSt_VFile = fopen(lpszVFile, "rb");
-			nRet = fread(tszMsgBuffer, 1, sizeof(tszMsgBuffer), pSt_VFile);
-		}
-		while (1)
-		{
-			if (StreamClient_FilePush_Push(xhToken, tszMsgBuffer, nRet, 0))
-			{
-				break;
-			}
-		}
-	}
-}
-void fread_audio(XHANDLE xhToken)
-{
-	while (1)
-	{
-		XCHAR tszMsgBuffer[4096];
-		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-
-		int nRet = fread(tszMsgBuffer, 1, sizeof(tszMsgBuffer), pSt_AFile);
-		if (nRet <= 0)
-		{
-			fclose(pSt_AFile);
-			pSt_AFile = fopen(lpszAFile, "rb");
-			nRet = fread(tszMsgBuffer, 1, sizeof(tszMsgBuffer), pSt_AFile);
-		}
-		while (1)
-		{
-			if (StreamClient_FilePush_Push(xhToken, tszMsgBuffer, nRet, 1))
-			{
-				break;
-			}
-		}
-	}
-}
-
 int Test_RTMPPush()
 {
 	XHANDLE xhStream = NULL;
 	LPCXSTR lpszUrl = _X("rtmp://app.xyry.org/live/qyt");
-	bool bMemory = false;
 
-	if (bMemory)
+	xhStream = StreamClient_FilePush_Init();
+	if (NULL == xhStream)
 	{
-		pSt_VFile = fopen(lpszVFile, "rb");
-		if (NULL == pSt_VFile)
-		{
-			printf("fopen1:%d\n", errno);
-			return -1;
-		}
-		pSt_AFile = fopen(lpszAFile, "rb");
-		if (NULL == pSt_AFile)
-		{
-			printf("fopen2:%d\n", errno);
-			return -1;
-		}
-
-		xhStream = StreamClient_FilePush_Init();
-		if (NULL == xhStream)
-		{
-			printf("StreamClient_FilePush_Push:%lX\n", StreamClient_GetLastError());
-			return -1;
-		}
-		std::thread m_ThreadVideo(fread_video, xhStream);
-		std::thread m_ThreadAudio(fread_audio, xhStream);
-
-		m_ThreadVideo.detach();
-		m_ThreadAudio.detach();
-		std::this_thread::sleep_for(std::chrono::seconds(3));
-		if (!StreamClient_FilePush_Input(xhStream))
-		{
-			printf("StreamClient_FilePush_Input:%lX\n", StreamClient_GetLastError());
-			return -1;
-		}
-		if (!StreamClient_FilePush_Output(xhStream, lpszUrl))
-		{
-			printf("StreamClient_FilePush_Output:%lX\n", StreamClient_GetLastError());
-			return -1;
-		}
-		if (!StreamClient_FilePush_Start(xhStream))
-		{
-			printf("StreamClient_FilePush_Output:%lX\n", StreamClient_GetLastError());
-			return -1;
-		}
+		printf("StreamClient_FilePush_Push:%lX\n", StreamClient_GetLastError());
+		return -1;
 	}
-	else
+	if (!StreamClient_FilePush_Input(xhStream, lpszVFile, lpszAFile))
 	{
-		xhStream = StreamClient_FilePush_Init();
-		if (NULL == xhStream)
-		{
-			printf("StreamClient_FilePush_Push:%lX\n", StreamClient_GetLastError());
-			return -1;
-		}
-		if (!StreamClient_FilePush_Input(xhStream, lpszVFile, lpszAFile))
-		{
-			printf("StreamClient_FilePush_Input:%lX\n", StreamClient_GetLastError());
-			return -1;
-		}
-		if (!StreamClient_FilePush_Output(xhStream, lpszUrl))
-		{
-			printf("StreamClient_FilePush_Output:%lX\n", StreamClient_GetLastError());
-			return -1;
-		}
-		if (!StreamClient_FilePush_Start(xhStream))
-		{
-			printf("StreamClient_FilePush_Output:%lX\n", StreamClient_GetLastError());
-			return -1;
-		}
+		printf("StreamClient_FilePush_Input:%lX\n", StreamClient_GetLastError());
+		return -1;
+	}
+	if (!StreamClient_FilePush_Output(xhStream, lpszUrl))
+	{
+		printf("StreamClient_FilePush_Output:%lX\n", StreamClient_GetLastError());
+		return -1;
+	}
+	if (!StreamClient_FilePush_Start(xhStream))
+	{
+		printf("StreamClient_FilePush_Output:%lX\n", StreamClient_GetLastError());
+		return -1;
 	}
 
 	bool bIsPush = true;

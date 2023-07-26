@@ -31,18 +31,21 @@
 //Linux::g++ -std=c++17 -Wall -g StreamMedia_APPPull.cpp -o StreamMedia_APPPull.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia -lXEngine_BaseLib -lStreamMedia_StreamClient -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia,--disable-new-dtags
 //Macos::g++ -std=c++17 -Wall -g StreamMedia_APPPull.cpp -o StreamMedia_APPPull.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_StreamMedia -lXEngine_BaseLib -lStreamMedia_StreamClient
 
+FILE* pSt_File;
 void CBStream_Pull(uint8_t* puszMsgBuffer, int nSize, int nAVType, __int64x nPts, __int64x nDts, __int64x nDuration, double dlTime, XPVOID lParam)
 {
+	fwrite(puszMsgBuffer, 1, nSize, pSt_File);
 	printf("Size:%d,AV:%d,Time:%lf\n", nSize, nAVType, dlTime);
 	return ;
 }
 int Test_RTMPPull()
 {
-	LPCXSTR lpszPullUrl = _X("rtmp://ys.uavebit.com:1935/live/4TADKCF001002E");
+	LPCXSTR lpszPullUrl = _X("rtmp://192.168.224.128/live/livestream");
 	LPCXSTR lpszPushUrl = _X("rtmp://app.xyry.org/live/123");
 	int nStreamCount = 0;
 	STREAMMEDIA_PULLSTREAM** ppSt_PullStream;
 
+	pSt_File = fopen("D:\\windows-ffmpeg\\x64\\3.hevc", "wb");
 	XHANDLE xhStream = StreamClient_StreamPull_Init(lpszPullUrl, &ppSt_PullStream, &nStreamCount, CBStream_Pull);
 	if (NULL == xhStream)
 	{
@@ -61,11 +64,12 @@ int Test_RTMPPull()
 			ppSt_PullStream[i]->bEnable = false;
 		}
 	}
+	/*
 	if (!StreamClient_StreamPull_PushStream(xhStream, lpszPushUrl, &ppSt_PullStream, nStreamCount))
 	{
 		printf("XStream_StreamPull_PushStream:%lX\n", StreamClient_GetLastError());
 		return -1;
-	}
+	}*/
 	XENGINE_PROTOCOL_AVINFO st_MediaStream;
 	memset(&st_MediaStream, '\0', sizeof(XENGINE_PROTOCOL_AVINFO));
 

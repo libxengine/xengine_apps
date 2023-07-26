@@ -78,12 +78,59 @@ void CALLBACK VideoCodec_Stream_Callback(XNETHANDLE xhVideo, uint8_t* pszYBuffer
 	}
 	free(ptszFilterBuffer);
 }
+int Test_H265Hevc()
+{
+#ifdef _MSC_BUILD
+	FILE* pSt_File = _tfopen("d:\\1.hevc", "rb");
+	pSt_YUVFile = _tfopen("d:\\ds.yuv", "wb");
+#else
+	FILE* pSt_File = fopen("1.hevc", "rb");
+	pSt_YUVFile = fopen("ds.yuv", "wb");
+#endif
+	AVHelp_Parse_FrameInit(&xhParse, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H265);
+	if (!VideoCodec_Stream_DeInit(&xhDeVideo, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H265))
+	{
+		printf("VideoCodec_Stream_DeInit\n");
+		return -1;
+	}
+	while (1)
+	{
+		XCHAR tszBuffer[10240];
+		memset(tszBuffer, '\0', sizeof(tszBuffer));
+		int nRet = fread(tszBuffer, 1, 10240, pSt_File);
+		if (nRet <= 0)
+		{
+			break;
+		}
+
+		int nListCount = 0;
+		AVHELP_FRAMEDATA** ppSt_Frame;
+		AVHelp_Parse_FrameGet(xhParse, tszBuffer, nRet, &ppSt_Frame, &nListCount);
+		for (int i = 0; i < nListCount; i++)
+		{
+			int nVideoCount = 0;
+			AVCODEC_VIDEO_MSGBUFFER** ppSt_MSGBuffer;
+			if (VideoCodec_Stream_DeCodec(xhDeVideo, ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen, &ppSt_MSGBuffer, &nVideoCount))
+			{
+				for (int j = 0; j < nVideoCount; j++)
+				{
+					BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_MSGBuffer[j]->ptszYBuffer);
+				}
+			}
+			BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->ptszMsgBuffer);
+			BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_MSGBuffer, nVideoCount);
+		}
+		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_Frame, nListCount);
+	}
+	VideoCodec_Stream_Destroy(xhDeVideo);
+	AVHelp_Parse_FrameClose(xhParse);
+	return 0;
+}
 int Test_CodecFilter()
 {
 #ifdef _MSC_BUILD
-	FILE* pSt_File = _tfopen("d:\\h264 file\\480p.264", "rb");
-	pSt_264File = _tfopen("d:\\h264 file\\en.h264", "wb");
-	pSt_YUVFile = _tfopen("d:\\h264 file\\ds.yuv", "wb");
+	FILE* pSt_File = _tfopen("d:\\1.hevc", "rb");
+	pSt_YUVFile = _tfopen("d:\\ds.yuv", "wb");
 #else
 	FILE* pSt_File = fopen("480p.264", "rb");
 	pSt_264File = fopen("en.h264", "wb");
@@ -97,7 +144,7 @@ int Test_CodecFilter()
 	st_VideoInfo.nBitRate = 400000;
 	st_VideoInfo.nFrameRate = 24;
 	st_VideoInfo.enAVCodec = ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264;
-	
+
 	AVHelp_Parse_FrameInit(&xhParse, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
 	if (!VideoCodec_Stream_EnInit(&xhEnVideo, &st_VideoInfo))
 	{
@@ -142,6 +189,7 @@ int Test_CodecFilter()
 }
 int main()
 {
+	Test_H265Hevc();
 	int nListCount = 0;
 	AVCODEC_VIDEO_HWCODEC** ppSt_ListHWCodec;
 	VideoCodec_Help_GetHWCodec(&ppSt_ListHWCodec, &nListCount);

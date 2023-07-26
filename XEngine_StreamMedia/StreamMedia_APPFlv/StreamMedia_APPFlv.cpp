@@ -107,7 +107,7 @@ bool FLV_Parse()
 	memset(tszPPSBuffer, '\0', sizeof(tszPPSBuffer));
 	memset(tszSPSBuffer, '\0', sizeof(tszSPSBuffer));
 
-	if (FLVProtocol_Parse_GetMetaInfo(lpszClientID, tszSPSBuffer, tszPPSBuffer, &nSPSLen, &nPPSLen))
+	if (FLVProtocol_Parse_GetMetaInfo(lpszClientID, tszSPSBuffer, tszPPSBuffer, NULL, &nSPSLen, &nPPSLen, NULL))
 	{
 		printf("%d %d\n", nSPSLen, nPPSLen);
 	}
