@@ -40,7 +40,7 @@ void CBStream_Pull(uint8_t* puszMsgBuffer, int nSize, int nAVType, __int64x nPts
 }
 int Test_RTMPPull()
 {
-	LPCXSTR lpszPullUrl = _X("rtmp://192.168.224.128/live/livestream");
+	LPCXSTR lpszPullUrl = _X("rtmp://10.0.3.155/live/qyt");
 	LPCXSTR lpszPushUrl = _X("rtmp://app.xyry.org/live/123");
 	int nStreamCount = 0;
 	STREAMMEDIA_PULLSTREAM** ppSt_PullStream;

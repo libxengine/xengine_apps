@@ -52,8 +52,6 @@ using namespace std;
 //Linux::g++ -std=c++17 -Wall -g StreamMedia_APPTs.cpp -o StreamMedia_APPTs.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -lXEngine_BaseLib -lNetHelp_APIHelp -lStreamMedia_HLSProtocol -lXEngine_AVHelp -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec,--disable-new-dtags
 //Macos::g++ -std=c++17 -Wall -g StreamMedia_APPRtmp.cpp -o StreamMedia_APPRtmp.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -lXEngine_BaseLib-lNetHelp_APIHelp -lStreamMedia_HLSProtocol -lXEngine_AVHelp
 
-bool bServer = true;
-
 int M3U8File_Packet()
 {
 #ifdef _MSC_BUILD
@@ -98,9 +96,8 @@ int M3U8File_Packet()
 }
 bool TSFile_Parse()
 {
-    //parsefile("D:\\m50-4kp30-10m-main-l5.ts");
 	LPCXSTR lpszClientID = _X("client");
-    FILE* pSt_RFile = fopen("D:\\obs_h264.ts", "rb");
+    FILE* pSt_RFile = fopen("D:\\windows-ffmpeg\\x64\\1.ts", "rb");
     FILE* pSt_VFile = fopen("D:\\2.h264", "wb");
     FILE* pSt_AFile = fopen("D:\\2.aac", "wb");
 
@@ -171,12 +168,58 @@ bool TSFile_Parse()
 
 bool TSFile_Packet()
 {
-	
+	XNETHANDLE xhVideo = 0;
+	LPCXSTR lpszVideoFile = _X("D:\\h264 file\\1080P.264");
+	LPCXSTR lpszClientID = _X("client");
+	FILE* pSt_WFile = fopen("D:\\windows-ffmpeg\\x64\\1.ts", "wb");
+	FILE* pSt_RVideo = fopen(lpszVideoFile, "rb");
+
+	AVHelp_Parse_FrameInit(&xhVideo, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
+	HLSProtocol_TSPacket_Insert(lpszClientID, 128);
+
+	int nMsgLen = 0;
+	XCHAR tszMsgBuffer[2048];
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+
+	HLSProtocol_TSPacket_PATInfo(lpszClientID, (XBYTE *)tszMsgBuffer, &nMsgLen);
+	fwrite(tszMsgBuffer, 1, nMsgLen, pSt_WFile);
+
+	nMsgLen = 0;
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	HLSProtocol_TSPacket_PMTInfo(lpszClientID, (XBYTE*)tszMsgBuffer, &nMsgLen);
+	fwrite(tszMsgBuffer, 1, nMsgLen, pSt_WFile);
+
+	while (true)
+	{
+		XCHAR tszVBuffer[2048];
+		memset(tszVBuffer, '\0', sizeof(tszVBuffer));
+
+		int nRet = fread(tszVBuffer, 1, sizeof(tszVBuffer), pSt_RVideo);
+		if (nRet <= 0)
+		{
+			break;
+		}
+		int nListCount = 0;
+		AVHELP_FRAMEDATA** ppSt_Frame;
+
+		AVHelp_Parse_FrameGet(xhVideo, tszVBuffer, nRet, &ppSt_Frame, &nListCount);
+		for (int i = 0; i < nListCount; i++)
+		{
+			int nWLen = 0;
+			XCHAR* ptszMsgBuffer = (XCHAR*)malloc(XENGINE_MEMORY_SIZE_MAX);
+
+			//HLSProtocol_TSPacket_TSAVPacket(lpszClientID, ptszMsgBuffer, &nWLen, 0xc0);
+		}
+	}
+
+	fclose(pSt_WFile);
+	AVHelp_Parse_FrameClose(xhVideo);
 	return true;
 }
 
 int main()
 {
+	bool bServer = true;
 	if (bServer)
 	{
 		TSFile_Parse();

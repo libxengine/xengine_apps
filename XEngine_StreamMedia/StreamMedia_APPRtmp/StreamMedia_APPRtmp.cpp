@@ -65,7 +65,7 @@ using namespace std;
 //Linux::g++ -std=c++17 -Wall -g StreamMedia_APPRtmp.cpp -o StreamMedia_APPRtmp.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_Core -lXClient_Socket -lNetHelp_APIHelp -lStreamMedia_RTMPProtocol -lXEngine_AVHelp -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec,--disable-new-dtags
 //Macos::g++ -std=c++17 -Wall -g StreamMedia_APPRtmp.cpp -o StreamMedia_APPRtmp.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Client -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_Core -lXClient_Socket -lNetHelp_APIHelp -lStreamMedia_RTMPProtocol -lXEngine_AVHelp
 
-bool bServer = true;
+bool bServer = false;
 XSOCKET hClient = 0;
 XHANDLE xhXCore = NULL;
 bool bConnect = false;
@@ -189,8 +189,8 @@ void RTMPProtocol_Thread_Process()
 						}
 						else if (XENGINE_STREAMMEDIA_RTMP_MSGTYPE_VIDEO == st_RTMPHdr.byTypeID)
 						{
-							int nFLen = 1024000;
-							XCHAR* ptszFBuffer = (XCHAR*)malloc(nFLen);
+							int nFLen = XENGINE_MEMORY_SIZE_MAX;
+							XCHAR* ptszFBuffer = (XCHAR*)malloc(XENGINE_MEMORY_SIZE_MAX);
 							XENGINE_RTMPVIDEO st_RTMPVideo;
 							XENGINE_RTMPVIDEOPARAM st_RTMPVParam;
 
@@ -198,7 +198,7 @@ void RTMPProtocol_Thread_Process()
 							memset(&st_RTMPVideo, '\0', sizeof(XENGINE_RTMPVIDEO));
 
 							memcpy(&st_RTMPVideo, ptszMsgBuffer, sizeof(XENGINE_RTMPVIDEO));
-							RTMPProtocol_Help_ParseVideo(&st_RTMPVideo, ptszFBuffer, &nFLen, ptszMsgBuffer, nMsgLen, &st_RTMPVParam);
+							RTMPProtocol_Help_ParseVideo(&st_RTMPVideo, ptszFBuffer, &nFLen, ptszMsgBuffer + sizeof(XENGINE_RTMPVIDEO), nMsgLen - sizeof(XENGINE_RTMPVIDEO), &st_RTMPVParam);
 							
 							if (st_RTMPVideo.byAVCType == 1)
 							{
@@ -364,7 +364,7 @@ bool RTMP_Parse()
 
 bool RTMP_Packet()
 {
-	LPCXSTR lpszAddr = _X("192.168.224.128");
+	LPCXSTR lpszAddr = _X("10.0.3.155");
 	
 	if (!XClient_TCPSelect_Create(&hClient, lpszAddr, 1935))
 	{
@@ -410,37 +410,51 @@ bool RTMP_Packet()
 	st_RTMPCommand.nCMDId = 1;
 	_tcsxcpy(st_RTMPCommand.tszCMDName, _X("connect"));
 
-	st_RTMPCommand.nProCount = 6;
+	st_RTMPCommand.nProCount = 8;
 	BaseLib_OperatorMemory_Malloc((XPPPMEM)&st_RTMPCommand.ppSt_CMDProperty, st_RTMPCommand.nProCount, sizeof(XENGINE_RTMPCMDPROPERTY));
 	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[0]->tszKeyBuffer, "app");
 	st_RTMPCommand.ppSt_CMDProperty[0]->st_CMDOBJect.byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_STRING;
 	st_RTMPCommand.ppSt_CMDProperty[0]->st_CMDOBJect.nMLen = 4;
 	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[0]->st_CMDOBJect.tszMsgBuffer, "live");
 
-	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[1]->tszKeyBuffer, "type");
+	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[1]->tszKeyBuffer, "flashVer");
 	st_RTMPCommand.ppSt_CMDProperty[1]->st_CMDOBJect.byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_STRING;
-	st_RTMPCommand.ppSt_CMDProperty[1]->st_CMDOBJect.nMLen = 10;
-	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[1]->st_CMDOBJect.tszMsgBuffer, "nonprivate");
+	st_RTMPCommand.ppSt_CMDProperty[1]->st_CMDOBJect.nMLen = 13;
+	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[1]->st_CMDOBJect.tszMsgBuffer, "LNX 9,0,124,2");
 
-	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[2]->tszKeyBuffer, "supportsGoAway");
-	st_RTMPCommand.ppSt_CMDProperty[2]->st_CMDOBJect.byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_BOOL;
-	st_RTMPCommand.ppSt_CMDProperty[2]->st_CMDOBJect.nMLen = 1;
-	st_RTMPCommand.ppSt_CMDProperty[2]->st_CMDOBJect.tszMsgBuffer[0] = 0x01;
+	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[2]->tszKeyBuffer, "tcUrl");
+	st_RTMPCommand.ppSt_CMDProperty[2]->st_CMDOBJect.byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_STRING;
+	st_RTMPCommand.ppSt_CMDProperty[2]->st_CMDOBJect.nMLen = 27;
+	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[2]->st_CMDOBJect.tszMsgBuffer, "rtmp://10.0.3.155:1935/live");
 
-	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[3]->tszKeyBuffer, "flashVer");
-	st_RTMPCommand.ppSt_CMDProperty[3]->st_CMDOBJect.byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_STRING;
-	st_RTMPCommand.ppSt_CMDProperty[3]->st_CMDOBJect.nMLen = 31;
-	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[3]->st_CMDOBJect.tszMsgBuffer, "FMLE/3.0 (compatible; FMSc/1.0)");
+	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[3]->tszKeyBuffer, "fpad");
+	st_RTMPCommand.ppSt_CMDProperty[3]->st_CMDOBJect.byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_BOOL;
+	st_RTMPCommand.ppSt_CMDProperty[3]->st_CMDOBJect.nMLen = 1;
+	st_RTMPCommand.ppSt_CMDProperty[3]->st_CMDOBJect.tszMsgBuffer[0] = 0x00;
 
-	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[4]->tszKeyBuffer, "swfUrl");
-	st_RTMPCommand.ppSt_CMDProperty[4]->st_CMDOBJect.byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_STRING;
-	st_RTMPCommand.ppSt_CMDProperty[4]->st_CMDOBJect.nMLen = 24;
-	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[4]->st_CMDOBJect.tszMsgBuffer, "rtmp://app.xyry.org/live");
+	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[4]->tszKeyBuffer, "capabilities");
+	st_RTMPCommand.ppSt_CMDProperty[4]->st_CMDOBJect.byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_INT64;
+	st_RTMPCommand.ppSt_CMDProperty[4]->st_CMDOBJect.nMLen = 8;
+	double dlValue = 15;
+	memcpy(st_RTMPCommand.ppSt_CMDProperty[4]->st_CMDOBJect.tszMsgBuffer, &dlValue, 8);
 
-	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[5]->tszKeyBuffer, "tcUrl");
-	st_RTMPCommand.ppSt_CMDProperty[5]->st_CMDOBJect.byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_STRING;
-	st_RTMPCommand.ppSt_CMDProperty[5]->st_CMDOBJect.nMLen = 24;
-	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[5]->st_CMDOBJect.tszMsgBuffer, "rtmp://app.xyry.org/live");
+	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[5]->tszKeyBuffer, "audioCodecs");
+	st_RTMPCommand.ppSt_CMDProperty[5]->st_CMDOBJect.byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_INT64;
+	st_RTMPCommand.ppSt_CMDProperty[5]->st_CMDOBJect.nMLen = 8;
+	dlValue = 4071;
+	memcpy(st_RTMPCommand.ppSt_CMDProperty[5]->st_CMDOBJect.tszMsgBuffer, &dlValue, 8);
+
+	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[6]->tszKeyBuffer, "videoCodecs");
+	st_RTMPCommand.ppSt_CMDProperty[6]->st_CMDOBJect.byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_INT64;
+	st_RTMPCommand.ppSt_CMDProperty[6]->st_CMDOBJect.nMLen = 8;
+	dlValue = 252;
+	memcpy(st_RTMPCommand.ppSt_CMDProperty[6]->st_CMDOBJect.tszMsgBuffer, &dlValue, 8);
+
+	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[7]->tszKeyBuffer, "videoFunction");
+	st_RTMPCommand.ppSt_CMDProperty[7]->st_CMDOBJect.byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_INT64;
+	st_RTMPCommand.ppSt_CMDProperty[7]->st_CMDOBJect.nMLen = 8;
+	dlValue = 1;
+	memcpy(st_RTMPCommand.ppSt_CMDProperty[7]->st_CMDOBJect.tszMsgBuffer, &dlValue, 8);
 
 	RTMPProtocol_Help_PKTCommand(tszSDBuffer, &nSDLen, 3, &st_RTMPCommand, false, false);
 	XClient_TCPSelect_SendMsg(hClient, tszSDBuffer, nSDLen);
@@ -473,7 +487,7 @@ bool RTMP_Packet()
 	
 	st_RTMPCommand.ppSt_CMDObject[0]->nMLen = 10;
 	st_RTMPCommand.ppSt_CMDObject[0]->byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_STRING;
-	_tcsxcpy(st_RTMPCommand.ppSt_CMDObject[0]->tszMsgBuffer, "livestream");
+	_tcsxcpy(st_RTMPCommand.ppSt_CMDObject[0]->tszMsgBuffer, "h265");
 	RTMPProtocol_Help_PKTCommand(tszSDBuffer, &nSDLen, 8, &st_RTMPCommand, true, false);
 	XClient_TCPSelect_SendMsg(hClient, tszSDBuffer, nSDLen);
 	BaseLib_OperatorMemory_Free((XPPPMEM)&st_RTMPCommand.ppSt_CMDObject, st_RTMPCommand.nObCount);
@@ -486,9 +500,9 @@ bool RTMP_Packet()
 	st_RTMPCommand.nObCount = 1;
 	BaseLib_OperatorMemory_Malloc((XPPPMEM)&st_RTMPCommand.ppSt_CMDObject, st_RTMPCommand.nObCount, sizeof(XENGINE_RTMPCMDOBJECT));
 
-	st_RTMPCommand.ppSt_CMDObject[0]->nMLen = 10;
+	st_RTMPCommand.ppSt_CMDObject[0]->nMLen = 4;
 	st_RTMPCommand.ppSt_CMDObject[0]->byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_STRING;
-	_tcsxcpy(st_RTMPCommand.ppSt_CMDObject[0]->tszMsgBuffer, "livestream");
+	_tcsxcpy(st_RTMPCommand.ppSt_CMDObject[0]->tszMsgBuffer, "h265");
 
 	RTMPProtocol_Help_PKTCommand(tszSDBuffer, &nSDLen, 8, &st_RTMPCommand, true, false);
 	XClient_TCPSelect_SendMsg(hClient, tszSDBuffer, nSDLen);
