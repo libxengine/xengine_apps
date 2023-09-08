@@ -10,7 +10,7 @@
 #include <errno.h>
 #include <inttypes.h>
 #include <thread>
-
+using namespace std;
 #ifdef _XENGINE_USER_DIR_SYSTEM
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
@@ -43,10 +43,8 @@
 #endif
 #endif
 
-
-
-//Linux::g++ -std=c++17 -Wall -g StreamMedia_APPFLVPush.cpp -o StreamMedia_APPFLVPush.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia -lXEngine_BaseLib -lXEngine_AVHelp -lStreamMedia_StreamClient -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia,--disable-new-dtags
-//Macos::g++ -std=c++17 -Wall -g StreamMedia_APPFLVPush.cpp -o StreamMedia_APPFLVPush.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCodec -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_StreamMedia -lXEngine_BaseLib -lXEngine_AVHelp -lStreamMedia_StreamClient
+//Linux::g++ -std=c++17 -Wall -g StreamMedia_APPClient.cpp -o StreamMedia_APPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia -lXEngine_BaseLib -lXEngine_AVHelp -lStreamMedia_StreamClient -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia,--disable-new-dtags
+//Macos::g++ -std=c++17 -Wall -g StreamMedia_APPClient.cpp -o StreamMedia_APPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCodec -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_StreamMedia -lXEngine_BaseLib -lXEngine_AVHelp -lStreamMedia_StreamClient
 
 FILE* pSt_VFile;
 FILE* pSt_AFile;
@@ -58,6 +56,12 @@ LPCXSTR lpszVFile = _X("480p.264");
 LPCXSTR lpszAFile = _X("test.aac");
 #endif
 
+void CBStream_Pull(uint8_t* puszMsgBuffer, int nSize, int nAVType, __int64x nPts, __int64x nDts, __int64x nDuration, double dlTime, XPVOID lParam)
+{
+	//fwrite(puszMsgBuffer, 1, nSize, pSt_VFile);
+	printf("Size:%d,AV:%d,Time:%lf\n", nSize, nAVType, dlTime);
+	return;
+}
 int Test_RTMPPush()
 {
 	XHANDLE xhStream = NULL;
@@ -69,7 +73,7 @@ int Test_RTMPPush()
 		printf("StreamClient_FilePush_Push:%lX\n", StreamClient_GetLastError());
 		return -1;
 	}
-	if (!StreamClient_FilePush_Input(xhStream, lpszVFile, lpszAFile))
+	if (!StreamClient_FilePush_Input(xhStream, lpszVFile))
 	{
 		printf("StreamClient_FilePush_Input:%lX\n", StreamClient_GetLastError());
 		return -1;
@@ -131,7 +135,7 @@ int Test_LivePush()
 			return -1;
 		}
 		nVLen = fread(tszVBuffer, 1, sizeof(tszVBuffer), pSt_VFile);
-		AVHelp_Parse_264Hdr(tszVBuffer, nVLen, tszSPSBuffer, tszPPSBuffer, NULL, NULL, NULL, NULL, NULL, &nPos);
+		AVHelp_Parse_VideoHdr(tszVBuffer, nVLen, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264, NULL, tszSPSBuffer, tszPPSBuffer, NULL, NULL, NULL, NULL, NULL, &nPos);
 
 		st_MediaStream.st_VideoInfo.nVLen = nPos;
 		memcpy(st_MediaStream.st_VideoInfo.tszVInfo, tszVBuffer, nPos);
@@ -211,15 +215,61 @@ int Test_LivePush()
 	return 0;
 }
 
+int Test_RTMPPull()
+{
+	//LPCXSTR lpszPullUrl = _X("rtmp://10.0.3.155/live/qyt");
+	LPCXSTR lpszPullUrl = _X("srt://10.0.3.155:10080?streamid=#!::r=live/livestream,m=request");
+	LPCXSTR lpszPushUrl = _X("rtmp://app.xyry.org/live/123");
+
+	int nStreamCount = 0;
+	STREAMMEDIA_PULLSTREAM** ppSt_PullStream;
+
+	//pSt_VFile = fopen("D:\\windows-ffmpeg\\x64\\3.ts", "wb");
+	XHANDLE xhStream = StreamClient_StreamPull_Init(lpszPullUrl, &ppSt_PullStream, &nStreamCount, CBStream_Pull);
+	if (NULL == xhStream)
+	{
+		printf("XStream_FilePush_Push:%lX\n", StreamClient_GetLastError());
+		return -1;
+	}
+
+	for (int i = 0; i < nStreamCount; i++)
+	{
+		if (ppSt_PullStream[i]->enStreamType == ENUM_STREAMMEIDA_STREAMCLIENT_STREAM_TYPE_VIDEO)
+		{
+			ppSt_PullStream[i]->bEnable = true;
+		}
+		else if (ppSt_PullStream[i]->enStreamType == ENUM_STREAMMEIDA_STREAMCLIENT_STREAM_TYPE_AUDIO)
+		{
+			ppSt_PullStream[i]->bEnable = true;
+		}
+	}
+	/*
+	if (!StreamClient_StreamPull_PushStream(xhStream, lpszPushUrl, &ppSt_PullStream, nStreamCount))
+	{
+		printf("XStream_StreamPull_PushStream:%lX\n", StreamClient_GetLastError());
+		return -1;
+	}*/
+	XENGINE_PROTOCOL_AVINFO st_MediaStream;
+	memset(&st_MediaStream, '\0', sizeof(XENGINE_PROTOCOL_AVINFO));
+
+	StreamClient_StreamPull_Start(xhStream);
+	bool bPull = true;
+
+	while (bPull)
+	{
+		StreamClient_StreamPull_GetStatus(xhStream, &bPull);
+	}
+	StreamClient_StreamPull_Close(xhStream);
+	return 1;
+}
 int main()
 {
 #ifdef _MSC_BUILD
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
-	//Test_LivePush();
-	Test_RTMPPush();
-	
+	Test_RTMPPull();
+
 #ifdef _MSC_BUILD
 	WSACleanup();
 #endif

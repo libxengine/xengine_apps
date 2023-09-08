@@ -105,8 +105,8 @@ int AVPacket_Test_FileConvert()
 {
 	double nTotalAVTime = 0;
 #ifdef _MSC_BUILD
-	LPCXSTR lpszSrcFile = "D:\\h264 file\\480p.flv";
-	LPCXSTR lpszDstFile = "D:\\h264 file\\480p.mp4";
+	LPCXSTR lpszSrcFile = "D:\\windows-ffmpeg\\x64\\1.ts";
+	LPCXSTR lpszDstFile = "D:\\windows-ffmpeg\\x64\\1.mp4";
 #else
 	LPCXSTR lpszSrcFile = "480p.flv";
 	LPCXSTR lpszDstFile = "conv.mp4";
@@ -285,8 +285,8 @@ int AVPacket_Test_UNPacket()
 int main()
 {
 	//AVPacket_Test_FileLink();
-	//AVPacket_Test_FileConvert();
-	AVPacket_Test_FilePacket();
+	AVPacket_Test_FileConvert();
+	//AVPacket_Test_FilePacket();
 	//AVPacket_Test_UNPacket();
 
 	return 1;

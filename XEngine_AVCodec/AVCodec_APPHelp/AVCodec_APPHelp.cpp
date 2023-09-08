@@ -101,7 +101,7 @@ void Test_Parse()
 		for (int i = 0; i < nListCount; i++)
 		{
 			XENGINE_AVCODEC_VIDEOFRAMETYPE enVideoFrame;
-			AVHelp_Parse_H264NaluType((LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, &enVideoFrame);
+			AVHelp_Parse_NaluType((LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264, &enVideoFrame);
 		}
 	}
 	AVHelp_Parse_FrameClose(xhToken);
@@ -121,21 +121,24 @@ void Test_PPS264Info()
 	XBYTE uszSPSBuffer[64];
 	XBYTE uszPPSBuffer[64];
 	XBYTE uszSEIBuffer[1024];
-	XBYTE uszIDLeave[64];
 	XCHAR uszFileBuffer[2048];
 
 	memset(uszSPSBuffer, '\0', sizeof(uszSPSBuffer));
 	memset(uszPPSBuffer, '\0', sizeof(uszPPSBuffer));
 	memset(uszSEIBuffer, '\0', sizeof(uszSEIBuffer));
-	memset(uszIDLeave, '\0', sizeof(uszIDLeave));
 	memset(uszFileBuffer, '\0', sizeof(uszFileBuffer));
 	FILE* pSt_File = fopen(lpszSrcFile, "rb");
 	int nRet = fread(uszFileBuffer, 1, sizeof(uszFileBuffer), pSt_File);
 
-	if (!AVHelp_Parse_264Hdr(uszFileBuffer, nRet, uszSPSBuffer, uszPPSBuffer, uszSEIBuffer, uszIDLeave, &nSPSLen, &nPPSLen, &nSEILen))
+	if (!AVHelp_Parse_VideoHdr(uszFileBuffer, nRet, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264, NULL, uszSPSBuffer, uszPPSBuffer, uszSEIBuffer, NULL, &nSPSLen, &nPPSLen, &nSEILen))
 	{
 		return;
 	}
+	AFHELP_FRAMESPS st_SPSInfo;
+	memset(&st_SPSInfo, '\0', sizeof(AFHELP_FRAMESPS));
+
+	AVHelp_Parse_SPSInfo((LPCXSTR)uszSPSBuffer + 1, nSPSLen - 1, &st_SPSInfo);
+
 	printf("SPS-%d:", nSPSLen);
 	for (int i = 0; i < nSPSLen; i++)
 	{
@@ -174,7 +177,7 @@ void Test_PPS265Info()
 	FILE* pSt_File = fopen(lpszSrcFile, "rb");
 	int nRet = fread(puszFileBuffer, 1, 1024 * 1024 * 10, pSt_File);
 
-	if (!AVHelp_Parse_265Hdr(puszFileBuffer, nRet, uszVPSBuffer, uszSPSBuffer, uszPPSBuffer, &nVPSLen, &nSPSLen, &nPPSLen))
+	if (!AVHelp_Parse_VideoHdr(puszFileBuffer, nRet, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H265, uszVPSBuffer, uszSPSBuffer, uszPPSBuffer, NULL, &nVPSLen, &nSPSLen, &nPPSLen))
 	{
 		return;
 	}
@@ -203,7 +206,7 @@ void Test_PPS265Info()
 
 	XCHAR tszICStr[1024];
 	memset(tszICStr, '\0', sizeof(tszICStr));
-	AVHelp_Parse_265Paraset(uszVPSBuffer, nVPSLen, &nProspace, &nProID, &nFlags, &nLevelID, tszICStr);
+	AVHelp_Parse_VPSInfo(uszVPSBuffer, nVPSLen, &nProspace, &nProID, &nFlags, &nLevelID, tszICStr);
 	printf("\n%d %d %d %d %s\n", nProspace, nProID, nFlags, nLevelID, tszICStr);
 }
 void Test_AudioInfo()
@@ -260,10 +263,10 @@ int main()
 {
 	//Test_MetaInfo();
 	//Test_Parse();
-	//Test_PPS264Info();
+	Test_PPS264Info();
 	//Test_PPS265Info();
-	Test_AudioInfo();
-	Test_AVList();
+	//Test_AudioInfo();
+	//Test_AVList();
 
 	return 0;
 }

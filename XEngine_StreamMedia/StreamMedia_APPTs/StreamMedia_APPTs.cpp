@@ -97,7 +97,7 @@ int M3U8File_Packet()
 bool TSFile_Parse()
 {
 	LPCXSTR lpszClientID = _X("client");
-    FILE* pSt_RFile = fopen("D:\\windows-ffmpeg\\x64\\1.ts", "rb");
+    FILE* pSt_RFile = fopen("D:\\windows-ffmpeg\\x64\\obs_h264.ts", "rb");
     FILE* pSt_VFile = fopen("D:\\2.h264", "wb");
     FILE* pSt_AFile = fopen("D:\\2.aac", "wb");
 
@@ -139,13 +139,13 @@ bool TSFile_Parse()
 						{
 							if (nMSGLen > 0)
 							{
-                                if (0 == byAVType)
+                                if (0x1b == byAVType)
                                 {
 									fwrite(ptszMsgBuffer, 1, nMSGLen, pSt_VFile);
 									nCount += nMSGLen;
 									printf("Write:%d %d\n", nCount, nMSGLen);
                                 }
-                                else if (1 == byAVType)
+                                else if (0x0f == byAVType)
                                 {
 									fwrite(ptszMsgBuffer, 1, nMSGLen, pSt_AFile);
 									nCount += nMSGLen;
@@ -175,7 +175,7 @@ bool TSFile_Packet()
 	FILE* pSt_RVideo = fopen(lpszVideoFile, "rb");
 
 	AVHelp_Parse_FrameInit(&xhVideo, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
-	HLSProtocol_TSPacket_Insert(lpszClientID, 128);
+	HLSProtocol_TSPacket_Insert(lpszClientID, 0x100, 0x1B, 0x0F, 0x101, 0);
 
 	int nMsgLen = 0;
 	XCHAR tszMsgBuffer[2048];
@@ -206,10 +206,17 @@ bool TSFile_Packet()
 		for (int i = 0; i < nListCount; i++)
 		{
 			int nWLen = 0;
-			XCHAR* ptszMsgBuffer = (XCHAR*)malloc(XENGINE_MEMORY_SIZE_MAX);
+			int nMSGCount = 0;
+			XBYTE** ptszMsgBuffer;
 
-			//HLSProtocol_TSPacket_TSAVPacket(lpszClientID, ptszMsgBuffer, &nWLen, 0xc0);
+			HLSProtocol_TSPacket_AVPacket(lpszClientID, &ptszMsgBuffer, &nMSGCount, 0x101, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen);
+			for (int j = 0; j < nMSGCount; j++)
+			{
+				fwrite(ptszMsgBuffer[j], 1, 188, pSt_WFile);
+			}
+			BaseLib_OperatorMemory_Free((XPPPMEM)&ptszMsgBuffer, nMSGCount);
 		}
+		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_Frame, nListCount);
 	}
 
 	fclose(pSt_WFile);
