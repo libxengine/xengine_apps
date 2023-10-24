@@ -79,6 +79,8 @@ void TimeTest()
 	BaseLib_OperatorTime_StrToInt(lpszTimeStr, &nTTime);
 	BaseLib_OperatorTime_IntToStr(nTTime, tszTimeStr);
 
+	BaseLib_OperatorTime_GetSysTime(&st_LibTimer);
+	BaseLib_OperatorTime_TimezoneCvt(&st_LibTimer, 4);
 	return;
 }
 void StringTest()

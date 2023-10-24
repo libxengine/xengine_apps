@@ -364,7 +364,7 @@ bool RTMP_Parse()
 
 bool RTMP_Packet()
 {
-	LPCXSTR lpszAddr = _X("10.0.3.155");
+	LPCXSTR lpszAddr = _X("127.0.0.1");
 	
 	if (!XClient_TCPSelect_Create(&hClient, lpszAddr, 1935))
 	{
@@ -422,10 +422,11 @@ bool RTMP_Packet()
 	st_RTMPCommand.ppSt_CMDProperty[1]->st_CMDOBJect.nMLen = 13;
 	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[1]->st_CMDOBJect.tszMsgBuffer, "LNX 9,0,124,2");
 
+	LPCXSTR lpszLiveStream = _X("rtmp://10.0.3.155:1935/live");
 	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[2]->tszKeyBuffer, "tcUrl");
 	st_RTMPCommand.ppSt_CMDProperty[2]->st_CMDOBJect.byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_STRING;
-	st_RTMPCommand.ppSt_CMDProperty[2]->st_CMDOBJect.nMLen = 27;
-	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[2]->st_CMDOBJect.tszMsgBuffer, "rtmp://10.0.3.155:1935/live");
+	st_RTMPCommand.ppSt_CMDProperty[2]->st_CMDOBJect.nMLen = _tcsxlen(lpszLiveStream);
+	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[2]->st_CMDOBJect.tszMsgBuffer, lpszLiveStream);
 
 	_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[3]->tszKeyBuffer, "fpad");
 	st_RTMPCommand.ppSt_CMDProperty[3]->st_CMDOBJect.byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_BOOL;

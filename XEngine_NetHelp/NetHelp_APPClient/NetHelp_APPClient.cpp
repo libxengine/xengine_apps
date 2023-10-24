@@ -111,10 +111,10 @@ int Test_Http2Request()
 }
 int Test_HttpRequest()
 {
-	LPCXSTR lpszUrl = _X("http://www.baidu.com");
+	LPCXSTR lpszUrl = _X("https://10.0.3.155:1986/rtc/v1/play/");
 	XCHAR* ptszMsgBuffer = NULL;
 
-	APIClient_Http_Request(_X("GET"), lpszUrl, NULL, NULL, &ptszMsgBuffer);
+	APIClient_Http_Request(_X("OPTIONS"), lpszUrl, NULL, NULL, &ptszMsgBuffer);
 	printf("%s\n", ptszMsgBuffer);
 	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 	return 0;
@@ -231,7 +231,7 @@ int main()
 	//download_http();
 
 	//Test_Http2Request();
-	//Test_HttpRequest();
+	Test_HttpRequest();
 	Test_HttpCreate();
 
 	NetHelp_APPClient_EMailPop3();

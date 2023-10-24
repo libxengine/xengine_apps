@@ -94,7 +94,6 @@ bool FLV_Parse()
 		{
 			if (0 == nAVType && 0 != st_FLVVideo.byFrameType)
 			{
-				AVHelp_Parse_FixProtocol(ptszMsgBuffer, nMsgLen);
 			}
 		}
 	}
@@ -293,7 +292,7 @@ bool FLV_PacketAudio()
 		for (int i = 0; i < nListCount; i++)
 		{
 			XCHAR tszMsgBuffer[102400];
-			FLVProtocol_Packet_FrameAudio(lpszClientID, tszMsgBuffer, &nWBLen, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen, nTimeStamp);
+			FLVProtocol_Packet_FrameAudio(lpszClientID, tszMsgBuffer, &nWBLen, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen, NULL, nTimeStamp);
 			fwrite(tszMsgBuffer, 1, nWBLen, pSt_FLVFile);
 			nTimeStamp += 93;
 		}

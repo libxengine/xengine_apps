@@ -97,7 +97,7 @@ int M3U8File_Packet()
 bool TSFile_Parse()
 {
 	LPCXSTR lpszClientID = _X("client");
-    FILE* pSt_RFile = fopen("D:\\windows-ffmpeg\\x64\\obs_h264.ts", "rb");
+    FILE* pSt_RFile = fopen("D:\\windows-ffmpeg\\x64\\1.ts", "rb");
     FILE* pSt_VFile = fopen("D:\\2.h264", "wb");
     FILE* pSt_AFile = fopen("D:\\2.aac", "wb");
 
@@ -141,15 +141,15 @@ bool TSFile_Parse()
 							{
                                 if (0x1b == byAVType)
                                 {
-									fwrite(ptszMsgBuffer, 1, nMSGLen, pSt_VFile);
+									//fwrite(ptszMsgBuffer, 1, nMSGLen, pSt_VFile);
 									nCount += nMSGLen;
-									printf("Write:%d %d\n", nCount, nMSGLen);
+									//printf("Write:%d %d\n", nCount, nMSGLen);
                                 }
                                 else if (0x0f == byAVType)
                                 {
-									fwrite(ptszMsgBuffer, 1, nMSGLen, pSt_AFile);
+									//fwrite(ptszMsgBuffer, 1, nMSGLen, pSt_AFile);
 									nCount += nMSGLen;
-									printf("Write:%d %d\n", nCount, nMSGLen);
+									//printf("Write:%d %d\n", nCount, nMSGLen);
                                 }
 							}
 						}

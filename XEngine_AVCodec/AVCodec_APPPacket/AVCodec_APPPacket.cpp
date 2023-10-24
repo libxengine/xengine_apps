@@ -285,8 +285,8 @@ int AVPacket_Test_UNPacket()
 int main()
 {
 	//AVPacket_Test_FileLink();
-	AVPacket_Test_FileConvert();
-	//AVPacket_Test_FilePacket();
+	//AVPacket_Test_FileConvert();
+	AVPacket_Test_FilePacket();
 	//AVPacket_Test_UNPacket();
 
 	return 1;
