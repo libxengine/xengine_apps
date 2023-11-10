@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef _XENGINE_USER_DIR_SYSTEM
+#if 1 == _XENGINE_USER_DIR_SYSTEM
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
 #include <XEngine_Include/XEngine_HelpComponents/BINPack_Define.h>

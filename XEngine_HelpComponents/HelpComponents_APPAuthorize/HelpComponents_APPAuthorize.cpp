@@ -8,7 +8,7 @@
 #include <string.h>
 #include <inttypes.h>
 
-#ifdef _XENGINE_USER_DIR_SYSTEM
+#if 1 == _XENGINE_USER_DIR_SYSTEM
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
@@ -120,7 +120,7 @@ int Authorize_APPLocal()
 	strcpy(st_AuthLocal.st_AuthAppInfo.tszAppName, "XEngine");
 	strcpy(st_AuthLocal.st_AuthAppInfo.tszAppVer, "7.17.0.1001");
 
-	st_AuthLocal.st_AuthRegInfo.enSerialType = ENUM_HELPCOMPONENTS_AUTHORIZE_SERIAL_TYPE_MINUTE;
+	st_AuthLocal.st_AuthRegInfo.enSerialType = ENUM_HELPCOMPONENTS_AUTHORIZE_SERIAL_TYPE_SECOND;
 	st_AuthLocal.st_AuthRegInfo.enRegType = ENUM_HELPCOMPONENTS_AUTHORIZE_REG_TYPE_TRY;
 	st_AuthLocal.st_AuthRegInfo.enHWType = ENUM_HELPCOMPONENTS_AUTHORIZE_HW_TYPE_CPU;
 	st_AuthLocal.st_AuthRegInfo.enVModeType = ENUM_HELPCOMPONENTS_AUTHORIZE_VERMODE_TYPE_LOCAL;

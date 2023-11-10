@@ -8,7 +8,7 @@
 #include <string.h>
 #include <thread>
 #include <locale.h>
-#ifdef _XENGINE_USER_DIR_SYSTEM
+#if 1 == _XENGINE_USER_DIR_SYSTEM
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_Types.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
@@ -366,11 +366,21 @@ int test_handle()
 	}
 	return 0;
 }
+int test_endain()
+{
+	double nValue64 = 1920;
+	XCHAR tszMsgBuffer[MAX_PATH];
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+
+	BaseLib_OperatorEndain_ToHexW64((XBYTE*)tszMsgBuffer, *(__int64u*)&nValue64, true);
+	return 0;
+}
 
 int main()
 {
 	setlocale(LC_ALL, "");
 
+	test_endain();
 	test_handle();
 	TestAddrLib();
 	StringTest();

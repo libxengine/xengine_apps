@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef _XENGINE_USER_DIR_SYSTEM
+#if 1 == _XENGINE_USER_DIR_SYSTEM
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_NetHelp/APIHelp_Define.h>
 #include <XEngine_Include/XEngine_NetHelp/APIHelp_Error.h>
@@ -39,17 +39,27 @@ int Test_Domain()
 	printf("APIHelp_Domain_GetInfo:%s,%s,%s,%s,%d\n",st_APIDomain.tszDomainName, st_APIDomain.tszMainDomain, st_APIDomain.tszSubDomain, st_APIDomain.tszTopDomain, enAPIDomain);
 	return 0;
 }
+int Test_Email()
+{
+	LPCXSTR lpszEMailStr = _X("486179@qq.com");
+	XCHAR tszNameStr[MAX_PATH];
+	XCHAR tszDomainStr[MAX_PATH];
+
+	memset(tszNameStr, '\0', MAX_PATH);
+	memset(tszDomainStr, '\0', MAX_PATH);
+
+	if (APIHelp_EMail_IsEMailAddr(lpszEMailStr))
+	{
+		APIHelp_EMail_GetName(lpszEMailStr, tszNameStr, tszDomainStr);
+		printf("Test_Email:%s,%s", tszNameStr, tszDomainStr);
+	}
+	return 0;
+}
 
 int main()
 {
 	Test_Domain();
-
-	double nValue64 = 1920;
-	XCHAR tszMsgBuffer[MAX_PATH];
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-
-	APIHelp_NetWork_ToHexW64((XBYTE*)tszMsgBuffer, *(__int64u*)&nValue64, true);
-
+	Test_Email();
 	return 0;
 }
 
