@@ -11,84 +11,138 @@
 
 #if 1 == _XENGINE_USER_DIR_SYSTEM
 #include <XEngine_Include/XEngine_CommHdr.h>
+#include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
+#include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
 #include <XEngine_Include/XEngine_StreamMedia/RTSPProtocol_Define.h>
 #include <XEngine_Include/XEngine_StreamMedia/RTSPProtocol_Error.h>
 #ifdef _MSC_BUILD
+#pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"XEngine_StreamMedia/StreamMedia_RTSPProtocol.lib")
 #endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_RTSPProtocol/RTSPProtocol_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_RTSPProtocol/RTSPProtocol_Error.h"
 #ifdef _MSC_BUILD
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/StreamMedia_RTSPProtocol.lib")
 #endif
 #endif
-//Linux::g++ -std=c++17 -Wall -g StreamMedia_APPRtsp.cpp -o StreamMedia_APPRtsp.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia -lXEngine_BaseLib -lStreamMedia_RTSPProtocol -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_Core:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia,--disable-new-dtags
-//Macos::g++ -std=c++17 -Wall -g StreamMedia_APPRtsp.cpp -o StreamMedia_APPRtsp.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_StreamMedia -lXEngine_BaseLib -lStreamMedia_RTSPProtocol
+//Linux::g++ -std=c++17 -Wall -g StreamMedia_APPRtsp.cpp -o StreamMedia_APPRtsp.exe -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_StreamMedia -lXEngine_BaseLib -lStreamMedia_RTSPProtocol 
+//Macos::g++ -std=c++17 -Wall -g StreamMedia_APPRtsp.cpp -o StreamMedia_APPRtsp.exe -lXEngine_BaseLib -lStreamMedia_RTSPProtocol
 
-void TestUDP_RtspProtocol()
+void TestUDP_ParseREQProtocol(LPCXSTR lpszMsgBuffer, int nMsgLen)
 {
-	int nMsgLen = 0;
-	LPCXSTR lpszRTSPUrl = _X("rtsp://127.0.0.1/live/1");
-	LPCXSTR lpszSession = _X("3B2241FA");
-	XCHAR tszMsgBuffer[1024];
+	int nListCount = 4;
+	XCHAR** pptszListStr;
 
-	RTSPPROTOCOL_REQUEST st_RtspRequest;
-	RTSPPROTOCOL_RESPONSE st_RtspResponse;
-	RTSPPROTOCOL_SETUP st_RtspSetup;
+	BaseLib_OperatorMemory_Malloc((XPPPMEM)&pptszListStr, nListCount, MAX_PATH);
 
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	memset(&st_RtspRequest, '\0', sizeof(RTSPPROTOCOL_REQUEST));
-	memset(&st_RtspResponse, '\0', sizeof(RTSPPROTOCOL_RESPONSE));
-	memset(&st_RtspSetup, '\0', sizeof(RTSPPROTOCOL_SETUP));
+	strcpy((pptszListStr)[0], _X("CSeq: 5\r\n"));
+	strcpy((pptszListStr)[1], _X("User-Agent: LibVLC/3.0.20 (LIVE555 Streaming Media v2016.11.28)\r\n"));
+	strcpy((pptszListStr)[2], _X("Transport: RTP/AVP;unicast;client_port=58042-58043\r\n"));
+	strcpy((pptszListStr)[3], _X("Session: fM9tTFsntU2y\r\n"));
 
-	RTSPProtocol_ClientPacket_Setup(tszMsgBuffer, &nMsgLen, lpszRTSPUrl, IPPROTO_UDP, 1, 63505, 63506);
-	RTSPProtocol_CoreParse_Parse(&st_RtspRequest, tszMsgBuffer, nMsgLen);
-	RTSPProtocol_CoreHelp_Transport(st_RtspRequest.st_ExtInfo.tszTransport, &st_RtspSetup.nIPProtol, &st_RtspSetup.nClientRTPPort, &st_RtspSetup.nClientRTCPPort);
+	RTSPPROTOCOL_REQUEST st_RTSPRequest = {};
+	LPCXSTR lpszMethodStr = _X("SETUP");
+	LPCXSTR lpszURLStr = _X("rtsp://127.0.0.1:554/live/qyt/trackID=1");
+	LPCXSTR lpszVERStr = _X("RTSP/1.0");
 
-	st_RtspSetup.nServerRTPPort = 10001;
-	st_RtspSetup.nServerRTCPPort = 10002;
-	strcpy(st_RtspSetup.tszDestAddr, _X("192.168.1.108"));
-	strcpy(st_RtspSetup.tszSourceAddr, _X("192.168.1.115"));
-
-	RTSPProtocol_CorePacket_Setup(tszMsgBuffer, &nMsgLen, lpszSession, &st_RtspSetup, st_RtspRequest.nCseq);
-	RTSPProtocol_ClientParse_Parse(&st_RtspResponse, tszMsgBuffer, nMsgLen);
+	RTSPProtocol_REQParse_Request(&st_RTSPRequest, lpszMethodStr, lpszURLStr, lpszVERStr, &pptszListStr, nListCount);
+	BaseLib_OperatorMemory_Free((XPPPMEM)&pptszListStr, nListCount);
 	return;
 }
-void TestTCP_RtspProtocol()
+void TestUDP_ParseREPProtocol(LPCXSTR lpszMsgBuffer, int nMsgLen)
 {
-	int nMsgLen = 0;
-	LPCXSTR lpszRTSPUrl = _X("rtsp://127.0.0.1/live/1");
-	LPCXSTR lpszSession = _X("3B2241FA");
-	XCHAR tszMsgBuffer[1024];
+	RTSPPROTOCOL_RESPONSE st_RTSPResponse = {};
+	RTSPProtocol_REPParse_Request(&st_RTSPResponse, lpszMsgBuffer, nMsgLen);
 
-	RTSPPROTOCOL_REQUEST st_RtspRequest;
-	RTSPPROTOCOL_RESPONSE st_RtspResponse;
-	RTSPPROTOCOL_SETUP st_RtspSetup;
-	RTSPPROTOCOL_AUTHINFO st_AuthInfo;
-
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	memset(&st_RtspRequest, '\0', sizeof(RTSPPROTOCOL_REQUEST));
-	memset(&st_RtspResponse, '\0', sizeof(RTSPPROTOCOL_RESPONSE));
-	memset(&st_RtspSetup, '\0', sizeof(RTSPPROTOCOL_SETUP));
-	memset(&st_AuthInfo, '\0', sizeof(RTSPPROTOCOL_AUTHINFO));
-
-	strcpy(st_AuthInfo.tszAuthUser, "123123aa");
-	strcpy(st_AuthInfo.tszAuthPass, "123123");
-
-	RTSPProtocol_ClientPacket_Setup(tszMsgBuffer, &nMsgLen, lpszRTSPUrl, IPPROTO_TCP, 1, 1, 2, 3, &st_AuthInfo);
-	RTSPProtocol_CoreParse_Parse(&st_RtspRequest, tszMsgBuffer, nMsgLen);
-	RTSPProtocol_CoreHelp_Transport(st_RtspRequest.st_ExtInfo.tszTransport, &st_RtspSetup.nIPProtol, &st_RtspSetup.nClientRTPPort, &st_RtspSetup.nClientRTCPPort);
-
-	RTSPProtocol_CorePacket_Setup(tszMsgBuffer, &nMsgLen, lpszSession, &st_RtspSetup, st_RtspRequest.nCseq);
-	RTSPProtocol_ClientParse_Parse(&st_RtspResponse, tszMsgBuffer, nMsgLen);
+	for (int i = 0; i < st_RTSPResponse.nRTPCount; i++)
+	{
+		printf("%s\n", st_RTSPResponse.ppSt_RTPInfo[i]->tszURLStr);
+	}
+	BaseLib_OperatorMemory_Free((XPPPMEM)&st_RTSPResponse.ppSt_RTPInfo, st_RTSPResponse.nRTPCount);
 	return;
 }
+void TestUDP_PacketREPProtocol(XCHAR* ptszMsgBuffer, int* pInt_MSGLen)
+{
+	RTSPPROTOCOL_RESPONSE st_RTSPResponse = {};
 
+	st_RTSPResponse.nCode = 200;
+	st_RTSPResponse.nCSeq = 4;
+	st_RTSPResponse.nPLen = 612;
+	st_RTSPResponse.nRTPCount = 2;
+	st_RTSPResponse.nTimeout = 65;
+
+	BaseLib_OperatorMemory_Malloc((XPPPMEM)&st_RTSPResponse.ppSt_RTPInfo, st_RTSPResponse.nRTPCount, sizeof(RTSPPROTOCOL_RTPINFO));
+
+	st_RTSPResponse.ppSt_RTPInfo[0]->nCSeq = 35011;
+	st_RTSPResponse.ppSt_RTPInfo[0]->nNTPTime = 12312312345;
+	strcpy(st_RTSPResponse.ppSt_RTPInfo[0]->tszURLStr, "rtsp://127.0.0.1:554/live/qyt/trackID=0");
+
+	st_RTSPResponse.ppSt_RTPInfo[1]->nCSeq = 2342;
+	st_RTSPResponse.ppSt_RTPInfo[1]->nNTPTime = 35341241;
+	strcpy(st_RTSPResponse.ppSt_RTPInfo[1]->tszURLStr, "rtsp://127.0.0.1:554/live/qyt/trackID=1");
+
+	st_RTSPResponse.st_OPTion.bAnnounce = true;
+	st_RTSPResponse.st_OPTion.bDescribe = true;
+	st_RTSPResponse.st_OPTion.bOptions = true;
+	st_RTSPResponse.st_OPTion.bPlay = true;
+	st_RTSPResponse.st_OPTion.bSetup = true;
+	st_RTSPResponse.st_OPTion.bTeardown = true;
+
+	st_RTSPResponse.st_Range.bNPTTime = true;
+
+	st_RTSPResponse.st_TransportInfo.st_ClientPorts.nRTPPort = 58001;
+	st_RTSPResponse.st_TransportInfo.st_ClientPorts.nRTCPPort = 58002;
+	st_RTSPResponse.st_TransportInfo.st_ServerPorts.nRTPPort = 58011;
+	st_RTSPResponse.st_TransportInfo.st_ServerPorts.nRTCPPort = 58012;
+	st_RTSPResponse.st_TransportInfo.st_TransTypes.bUnicast = true;
+	st_RTSPResponse.st_TransportInfo.st_TransFlags.bAVP = true;
+	st_RTSPResponse.st_TransportInfo.st_TransFlags.bRTP = true;
+	st_RTSPResponse.st_TransportInfo.st_TransFlags.bUDP = true;
+	strcpy(st_RTSPResponse.st_TransportInfo.tszSSRCStr, "000002");
+
+	strcpy(st_RTSPResponse.tszConBase, "rtsp://127.0.0.1:554/live/qyt/");
+	strcpy(st_RTSPResponse.tszDate, "Wed, Nov 15 2023 09:32:49 GMT");
+	strcpy(st_RTSPResponse.tszSession, "fM9tTFsntU2y");
+
+	RTSPProtocol_REPPacket_Response(ptszMsgBuffer, pInt_MSGLen, &st_RTSPResponse);
+	BaseLib_OperatorMemory_Free((XPPPMEM)&st_RTSPResponse.ppSt_RTPInfo, st_RTSPResponse.nRTPCount);
+	printf("%s\n", ptszMsgBuffer);
+}
+void TestUDP_PacketREQProtocol(XCHAR* ptszMsgBuffer, int* pInt_MSGLen)
+{
+	RTSPPROTOCOL_REQUEST st_RTSPRequest = {};
+
+	st_RTSPRequest.enMethod = ENUM_RTSPPROTOCOL_METHOD_TYPE_DESCRIBE;
+	st_RTSPRequest.nCseq = 2;
+
+	st_RTSPRequest.st_Range.bNPTTime = true;
+
+	st_RTSPRequest.st_TransportInfo.st_TransFlags.bAVP = true;
+	st_RTSPRequest.st_TransportInfo.st_TransFlags.bRTP = true;
+	st_RTSPRequest.st_TransportInfo.st_TransFlags.bUDP = true;
+	st_RTSPRequest.st_TransportInfo.st_TransTypes.bUnicast = true;
+	st_RTSPRequest.st_TransportInfo.st_ClientPorts.nRTPPort = 30001;
+	st_RTSPRequest.st_TransportInfo.st_ClientPorts.nRTCPPort = 30002;
+
+	strcpy(st_RTSPRequest.tszSession, "D31D13D");
+	
+	RTSPProtocol_REQPacket_Request(ptszMsgBuffer, pInt_MSGLen, &st_RTSPRequest);
+	printf("%s\n", ptszMsgBuffer);
+}
 int main()
 {
-	TestUDP_RtspProtocol();
-	TestTCP_RtspProtocol();
+	int nMsgLen = 0;
+	XCHAR tszMsgBuffer[2048] = {};
+	TestUDP_PacketREPProtocol(tszMsgBuffer, &nMsgLen);
+	TestUDP_ParseREPProtocol(tszMsgBuffer, nMsgLen);
+
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	TestUDP_PacketREQProtocol(tszMsgBuffer, &nMsgLen);
+	TestUDP_ParseREQProtocol(tszMsgBuffer, nMsgLen);
 	return 0;
 }

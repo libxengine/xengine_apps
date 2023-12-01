@@ -47,8 +47,8 @@
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g StreamMedia_APPRTPProtocol.cpp -o StreamMedia_APPRTPProtocol.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -lXEngine_BaseLib -lStreamMedia_RTPProtocol -lXEngine_AVHelp -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec,--disable-new-dtags
-//Macos::g++ -std=c++17 -Wall -g StreamMedia_APPRTPProtocol.cpp -o StreamMedia_APPRTPProtocol.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_StreamMedia -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -lXEngine_BaseLib -lStreamMedia_RTPProtocol -lXEngine_AVHelp
+//Linux::g++ -std=c++17 -Wall -g StreamMedia_APPRTPProtocol.cpp -o StreamMedia_APPRTPProtocol.exe -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_StreamMedia -L /usr/local/lib/XEngine_Release/XEngine_AVCodec -lXEngine_BaseLib -lStreamMedia_RTPProtocol -lXEngine_AVHelp 
+//Macos::g++ -std=c++17 -Wall -g StreamMedia_APPRTPProtocol.cpp -o StreamMedia_APPRTPProtocol.exe -lXEngine_BaseLib -lStreamMedia_RTPProtocol -lXEngine_AVHelp
 
 void TestPacket_RTP264()
 {
@@ -60,7 +60,7 @@ void TestPacket_RTP264()
 		return;
 	}
 	AVHelp_Parse_FrameInit(&xhFrame, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
-	RTPProtocol_Packet_SetInfo(lpszClientID);
+	RTPProtocol_Packet_SetTime(lpszClientID, 25);
 
 #ifdef _MSC_BUILD
 	LPCXSTR lpsz264File = _X("D:\\h264 file\\480p.264");
@@ -170,7 +170,7 @@ void TestPacket_RTP265()
 		return;
 	}
 	AVHelp_Parse_FrameInit(&xhFrame, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H265);
-	RTPProtocol_Packet_SetInfo(lpszClientID);
+	RTPProtocol_Packet_SetTime(lpszClientID, 25);
 
 #ifdef _MSC_BUILD
 	LPCXSTR lpsz264File = _X("D:\\h264 file\\2.hevc");
@@ -283,7 +283,7 @@ void TestPacket_RTPAAC()
 		return;
 	}
 	AVHelp_Parse_FrameInit(&xhFrame, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC);
-	RTPProtocol_Packet_SetInfo(lpszClientID, 1024, 44100);
+	RTPProtocol_Packet_SetTime(lpszClientID, 44100);
 
 #ifdef _MSC_BUILD
 	LPCXSTR lpszAACFile = _X("D:\\h264 file\\test.aac");
@@ -337,7 +337,7 @@ void TestParse_RTPAAC()
 		printf("errrno");
 		return;
 	}
-	RTPProtocol_Packet_SetInfo(lpszClientID, 1024, 44100);
+	RTPProtocol_Packet_SetTime(lpszClientID, 44100);
 
 #ifdef _MSC_BUILD
 	LPCXSTR lpsz264File = _X("D:\\h264 file\\test_1.aac");

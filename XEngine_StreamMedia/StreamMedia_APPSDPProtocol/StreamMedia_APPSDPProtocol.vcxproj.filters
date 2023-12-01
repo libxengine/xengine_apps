@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="RfcComponents_APPSDPProtocol.cpp">
+    <ClCompile Include="StreamMedia_APPSDPProtocol.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
