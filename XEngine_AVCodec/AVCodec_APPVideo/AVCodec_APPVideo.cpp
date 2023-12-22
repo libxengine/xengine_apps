@@ -45,7 +45,6 @@
 
 XNETHANDLE xhDeVideo;
 XNETHANDLE xhEnVideo;
-XNETHANDLE xhFilterVideo;
 XNETHANDLE xhParse;
 FILE* pSt_YUVFile;
 FILE* pSt_264File;
@@ -56,27 +55,15 @@ void CALLBACK VideoCodec_Stream_Callback(XNETHANDLE xhVideo, uint8_t* pszYBuffer
 	//fwrite(pszYBuffer, 1, nYLen, pSt_YUVFile);
 	//fwrite(pszUBuffer, 1, nULen, pSt_YUVFile);
 	//fwrite(pszVBuffer, 1, nVLen, pSt_YUVFile);
-	int nFilterLen = 1920 * 1080 * 3;
-	uint8_t* ptszFilterBuffer = (uint8_t*)malloc(nFilterLen);
-
-	memset(ptszFilterBuffer, '\0', nFilterLen);
-
-	if (VideoCodec_Help_FilterCvt(xhFilterVideo, pszYBuffer, pszUBuffer, pszVBuffer, nYLen, nULen, nVLen, ptszFilterBuffer, &nFilterLen))
+	int nListCount = 0;
+	AVCODEC_VIDEO_MSGBUFFER** ppSt_MSGBuffer;
+	VideoCodec_Stream_EnCodec(xhEnVideo, pszYBuffer, pszUBuffer, pszVBuffer, nYLen, nULen, nVLen, &ppSt_MSGBuffer, &nListCount);
+	for (int i = 0; i < nListCount; i++)
 	{
-		int nRet = fwrite(ptszFilterBuffer, 1, nFilterLen, pSt_YUVFile);
-		printf("%d == %d\n", nFilterLen, nRet);
-
-		int nListCount = 0;
-		AVCODEC_VIDEO_MSGBUFFER** ppSt_MSGBuffer;
-		VideoCodec_Stream_EnCodec(xhEnVideo, ptszFilterBuffer, NULL, NULL, nFilterLen, 0, 0, &ppSt_MSGBuffer, &nListCount);
-		for (int i = 0; i < nListCount; i++)
-		{
-			fwrite(ppSt_MSGBuffer[i]->ptszYBuffer, 1, ppSt_MSGBuffer[i]->nYLen, pSt_264File);
-			BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_MSGBuffer[i]->ptszYBuffer);
-		}
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
+		fwrite(ppSt_MSGBuffer[i]->ptszYBuffer, 1, ppSt_MSGBuffer[i]->nYLen, pSt_264File);
+		BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_MSGBuffer[i]->ptszYBuffer);
 	}
-	free(ptszFilterBuffer);
+	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);;
 }
 int Test_H265Hevc()
 {
@@ -156,8 +143,6 @@ int Test_CodecFilter()
 		printf("VideoCodec_Stream_DeInit\n");
 		return -1;
 	}
-	const char* filter_descr = "drawtext=fontfile=Arial.ttf:fontcolor=green:fontsize=30:x=100:y=10:text='www.xyry.org'";
-	VideoCodec_Help_FilterInit(&xhFilterVideo, filter_descr, 720, 480);
 	while (1)
 	{
 		XCHAR tszBuffer[10240];

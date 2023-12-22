@@ -23,6 +23,8 @@ using namespace std;
 #include <XEngine_Include/XEngine_AVCodec/AVHelp_Error.h>
 #include <XEngine_Include/XEngine_AVCodec/AVPacket_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVPacket_Error.h>
+#include <XEngine_Include/XEngine_AVCodec/AVFilter_Define.h>
+#include <XEngine_Include/XEngine_AVCodec/AVFilter_Error.h>
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"XEngine_AVCodec/XEngine_AVCollect.lib")
@@ -30,6 +32,7 @@ using namespace std;
 #pragma comment(lib,"XEngine_AVCodec/XEngine_AudioCodec.lib")
 #pragma comment(lib,"XEngine_AVCodec/XEngine_AVHelp.lib")
 #pragma comment(lib,"XEngine_AVCodec/XEngine_AVPacket.lib")
+#pragma comment(lib,"XEngine_AVCodec/XEngine_AVFilter.lib")
 #endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
@@ -46,6 +49,8 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVPacket/AVPacket_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVPacket/AVPacket_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFilter/AVFilter_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFilter/AVFilter_Error.h"
 #ifdef _MSC_BUILD
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVCollect.lib")
@@ -53,6 +58,7 @@ using namespace std;
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AudioCodec.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVPacket.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVFilter.lib")
 #endif
 #endif
 
@@ -89,7 +95,7 @@ void CALLBACK XEngine_AVCollect_CBScreen(uint8_t* punStringY, int nYLen, uint8_t
 	}
 	memset(ptszFilterBuffer, '\0', nFLen);
 
-	if (VideoCodec_Help_FilterCvt(xhFilter, punStringY, punStringU, punStringV, nYLen, nULen, nVLen, (uint8_t*)ptszFilterBuffer, &nFLen))
+	if (AVFilter_Video_Cvt(xhFilter, punStringY, punStringU, punStringV, nYLen, nULen, nVLen, (uint8_t*)ptszFilterBuffer, &nFLen))
 	{
 		int nListCount = 0;
 		AVCODEC_VIDEO_MSGBUFFER** ppSt_MSGBuffer;
@@ -220,8 +226,14 @@ int main()
 	XCHAR tszFilterStr[MAX_PATH];
 	memset(tszFilterStr, '\0', MAX_PATH);
 
+	AVFILTER_VIDEO_INFO st_VideoInfo = {};
+	st_VideoInfo.enAVPixForamt = ENUM_AVCOLLECT_VIDEO_FMT_YUV420P;
+	st_VideoInfo.nFrame = 24;
+	st_VideoInfo.nHeight = st_AVInfo.st_VideoInfo.nHeight;
+	st_VideoInfo.nWidth = st_AVInfo.st_VideoInfo.nWidth;
+
 	sprintf(tszFilterStr, _X("drawtext=fontfile=Arial.ttf:fontcolor=green:fontsize=30:x=100:y=10:text='www.xyry.org'"));
-	if (!VideoCodec_Help_FilterInit(&xhFilter, tszFilterStr, st_AVInfo.st_VideoInfo.nWidth, st_AVInfo.st_VideoInfo.nHeight, ENUM_AVCOLLECT_VIDEO_FMT_YUV420P, 24))
+	if (!AVFilter_Video_Init(&xhFilter, tszFilterStr, &st_VideoInfo))
 	{
 		printf(_X("初始化过滤器失败"));
 		return -1;
@@ -236,7 +248,7 @@ int main()
 	AVCollect_Audio_Destory(xhSound);
 	VideoCodec_Stream_Destroy(xhVideo);
 	AudioCodec_Stream_Destroy(xhAudio);
-	VideoCodec_Help_FilterDestroy(xhFilter);
+	AVFilter_Video_Destroy(xhFilter);
 
 	if (NULL != pSt_VideoFile)
 	{

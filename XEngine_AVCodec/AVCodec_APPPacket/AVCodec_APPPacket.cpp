@@ -177,12 +177,13 @@ int AVPacket_Test_FilePacket()
 		printf("AVPacket_FileUNPack_Output:%lX\n", AVPacket_GetLastError());
 		return -1;
 	}
-	if (!AVPacket_FilePacket_Input(xhAVFile, lpszVideoFile))
+	
+	if (!AVPacket_FilePacket_Input(xhAVFile, lpszAudioFile1))
 	{
 		printf("AVPacket_FileUNPack_Input:%lX\n", AVPacket_GetLastError());
 		return -1;
 	}
-	if (!AVPacket_FilePacket_Input(xhAVFile, lpszAudioFile1))
+	if (!AVPacket_FilePacket_Input(xhAVFile, lpszVideoFile))
 	{
 		printf("AVPacket_FileUNPack_Input:%lX\n", AVPacket_GetLastError());
 		return -1;

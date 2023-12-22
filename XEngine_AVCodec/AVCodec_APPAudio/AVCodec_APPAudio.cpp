@@ -196,91 +196,11 @@ void Audio_DeCodec()
 	AudioCodec_Stream_Destroy(xhCoder);
 	AVHelp_Parse_FrameClose(xhParse);
 }
-void Audio_Mix()
-{
-	XNETHANDLE xhFilter;
 
-#ifdef _MSC_BUILD
-	LPCXSTR lpszAudioFile1 = "d:\\audio\\3.pcm";
-	LPCXSTR lpszAudioFile2 = "d:\\audio\\4.pcm";
-	LPCXSTR lpszDstFile = "d:\\audio\\mix.pcm";
-#else
-	LPCXSTR lpszAudioFile1 = "3.pcm";
-	LPCXSTR lpszAudioFile2 = "4.pcm";
-	LPCXSTR lpszDstFile = "mix.pcm";
-#endif
-
-
-	AVCODEC_AUDIO_FILTER** ppSt_AudioFile;
-	BaseLib_OperatorMemory_Malloc((XPPPMEM)&ppSt_AudioFile, 2, sizeof(AVCODEC_AUDIO_FILTER));
-
-	ppSt_AudioFile[0]->nSampleFmt = ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_S16;
-	ppSt_AudioFile[0]->nSampleRate = 44100;
-	ppSt_AudioFile[0]->nNBSample = 1152;
-	ppSt_AudioFile[0]->nChannle = 2;
-	ppSt_AudioFile[0]->nIndex = 0;
-	strcpy(ppSt_AudioFile[0]->tszArgsName, lpszAudioFile1);
-
-	ppSt_AudioFile[1]->nSampleFmt = ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_S16;
-	ppSt_AudioFile[1]->nSampleRate = 44100;
-	ppSt_AudioFile[1]->nNBSample = 1152;
-	ppSt_AudioFile[1]->nChannle = 2;
-	ppSt_AudioFile[1]->nIndex = 1;
-	strcpy(ppSt_AudioFile[1]->tszArgsName, lpszAudioFile2);
-
-	if (!AudioCodec_Help_MixInit(&xhFilter, "sample_rates=44100:sample_fmts=s16:channel_layouts=stereo", &ppSt_AudioFile, 2))
-	{
-		printf("AudioCodec_Help_FilterInit\n");
-		return;
-	}
-	FILE* pSt_File1 = fopen(lpszAudioFile1, _X("rb"));
-	FILE* pSt_File2 = fopen(lpszAudioFile2, _X("rb"));
-	FILE* pSt_FileAac = fopen(lpszDstFile, _X("wb"));
-	while (1)
-	{
-		XCHAR tszEnBuffer1[4608];
-		XCHAR tszEnBuffer2[4608];
-		XCHAR tszFilterBuffer[8196];
-
-		memset(tszEnBuffer1, '\0', sizeof(tszEnBuffer1));
-		memset(tszEnBuffer2, '\0', sizeof(tszEnBuffer2));
-		memset(tszFilterBuffer, '\0', sizeof(tszFilterBuffer));
-
-		int nRet1 = fread(tszEnBuffer1, 1, sizeof(tszEnBuffer1), pSt_File1);
-		if (nRet1 <= 0)
-		{
-			break;
-		}
-		int nRet2 = fread(tszEnBuffer2, 1, sizeof(tszEnBuffer2), pSt_File2);
-		if (nRet2 <= 0)
-		{
-			break;
-		}
-		if (!AudioCodec_Help_MixInput(xhFilter, 0, (uint8_t*)tszEnBuffer1, nRet1))
-		{
-			printf("errno\n");
-		}
-		if (!AudioCodec_Help_MixInput(xhFilter, 1, (uint8_t*)tszEnBuffer2, nRet2))
-		{
-			printf("errno\n");
-		}
-
-		int nFilterLen = 0;
-		if (AudioCodec_Help_MixOutput(xhFilter, (uint8_t*)tszFilterBuffer, &nFilterLen))
-		{
-			fwrite(tszFilterBuffer, 1, nFilterLen, pSt_FileAac);
-		}
-	}
-	AudioCodec_Help_FilterDestroy(xhFilter);
-	fclose(pSt_File1);
-	fclose(pSt_File2);
-	fclose(pSt_FileAac);
-}
 int main()
 {
-	//Audio_ListCodec();
+	Audio_ListCodec();
 	Audio_Encode();
 	Audio_DeCodec();
-	Audio_Mix();
 	return 0;
 }
