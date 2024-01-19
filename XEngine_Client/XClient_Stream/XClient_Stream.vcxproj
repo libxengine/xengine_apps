@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{4aba57cd-08af-4eed-83f4-7989deffd3a3}</ProjectGuid>
-    <RootNamespace>StreamMediaAPPClient</RootNamespace>
+    <ProjectGuid>{0e8867a1-ec77-4162-acc2-d1555a00c717}</ProjectGuid>
+    <RootNamespace>XClientStream</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -131,7 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="StreamMedia_APPClient.cpp" />
+    <ClCompile Include="XClient_Stream.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="StreamMedia_APPClient.cpp">
+    <ClCompile Include="XClient_Stream.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

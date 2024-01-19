@@ -163,6 +163,7 @@ void Audio_DeCodec()
 		printf("AudioCodec_Stream_DeInit\n");
 		return;
 	}
+	
 	if (!AudioCodec_Stream_SetResample(xhCoder, &nLen, 44100, 44100, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_S16, 2, 2))
 	{
 		printf("AudioCodec_Stream_ResamplerInit\n");
@@ -199,8 +200,8 @@ void Audio_DeCodec()
 
 int main()
 {
-	Audio_ListCodec();
-	Audio_Encode();
+	//Audio_ListCodec();
+	//Audio_Encode();
 	Audio_DeCodec();
 	return 0;
 }

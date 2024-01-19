@@ -30,7 +30,6 @@
 
 int main()
 {
-	DWORD dwRet = GetTickCount();
 	HELPCOMPONENTS_XLOG_COLOR st_XLogColor;
 	HELPCOMPONENTS_XLOG_CONFIGURE st_XLogConfig;
 
@@ -87,6 +86,5 @@ int main()
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("xlog test ok"));
 
 	HelpComponents_XLog_Destroy(xhLog);
-	printf("%ld\n", GetTickCount() - dwRet);
 	return 0;
 }

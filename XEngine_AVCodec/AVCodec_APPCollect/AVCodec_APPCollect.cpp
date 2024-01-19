@@ -69,7 +69,7 @@ int main()
 	AVCollect_Video_GetInfo(xhVideo, &st_AVInfo);
 	printf("AVCollect_Screen_GetInfo:%d %d %lld\n", st_AVInfo.st_VideoInfo.nWidth, st_AVInfo.st_VideoInfo.nHeight, st_AVInfo.st_VideoInfo.nBitRate);
 	AVCollect_Video_Start(xhVideo);
-	/*
+	
 	XHANDLE xhAudio = AVCollect_Audio_Init("dshow", _X("audio=virtual-audio-capturer"), XEngine_AVCollect_CBAudio);
 	if (NULL == xhAudio)
 	{
@@ -79,7 +79,7 @@ int main()
 	AVCollect_Audio_GetInfo(xhAudio, &st_AVInfo);
 	printf("AVCollect_Audio_GetInfo:%d %lld\n", st_AVInfo.st_AudioInfo.nSampleFmt, st_AVInfo.st_AudioInfo.nBitRate);
 	AVCollect_Audio_Start(xhAudio);
-	*/
+	
 	while (1)
 	{
 		std::this_thread::sleep_for(std::chrono::seconds(15));
