@@ -135,6 +135,12 @@ void StringTest()
 	memset(tszFileDir, '\0', MAX_PATH);
 	memset(tszFileName, '\0', MAX_PATH);
 	BaseLib_OperatorString_GetFileAndPath(lpszFile4, tszFileDir, tszFileName);
+
+	XCHAR tszFileStr[MAX_PATH] = {};
+	BaseLib_OperatorString_GetSeparatorStr("123456/789/abc/ddd", "/", tszFileStr, 2, true);
+
+	BaseLib_OperatorString_GetSeparatorStr("123456/789/abc/ddd", "/", tszFileStr, 1, false);
+	return;
 }
 
 void GMTTimeTest()
@@ -375,6 +381,18 @@ int test_endain()
 	BaseLib_OperatorEndain_ToHexW64((XBYTE*)tszMsgBuffer, *(__int64u*)&nValue64, true);
 	return 0;
 }
+int test_ipaddr()
+{
+	XUINT nIPAddr = 0;
+	LPCXSTR lpszIPAddr = _X("192.168.0.1");
+	XCHAR tszIPAddr[128] = {};
+
+	BaseLib_OperatorIPAddr_IPConvertInt(lpszIPAddr, &nIPAddr);
+	BaseLib_OperatorIPAddr_IPConvertStr(&nIPAddr, tszIPAddr);
+
+	printf("IPConvert:%d %s\n", nIPAddr, tszIPAddr);
+	return 0;
+}
 
 int main()
 {
@@ -392,5 +410,6 @@ int main()
 	TimeTest();
 	GMTTimeTest();
 	profiletest();
+	test_ipaddr();
 	return 0;
 }

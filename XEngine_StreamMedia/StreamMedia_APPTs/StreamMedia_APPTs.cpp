@@ -56,48 +56,107 @@ int M3U8File_Packet()
 {
 #ifdef _MSC_BUILD
 	LPCXSTR lpszVideoFile = _X("D:\\h264 file\\480p.264");
+	LPCXSTR lpszRootFile = _X("D:\\xengine_apps\\Debug\\live\\root.m3u8");
+	LPCXSTR lpszLowFile = _X("D:\\xengine_apps\\Debug\\live\\low\\live.m3u8");
+	LPCXSTR lpszNormalFile = _X("D:\\xengine_apps\\Debug\\live\\normal\\live.m3u8");
 #else
 	LPCXSTR lpszVideoFile = _X("480p.264");
-#endif
-	LPCXSTR lpszDstFile = _X("./live/normal/480p-");
-	LPCXSTR lpszRootFile = _X("./live/live.m3u8");
+	LPCXSTR lpszRootFile = _X("./live/root.m3u8");
 	LPCXSTR lpszLowFile = _X("./live/low/live.m3u8");
 	LPCXSTR lpszNormalFile = _X("./live/normal/live.m3u8");
-	LPCXSTR lpszHighFile = _X("./live/high/live.m3u8");
+#endif
+
 	XNETHANDLE xhRoot = 0;
 	XNETHANDLE xhLow = 0;
 	XNETHANDLE xhNormal = 0;
-	XNETHANDLE xhHigh = 0;
-	if (!HLSProtocol_M3u8File_Create(&xhRoot, lpszRootFile))
+
+	if (!HLSProtocol_M3u8Packet_Create(&xhRoot, lpszRootFile))
 	{
-		printf("HLSProtocol_M3u8File_Create:%lX\n", HLSProtocol_GetLastError());
+		printf("HLSProtocol_M3u8Packet_Create:%lX\n", HLSProtocol_GetLastError());
 		return -1;
 	}
 
-	if (!HLSProtocol_M3u8File_AddStream(xhRoot, &xhLow, lpszLowFile, "www.xyry.org/live/low/live.m3u8", 150000))
+	if (!HLSProtocol_M3u8Packet_AddStream(xhRoot, &xhLow, lpszLowFile, true, 15, 100, 40000, 1, "www.xyry.org/live/low/live.m3u8"))
 	{
-		printf("HLSProtocol_M3u8File_AddStream:%lX\n", HLSProtocol_GetLastError());
+		printf("HLSProtocol_M3u8Packet_AddStream:%lX\n", HLSProtocol_GetLastError());
 		return -1;
 	}
-	if (!HLSProtocol_M3u8File_AddStream(xhRoot, &xhNormal, lpszNormalFile, "www.xyry.org/live/normal/live.m3u8", 500000))
+	if (!HLSProtocol_M3u8Packet_AddStream(xhRoot, &xhNormal, lpszNormalFile, true, 15, 100, 40000, 1, "www.xyry.org/live/normal/live.m3u8"))
 	{
-		printf("HLSProtocol_M3u8File_AddStream:%lX\n", HLSProtocol_GetLastError());
+		printf("HLSProtocol_M3u8Packet_AddStream:%lX\n", HLSProtocol_GetLastError());
 		return -1;
 	}
-	if (!HLSProtocol_M3u8File_AddStream(xhRoot, &xhHigh, lpszHighFile, "www.xyry.org/live/high/live.m3u8", 2000000))
-	{
-		printf("HLSProtocol_M3u8File_AddStream:%lX\n", HLSProtocol_GetLastError());
-		return -1;
-	}
+	HLSProtocol_M3u8Packet_AddFile(xhRoot, xhNormal, "1.ts", 233, false);
+	HLSProtocol_M3u8Packet_AddFile(xhRoot, xhNormal, "2.ts", 233, false);
+	HLSProtocol_M3u8Packet_AddFile(xhRoot, xhNormal);
 
-	HLSProtocol_M3u8File_Delete(xhRoot);
+	//HLSProtocol_M3u8Packet_Delete(xhRoot, xhNormal);
+	//HLSProtocol_M3u8Packet_Delete(xhRoot);
 	printf("wandan\n");
 	return 0;
 }
+int M3U8File_Parse()
+{
+	XNETHANDLE xhToken = 0;
+	if (!HLSProtocol_M3U8Parse_Create(&xhToken))
+	{
+		printf("HLSProtocol_M3U8Parse_Create:%lX\n", HLSProtocol_GetLastError());
+		return -1;
+	}
+	bool bStream = false;
+	LPCXSTR lpszFile = _X("D:\\xengine_apps\\Debug\\live\\root.m3u8");
+	HLSProtocol_M3U8Parse_ReadStream(xhToken, &bStream, lpszFile);
+
+	XBYTE byVersion = 0;
+	int nListCount = 0;
+	HLSPROTOCOL_M3U8HDR** ppSt_ListFile;
+	HLSProtocol_M3U8Parse_GetStream(xhToken, &byVersion, &ppSt_ListFile, &nListCount);
+	for (int i = 0; i < nListCount; i++)
+	{
+		printf("%d:%s\n", ppSt_ListFile[i]->nBandwidth, ppSt_ListFile[i]->tszStreamAddr);
+	}
+	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListFile, nListCount);
+
+	HLSPROTOCOL_M3U8INFO st_M3u8Info = {};
+	LPCXSTR lpszFileInfo = _X("D:\\xengine_apps\\Debug\\live\\normal\\live.m3u8");
+	HLSProtocol_M3U8Parse_ReadLive(xhToken, &st_M3u8Info, lpszFileInfo);
+
+	while (true)
+	{
+		double dlTime = 0;
+		XCHAR tszStreamAddr[MAX_PATH] = {};
+		if (HLSProtocol_M3U8Parse_GetLive(xhToken, tszStreamAddr, &dlTime))
+		{
+			printf("%s %lf\n", tszStreamAddr, dlTime);
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	HLSProtocol_M3U8Parse_ReadLive(xhToken, &st_M3u8Info, lpszFileInfo);
+	while (true)
+	{
+		double dlTime = 0;
+		XCHAR tszStreamAddr[MAX_PATH] = {};
+		if (HLSProtocol_M3U8Parse_GetLive(xhToken, tszStreamAddr, &dlTime))
+		{
+			printf("%s %lf\n", tszStreamAddr, dlTime);
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	return 0;
+}
+
 bool TSFile_Parse()
 {
 	LPCXSTR lpszClientID = _X("client");
-    FILE* pSt_RFile = fopen("D:\\XEngine_StreamMedia\\XEngine_APPClient\\Debug\\1.ts", "rb");
+    FILE* pSt_RFile = fopen("D:\\XEngine_StreamMedia\\XEngine_Source\\Debug\\1.ts", "rb");
     FILE* pSt_VFile = fopen("D:\\2.h264", "wb");
     FILE* pSt_AFile = fopen("D:\\2.aac", "wb");
 
@@ -143,13 +202,13 @@ bool TSFile_Parse()
                                 {
 									fwrite(ptszMsgBuffer, 1, nMSGLen, pSt_VFile);
 									nCount += nMSGLen;
-									printf("Write:%d %d\n", nCount, nMSGLen);
+									printf("Write Video:%d %d\n", nCount, nMSGLen);
                                 }
                                 else if (0x0f == byAVType)
                                 {
 									fwrite(ptszMsgBuffer, 1, nMSGLen, pSt_AFile);
 									nCount += nMSGLen;
-									printf("Write:%d %d\n", nCount, nMSGLen);
+									printf("Write Audio:%d %d\n", nCount, nMSGLen);
                                 }
 							}
 						}
@@ -169,14 +228,14 @@ bool TSFile_Parse()
 bool TSFile_Packet()
 {
 	XNETHANDLE xhVideo = 0;
-	LPCXSTR lpszVideoFile = _X("D:\\h264 file\\1080P.264");
+	LPCXSTR lpszVideoFile = _X("D:\\h264 file\\720x480.264");
 	LPCXSTR lpszClientID = _X("client");
 	FILE* pSt_WFile = fopen("D:\\windows-ffmpeg\\x64\\1.ts", "wb");
 	FILE* pSt_RVideo = fopen(lpszVideoFile, "rb");
 
 	AVHelp_Parse_FrameInit(&xhVideo, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
-	HLSProtocol_TSPacket_Insert(lpszClientID, 0x100, 0x1B, 0x0F, 0x101, 0);
-
+	HLSProtocol_TSPacket_Insert(lpszClientID, 0x1000, 0x1B, 0x0F, 0x101, 0);
+	HLSProtocol_TSPacket_SetTime(lpszClientID, 24, 0);
 	int nMsgLen = 0;
 	XCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
@@ -209,7 +268,7 @@ bool TSFile_Packet()
 			int nMSGCount = 0;
 			XBYTE** ptszMsgBuffer;
 
-			HLSProtocol_TSPacket_AVPacket(lpszClientID, &ptszMsgBuffer, &nMSGCount, 0x101, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen);
+			HLSProtocol_TSPacket_AVPacketTS(lpszClientID, &ptszMsgBuffer, &nMSGCount, 0x101, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen);
 			for (int j = 0; j < nMSGCount; j++)
 			{
 				fwrite(ptszMsgBuffer[j], 1, 188, pSt_WFile);
@@ -226,14 +285,17 @@ bool TSFile_Packet()
 
 int main()
 {
-	bool bServer = true;
+	//M3U8File_Packet();
+	M3U8File_Parse();
+
+	bool bServer = false;
 	if (bServer)
 	{
-		TSFile_Parse();
+		//TSFile_Parse();
 	}
 	else
 	{
-		TSFile_Packet();
+		//TSFile_Packet();
 	}
 
 	return 0;

@@ -226,7 +226,7 @@ int AVPacket_Test_UNPacket()
 	LPCXSTR lpszVideoFile = "d:\\h264 file\\480p_1.264";
 	LPCXSTR lpszAudioFile1 = "d:\\h264 file\\test_1.aac";
 	LPCXSTR lpszAudioFile2 = "d:\\h264 file\\test_2.aac";
-	LPCXSTR lpszSrcFile = "d:\\h264 file\\480p.mp4";
+	LPCXSTR lpszSrcFile = "D:\\windows-ffmpeg\\x64\\1.ts";
 #else
 	LPCXSTR lpszVideoFile = "480p_1.264";
 	LPCXSTR lpszAudioFile1 = "test_1.aac";
@@ -255,8 +255,8 @@ int AVPacket_Test_UNPacket()
 		printf("%d %d AVTime:%lf\n", ppSt_ListFile[i]->nAVCodecType, ppSt_ListFile[i]->nAVCodecID, ppSt_ListFile[i]->dlAVTime);
 	}
 	strcpy(ppSt_ListFile[0]->tszFileName, lpszVideoFile);
-	strcpy(ppSt_ListFile[1]->tszFileName, lpszAudioFile1);
-	strcpy(ppSt_ListFile[2]->tszFileName, lpszAudioFile2);
+	//strcpy(ppSt_ListFile[1]->tszFileName, lpszAudioFile1);
+	//strcpy(ppSt_ListFile[2]->tszFileName, lpszAudioFile2);
 
 	if (!AVPacket_FileUNPack_Output(xhAVFile, &ppSt_ListFile, nListCount))
 	{
@@ -287,8 +287,8 @@ int main()
 {
 	//AVPacket_Test_FileLink();
 	//AVPacket_Test_FileConvert();
-	AVPacket_Test_FilePacket();
-	//AVPacket_Test_UNPacket();
+	//AVPacket_Test_FilePacket();
+	AVPacket_Test_UNPacket();
 
 	return 1;
 }

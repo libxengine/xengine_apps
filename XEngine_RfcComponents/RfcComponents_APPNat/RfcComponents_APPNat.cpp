@@ -50,12 +50,10 @@ int main()
 	XSOCKET m_Socket;
 	int nMsgLen = 0;
 	XCHAR tszMsgBuffer[2048];
-	XUINT nToken[3];
 	RFCCOMPONENTS_NATSTUN st_NatClient;
 
 	memset(&st_NatClient, '\0', sizeof(RFCCOMPONENTS_NATSTUN));
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	memset(&nToken, '\0', sizeof(nToken));
 
 	if (!XClient_UDPSelect_Create(&m_Socket))
 	{
@@ -68,6 +66,10 @@ int main()
 	XCHAR tszRandomStr[10] = {};
 	BaseLib_OperatorHandle_CreateStr(tszRandomStr, 8, 0, 2);
 	NatProtocol_StunNat_BuildAttr(tszTmpBuffer, &nMsgLen, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_ATTR_USERNAME, "j107le40:qhto", 13);
+
+	//NatProtocol_StunNat_BuildMapAddress(tszTmpBuffer + nMsgLen, &nMsgLen, "127.0.0.1", 5501);
+	//NatProtocol_StunNat_BuildMapAddress(tszTmpBuffer + nMsgLen, &nMsgLen, "192.168.1.180", 5501, true);
+	/*
 	NatProtocol_StunNat_BuildAttr(tszTmpBuffer + nMsgLen, &nMsgLen, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_ATTR_ICE_CONTROLLING, tszRandomStr, 8);
 
 	int nPLen = 0;
@@ -76,16 +78,19 @@ int main()
 	NatProtocol_StunNat_BuildAttr(tszTmpBuffer + nMsgLen, &nMsgLen, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_ATTR_USER_CANDIDATE);
 
 	nMsgLen += 8;//FIN
-
-	if (!NatProtocol_StunNat_Packet(tszMsgBuffer, &nMsgLen, nToken, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_CLASS_REQUEST, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_ATTR_MAPPED_ADDRESS, tszTmpBuffer))
+	*/
+	XCHAR tszTokenStr[64] = {};
+	BaseLib_OperatorHandle_CreateStr(tszTokenStr, 12, 0, 2);
+	if (!NatProtocol_StunNat_Packet(tszMsgBuffer, &nMsgLen, tszTokenStr, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_CLASS_REQUEST, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_ATTR_MAPPED_ADDRESS, tszTmpBuffer))
 	{
 		printf("构建请求包缓冲区错误!\n");
 		return -1;
 	}
+	/*
 	int nFLen = 0;
 	XCHAR tszFinBuffer[128] = {};
 	NatProtocol_StunNat_BuildFinger(tszMsgBuffer + nMsgLen - 8, &nFLen, tszMsgBuffer, nMsgLen - 8);
-
+	*/
 	if (!XClient_UDPSelect_SendMsg(m_Socket, tszMsgBuffer, nMsgLen))
 	{
 		printf("发送数据失败!,错误:%lX\n", XClient_GetLastError());
@@ -106,7 +111,7 @@ int main()
 		printf("处理数据失败!,错误:%lX\n", NatProtocol_GetLastError());
 		return -1;
 	}
-	printf("%s %d %d %d\n", st_NatClient.tszServiceName, st_NatClient.xhToken[0], st_NatClient.xhToken[1], st_NatClient.xhToken[2]);
+	printf("%s %s\n", st_NatClient.tszServiceName, st_NatClient.byTokenStr);
 
 	for (int i = 0; i < nListCount; i++)
 	{
@@ -165,7 +170,7 @@ int main()
 	NatProtocol_StunNat_BuildAddrFamily(tszAttrBuffer + nA1Len + nA2Len, &nA3Len);
 	nMsgLen = nA1Len + nA2Len + nA3Len;
 
-	if (!NatProtocol_StunNat_Packet(tszMsgBuffer, &nMsgLen, nToken, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_CLASS_REQUEST, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_METHOD_ALLOCATE, tszAttrBuffer))
+	if (!NatProtocol_StunNat_Packet(tszMsgBuffer, &nMsgLen, tszTokenStr, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_CLASS_REQUEST, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_METHOD_ALLOCATE, tszAttrBuffer))
 	{
 		printf("构建请求包缓冲区错误!\n");
 		return -1;
