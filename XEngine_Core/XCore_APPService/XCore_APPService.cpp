@@ -17,9 +17,12 @@ using namespace std;
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_Types.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
+#include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
+#include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
 #include <XEngine_Include/XEngine_Core/NetCore_Define.h>
 #include <XEngine_Include/XEngine_Core/NetCore_Error.h>
 #ifdef _MSC_BUILD
+#pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"XEngine_Core/XEngine_Core.lib")
 #endif
 #else
@@ -28,7 +31,10 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #ifdef _MSC_BUILD
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_Core.lib")
 #endif
 #endif
@@ -87,6 +93,16 @@ int test_tcpxcore()
 	}
 	NetCore_TCPXCore_RegisterCallBackEx(xhTCPCore,TCPOverlapped_Login, TCPOverlapped_Recv, TCPOverlapped_Leave);
 	std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+
+	int nCount = 0;
+	XCHAR** ppszListClient;
+	NetCore_TCPXCore_GetAllEx(xhTCPCore, &ppszListClient, &nCount);
+	for (int i = 0; i < nCount; i++)
+	{
+		printf("%d:%s\n", i, ppszListClient[i]);
+	}
+	BaseLib_OperatorMemory_Free((XPPPMEM)&ppszListClient, nCount);
+
 	NetCore_TCPXCore_CloseForClientEx(xhTCPCore, tszClientAddr);
 	return 0;
 }

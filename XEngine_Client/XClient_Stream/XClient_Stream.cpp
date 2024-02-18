@@ -98,7 +98,7 @@ int Test_RTMPPush()
 	return 1;
 }
 
-int Test_LivePush()
+int Test_CodecPush()
 {
 	XHANDLE xhStream = NULL;
 	FILE* pSt_VFile = NULL;

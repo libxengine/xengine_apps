@@ -57,11 +57,15 @@ int XClient_ProxyClient()
 	}
 	nMsgLen = 10240;
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nMsgLen))
-	{
-		printf("XClient_TCPSelect_RecvMsg:%s\n", tszMsgBuffer);
-	}
 
+	if (XClient_OPTSocket_IOSelect(m_Socket, true))
+	{
+		if (XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nMsgLen))
+		{
+			printf("XClient_TCPSelect_RecvMsg:%s\n", tszMsgBuffer);
+		}
+	}
+	
 	LPCXSTR lpszRequestMsg2 = _X("GET / HTTP/1.1\r\n"
 		"Content-Length: 0\r\n"
 		"Host: xyry.org\r\n"
@@ -94,7 +98,7 @@ int TCPTest()
 	memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
 
 	XSOCKET m_Socket;
-	if (!XClient_TCPSelect_Create(&m_Socket, _X("10.10.13.53"), 5000))
+	if (!XClient_TCPSelect_Create(&m_Socket, _X("127.0.0.1"), 5000))
 	{
 		printf(_X("连接失败！\n"));
 		return -1;

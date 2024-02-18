@@ -117,6 +117,7 @@ XHTHREAD CALLBACK NetCore_Thread()
 						}
 						else
 						{
+							//127.0.0.1:8080
 							printf("%s %d:%s\n", ppSt_ListClient[i]->tszClientAddr, nMsgLen, ptszMsgBuffer);
 							XCHAR tszMsgBuffer[1024];
 							RFCCOMPONENTS_HTTP_HDRPARAM st_HdrParam;
@@ -201,7 +202,7 @@ int main()
 	NetCore_TCPXCore_RegisterCallBackEx(xhToken, NetCore_CB_Login, NetCore_CB_Recv, NetCore_CB_Close);
 	std::thread pSTDThread(NetCore_Thread);
 
-	std::this_thread::sleep_for(std::chrono::seconds(10));
+	std::this_thread::sleep_for(std::chrono::seconds(600));
 	bIsRun = false;
 	HttpProtocol_Server_DestroyEx(xhHttp);
 	pSTDThread.join();

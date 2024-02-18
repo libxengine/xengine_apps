@@ -51,7 +51,7 @@ bool CALLBACK EnumFile(LPCXSTR lpFileOrPath, bool bFindPath, XPVOID lParam)
 int main()
 {
 #ifdef _MSC_BUILD
-	SystemApi_File_EnumFile("D:\\XEngine\\XEngine_SourceCode\\Debug\\*", NULL, NULL, EnumFile);
+	SystemApi_File_EnumFile("D:\\XEngine\\XEngine_SourceCode\\Debug\\*", NULL, NULL);
 #else
 	SystemApi_File_EnumFile("/tmp", NULL, NULL, EnumFile);
 #endif
