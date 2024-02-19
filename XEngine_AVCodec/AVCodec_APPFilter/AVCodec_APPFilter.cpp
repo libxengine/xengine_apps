@@ -120,7 +120,7 @@ int Test_FilterMutliVideo()
 {
 	XNETHANDLE xhToken = 0;
 	int nVideoList = 4;
-	AVFILTER_VIDEO_INFO st_VideoDst = {};
+	AVFILTER_INFO st_AVFilter = {};
 	AVFILTER_VIDEO_INFO **ppSt_VideoInfo;
 
 	BaseLib_OperatorMemory_Malloc((XPPPMEM)&ppSt_VideoInfo, nVideoList, sizeof(AVFILTER_VIDEO_INFO));
@@ -130,65 +130,44 @@ int Test_FilterMutliVideo()
 	ppSt_VideoInfo[0]->nHeight = 480;
 	ppSt_VideoInfo[0]->nFrame = 24;
 	ppSt_VideoInfo[0]->enAVPixForamt = ENUM_AVCOLLECT_VIDEO_FMT_YUV420P;
-	
+	ppSt_VideoInfo[0]->bFilterEnable = true;
+	_tcsxcpy(ppSt_VideoInfo[0]->st_FilterInfo.tszARGName, "scale");
+	_tcsxcpy(ppSt_VideoInfo[0]->st_FilterInfo.tszARGPara, "360:240");
+
 	ppSt_VideoInfo[1]->nIndex = 1;
 	ppSt_VideoInfo[1]->nWidth = 720;
 	ppSt_VideoInfo[1]->nHeight = 480;
 	ppSt_VideoInfo[1]->nFrame = 24;
 	ppSt_VideoInfo[1]->enAVPixForamt = ENUM_AVCOLLECT_VIDEO_FMT_YUV420P;
+	ppSt_VideoInfo[1]->bFilterEnable = true;
+	_tcsxcpy(ppSt_VideoInfo[1]->st_FilterInfo.tszARGName, "scale");
+	_tcsxcpy(ppSt_VideoInfo[1]->st_FilterInfo.tszARGPara, "360:240");
 
 	ppSt_VideoInfo[2]->nIndex = 2;
 	ppSt_VideoInfo[2]->nWidth = 720;
 	ppSt_VideoInfo[2]->nHeight = 480;
 	ppSt_VideoInfo[2]->nFrame = 24;
 	ppSt_VideoInfo[2]->enAVPixForamt = ENUM_AVCOLLECT_VIDEO_FMT_YUV420P;
+	ppSt_VideoInfo[2]->bFilterEnable = true;
+	_tcsxcpy(ppSt_VideoInfo[2]->st_FilterInfo.tszARGName, "scale");
+	_tcsxcpy(ppSt_VideoInfo[2]->st_FilterInfo.tszARGPara, "360:240");
 
 	ppSt_VideoInfo[3]->nIndex = 3;
 	ppSt_VideoInfo[3]->nWidth = 720;
 	ppSt_VideoInfo[3]->nHeight = 480;
 	ppSt_VideoInfo[3]->nFrame = 24;
 	ppSt_VideoInfo[3]->enAVPixForamt = ENUM_AVCOLLECT_VIDEO_FMT_YUV420P;
-
-	st_VideoDst.nWidth = 720;
-	st_VideoDst.nHeight = 480;
-	st_VideoDst.nFrame = 24;
-	st_VideoDst.enAVPixForamt = ENUM_AVCOLLECT_VIDEO_FMT_YUV420P;
+	ppSt_VideoInfo[3]->bFilterEnable = true;
+	_tcsxcpy(ppSt_VideoInfo[3]->st_FilterInfo.tszARGName, "scale");
+	_tcsxcpy(ppSt_VideoInfo[3]->st_FilterInfo.tszARGPara, "360:240");
 	
-	XCHAR tszFilterStr[512] = {};
-	/*
-	_xstprintf(tszFilterStr, _X("nullsrc=size=720x480 [base];"
-		"[in0] scale=380x480 [left];"
-		"[in1] scale=380x480 [right];"
-		"[base] overlay=shortest=1[tmp1];"
-		"[tmp1] overlay=shortest=1:x=380;"));
-	
-	_xstprintf(tszFilterStr,
-		"buffer=video_size=720x480:pix_fmt=0:time_base=1/24:[main];"
-		"buffer=video_size=720x480:pix_fmt=0:time_base=1/24:[logo];"
-		"[logo]scale=iw/2:ih/2[small];"
-		"[main][small]overlay=W/2:H/2[result];"
-		"[result]buffersink");
-		
-	_xstprintf(tszFilterStr, _X("nullsrc=size=720x480 [base];"
-		"[in0] scale=360x240 [upperleft];"
-		"[in1] scale=360x240 [upperright];"
-		"[in2] scale=360x240 [lowerleft];"
-		"[in3] scale=360x240 [lowerright];"
-		"[base][upperleft] overlay=shortest=1[tmp1];"
-		"[tmp1][upperright] overlay=shortest=1:x=360 [tmp2];"
-		"[tmp2][lowerleft] overlay=shortest=1:y=240 [tmp3];"
-		"[tmp3][lowerright] overlay=shortest=1:x=360:y=240"));
-		*/
-	_xstprintf(tszFilterStr, _X("buffer=width=480:height=720:pix_fmt=0:time_base=1/24 [pad_in];"
-		"[pad_in] split=4 [in0] [in1] [in2] [in3];"
-		"[in0] crop=w=240:h=380:x=0:y=0 [tmp1];"
-		"[in1] [tmp1]crop=w=240:h=380:x=380:y=0 [tmp2];"
-		"[in2] [tmp2]crop=w=240:h=380:x=0:y=240 [tmp3];"
-		"[in3] [tmp3]crop=w=240:h=380:x=380:y=240"));
-	AVFilter_Video_MIXInit(&xhToken, tszFilterStr, &ppSt_VideoInfo, nVideoList, &st_VideoDst);
+	_tcsxcpy(st_AVFilter.tszARGName, "xstack");
+	_tcsxcpy(st_AVFilter.tszARGPara, "inputs=4:layout=0_0|w0_0|0_h0|w0_h0");
 
-	FILE* pSt_RBFile = _xtfopen("D:\\windows-ffmpeg\\x64\\output_1.yuv", _X("rb"));
-	FILE* pSt_WBFile = _xtfopen("D:\\windows-ffmpeg\\x64\\output_w.yuv", _X("wb"));
+	AVFilter_Video_MIXInit(&xhToken, &ppSt_VideoInfo, nVideoList, &st_AVFilter);
+
+	FILE* pSt_RBFile = _xtfopen("D:\\h264 file\\output.yuv", _X("rb"));
+	FILE* pSt_WBFile = _xtfopen("D:\\h264 file\\output_w.yuv", _X("wb"));
 
 	int nSize = 720 * 480 * 3 / 2;
 	XCHAR* ptszWBBuffer = (XCHAR*)malloc(nSize);
@@ -241,22 +220,29 @@ void Test_FilterMutliAudio()
 	LPCXSTR lpszDstFile = "mix.pcm";
 #endif
 
+	AVFILTER_INFO st_AVFilter = {};
 	AVFILTER_AUDIO_INFO** ppSt_AudioFile;
 	BaseLib_OperatorMemory_Malloc((XPPPMEM)&ppSt_AudioFile, 2, sizeof(AVFILTER_AUDIO_INFO));
 
 	ppSt_AudioFile[0]->nSampleFmt = ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_S16;
 	ppSt_AudioFile[0]->nSampleRate = 44100;
-	ppSt_AudioFile[0]->nNBSample = 1152;
+	ppSt_AudioFile[0]->nNBSample = 1024;
 	ppSt_AudioFile[0]->nChannle = 2;
 	ppSt_AudioFile[0]->nIndex = 0;
 
 	ppSt_AudioFile[1]->nSampleFmt = ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_S16;
 	ppSt_AudioFile[1]->nSampleRate = 44100;
-	ppSt_AudioFile[1]->nNBSample = 1152;
+	ppSt_AudioFile[1]->nNBSample = 1024;
 	ppSt_AudioFile[1]->nChannle = 2;
 	ppSt_AudioFile[1]->nIndex = 1;
 
-	if (!AVFilter_Audio_MIXInit(&xhFilter, "sample_rates=44100:sample_fmts=s16:channel_layouts=stereo", &ppSt_AudioFile, 2))
+	_tcsxcpy(st_AVFilter.tszARGName, "amix");
+	_tcsxcpy(st_AVFilter.tszARGPara, "inputs=2:duration=longest");
+	//指定输出
+	_tcsxcpy(st_AVFilter.st_OUTFilter.tszARGName, "aformat");
+	_tcsxcpy(st_AVFilter.st_OUTFilter.tszARGPara, "sample_fmts=s16:sample_rates=44100:channel_layouts=stereo");
+
+	if (!AVFilter_Audio_MIXInit(&xhFilter, &ppSt_AudioFile, 2, &st_AVFilter))
 	{
 		printf("AudioCodec_Help_FilterInit\n");
 		return;
@@ -266,9 +252,9 @@ void Test_FilterMutliAudio()
 	FILE* pSt_FileAac = fopen(lpszDstFile, _X("wb"));
 	while (1)
 	{
-		XCHAR tszEnBuffer1[4608];
-		XCHAR tszEnBuffer2[4608];
-		XCHAR tszFilterBuffer[8196];
+		XCHAR tszEnBuffer1[4096];
+		XCHAR tszEnBuffer2[4096];
+		XCHAR tszFilterBuffer[10240];
 
 		memset(tszEnBuffer1, '\0', sizeof(tszEnBuffer1));
 		memset(tszEnBuffer2, '\0', sizeof(tszEnBuffer2));
@@ -310,6 +296,6 @@ int main()
 	//Test_FilterVideo();
 
 	Test_FilterMutliAudio();
-	Test_FilterMutliVideo();
+	//Test_FilterMutliVideo();
 	return 0;
 }

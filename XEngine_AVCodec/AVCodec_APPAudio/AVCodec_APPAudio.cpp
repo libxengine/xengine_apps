@@ -154,7 +154,7 @@ void Audio_DeCodec()
 	memset(&st_AudioInfo, '\0', sizeof(AVCODEC_AUDIO_INFO));
 
 	st_AudioInfo.nSampleRate = 44100;
-	st_AudioInfo.nFrameSize = 1124;
+	st_AudioInfo.nFrameSize = 1024;
 	st_AudioInfo.nChannel = 2;
 	st_AudioInfo.nSampleFmt = ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP;
 
@@ -164,10 +164,14 @@ void Audio_DeCodec()
 		return;
 	}
 	
-	if (!AudioCodec_Stream_SetResample(xhCoder, &nLen, 44100, 44100, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_S16, 2, 2))
+	if (!AudioCodec_Stream_SetResample(xhCoder, &nLen, st_AudioInfo.nSampleRate, 44100, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_S16, 2, 2))
 	{
 		printf("AudioCodec_Stream_ResamplerInit\n");
 		return;
+	}
+	if (nLen <= 0)
+	{
+		nLen = 10240;
 	}
 	AVHelp_Parse_FrameInit(&xhParse, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC);
 
