@@ -34,8 +34,7 @@
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_SystemApi.lib")
 #endif
 #endif
-//linux::g++ -std=gnu++17 -Wall -g HelpComponents_APPCompress.cpp -o HelpComponents_APPCompress.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents -lXEngine_BaseLib -lXEngine_SystemApi -lHelpComponents_Compress -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_HelpComponents,--disable-new-dtags
-//Macos::g++ -std=gnu++17 -Wall -g HelpComponents_APPCompress.cpp -o HelpComponents_APPCompress.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_SystemSdk -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_HelpComponents -lXEngine_BaseLib -lXEngine_SystemApi -lHelpComponents_Compress
+//linux Macos:g++ -std=gnu++17 -Wall -g HelpComponents_APPCompress.cpp -o HelpComponents_APPCompress.exe -lXEngine_BaseLib -lXEngine_SystemApi -lHelpComponents_Compress 
 
 void CompressBuffer_Test()
 {

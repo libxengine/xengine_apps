@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="XCore_APPNetXApi.cpp">
+    <ClCompile Include="XClient_APIHelp.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

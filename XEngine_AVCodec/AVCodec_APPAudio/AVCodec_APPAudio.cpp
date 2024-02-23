@@ -41,8 +41,8 @@
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
 #endif
 #endif
-//Linux::g++ -std=c++17 -Wall -g AVCodec_APPAudio.cpp -o AVCodec_APPAudio.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_AVHelp -lXEngine_AudioCodec -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
-//Macos::g++ -std=c++17 -Wall -g AVCodec_APPAudio.cpp -o AVCodec_APPAudio.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_AVHelp -lXEngine_AudioCoder
+//Linux Macos:g++ -std=c++17 -Wall -g AVCodec_APPAudio.cpp -o AVCodec_APPAudio.exe -lXEngine_BaseLib -lXEngine_AVHelp -lXEngine_AudioCodec
+
 
 void CALLBACK AudioCodec_Stream_Callback(XNETHANDLE xhNet, uint8_t* pszBuffer, int nLen, AVCODEC_AUDIO_INFO* pSt_AudioInfo, XPVOID lParam)
 {
@@ -79,7 +79,7 @@ void Audio_Encode()
 	memset(&st_AudioInfo, '\0', sizeof(AVCODEC_AUDIO_INFO));
 
 	st_AudioInfo.nChannel = 2;
-	st_AudioInfo.nSampleRate = 44100;
+	st_AudioInfo.nSampleRate = 48000;
 	st_AudioInfo.nBitRate = 64000;
 	st_AudioInfo.nSampleFmt = ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP;
 	st_AudioInfo.enAVCodec = ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC;
@@ -89,14 +89,14 @@ void Audio_Encode()
 		return;
 	}
 	int nLen = 0;
-	if (!AudioCodec_Stream_SetResample(xhCoder, &nLen, 44100, 44100, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_S16, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP, 2, 2))
+	if (!AudioCodec_Stream_SetResample(xhCoder, &nLen, 48000, 48000, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_S16, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP, 2, 2))
 	{
 		printf("AudioCodec_Stream_ResamplerInit\n");
 		return;
 	}
 #ifdef _MSC_BUILD
-	FILE* pSt_File = fopen("d:\\audio\\44.1k_2_16.pcm", "rb");
-	FILE* pSt_FileAac = fopen("d:\\audio\\44.1k_2_16.aac", "wb");
+	FILE* pSt_File = fopen("d:\\output.pcm", "rb");
+	FILE* pSt_FileAac = fopen("d:\\output.aac", "wb");
 #else
 	FILE* pSt_File = fopen("44.1k_2_16.pcm", "rb");
 	FILE* pSt_FileAac = fopen("44.1k_2_16.aac", "wb");
@@ -104,13 +104,13 @@ void Audio_Encode()
 
 	while (1)
 	{
-		XCHAR tszEnBuffer[40960];
+		XCHAR tszEnBuffer[4608];
 		XCHAR tszPCMBuffer[40960];
 
 		memset(tszEnBuffer, '\0', sizeof(tszEnBuffer));
 		memset(tszPCMBuffer, '\0', sizeof(tszPCMBuffer));
 
-		int nRet = fread(tszPCMBuffer, 1, 1000, pSt_File);
+		int nRet = fread(tszPCMBuffer, 1, 4608, pSt_File);
 		if (nRet <= 0)
 		{
 			break;
@@ -122,7 +122,7 @@ void Audio_Encode()
 			for (int i = 0; i < nListCount; i++)
 			{
 				XBYTE byAACHdr[8];
-				AVHelp_Packet_AACHdr(byAACHdr, 44100, 2, ppSt_ListAudio[i]->nMsgLen);
+				AVHelp_Packet_AACHdr(byAACHdr, 48000, 2, ppSt_ListAudio[i]->nMsgLen);
 
 				fwrite(byAACHdr, 1, 7, pSt_FileAac);
 				fwrite(ppSt_ListAudio[i]->ptszMsgBuffer, 1, ppSt_ListAudio[i]->nMsgLen, pSt_FileAac);
@@ -205,7 +205,7 @@ void Audio_DeCodec()
 int main()
 {
 	//Audio_ListCodec();
-	//Audio_Encode();
-	Audio_DeCodec();
+	Audio_Encode();
+	//Audio_DeCodec();
 	return 0;
 }

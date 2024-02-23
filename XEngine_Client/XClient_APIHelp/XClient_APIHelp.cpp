@@ -11,26 +11,25 @@
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
-#include <XEngine_Include/XEngine_NetHelp/APIClient_Define.h>
-#include <XEngine_Include/XEngine_NetHelp/APIClient_Error.h>
+#include <XEngine_Include/XEngine_Client/APIClient_Define.h>
+#include <XEngine_Include/XEngine_Client/APIClient_Error.h>
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
-#pragma comment(lib,"XEngine_NetHelp/NetHelp_APIClient.lib")
+#pragma comment(lib,"XEngine_Client/XClient_APIHelp.lib")
 #endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_APIClient/APIClient_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_APIClient/APIClient_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_APIHelp/APIClient_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_APIHelp/APIClient_Error.h"
 #ifdef _MSC_BUILD
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/NetHelp_APIClient.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XClient_APIHelp.lib")
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g NetHelp_APPClient.cpp -o NetHelp_APPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp -lXEngine_BaseLib -lNetHelp_APIClient -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_NetHelp,--disable-new-dtags
-//Macos::g++ -std=c++17 -Wall -g NetHelp_APPClient.cpp -o NetHelp_APPClient.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_NetHelp -lXEngine_BaseLib -lNetHelp_APIClient
+//Linux::g++ -std=c++17 -Wall -g XClient_APIHelp.cpp -o XClient_APIHelp.exe -lXEngine_BaseLib -lXClient_APIHelp
 
 void CALLBACK NetHelp_APPClient_CBRecv(XHANDLE xhToken, LPCXSTR lpszMsgBuffer, int nMsgLen, XPVOID lParam)
 {
@@ -47,8 +46,8 @@ void CALLBACK NetHelp_HttpGet_Chunked(XNETHANDLE xhToken, XPVOID lpszMsgBuffer, 
 
 int NetHelp_APPClient_EMailPop3()
 {
-	NETHELP_EMAILCLIENT st_EMailClient;
-	memset(&st_EMailClient, '\0', sizeof(NETHELP_EMAILCLIENT));
+	XCLIENT_APIEMAIL st_EMailClient;
+	memset(&st_EMailClient, '\0', sizeof(XCLIENT_APIEMAIL));
 
 	strcpy(st_EMailClient.tszServiceAddr, _X("pop3s://pop.exmail.qq.com:995"));
 	strcpy(st_EMailClient.tszUserName, _X("qyt@xyry.org"));
@@ -70,8 +69,8 @@ int NetHelp_APPClient_EMailPop3()
 }
 int NetHelp_APPClient_EMailSmtp()
 {
-	NETHELP_EMAILCLIENT st_EMailClient;
-	memset(&st_EMailClient, '\0', sizeof(NETHELP_EMAILCLIENT));
+	XCLIENT_APIEMAIL st_EMailClient;
+	memset(&st_EMailClient, '\0', sizeof(XCLIENT_APIEMAIL));
 
 	strcpy(st_EMailClient.tszServiceAddr, _X("smtps://smtp.exmail.qq.com:465"));
 	strcpy(st_EMailClient.tszUserName, _X("qyt@xyry.org"));
@@ -99,8 +98,8 @@ int Test_Http2Request()
 	LPCXSTR lpszUrl = _X("http://www.nghttp2.org/");
 	XCHAR* ptszMsgBuffer = NULL;
 	int nLen = 0;
-	NETHELP_HTTPCLIENT st_HTTPParam;
-	memset(&st_HTTPParam, '\0', sizeof(NETHELP_HTTPCLIENT));
+	XCLIENT_APIHTTP st_HTTPParam;
+	memset(&st_HTTPParam, '\0', sizeof(XCLIENT_APIHTTP));
 
 	st_HTTPParam.bHTTP2Enable = true;
 
@@ -145,11 +144,11 @@ int Test_HttpCreate()
 }
 
 bool bRun = false;
-void CALLBACK Download_Progress(XHANDLE xhToken, double dlTotal, double dlNow, double ulTotal, double ulNow, ENUM_NETHELP_APICLIENT_FILE_STATUS en_DownHttpStatus, XPVOID lParam)
+void CALLBACK Download_Progress(XHANDLE xhToken, double dlTotal, double dlNow, double ulTotal, double ulNow, ENUM_XCLIENT_APIHELP_FILE_STATUS en_DownHttpStatus, XPVOID lParam)
 {
 	printf("下载任务：%p,总大小：%lf，已经下载大小：%lf，下载标识符：%d\n", xhToken, dlTotal, dlNow, en_DownHttpStatus);
 
-	if (ENUM_NETHELP_APICLIENT_FILE_STATUS_COMPLETE == en_DownHttpStatus)
+	if (ENUM_XCLIENT_APIHELP_FILE_STATUS_COMPLETE == en_DownHttpStatus)
 	{
 		bRun = false;
 	}
@@ -175,14 +174,14 @@ int download_http()
 
 	while (bRun)
 	{
-		NETHELP_FILEINFO st_TaskInfo;
-		memset(&st_TaskInfo, '\0', sizeof(NETHELP_FILEINFO));
+		XCLIENT_APIFILE st_TaskInfo;
+		memset(&st_TaskInfo, '\0', sizeof(XCLIENT_APIFILE));
 
 		if (!APIClient_File_Query(xhDownCall, &st_TaskInfo))
 		{
 			break;
 		}
-		if (ENUM_NETHELP_APICLIENT_FILE_STATUS_COMPLETE == st_TaskInfo.en_DownStatus)
+		if (ENUM_XCLIENT_APIHELP_FILE_STATUS_COMPLETE == st_TaskInfo.en_DownStatus)
 		{
 			break;
 		}
@@ -208,14 +207,14 @@ int upload_http()
 	APIClient_File_Start(xhUPLoad, false, "PUT");
 	while (1)
 	{
-		NETHELP_FILEINFO st_TaskInfo;
-		memset(&st_TaskInfo, '\0', sizeof(NETHELP_FILEINFO));
+		XCLIENT_APIFILE st_TaskInfo;
+		memset(&st_TaskInfo, '\0', sizeof(XCLIENT_APIFILE));
 
 		if (!APIClient_File_Query(xhUPLoad, &st_TaskInfo))
 		{
 			break;
 		}
-		if (ENUM_NETHELP_APICLIENT_FILE_STATUS_COMPLETE == st_TaskInfo.en_DownStatus)
+		if (ENUM_XCLIENT_APIHELP_FILE_STATUS_COMPLETE == st_TaskInfo.en_DownStatus)
 		{
 			break;
 		}

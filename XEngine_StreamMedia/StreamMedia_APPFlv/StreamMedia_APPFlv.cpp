@@ -49,8 +49,7 @@ using namespace std;
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g StreamMedia_APPFlv.cpp -o StreamMedia_APPFlv.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -lXEngine_BaseLib -lStreamMedia_FLVProtocol -lXEngine_AVHelp -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_StreamMedia:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec,--disable-new-dtags
-//Macos::g++ -std=c++17 -Wall -g StreamMedia_APPFlv.cpp -o StreamMedia_APPFlv.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_StreamMedia -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCodec -lXEngine_BaseLib -lStreamMedia_FLVProtocol -lXEngine_AVHelp
+//Linux::g++ -std=c++17 -Wall -g StreamMedia_APPFlv.cpp -o StreamMedia_APPFlv.exe -lXEngine_BaseLib -lStreamMedia_FLVProtocol -lXEngine_AVHelp
 
 bool FLV_Parse()
 {

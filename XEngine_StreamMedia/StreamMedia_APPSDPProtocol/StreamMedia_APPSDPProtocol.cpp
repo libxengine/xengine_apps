@@ -29,8 +29,7 @@
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/StreamMedia_SDPProtocol.lib")
 #endif
 #endif
-//Linux::g++ -std=c++17 -Wall -g StreamMedia_APPSDPProtocol.cpp -o StreamMedia_APPSDPProtocol.exe -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_StreamMedia -lXEngine_BaseLib -lStreamMedia_SDPProtocol
-//Macos::g++ -std=c++17 -Wall -g StreamMedia_APPSDPProtocol.cpp -o StreamMedia_APPSDPProtocol.exe -lXEngine_BaseLib -lStreamMedia_SDPProtocol
+//Linux::g++ -std=c++17 -Wall -g StreamMedia_APPSDPProtocol.cpp -o StreamMedia_APPSDPProtocol.exe -lXEngine_BaseLib -lStreamMedia_SDPProtocol
 
 void CreateSDP(XCHAR* ptszMsgBuffer, int* pInt_Len)
 {

@@ -26,8 +26,7 @@ using namespace std;
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g AVCodec_APPCollect.cpp -o AVCodec_APPCollect.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_AVCollect -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec,--disable-new-dtags
-//MacOS::g++ -std=c++17 -Wall -g AVCodec_APPCollect.cpp -o AVCodec_APPCollect.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_AVCollect
+//Linux MacOS:g++ -std=c++17 -Wall -g AVCodec_APPCollect.cpp -o AVCodec_APPCollect.exe -lXEngine_BaseLib -lXEngine_AVCollect
 
 FILE* pSt_File;
 int nWidth;

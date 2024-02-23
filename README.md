@@ -27,6 +27,3 @@ xengine v8 例子代码
 
 # 安装示例
 在使用我们例子,你需要先按照引擎的README说明安装  
-然后修改代码,比如  
-头文件:#include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h" 修改为: #include <XEngine_Include/XEngine_CommHdr.h>  
-库文件:#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib") 修改为 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib") 

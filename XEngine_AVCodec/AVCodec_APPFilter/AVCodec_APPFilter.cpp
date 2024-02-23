@@ -36,8 +36,7 @@
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g AVCodec_APPFilter.cpp -o AVCodec_APPFilter.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_AVFilter -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec,--disable-new-dtags
-//MacOS::g++ -std=c++17 -Wall -g AVCodec_APPVideo.cpp -o AVCodec_APPVideo.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_AVFilter
+//Linux MacOS:g++ -std=c++17 -Wall -g AVCodec_APPFilter.cpp -o AVCodec_APPFilter.exe -lXEngine_BaseLib -lXEngine_AVFilter 
 
 int Test_FilterAudio()
 {
@@ -296,6 +295,6 @@ int main()
 	//Test_FilterVideo();
 
 	Test_FilterMutliAudio();
-	//Test_FilterMutliVideo();
+	Test_FilterMutliVideo();
 	return 0;
 }

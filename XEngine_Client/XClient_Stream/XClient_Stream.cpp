@@ -21,8 +21,8 @@ using namespace std;
 #include <XEngine_Include/XEngine_AVCodec/AudioCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVHelp_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVHelp_Error.h>
-#include <XEngine_Include/XEngine_Client/XClientStream_Define.h>
-#include <XEngine_Include/XEngine_Client/XClientStream_Error.h>
+#include <XEngine_Include/XEngine_Client/StreamClient_Define.h>
+#include <XEngine_Include/XEngine_Client/StreamClient_Error.h>
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_Client/XClient_Stream.lib")
 #pragma comment(lib,"XEngine_AVCodec/XEngine_AVHelp.lib")
@@ -35,16 +35,15 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Stream/XClientStream_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Stream/XClientStream_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Stream/StreamClient_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Stream/StreamClient_Error.h"
 #ifdef _MSC_BUILD
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XClient_Stream.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g XClient_Stream.cpp -o XClient_Stream.exe -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -lXEngine_BaseLib -L /usr/local/lib/XEngine_Release/XEngine_Client -L /usr/local/lib/XEngine_Release/XEngine_AVCodec -lXEngine_BaseLib -lXClient_Stream -lXEngine_AVHelp
-//Macos::g++ -std=c++17 -Wall -g XClient_Stream.cpp -o XClient_Stream.exe -lXEngine_BaseLib -lXClient_Stream -lXEngine_AVHelp
+//Linux::g++ -std=c++17 -Wall -g XClient_Stream.cpp -o XClient_Stream.exe -lXEngine_BaseLib -lXClient_Stream -lXEngine_AVHelp
 
 FILE* pSt_VFile;
 FILE* pSt_AFile;

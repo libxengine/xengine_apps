@@ -32,8 +32,7 @@
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g SystemApi_APPFile.cpp -o SystemApi_APPFile.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk -lXEngine_BaseLib -lXEngine_SystemApi -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk,--disable-new-dtags
-//Macos::g++ -std=c++17 -Wall -g SystemApi_APPFile.cpp -o SystemApi_APPFile.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_SystemSdk -lXEngine_BaseLib -lXEngine_SystemApi
+//Linux::g++ -std=c++17 -Wall -g SystemApi_APPFile.cpp -o SystemApi_APPFile.exe -lXEngine_BaseLib -lXEngine_SystemApi
 
 bool CALLBACK EnumFile(LPCXSTR lpFileOrPath, bool bFindPath, XPVOID lParam)
 {
@@ -50,11 +49,19 @@ bool CALLBACK EnumFile(LPCXSTR lpFileOrPath, bool bFindPath, XPVOID lParam)
 
 int main()
 {
+	int nCount = 0;
+	XCHAR** ppszListDir;
 #ifdef _MSC_BUILD
-	SystemApi_File_EnumFile("D:\\XEngine\\XEngine_SourceCode\\Debug\\*", NULL, NULL);
+	SystemApi_File_EnumFile("D:\\test\\*", &ppszListDir, &nCount, true, 1);
 #else
-	SystemApi_File_EnumFile("/tmp", NULL, NULL, EnumFile);
+	SystemApi_File_EnumFile("/tmp", &ppszListDir, &nCount);
 #endif
+
+	for (int i = 0; i < nCount; i++)
+	{
+		printf("%s\n", ppszListDir[i]);
+	}
+	BaseLib_OperatorMemory_Free((XPPPMEM)&ppszListDir, nCount);
 
 #ifdef _MSC_BUILD
 	LPCXSTR lpszFile = _X("D:\\xengine_apps\\Debug\\1.txt");

@@ -27,6 +27,3 @@ To use under LINUX Or MacOS. You can use the command to compile, gdb debugging. 
 
 # Installation example
 Before using our example, you need to install it first according to the engine's README instructions.  
-Then modify the code, such as  
-Header file: #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h" Modified to: #include <XEngine_Include/XEngine_CommHdr.h>  
-Library file: #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib") Modified to #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib")  

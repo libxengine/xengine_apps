@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="XCore_APPWBlack.cpp">
+    <ClCompile Include="NetHelp_APPWBlack.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

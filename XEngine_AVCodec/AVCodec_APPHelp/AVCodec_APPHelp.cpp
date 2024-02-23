@@ -38,8 +38,7 @@
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g AVCodec_APPHelp.cpp -o AVCodec_APPHelp.exe -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_AVHelp -Wl,-rpath=../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_BaseLib:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_SystemSdk:../../../XEngine/XEngine_Release/XEngine_Linux/Ubuntu/XEngine_AVCodec,--disable-new-dtags
-//Macos::g++ -std=c++17 -Wall -g AVCodec_APPHelp.cpp -o AVCodec_APPHelp.exe -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_BaseLib -L ../../../XEngine/XEngine_Release/XEngine_Mac/XEngine_AVCodec -lXEngine_BaseLib -lXEngine_AVHelp
+//Linux Macos:g++ -std=c++17 -Wall -g AVCodec_APPHelp.cpp -o AVCodec_APPHelp.exe -lXEngine_BaseLib -lXEngine_AVHelp
 
 void Test_MetaInfo()
 {

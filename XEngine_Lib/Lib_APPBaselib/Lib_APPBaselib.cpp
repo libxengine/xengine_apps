@@ -26,8 +26,7 @@
 #endif
 #endif
 
-//Linux:g++ -std=c++17 -Wall -g Lib_APPBaselib.cpp -o Lib_APPBaselib.exe -L /usr/local/lib/XEngine_Release/XEngine_BaseLib -lXEngine_BaseLib
-//Macos:g++ -std=c++17 -Wall -g Lib_APPBaselib.cpp -o Lib_APPBaselib.exe -lXEngine_BaseLib
+//Linux MacOS:g++ -std=c++17 -Wall -g Lib_APPBaselib.cpp -o Lib_APPBaselib.exe -lXEngine_BaseLib
 
 
 void EventTest()
