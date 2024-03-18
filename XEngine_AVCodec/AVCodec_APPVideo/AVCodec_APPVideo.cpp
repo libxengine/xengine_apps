@@ -112,10 +112,10 @@ int Test_H265Hevc()
 	AVHelp_Parse_FrameClose(xhParse);
 	return 0;
 }
-int Test_CodecFilter()
+int Test_Codech264()
 {
 #ifdef _MSC_BUILD
-	FILE* pSt_File = _tfopen("d:\\1.hevc", "rb");
+	FILE* pSt_File = _tfopen("d:\\1.h264", "rb");
 	pSt_YUVFile = _tfopen("d:\\ds.yuv", "wb");
 #else
 	FILE* pSt_File = fopen("480p.264", "rb");
@@ -181,6 +181,6 @@ int main()
 	{
 		printf("%d = %s\n", ppSt_ListHWCodec[i]->enHWDevice, ppSt_ListHWCodec[i]->tszHWName);
 	}
-	Test_CodecFilter();
+	Test_Codech264();
 	return 0;
 }
