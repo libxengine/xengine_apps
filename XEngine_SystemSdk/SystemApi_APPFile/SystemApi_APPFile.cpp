@@ -51,6 +51,9 @@ int main()
 {
 	int nCount = 0;
 	XCHAR** ppszListDir;
+	SYSTEMAPI_FILE_ATTR st_FileAttr = {};
+	SystemApi_File_GetFileAttr(_X("D:\\xengine_apps"), &st_FileAttr);
+
 #ifdef _MSC_BUILD
 	SystemApi_File_EnumFile("D:\\test\\*", &ppszListDir, &nCount, true, 1);
 #else

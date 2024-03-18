@@ -131,11 +131,12 @@ int Test_SystemInfo()
 	SystemApi_System_GetProcessCount(&nProcessCount);
 	SystemApi_System_GetUpTime(&st_LibTimer);
 
+	XCHAR tszValueStr[128] = {};
+	SystemApi_System_WMIQuery("SELECT * FROM Win32_Processor", "MaxClockSpeed", tszValueStr, 1);
 	printf("Test_SystemInfo:%llu %llu %d\n", st_MemoryInfo.dwMemory_Total, st_MemoryInfo.dwMemory_Free, st_MemoryInfo.nMemoryUsage);
 	printf("Test_SystemInfo:%d %d %d %d %04d-%02d-%02d %02d:%02d:%02d\n", nUsage, nCPUCount, nCPUCount, nProcessCount, st_LibTimer.wYear, st_LibTimer.wMonth, st_LibTimer.wDay, st_LibTimer.wHour, st_LibTimer.wMinute, st_LibTimer.wSecond);
 	return 0;
 }
-
 int main()
 {
 	Test_SerialInfo();

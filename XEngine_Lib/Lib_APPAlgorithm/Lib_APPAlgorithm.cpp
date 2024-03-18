@@ -88,7 +88,7 @@ int Test_Calulation()
 
 int main()
 {
-	Test_Calulation();
+	//Test_Calulation();
 	int nIntA = 0;
 	int nIntB = 0;
 	LPCXSTR lpszIntBuffer = _X("123456798");
@@ -96,11 +96,11 @@ int main()
 	Algorithm_String_GetMemoryInt(lpszIntBuffer, 4, 6, &nIntB);
 
 	int nPos = 0;
-	LPCXSTR lpszSourceStr = _X("123hel54124hello666");
+	LPCXSTR lpszSourceStr = _X("123helhello54124666");
 	LPCXSTR lpszFindStr = _X("hell");
 	if (Algorithm_String_XFastMatch(lpszSourceStr, lpszFindStr, &nPos))
 	{
-		_xtprintf(_X("Algorithm_String_XFastMatch:%d\n"), nPos);
+		_xtprintf(_X("Algorithm_String_XFastMatch:%d,%s\n"), nPos, lpszSourceStr + nPos);
 	}
 
 	int nSwapA = 100;

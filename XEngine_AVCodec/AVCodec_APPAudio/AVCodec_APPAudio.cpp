@@ -205,7 +205,7 @@ void Audio_DeCodec()
 int main()
 {
 	//Audio_ListCodec();
-	Audio_Encode();
-	//Audio_DeCodec();
+	//Audio_Encode();
+	Audio_DeCodec();
 	return 0;
 }

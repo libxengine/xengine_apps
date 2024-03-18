@@ -155,7 +155,7 @@ void CALLBACK Download_Progress(XHANDLE xhToken, double dlTotal, double dlNow, d
 }
 int download_http()
 {
-	LPCXSTR lpszHttpAddr = _X("https://webcdn.m.qq.com/spcmgr/download/QQ9.7.1.28940.exe");
+	LPCXSTR lpszHttpAddr = _X("https://sw.pcmgr.qq.com/df8e46fd8131b749186d37c2db121537/65e83e7d/spcmgr/download/QQ_9.7.22.240304_01.exe");
 	//LPCXSTR lpszHttpAddr = _X("http://192.168.1.7:5101/QQ.exe");
 #ifdef _MSC_BUILD
 	LPCXSTR lpszFileAddr = _X("D:\\xengine_apps\\Debug\\QQ.exe");
@@ -191,9 +191,9 @@ int download_http()
 }
 int upload_http()
 {
-	LPCXSTR lpszHttpAddr = _X("http://192.168.1.7:5102/QQ.exe");
+	LPCXSTR lpszHttpAddr = _X("http://10.0.3.155:5102/api?filename=Fairdell_HexCmp2.exe&storeagekey=storagekey1");
 #ifdef _MSC_BUILD
-	LPCXSTR lpszFileAddr = _X("D:\\xengine_apps\\Debug\\QQ.exe");
+	LPCXSTR lpszFileAddr = _X("D:\\Fairdell_HexCmp2.exe");
 #else
 	LPCXSTR lpszFileAddr = _X("QQ.exe");
 #endif
@@ -204,7 +204,7 @@ int upload_http()
 		printf("下载失败！");
 		return -1;
 	}
-	APIClient_File_Start(xhUPLoad, false, "PUT");
+	APIClient_File_Start(xhUPLoad, false, "POST");
 	while (1)
 	{
 		XCLIENT_APIFILE st_TaskInfo;
@@ -226,14 +226,14 @@ int upload_http()
 
 int main()
 {
-	//upload_http();
+	upload_http();
 	//download_http();
 
 	//Test_Http2Request();
-	Test_HttpRequest();
-	Test_HttpCreate();
+	//Test_HttpRequest();
+	//Test_HttpCreate();
 
-	NetHelp_APPClient_EMailPop3();
-	NetHelp_APPClient_EMailSmtp();
+	//NetHelp_APPClient_EMailPop3();
+	//NetHelp_APPClient_EMailSmtp();
 	return 0;
 }

@@ -109,22 +109,28 @@ void RsaSSL()
 	LPCXSTR lpszPrivateKey = _X("test.Key");
 	LPCXSTR lpszPublicKey = _X("test_pub.Key");
 #endif
+	int nSize = 0;
+	XCHAR tszRSABuffer[4096] = {};
+	OPenSsl_Api_RSAFileCreate(lpszPrivateKey);
+	OPenSsl_Api_RSAMemoryCreate(tszRSABuffer, &nSize);
 
-	if (!OPenSsl_Api_RSACreate(lpszPublicKey, lpszPrivateKey, lpszPass))
-	{
-		return;
-	}
+	OPenSsl_Api_RSAPubFile(lpszPrivateKey, lpszPublicKey);
+
+	int nPLen = 4096;
+	XCHAR tszPUBBuffer[4096] = {};
+	OPenSsl_Api_RSAPubMemory(tszPUBBuffer, &nPLen, tszRSABuffer, nSize);
+
 	int nRsaLen = strlen(lpszSource);
 	XBYTE puszRsaEnString[1024];
 	memset(puszRsaEnString, '\0', sizeof(puszRsaEnString));
-	if (!OPenSsl_Api_RSAEncodec(lpszPublicKey, lpszSource, &nRsaLen, puszRsaEnString, true, lpszPass))
+	if (!OPenSsl_Api_RSAEncodec(lpszPublicKey, lpszSource, &nRsaLen, puszRsaEnString, true))
 	{
 		return;
 	}
 	printf("RSA:%s\n", puszRsaEnString);
 	XCHAR tszDeString[1024];
 	memset(tszDeString, '\0', sizeof(tszDeString));
-	if (!OPenSsl_Api_RSADecodec(lpszPrivateKey, puszRsaEnString, &nRsaLen, tszDeString, false, lpszPass))
+	if (!OPenSsl_Api_RSADecodec(lpszPrivateKey, (LPCXSTR)puszRsaEnString, &nRsaLen, tszDeString, false))
 	{
 		return;
 	}
@@ -172,7 +178,6 @@ void VerSign()
 	LPCXSTR lpszCAFile = _X("ca.crt");
 	LPCXSTR lpszUserFile = _X("test.crt");
 #endif
-	LPCXSTR lpszPass = _X("123123");
 
 	OPENSSL_X509CCINL st_X509Info;
 	memset(&st_X509Info, '\0', sizeof(OPENSSL_X509CCINL));
@@ -185,9 +190,9 @@ void VerSign()
 	strcpy(st_X509Info.tszOrgUnitName, "soft");
 	strcpy(st_X509Info.tszEmailAddress, "486179@qq.com");
 
-	OPenSsl_Cert_MakeCACert(lpszCAFile, 120102, 60 * 60 * 24 * 10, &st_X509Info, lpszPrivateKey, lpszPass);
-	OPenSsl_Cert_X509GenRequest(lpszReqFile, &st_X509Info, lpszPrivateKey, lpszPass);
-	OPenSsl_Cert_X509SignVer(lpszCAFile, lpszReqFile, lpszPass, lpszUserFile, 1100220011, 60 * 60 * 24 * 10, lpszPrivateKey, lpszPass);
+	OPenSsl_Cert_MakeCACert(lpszCAFile, 120102, 60 * 60 * 24 * 10, &st_X509Info, lpszPrivateKey);
+	OPenSsl_Cert_X509Create(lpszReqFile, &st_X509Info, lpszPrivateKey, NULL, false);
+	OPenSsl_Cert_X509Sign(lpszCAFile, lpszReqFile, lpszUserFile, 60 * 60 * 24 * 10, lpszPrivateKey);
 }
 void CertVer()
 {
