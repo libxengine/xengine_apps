@@ -201,9 +201,65 @@ void Audio_DeCodec()
 	AudioCodec_Stream_Destroy(xhCoder);
 	AVHelp_Parse_FrameClose(xhParse);
 }
+void OPUS_Encode()
+{
+	XNETHANDLE xhCoder;
+	AVCODEC_AUDIO_INFO st_AudioInfo;
 
+	memset(&st_AudioInfo, '\0', sizeof(AVCODEC_AUDIO_INFO));
+
+	st_AudioInfo.nChannel = 2;
+	st_AudioInfo.nSampleRate = 48000;
+	st_AudioInfo.nBitRate = 64000;
+	st_AudioInfo.nSampleFmt = ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_S16;
+	st_AudioInfo.enAVCodec = ENUM_XENGINE_AVCODEC_AUDIO_TYPE_OPUS;
+	if (!AudioCodec_Stream_EnInit(&xhCoder, &st_AudioInfo))
+	{
+		printf("AudioCodec_Stream_EnInit\n");
+		return;
+	}
+#ifdef _MSC_BUILD
+	FILE* pSt_File = fopen("d:\\audio\\mix.pcm", "rb");
+	FILE* pSt_FileAac = fopen("d:\\audio\\output1.opus", "wb");
+#else
+	FILE* pSt_File = fopen("44.1k_2_16.pcm", "rb");
+	FILE* pSt_FileAac = fopen("44.1k_2_16.aac", "wb");
+#endif
+
+	int nSize = 0;
+	AudioCodec_Stream_GetSize(xhCoder, &nSize);
+	while (1)
+	{
+		XCHAR tszEnBuffer[4608];
+		XCHAR tszPCMBuffer[3840];  // 3840 == nSize
+
+		memset(tszEnBuffer, '\0', sizeof(tszEnBuffer));
+		memset(tszPCMBuffer, '\0', sizeof(tszPCMBuffer));
+
+		int nRet = fread(tszPCMBuffer, 1, sizeof(tszPCMBuffer), pSt_File);
+		if (nRet <= 0)
+		{
+			break;
+		}
+		int nListCount = 0;
+		AVCODEC_AUDIO_MSGBUFFER** ppSt_ListAudio;
+		if (AudioCodec_Stream_EnCodec(xhCoder, (uint8_t*)tszPCMBuffer, nRet, &ppSt_ListAudio, &nListCount))
+		{
+			for (int i = 0; i < nListCount; i++)
+			{
+				fwrite(ppSt_ListAudio[i]->ptszMsgBuffer, 1, ppSt_ListAudio[i]->nMsgLen, pSt_FileAac);
+				BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_ListAudio[i]->ptszMsgBuffer);
+			}
+		}
+		AudioCodec_Stream_Free(&ppSt_ListAudio, nListCount);
+	}
+	fclose(pSt_File);
+	fclose(pSt_FileAac);
+	AudioCodec_Stream_Destroy(xhCoder);
+}
 int main()
 {
+	OPUS_Encode();
 	//Audio_ListCodec();
 	//Audio_Encode();
 	Audio_DeCodec();

@@ -391,10 +391,16 @@ int test_ipaddr()
 	return 0;
 }
 
+int Test_Ver()
+{
+	printf("%lld\n%s\n", BaseLib_OperatorVer_XNumberInt(), BaseLib_OperatorVer_XNumberStr());
+	return 0;
+}
 int main()
 {
 	setlocale(LC_ALL, "");
 
+	Test_Ver();
 	test_endain();
 	test_handle();
 	TestAddrLib();

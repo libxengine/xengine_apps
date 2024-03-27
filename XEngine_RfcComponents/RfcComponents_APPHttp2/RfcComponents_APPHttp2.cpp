@@ -70,7 +70,7 @@ bool CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID l
 
 	if (bSsl)
 	{
-		OPenSsl_Server_AcceptEx(xhSsl, hSocket, lpszClientAddr, tszSubject, tszIssuer, tszAlgorithm);
+		OPenSsl_Server_AcceptEx(xhSsl, hSocket, lpszClientAddr);
 	}
 	printf("NetCore_CB_Login:%s\n", lpszClientAddr);
 	HttpProtocol_Server2_CreateClientEx(xhHttp, lpszClientAddr, 1);
