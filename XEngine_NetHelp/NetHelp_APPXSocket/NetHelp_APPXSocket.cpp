@@ -48,27 +48,6 @@ static void CALLBACK XSocket_Sniffer_Callback(XHANDLE xhToken, XSOCKET_PROTOCOLI
 	}
 	printf("\n\n");
 }
-int Test_NetFlow()
-{
-	//网络流量
-
-	for (int i = 0; i < 2; i++)
-	{
-		XSOCKET_FLOWSTATE st_FlowState;
-		memset(&st_FlowState, '\0', sizeof(XSOCKET_FLOWSTATE));
-
-#ifdef _MSC_BUILD
-		XSocket_NetFlow_GetAll(&st_FlowState, "Intel(R) Wi-Fi 6E AX211 160MHz");
-
-#else
-		XSocket_NetFlow_GetAll(&st_FlowState, "ens33");
-#endif
-
-		printf("Send:%llu Recv:%llu\n", st_FlowState.st_SendPackets.ullBytes, st_FlowState.st_RecvPackets.ullBytes);
-		std::this_thread::sleep_for(std::chrono::seconds(1));
-	}
-	return 0;
-}
 int Test_NetSniffer()
 {
 	//网路嗅探
@@ -79,23 +58,6 @@ int Test_NetSniffer()
 #endif
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 	XSocket_Sniffer_Stop(xhNet);
-	return 0;
-}
-int Test_CtrlFlow()
-{
-	XNETHANDLE xhNet;
-	XNETHANDLE xhFilter;
-#ifdef _MSC_BUILD
-	XSocket_CtrlFlow_Init(&xhNet, NULL);
-#else
-	XSocket_CtrlFlow_Init(&xhNet, "ens33");
-#endif
-	XSocket_CtrlFlow_AddFlow(xhNet, &xhFilter, 1000000, 10000, 5000);
-
-	std::this_thread::sleep_for(std::chrono::seconds(2));
-	XSocket_CtrlFlow_DelFlow(xhNet, xhFilter);
-	XSocket_CtrlFlow_Destory(xhNet);
-
 	return 0;
 }
 
@@ -161,8 +123,6 @@ int main()
 
 	XSocket_TestSocket();
 	Test_NetSniffer();
-	Test_NetFlow();
-	//Test_CtrlFlow();
 #ifdef _MSC_BUILD
 	WSACleanup();
 #endif

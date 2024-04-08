@@ -64,7 +64,7 @@ int Test_SerialInfo()
 	{
 		return -1;
 	}
-	printf("Test_SerialInfo:%s %s %s %s\n", st_SDKSerial.tszBoardSerial, st_SDKSerial.tszSystemSerail, st_SDKSerial.tszCpuSerial, st_SDKSerial.tszDiskSerial);
+	printf("Test_SerialInfo:%s %s %s %s\n", st_SDKSerial.tszBoardSerial, st_SDKSerial.tszSystemSerial, st_SDKSerial.tszCpuSerial, st_SDKSerial.tszDiskSerial);
 	return 0;
 }
 int Test_DiskInfo()

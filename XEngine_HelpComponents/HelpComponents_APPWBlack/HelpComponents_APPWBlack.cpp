@@ -18,25 +18,25 @@ using namespace std;
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
-#include <XEngine_Include/XEngine_NetHelp/WBlackList_Define.h>
-#include <XEngine_Include/XEngine_NetHelp/WBlackList_Error.h>
+#include <XEngine_Include/XEngine_HelpComponents/WBlackList_Define.h>
+#include <XEngine_Include/XEngine_HelpComponents/WBlackList_Error.h>
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
-#pragma comment(lib,"XEngine_NetHelp/NetHelp_WBlackList.lib")
+#pragma comment(lib,"XEngine_HelpComponents/HelpComponents_WBlackList.lib")
 #endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_WBlackList/WBlackList_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_WBlackList/WBlackList_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_WBlackList/WBlackList_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_WBlackList/WBlackList_Error.h"
 #ifdef _MSC_BUILD
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/NetHelp_WBlackList.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/HelpComponents_WBlackList.lib")
 #endif
 #endif
-//Linux::g++ -std=gnu++17 -Wall -g NetHelp_APPWBlack.cpp -o NetHelp_APPWBlack.exe -lXEngine_BaseLib -lNetHelp_WBlackList
+//Linux::g++ -std=gnu++17 -Wall -g HelpComponents_APPWBlack.cpp -o HelpComponents_APPWBlack.exe -lXEngine_BaseLib -lHelpComponents_WBlackList
 
 int Test_IPV4BlackList()
 {
