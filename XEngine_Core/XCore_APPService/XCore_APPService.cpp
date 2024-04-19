@@ -47,8 +47,9 @@ XCHAR tszClientAddr[64];
 
 bool CALLBACK TCPOverlapped_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
-	strcpy(tszClientAddr, lpszClientAddr);
 	printf("TCPOverlapped_Login:%s = %d\n", lpszClientAddr, hSocket);
+	//NetCore_TCPXCore_PasueRecvEx(xhTCPCore, lpszClientAddr, false);
+	strcpy(tszClientAddr, lpszClientAddr);
 	return true;
 }
 void CALLBACK TCPOverlapped_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
@@ -91,7 +92,10 @@ int test_tcpxcore()
 		printf(_X("NetCore_TCPXCore_StartEx Start Is Failed!\n"));
 	}
 	NetCore_TCPXCore_RegisterCallBackEx(xhTCPCore,TCPOverlapped_Login, TCPOverlapped_Recv, TCPOverlapped_Leave);
-	std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+
+	std::this_thread::sleep_for(std::chrono::seconds(30));
+	NetCore_TCPXCore_PasueRecvEx(xhTCPCore, tszClientAddr);
+	std::this_thread::sleep_for(std::chrono::seconds(10000));
 
 	int nCount = 0;
 	XCHAR** ppszListClient;

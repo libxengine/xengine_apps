@@ -105,7 +105,8 @@ void StringTest()
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	int nLen = _xstprintf(tszMsgBuffer, "123456abc123765cd123ddd321");
 
-	BaseLib_OperatorString_GetStartEnd(tszMsgBuffer, tszValue, "123", "321", true);
+	memset(tszValue, '\0', sizeof(tszValue));
+	BaseLib_OperatorString_GetStartEnd(tszMsgBuffer, tszValue, NULL, "321", false);
 	BaseLib_OperatorString_Change(tszMsgBuffer, &nLen, "123", "321", "ccccc", false);
 
 	XCHAR tszFileDir[MAX_PATH];
