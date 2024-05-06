@@ -29,13 +29,12 @@ using namespace std;
 
 //Linux Macos:g++ -std=gnu++11 -Wall -g Lib_APPAlgorithm.cpp -o Lib_APPAlgorithm.exe -lXEngine_Algorithm
 
-void CALLBACK Test_CBPassive(XHANDLE xhToken, __int64u nAvgSDFlow, __int64u nAvgRVFlow, __int64u nAvgTime, XPVOID lParam)
+void CALLBACK Test_CBPassive(XHANDLE xhToken, bool bSDFlow, bool bRVFlow, bool bTime, XPVOID lParam)
 {
 	XCHAR tszClientAddr[128];
 	memset(tszClientAddr, '\0', 128);
 
 	_tcsxcpy(tszClientAddr, (LPCXSTR)lParam);
-	_xtprintf(_X("%s: AVG_Flow:%llu\n"), tszClientAddr, nAvgSDFlow);
 }
 
 int Test_Calulation()
@@ -73,7 +72,7 @@ int Test_Calulation()
 	memset(ptszMsgBuffer, '\0', 128);
 
 	_tcsxcpy(ptszMsgBuffer, _X("127.0.0.1"));
-	Algorithm_Calculation_PassiveOPen(xhToken, Test_CBPassive, 1024, 0, 0, ptszMsgBuffer);
+	Algorithm_Calculation_PassiveOPen(xhToken, Test_CBPassive, 1024, 0, 0, false, ptszMsgBuffer);
 	for (int i = 0; i < 500; i++)
 	{
 		Algorithm_Calculation_ADDSDFlow(xhToken, rand());

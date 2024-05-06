@@ -51,6 +51,7 @@ int MP4_Parse()
 {
 	LPCXSTR lpszClientID = _X("127777");
 	FILE* pSt_File = _xtfopen(_X("D:\\h264 file\\720x480.mp4"), _X("rb"));
+	//FILE* pSt_File = _xtfopen(_X("D:\\h264 file\\outputfile.mp4"), _X("rb"));
 	if (NULL == pSt_File)
 	{
 		return -1;
@@ -111,6 +112,101 @@ int MP4_Parse()
 	MP4Protocol_Parse_Destory();
 	return 0;
 }
+
+void MP4_PacketMoov(LPCXSTR lpszClientID, FILE* pSt_File, int nPos)
+{
+	int nSize = 0;
+	int nMOOVPos = 0;
+	int nTRAKPos = 0;
+	int nMDIAPos = 0;
+	int nMINFPos = 0;
+	int nSTBLPos = 0;
+	XCHAR tszMSGBuffer[1024] = {};
+	MP4Protocol_Packet_HDRBox(lpszClientID, tszMSGBuffer, &nSize, _X("moov"));
+	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
+	nMOOVPos = nPos;
+	nPos += nSize;
+
+	memset(tszMSGBuffer, '\0', sizeof(tszMSGBuffer));
+	MP4Protocol_Packet_MVhd(lpszClientID, tszMSGBuffer, &nSize);
+	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
+	nPos += nSize;
+
+	memset(tszMSGBuffer, '\0', sizeof(tszMSGBuffer));
+	MP4Protocol_Packet_HDRBox(lpszClientID, tszMSGBuffer, &nSize, _X("trak"));
+	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
+	nTRAKPos = nPos;
+	nPos += nSize;
+
+	memset(tszMSGBuffer, '\0', sizeof(tszMSGBuffer));
+	MP4Protocol_Packet_TKhd(lpszClientID, tszMSGBuffer, &nSize, 0, 1920, 1080);
+	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
+	nPos += nSize;
+
+	memset(tszMSGBuffer, '\0', sizeof(tszMSGBuffer));
+	MP4Protocol_Packet_HDRBox(lpszClientID, tszMSGBuffer, &nSize, _X("mdia"));
+	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
+	nMDIAPos = nPos;
+	nPos += nSize;
+
+	memset(tszMSGBuffer, '\0', sizeof(tszMSGBuffer));
+	MP4Protocol_Packet_MDhd(lpszClientID, tszMSGBuffer, &nSize);
+	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
+	nPos += nSize;
+
+	memset(tszMSGBuffer, '\0', sizeof(tszMSGBuffer));
+	MP4Protocol_Packet_HDlr(lpszClientID, tszMSGBuffer, &nSize);
+	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
+	nPos += nSize;
+
+	memset(tszMSGBuffer, '\0', sizeof(tszMSGBuffer));
+	MP4Protocol_Packet_HDRBox(lpszClientID, tszMSGBuffer, &nSize, _X("minf"));
+	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
+	nMINFPos = nPos;
+	nPos += nSize;
+
+	memset(tszMSGBuffer, '\0', sizeof(tszMSGBuffer));
+	MP4Protocol_Packet_VMhd(lpszClientID, tszMSGBuffer, &nSize);
+	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
+	nPos += nSize;
+
+	memset(tszMSGBuffer, '\0', sizeof(tszMSGBuffer));
+	MP4Protocol_Packet_DInf(lpszClientID, tszMSGBuffer, &nSize);
+	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
+	nPos += nSize;
+
+	memset(tszMSGBuffer, '\0', sizeof(tszMSGBuffer));
+	MP4Protocol_Packet_HDRBox(lpszClientID, tszMSGBuffer, &nSize, _X("stbl"));
+	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
+	nSTBLPos = nPos;
+	nPos += nSize;
+
+	XENGINE_PROTOCOL_AVINFO st_AVInfo = {};
+	memset(tszMSGBuffer, '\0', sizeof(tszMSGBuffer));
+	MP4Protocol_Packet_STsd(lpszClientID, tszMSGBuffer, &nSize, &st_AVInfo);
+	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
+	nPos += nSize;
+
+	fseek(pSt_File, nSTBLPos, SEEK_SET);
+	nSize = XHtonl(nPos - nSTBLPos);
+	fwrite(&nSize, 1, 4, pSt_File);
+
+	fseek(pSt_File, nMINFPos, SEEK_SET);
+	nSize = XHtonl(nPos - nMINFPos);
+	fwrite(&nSize, 1, 4, pSt_File);
+
+	fseek(pSt_File, nMDIAPos, SEEK_SET);
+	nSize = XHtonl(nPos - nMDIAPos);
+	fwrite(&nSize, 1, 4, pSt_File);
+
+	fseek(pSt_File, nTRAKPos, SEEK_SET);
+	nSize = XHtonl(nPos - nTRAKPos);
+	fwrite(&nSize, 1, 4, pSt_File);
+
+	fseek(pSt_File, nMOOVPos, SEEK_SET);
+	nSize = XHtonl(nPos - nMOOVPos);
+	fwrite(&nSize, 1, 4, pSt_File);
+}
 int MP4_Packet()
 {
 	XNETHANDLE xhToken = 0;
@@ -136,8 +232,7 @@ int MP4_Packet()
 	__int64x nFilePos = 0;
 	XCHAR tszRVBuffer[2048] = {};
 	XCHAR *ptszSDBuffer = (XCHAR *)malloc(XENGINE_MEMORY_SIZE_MAX);
-	MP4Protocol_Packet_FTyp(lpszClientID, tszRVBuffer, &nRVLen);
-	MP4Protocol_Packet_HDRBox(lpszClientID, ptszSDBuffer, &nSDLen, "ftyp", tszRVBuffer, nRVLen);
+	MP4Protocol_Packet_FTyp(lpszClientID, ptszSDBuffer, &nSDLen);
 	fwrite(ptszSDBuffer, 1, nSDLen, pSt_WFile);
 	nFilePos += nSDLen;
 
@@ -186,6 +281,8 @@ int MP4_Packet()
 	fseek(pSt_WFile, nMDatPos, SEEK_SET);
 	fwrite(ptszSDBuffer, 1, nSDLen, pSt_WFile);
 	fseek(pSt_WFile, nFilePos, SEEK_SET);
+
+	MP4_PacketMoov(lpszClientID, pSt_WFile, nFilePos);
 
 	AVHelp_Parse_FrameClose(xhToken);
 	MP4Protocol_Packet_Delete(lpszClientID);

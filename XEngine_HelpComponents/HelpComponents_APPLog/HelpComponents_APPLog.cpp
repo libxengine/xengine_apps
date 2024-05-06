@@ -41,7 +41,7 @@ int main()
 	//st_XLogConfig.st_BackInfo.enBackType = HELPCOMPONENTS_XLOG_BACKTYPE_TIME;./
 	strcpy(st_XLogConfig.st_BackInfo.tszBackDir, _X("./back/"));
 	strcpy(st_XLogConfig.tszFileName, _X("./log/test.log"));
-	XHANDLE xhLog = HelpComponents_XLog_Init(HELPCOMPONENTS_XLOG_OUTTYPE_FILE | HELPCOMPONENTS_XLOG_OUTTYPE_STD, &st_XLogConfig);
+	XHANDLE xhLog = HelpComponents_XLog_Init(HELPCOMPONENTS_XLOG_OUTTYPE_FILE | HELPCOMPONENTS_XLOG_OUTTYPE_STD, &st_XLogConfig, false, true);
 	if (NULL == xhLog)
 	{
 		printf("HelpComponents_XLog_Init:%lX\n", XLog_GetLastError());
@@ -52,7 +52,7 @@ int main()
 	HelpComponents_XLog_SetLogInterval(xhLog, 1000);
 	for (int i = 0; i < 100; i++)
 	{
-		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("xlog test 1=%d XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO"), i);
+		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("xlog test 1=%d XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO中文测试"), i);
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 	HelpComponents_XLog_SetLogInterval(xhLog, 0);

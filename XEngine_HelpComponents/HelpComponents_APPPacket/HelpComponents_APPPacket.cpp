@@ -90,18 +90,18 @@ int Test_Packets()
 	memset(&st_ProtocolHdr, '\0', sizeof(XENGINE_PROTOCOLHDREX));
 	memset(&st_ProtocolTail, '\0', sizeof(XENGINE_PROTOCOLTAILEX));
 
-	st_ProtocolHdr.wHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
-	st_ProtocolHdr.wVersion = 1;
-	st_ProtocolHdr.wPayload = 2;
+	st_ProtocolHdr.byHeader = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_HEADER;
+	st_ProtocolHdr.byVersion = 1;
+	st_ProtocolHdr.byPayload = 2;
 	st_ProtocolHdr.xhToken = hSocket;
 	st_ProtocolHdr.xhXTPTime = 1;
 	st_ProtocolHdr.unOperatorType = ENUM_XENGINE_COMMUNICATION_PROTOCOL_TYPE_NORMAL;
 	st_ProtocolHdr.unOperatorCode = XENGINE_COMMUNICATION_PROTOCOL_OPERATOR_CODE_ISOK;
 	st_ProtocolHdr.unPacketSize = 5;
-	st_ProtocolHdr.wIsReply = false;
+	st_ProtocolHdr.byIsReply = false;
 
-	st_ProtocolTail.wCheckSum = HelpComponents_Help_CheckSum(lpszMsgBuffer, nLen);
-	st_ProtocolTail.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
+	st_ProtocolTail.byCheckSum = HelpComponents_Help_CheckSum(lpszMsgBuffer, nLen);
+	st_ProtocolTail.byTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
 
 	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDREX));
 	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDREX), lpszMsgBuffer, nLen);
