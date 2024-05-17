@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #if 1 == _XENGINE_USER_DIR_SYSTEM
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
@@ -40,7 +39,6 @@
 //Linux::g++ -std=c++17 -Wall -g RfcComponents_APPNat.cpp -o RfcComponents_APPNat.exe -lXEngine_BaseLib -lXClient_Socket -lRfcComponents_NTPProtocol
 
 
-#include <math.h>
 int main()
 {
 #ifdef _MSC_BUILD
@@ -51,10 +49,6 @@ int main()
 	int nMsgLen = 0;
 	XCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-
-	char precision = -23; // NTP服务器提供的precision值
-	double precision_in_seconds = pow(2.0, (double)precision);
-	int nPppP = precision_in_seconds * 1e9; // 转为纳秒
 
 	if (!XClient_UDPSelect_Create(&m_Socket))
 	{
@@ -89,8 +83,8 @@ int main()
 	NTPPROTOCOL_TIMEINFO st_TRSTime = {};
 	XCHAR tszIPAddr[128] = {};
 
-	NTPProtocol_Parse_Header(tszMsgBuffer, nMsgLen, &nTimeoffset, &nTimeDelay, &st_REFTime, &st_REVTime, &st_ORGTime, &st_TRSTime, &nTimePoll, &dlTimePrecision, tszIPAddr);
-
+	NTPProtocol_Parse_Header(tszMsgBuffer, nMsgLen, &st_REFTime, &st_REVTime, &st_ORGTime, &st_TRSTime, &nTimePoll, &dlTimePrecision, tszIPAddr);
+	NTPProtocol_Parse_TimeInfo(&st_REVTime, &st_ORGTime, &st_TRSTime, &nTimeoffset, &nTimeDelay);
 	XClient_UDPSelect_Close(m_Socket);
 #ifdef _MSC_BUILD
 	WSACleanup();

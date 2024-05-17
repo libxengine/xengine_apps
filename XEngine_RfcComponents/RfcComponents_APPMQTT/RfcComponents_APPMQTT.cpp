@@ -19,6 +19,7 @@ using namespace std;
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
 #include <XEngine_Include/XEngine_Core/NetCore_Define.h>
 #include <XEngine_Include/XEngine_Core/NetCore_Error.h>
+#include <XEngine_Include/XEngine_Core/ManagePool_Define.h>
 #include <XEngine_Include/XEngine_Client/XClient_Define.h>
 #include <XEngine_Include/XEngine_Client/XClient_Error.h>
 #include <XEngine_Include/XEngine_RfcComponents/MQTTProtocol_Define.h>
@@ -36,6 +37,7 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_ManagePool/ManagePool_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_MQTTProtocol/MQTTProtocol_Define.h"
@@ -53,36 +55,25 @@ using namespace std;
 bool RfcComponents_APPMQTT_Process(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int nMsgLen);
 
 XHANDLE xhToken = NULL;
-int nTmpLen = 0;
-XCHAR tszTmpBuffer[2048];
 
 bool CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("NetCore_CB_Login:%s\n", lpszClientAddr);
+	MQTTProtocol_Parse_Insert(lpszClientAddr);
 	return true;
 }
 void CALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
 	printf("NetCore_CB_Recv:%s-%d\n", lpszClientAddr, nMsgLen);
-
-	memcpy(tszTmpBuffer + nTmpLen, lpszRecvMsg, nMsgLen);
-	nTmpLen += nMsgLen;
-	if (!MQTTProtocol_Parse_GetHdr(tszTmpBuffer, nTmpLen))
-	{
-		nTmpLen = nMsgLen;
-		return;
-	}
-	RfcComponents_APPMQTT_Process(lpszClientAddr, tszTmpBuffer, nTmpLen);
-	nTmpLen = 0;
-	memset(tszTmpBuffer, '\0', sizeof(tszTmpBuffer));
-	
+	RfcComponents_APPMQTT_Process(lpszClientAddr, lpszRecvMsg, nMsgLen);
 }
 void CALLBACK NetCore_CB_Close(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("NetCore_CB_Close:%s\n", lpszClientAddr);
+	MQTTProtocol_Parse_Delete(lpszClientAddr);
 }
 
-void Packet_Property(XCHAR* ptszMsgBuffer, int* pInt_Len, MQTTPROTOCOL_HDRPROPERTY*** pppSt_HDRProperty, int nListCount)
+void Packet_Property(MQTTPROTOCOL_HDRPROPERTY*** pppSt_HDRProperty, int nListCount)
 {
 	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppSt_HDRProperty, nListCount, sizeof(MQTTPROTOCOL_HDRPROPERTY));
 
@@ -114,101 +105,49 @@ bool RfcComponents_APPMQTT_Process(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer
 {
 	int nSDLen = 0;
 	int nRVLen = 0;
-	XCHAR tszSDBuffer[1024];
-	XCHAR tszRVBuffer[1024];
+	XCHAR tszSDBuffer[1024] = {};
+	XCHAR tszRVBuffer[1024] = {};
+	MQTTPROTOCOL_FIXEDHEADER st_MQFixedHdr = {};
 
-	MQTTPROTOCOL_INFORMATION st_MQTTProtcol;
+	MQTTProtocol_Parse_Send(lpszClientAddr, lpszMsgBuffer, nMsgLen);
 
-	memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
-	memset(tszRVBuffer, '\0', sizeof(tszRVBuffer));
-	memset(&st_MQTTProtcol, '\0', sizeof(MQTTPROTOCOL_INFORMATION));
-
-	MQTTProtocol_Parse_Header(lpszMsgBuffer, nMsgLen, &st_MQTTProtcol);
-	//是不是连接
-	if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_CONNECT == st_MQTTProtcol.st_FixedHdr.byMsgType)
+	int nMSGLen = 0;
+	XCHAR* ptszMSGBuffer = NULL;
+	if (MQTTProtocol_Parse_Recv(lpszClientAddr, &st_MQFixedHdr, &ptszMSGBuffer, &nMsgLen))
 	{
-		int nListCount = 6;
-		MQTTPROTOCOL_HDRPROPERTY** ppSt_HDRProperty;
-
-		Packet_Property(tszSDBuffer, &nSDLen, &ppSt_HDRProperty, nListCount);
-		MQTTProtocol_Packet_REPConnect(tszRVBuffer, &nRVLen, 0, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_REASON_SUCCESS, &ppSt_HDRProperty, nListCount);
-		MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, nRVLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_CONNACK, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_FLAG_CONNACK);
-		memcpy(tszSDBuffer + nSDLen, tszRVBuffer, nRVLen);
-		nSDLen += nRVLen;
-
-		NetCore_TCPXCore_SendEx(xhToken, lpszClientAddr, tszSDBuffer, nSDLen);
-	}
-	else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_SUBSCRIBE == st_MQTTProtcol.st_FixedHdr.byMsgType)
-	{
-		MQTTProtocol_Packet_REPComm(tszRVBuffer, &nRVLen, st_MQTTProtcol.wMsgID, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_REASON_SUCCESS);
-		MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, nRVLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_SUBACK, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_FLAG_SUBACK);
-		memcpy(tszSDBuffer + nSDLen, tszRVBuffer, nRVLen);
-		nSDLen += nRVLen;
-
-		NetCore_TCPXCore_SendEx(xhToken, lpszClientAddr, tszSDBuffer, nSDLen);
-	}
-	else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_UNSUBSCRIBE == st_MQTTProtcol.st_FixedHdr.byMsgType)
-	{
-		MQTTProtocol_Packet_REPComm(tszRVBuffer, &nRVLen, st_MQTTProtcol.wMsgID, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_REASON_SUCCESS);
-		MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, nRVLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_UNSUBACK, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_FLAG_UNSUBACK);
-		memcpy(tszSDBuffer + nSDLen, tszRVBuffer, nRVLen);
-		nSDLen += nRVLen;
-
-		NetCore_TCPXCore_SendEx(xhToken, lpszClientAddr, tszSDBuffer, nSDLen);
-	}
-	else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PUBLISH == st_MQTTProtcol.st_FixedHdr.byMsgType)
-	{
-		if ((XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_FLAG_PUBLISH_QOS1 == st_MQTTProtcol.st_FixedHdr.byMsgFlag) || (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_FLAG_PUBLISH_QOS2 == st_MQTTProtcol.st_FixedHdr.byMsgFlag))
+		//是不是连接
+		if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_CONNECT == st_MQFixedHdr.byMsgType)
 		{
-			//需要回复
-			MQTTProtocol_Packet_REPPublish(tszRVBuffer, &nRVLen, st_MQTTProtcol.wMsgID, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_REASON_SUCCESS);
-			MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, nRVLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PUBACK, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_FLAG_PUBACK);
-			memcpy(tszSDBuffer + nSDLen, tszRVBuffer, nRVLen);
-			nSDLen += nRVLen;
+			int nListCount = 0;
+			MQTTPROTOCOL_HDRPROPERTY** ppSt_HDRProperty;
+			MQTTPROTOCOL_HDRCONNNECT st_HDRConnect = {};
+			MQTTPROTOCOL_USERINFO st_USerInfo = {};
 
+			MQTTProtocol_Parse_Connect(ptszMSGBuffer, nMsgLen, &st_HDRConnect, &st_USerInfo, &ppSt_HDRProperty, &nListCount);
+			BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_HDRProperty, nListCount);
+
+			nListCount = 0;
+			Packet_Property(&ppSt_HDRProperty, nListCount);
+			MQTTProtocol_Packet_REPConnect(tszRVBuffer, &nRVLen, 0, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_REASON_SUCCESS, &ppSt_HDRProperty, nListCount);
+			MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_CONNACK, tszRVBuffer, nRVLen);
 			NetCore_TCPXCore_SendEx(xhToken, lpszClientAddr, tszSDBuffer, nSDLen);
 		}
-	}
-	else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PINGREQ == st_MQTTProtcol.st_FixedHdr.byMsgType)
-	{
-		MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, 0, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PINGREP, 0);
-		NetCore_TCPXCore_SendEx(xhToken, lpszClientAddr, tszSDBuffer, nSDLen);
-	}
-	return true;
-}
+		else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_SUBSCRIBE == st_MQFixedHdr.byMsgType)
+		{
 
-bool RfcComponents_APPMQTT_Recv(XSOCKET hSocket)
-{
-	int nMsgLen = 2048;
-	XCHAR tszMsgBuffer[2048];
-	MQTTPROTOCOL_INFORMATION st_MQTTProtcol;
-
-	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	memset(&st_MQTTProtcol, '\0', sizeof(MQTTPROTOCOL_INFORMATION));
-
-	XClient_TCPSelect_RecvMsg(hSocket, tszMsgBuffer, &nMsgLen);
-
-	MQTTProtocol_Parse_Header(tszMsgBuffer, nMsgLen, &st_MQTTProtcol);
-	//是不是连接确认
-	if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_CONNACK == st_MQTTProtcol.st_FixedHdr.byMsgType)
-	{
-		printf("connect ack\n");
-	}
-	else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_UNSUBACK == st_MQTTProtcol.st_FixedHdr.byMsgType)
-	{
-		printf("unsubcribe ok\n");
-	}
-	else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_SUBACK == st_MQTTProtcol.st_FixedHdr.byMsgType)
-	{
-		printf("subcribe ok\n");
-	}
-	else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PUBACK == st_MQTTProtcol.st_FixedHdr.byMsgType)
-	{
-		printf("publish ok\n");
-	}
-	else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PINGREP == st_MQTTProtcol.st_FixedHdr.byMsgType)
-	{
-		printf("ping ok\n");
+		}
+		else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_UNSUBSCRIBE == st_MQFixedHdr.byMsgType)
+		{
+			
+		}
+		else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PUBLISH == st_MQFixedHdr.byMsgType)
+		{
+			
+		}
+		else if (XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PINGREQ == st_MQFixedHdr.byMsgType)
+		{
+			
+		}
 	}
 	return true;
 }
@@ -240,23 +179,22 @@ int main1()
 	st_HDRConnect.wHBTime = 60;
 	//连接
 	MQTTProtocol_Packet_REQConnect(tszRVBuffer, &nRVLen, &st_HDRConnect, "mqtt_123123aa");
-	MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, nRVLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_CONNECT, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_FLAG_CONNECT);
+	MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_CONNECT, tszRVBuffer, nRVLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_FLAG_CONNECT);
 	memcpy(tszSDBuffer + nSDLen, tszRVBuffer, nRVLen);
 	nSDLen += nRVLen;
 
 	XClient_TCPSelect_SendMsg(hSocket, tszSDBuffer, nSDLen);
-	RfcComponents_APPMQTT_Recv(hSocket);
 	//取消订阅
 	memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
 	memset(tszRVBuffer, '\0', sizeof(tszRVBuffer));
 
 	MQTTProtocol_Packet_REQUNSubscribe(tszRVBuffer, &nRVLen, 1101, "topic/name");
-	MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, nRVLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_UNSUBSCRIBE, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_FLAG_UNSUBSCRIBE);
+	MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_UNSUBSCRIBE, tszRVBuffer, nRVLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_FLAG_UNSUBSCRIBE);
 	memcpy(tszSDBuffer + nSDLen, tszRVBuffer, nRVLen);
 	nSDLen += nRVLen;
 
 	XClient_TCPSelect_SendMsg(hSocket, tszSDBuffer, nSDLen);
-	RfcComponents_APPMQTT_Recv(hSocket);
+	RfcComponents_APPMQTT_Process("1111", tszRVBuffer, nRVLen);
 	//订阅
 	MQTTPROTOCOL_HDRSUBSCRIBE st_HDROPtion;
 
@@ -265,21 +203,20 @@ int main1()
 	memset(&st_HDROPtion, '\0', sizeof(MQTTPROTOCOL_HDRSUBSCRIBE));
 	
 	MQTTProtocol_Packet_REQSubscribe(tszRVBuffer, &nRVLen, 1102, "topic/name", &st_HDROPtion);
-	MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, nRVLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_SUBSCRIBE, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_FLAG_SUBSCRIBE);
+	MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_SUBSCRIBE, tszRVBuffer, nRVLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_FLAG_SUBSCRIBE);
 	memcpy(tszSDBuffer + nSDLen, tszRVBuffer, nRVLen);
 	nSDLen += nRVLen;
 
 	XClient_TCPSelect_SendMsg(hSocket, tszSDBuffer, nSDLen);
-	RfcComponents_APPMQTT_Recv(hSocket);
 	//发布消息
 	memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
 	memset(tszRVBuffer, '\0', sizeof(tszRVBuffer));
 
-	MQTTProtocol_Packet_REQPublish(tszRVBuffer, &nRVLen, "topic/name");
+	MQTTProtocol_Packet_REQPublish(tszRVBuffer, &nRVLen, "topic/name", "123", 3, 123);
 	memcpy(tszRVBuffer + nRVLen, "hello", 5);
 	nRVLen += 5;
 
-	MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, nRVLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PUBLISH, 0);
+	MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PUBLISH, tszRVBuffer, nRVLen, 0);
 	memcpy(tszSDBuffer + nSDLen, tszRVBuffer, nRVLen);
 	nSDLen += nRVLen;
 
@@ -287,15 +224,14 @@ int main1()
 	//PING
 	nRVLen = 0;
 	memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
-	MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, nRVLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PINGREQ, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_FLAG_PINGREQ);
+	MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_PINGREQ, tszRVBuffer, nRVLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_FLAG_PINGREQ);
 	XClient_TCPSelect_SendMsg(hSocket, tszSDBuffer, nSDLen);
-	RfcComponents_APPMQTT_Recv(hSocket);
 	//断开连接
 	memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
 	memset(tszRVBuffer, '\0', sizeof(tszRVBuffer));
 
 	MQTTProtocol_Packet_DisConnect(tszRVBuffer, &nRVLen);
-	MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, nRVLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_DISCONN, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_FLAG_DISCONN);
+	MQTTProtocol_Packet_Header(tszSDBuffer, &nSDLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_TYPE_DISCONN, tszRVBuffer, nRVLen, XENGINE_RFCCOMPONENTS_MQTT_PROTOCOL_FLAG_DISCONN);
 	memcpy(tszSDBuffer + nSDLen, tszRVBuffer, nRVLen);
 	nSDLen += nRVLen;
 
@@ -314,6 +250,7 @@ int main()
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 
+	MQTTProtocol_Parse_Init(1);
 	xhToken = NetCore_TCPXCore_StartEx(1883);
 	if (NULL == xhToken)
 	{
@@ -326,6 +263,8 @@ int main()
 	{
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
+	MQTTProtocol_Parse_Destory();
+
 #ifdef _MSC_BUILD
 	WSACleanup();
 #endif

@@ -159,8 +159,10 @@ int Test_Datas()
 	st_ProtocolHdr.wReserve = 0;
 	st_ProtocolHdr.wTail = XENGIEN_COMMUNICATION_PACKET_PROTOCOL_TAIL;
 
-	memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
-	memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), lpszMsgBuffer, nLen);
+	int nMLen = 2048;
+	HelpComponents_Help_BuildPacket(tszMsgBuffer, &nMLen, &st_ProtocolHdr, lpszMsgBuffer, nLen);
+	//memcpy(tszMsgBuffer, &st_ProtocolHdr, sizeof(XENGINE_PROTOCOLHDR));
+	//memcpy(tszMsgBuffer + sizeof(XENGINE_PROTOCOLHDR), lpszMsgBuffer, nLen);
 
 	int nMsgLen = sizeof(XENGINE_PROTOCOLHDR) + nLen;
 

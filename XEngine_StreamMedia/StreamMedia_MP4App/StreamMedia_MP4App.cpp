@@ -121,14 +121,14 @@ void MP4_PacketMoov(LPCXSTR lpszClientID, FILE* pSt_File, int nPos)
 	int nMDIAPos = 0;
 	int nMINFPos = 0;
 	int nSTBLPos = 0;
-	XCHAR tszMSGBuffer[1024] = {};
+	XCHAR tszMSGBuffer[10240] = {};
 	MP4Protocol_Packet_HDRBox(lpszClientID, tszMSGBuffer, &nSize, _X("moov"));
 	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
 	nMOOVPos = nPos;
 	nPos += nSize;
 
 	memset(tszMSGBuffer, '\0', sizeof(tszMSGBuffer));
-	MP4Protocol_Packet_MVhd(lpszClientID, tszMSGBuffer, &nSize);
+	MP4Protocol_Packet_MVhd(lpszClientID, tszMSGBuffer, &nSize, 90090);
 	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
 	nPos += nSize;
 
@@ -139,7 +139,7 @@ void MP4_PacketMoov(LPCXSTR lpszClientID, FILE* pSt_File, int nPos)
 	nPos += nSize;
 
 	memset(tszMSGBuffer, '\0', sizeof(tszMSGBuffer));
-	MP4Protocol_Packet_TKhd(lpszClientID, tszMSGBuffer, &nSize, 0, 1920, 1080);
+	MP4Protocol_Packet_TKhd(lpszClientID, tszMSGBuffer, &nSize, 0, 720, 480, 90090);
 	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
 	nPos += nSize;
 
@@ -180,10 +180,56 @@ void MP4_PacketMoov(LPCXSTR lpszClientID, FILE* pSt_File, int nPos)
 	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
 	nSTBLPos = nPos;
 	nPos += nSize;
-
+	//读取H264的SPS,PPS
 	XENGINE_PROTOCOL_AVINFO st_AVInfo = {};
+	FILE* pSt_HFile = _xtfopen("D:\\h264 file\\720x480.264", "rb");
+	st_AVInfo.st_VideoInfo.nVLen = fread(st_AVInfo.st_VideoInfo.tszVInfo, 1, 39, pSt_HFile);
+	fclose(pSt_HFile);
+
 	memset(tszMSGBuffer, '\0', sizeof(tszMSGBuffer));
+	st_AVInfo.st_AudioInfo.bEnable = false;
+	st_AVInfo.st_VideoInfo.bEnable = true;
+
+	/*
+	st_AVInfo.st_AudioInfo.bEnable = true;
+	st_AVInfo.st_VideoInfo.bEnable = false;
+	st_AVInfo.st_AudioInfo.nChannel = 2;
+	st_AVInfo.st_AudioInfo.nSampleFmt = 16;
+	st_AVInfo.st_AudioInfo.nSampleRate = 48000;
+	st_AVInfo.st_AudioInfo.nALen = 5;
+	st_AVInfo.st_AudioInfo.tszAInfo[0] = 0x01;
+	st_AVInfo.st_AudioInfo.tszAInfo[1] = 0x02;
+	st_AVInfo.st_AudioInfo.tszAInfo[2] = 0x03;
+	st_AVInfo.st_AudioInfo.tszAInfo[3] = 0x04;
+	st_AVInfo.st_AudioInfo.tszAInfo[4] = 0x05;
+	*/
+
 	MP4Protocol_Packet_STsd(lpszClientID, tszMSGBuffer, &nSize, &st_AVInfo);
+	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
+	nPos += nSize;
+
+	memset(tszMSGBuffer, '\0', sizeof(tszMSGBuffer));
+	MP4Protocol_Packet_STts(lpszClientID, tszMSGBuffer, &nSize);
+	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
+	nPos += nSize;
+
+	memset(tszMSGBuffer, '\0', sizeof(tszMSGBuffer));
+	MP4Protocol_Packet_STss(lpszClientID, tszMSGBuffer, &nSize);
+	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
+	nPos += nSize;
+
+	memset(tszMSGBuffer, '\0', sizeof(tszMSGBuffer));
+	MP4Protocol_Packet_STsc(lpszClientID, tszMSGBuffer, &nSize);
+	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
+	nPos += nSize;
+
+	memset(tszMSGBuffer, '\0', sizeof(tszMSGBuffer));
+	MP4Protocol_Packet_STsz(lpszClientID, tszMSGBuffer, &nSize);
+	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
+	nPos += nSize;
+
+	memset(tszMSGBuffer, '\0', sizeof(tszMSGBuffer));
+	MP4Protocol_Packet_STco(lpszClientID, tszMSGBuffer, &nSize);
 	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
 	nPos += nSize;
 
@@ -265,11 +311,10 @@ int MP4_Packet()
 			AVHelp_Parse_NaluType((LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264, &enVideoFrameType);
 
 			int nFrameType = 0;
-			if ((ENUM_XENGINE_AVCODEC_VIDEO_FRAMETYPE_SPS == enVideoFrameType) || (ENUM_XENGINE_AVCODEC_VIDEO_FRAMETYPE_PPS == enVideoFrameType))
+			if ((ENUM_XENGINE_AVCODEC_VIDEO_FRAMETYPE_SPS == enVideoFrameType) || (ENUM_XENGINE_AVCODEC_VIDEO_FRAMETYPE_PPS == enVideoFrameType) || (ENUM_XENGINE_AVCODEC_VIDEO_FRAMETYPE_I == enVideoFrameType))
 			{
 				nFrameType = 1;
 			}
-			
 			MP4Protocol_Packet_FrameVideo(lpszClientID, ptszSDBuffer, &nSDLen, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen, nFilePos, nFrameType, 40);
 			fwrite(ptszSDBuffer, 1, nSDLen, pSt_WFile);
 			nFilePos += nSDLen;
@@ -293,7 +338,7 @@ int MP4_Packet()
 int main()
 {
 	MP4_Packet();
-	MP4_Parse();
+	//MP4_Parse();
 
 	return 0;
 }
