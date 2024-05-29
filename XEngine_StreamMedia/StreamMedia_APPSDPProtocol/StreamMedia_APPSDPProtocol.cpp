@@ -67,6 +67,7 @@ void CreateSDP(XCHAR* ptszMsgBuffer, int* pInt_Len)
 	SDPProtocol_Packet_Control(xhToken, 0);
 	//配置音频属性
 	SDPProtocol_Packet_AddMedia(xhToken, _X("audio"), "RTP/AVP", &pptszAVList, 1);
+	SDPProtocol_Packet_CName(xhToken, 111111, _X("79a9722580589zr5"), _X("video-666q08to"));
 
 	STREAMMEDIA_SDPPROTOCOL_MEDIAINFO st_SDPMediaAudio;
 	memset(&st_SDPMediaAudio, '\0', sizeof(STREAMMEDIA_SDPPROTOCOL_MEDIAINFO));
@@ -81,8 +82,8 @@ void CreateSDP(XCHAR* ptszMsgBuffer, int* pInt_Len)
 	st_SDPMediaAudio.st_FmtpAudio.nProfileID = 1;
 	st_SDPMediaAudio.st_FmtpAudio.nSizeLen = 13;
 	strcpy(st_SDPMediaAudio.st_FmtpAudio.tszMode, "AAC-hbr");
-	
 	SDPProtocol_Packet_AudioFmt(xhToken, 98, &st_SDPMediaAudio);
+	SDPProtocol_Packet_CName(xhToken, 222222222);
 	SDPProtocol_Packet_Control(xhToken, 1);
 	//附加信息
 	SDPProtocol_Packet_OptionalMediaName(xhToken, "medianame");
@@ -167,9 +168,14 @@ void ParseSDP(LPCXSTR lpszMsgBuffer, int nLen)
 	SDPProtocol_Parse_RtcpAttr(&ppSt_ListAttr, nACount, 35, &st_SDPRtcp);
 	SDPProtocol_Parse_RtcpAttr(&ppSt_ListAttr, nACount, 9, &st_SDPRtcp);
 
+	int nSsrcCount = 0;
+	STREAMMEDIA_SDPPROTOCOL_CNAME** ppSt_CNameList;
+	SDPProtocol_Parse_AttrCName(&ppSt_ListAttr, nACount, &ppSt_CNameList, &nSsrcCount);
+
 	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_AVMedia[0]->pptszAVList, ppSt_AVMedia[0]->nListCount);
-	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListAttr, nListCount);
+	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListAttr, nACount);
 	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_AVMedia, nListCount);
+	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_CNameList, nSsrcCount);
 
 	XCHAR tszMediaName[64];
 	memset(tszMediaName, '\0', sizeof(tszMediaName));

@@ -83,7 +83,7 @@ LPCXSTR lpszAudioFile = "Audio.aac";
 LPCXSTR lpszMP4File = "1.mp4";
 #endif
 
-void CALLBACK XEngine_AVCollect_CBScreen(uint8_t* punStringY, int nYLen, uint8_t* punStringU, int nULen, uint8_t* punStringV, int nVLen, XPVOID lParam)
+void CALLBACK XEngine_AVCollect_CBScreen(uint8_t* punStringY, int nYLen, uint8_t* punStringU, int nULen, uint8_t* punStringV, int nVLen, AVCOLLECT_TIMEINFO* pSt_TimeInfo, XPVOID lParam)
 {
 	int nFLen = 1024 * 1024 * 10;
 	int nELen = 1024 * 1024 * 10;
@@ -108,7 +108,7 @@ void CALLBACK XEngine_AVCollect_CBScreen(uint8_t* punStringY, int nYLen, uint8_t
 	free(ptszFilterBuffer);
 	ptszFilterBuffer = NULL;
 }
-void CALLBACK XEngine_AVCollect_CBAudio(uint8_t* punStringAudio, int nVLen, XPVOID lParam)
+void CALLBACK XEngine_AVCollect_CBAudio(uint8_t* punStringAudio, int nVLen, AVCOLLECT_TIMEINFO* pSt_TimeInfo, XPVOID lParam)
 {
 	int nListCount = 0;
 	AVCODEC_AUDIO_MSGBUFFER** ppSt_ListMsgBuffer;

@@ -31,14 +31,14 @@ using namespace std;
 FILE* pSt_File;
 int nWidth;
 int nHeight;
-void CALLBACK XEngine_AVCollect_CBVideo(uint8_t* punStringY, int nYLen, uint8_t* punStringU, int nULen, uint8_t* punStringV, int nVLen, XPVOID lParam)
+void CALLBACK XEngine_AVCollect_CBVideo(uint8_t* punStringY, int nYLen, uint8_t* punStringU, int nULen, uint8_t* punStringV, int nVLen, AVCOLLECT_TIMEINFO* pSt_TimeInfo, XPVOID lParam)
 {
 	fwrite(punStringY, 1, nWidth * nHeight, pSt_File);
 	fwrite(punStringU, 1, nWidth * nHeight / 4, pSt_File);
 	fwrite(punStringV, 1, nWidth * nHeight / 4, pSt_File);
 	printf("%d %d %d\n", nYLen, nULen, nVLen);
 }
-void CALLBACK XEngine_AVCollect_CBAudio(uint8_t* punStringAudio, int nVLen, XPVOID lParam)
+void CALLBACK XEngine_AVCollect_CBAudio(uint8_t* punStringAudio, int nVLen, AVCOLLECT_TIMEINFO* pSt_TimeInfo, XPVOID lParam)
 {
 }
 int main()

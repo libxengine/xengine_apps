@@ -46,6 +46,7 @@ int main()
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
+	
 	XSOCKET m_Socket;
 	int nMsgLen = 0;
 	XCHAR tszMsgBuffer[2048];
@@ -59,7 +60,7 @@ int main()
 		printf("创建套接字失败!,错误:%lX\n", NatProtocol_GetLastError());
 		return -1;
 	}
-	XClient_UDPSelect_Connect(m_Socket, "43.139.170.67", 3478);
+	XClient_UDPSelect_Connect(m_Socket, "127.0.0.1", 5604);
 
 	XCHAR tszTmpBuffer[128] = {};
 	XCHAR tszRandomStr[10] = {};
@@ -68,16 +69,11 @@ int main()
 
 	//NatProtocol_StunNat_BuildMapAddress(tszTmpBuffer + nMsgLen, &nMsgLen, "127.0.0.1", 5501);
 	//NatProtocol_StunNat_BuildMapAddress(tszTmpBuffer + nMsgLen, &nMsgLen, "192.168.1.180", 5501, true);
-	/*
+	
 	NatProtocol_StunNat_BuildAttr(tszTmpBuffer + nMsgLen, &nMsgLen, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_ATTR_ICE_CONTROLLING, tszRandomStr, 8);
-
-	int nPLen = 0;
-	NatProtocol_StunNat_BuildPriority(tszTmpBuffer + nMsgLen, &nPLen);
-	nMsgLen += nPLen;
+	NatProtocol_StunNat_BuildPriority(tszTmpBuffer + nMsgLen, &nMsgLen);
 	NatProtocol_StunNat_BuildAttr(tszTmpBuffer + nMsgLen, &nMsgLen, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_ATTR_USER_CANDIDATE);
 
-	nMsgLen += 8;//FIN
-	*/
 	XCHAR tszTokenStr[64] = {};
 	BaseLib_OperatorHandle_CreateStr(tszTokenStr, 12, 0, 2);
 	if (!NatProtocol_StunNat_Packet(tszMsgBuffer, &nMsgLen, tszTokenStr, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_CLASS_REQUEST, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_ATTR_MAPPED_ADDRESS, tszTmpBuffer))
