@@ -116,8 +116,8 @@ int Test_H265Hevc()
 int Test_Codech264()
 {
 #ifdef _MSC_BUILD
-	FILE* pSt_File = _tfopen("d:\\1.h264", "rb");
-	pSt_YUVFile = _tfopen("d:\\ds.yuv", "wb");
+	FILE* pSt_File = _tfopen("D:\\h264 file\\720x480.264", "rb");
+	pSt_YUVFile = _tfopen("D:\\h264 file\\ds.yuv", "wb");
 #else
 	FILE* pSt_File = fopen("480p.264", "rb");
 	pSt_264File = fopen("en.h264", "wb");
@@ -231,6 +231,7 @@ int Test_CodechAVS()
 }
 int main()
 {
+	Test_Codech264();
 	Test_CodechAVS();
 	Test_H265Hevc();
 	int nListCount = 0;
@@ -240,6 +241,6 @@ int main()
 	{
 		printf("%d = %s\n", ppSt_ListHWCodec[i]->enHWDevice, ppSt_ListHWCodec[i]->tszHWName);
 	}
-	Test_Codech264();
+	
 	return 0;
 }

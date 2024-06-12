@@ -85,7 +85,8 @@ void CALLBACK TCPSelect_CBLeave(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID 
 
 int XCore_DTSLTest(LPCXSTR lpszCAFile, LPCXSTR lpszSrvFile, LPCXSTR lpszKeyFile)
 {
-	xhSSL = OPenSsl_Server_InitEx(lpszCAFile, lpszSrvFile, lpszKeyFile, false, true, XENGINE_OPENSSL_PROTOCOL_DTL_SERVER);
+	bool bSocket = false;
+	xhSSL = OPenSsl_Server_InitEx(lpszCAFile, lpszSrvFile, lpszKeyFile, false, bSocket, XENGINE_OPENSSL_PROTOCOL_DTL_SERVER);
 	if (NULL == xhSSL)
 	{
 		printf("OPenSsl_Server_Init %lX\n", OPenSsl_GetLastError());
@@ -112,7 +113,7 @@ int XCore_DTSLTest(LPCXSTR lpszCAFile, LPCXSTR lpszSrvFile, LPCXSTR lpszKeyFile)
 	XBYTE tszRVKey[128] = {};
 	NetCore_UDPSelect_GetSocket(xhUDP, &hSocket);
 
-	if (1)
+	if (bSocket)
 	{
 		OPenSsl_Server_AcceptEx(xhSSL, hSocket, NULL, tszIPPort);
 	}
@@ -127,14 +128,17 @@ int XCore_DTSLTest(LPCXSTR lpszCAFile, LPCXSTR lpszSrvFile, LPCXSTR lpszKeyFile)
 			NetCore_UDPSelect_Recv(xhUDP, tszIPPort, tszRVBuffer, &nRVLen);
 			printf("%d-%s\n", nRVLen, tszRVBuffer);
 
-			if (OPenSsl_Server_AcceptMemoryEx(xhSSL, hSocket, tszIPPort, tszSDBuffer, &nSDLen, tszRVBuffer, nRVLen))
-			{
-				OPenSsl_Server_GetKeyEx(xhSSL, tszIPPort, tszSDKey, tszRVKey);
-				break;
-			}
+			bool bRet = OPenSsl_Server_AcceptMemoryEx(xhSSL, hSocket, tszIPPort, tszSDBuffer, &nSDLen, tszRVBuffer, nRVLen);
+			
 			int nPort = 0;
 			BaseLib_OperatorIPAddr_SegAddr(tszIPPort, &nPort);
 			NetCore_UDPSelect_Send(xhUDP, tszSDBuffer, nSDLen, tszIPPort, nPort);
+
+			if (bRet)
+			{
+				OPenSsl_Server_GetKeyEx(xhSSL, tszIPPort, tszSDKey);
+				break;
+			}
 		}
 	}
 	
@@ -143,9 +147,30 @@ int XCore_DTSLTest(LPCXSTR lpszCAFile, LPCXSTR lpszSrvFile, LPCXSTR lpszKeyFile)
 	{
 		int nMSGLen = 1024;
 		XCHAR tszMSGBuffer[1024] = {};
-		OPenSsl_Server_RecvMsgEx(xhSSL, tszIPPort, tszMSGBuffer, &nMSGLen);
-		printf("%d-%s\n", nMSGLen, tszMSGBuffer);
-		OPenSsl_Server_SendMsgEx(xhSSL, tszIPPort, tszMSGBuffer, nMSGLen);
+
+		if (bSocket)
+		{
+			OPenSsl_Server_RecvMsgEx(xhSSL, tszIPPort, tszMSGBuffer, &nMSGLen);
+			printf("%d-%s\n", nMSGLen, tszMSGBuffer);
+			OPenSsl_Server_SendMsgEx(xhSSL, tszIPPort, tszMSGBuffer, nMSGLen);
+		}
+		else
+		{
+			NetCore_UDPSelect_Recv(xhUDP, tszIPPort, tszMSGBuffer, &nMSGLen);
+
+			int nRVLen = 0;
+			int nSDLen = 0;
+			XCHAR* ptszRVBuffer = NULL;
+			XCHAR* ptszSDBuffer = NULL;
+			OPenSsl_Server_RecvMemoryEx(xhSSL, tszIPPort, &ptszRVBuffer, &nRVLen, tszMSGBuffer, nMSGLen);
+
+			printf("%d-%s\n", nMSGLen, tszMSGBuffer);
+			OPenSsl_Server_SendMemoryEx(xhSSL, tszIPPort, ptszRVBuffer, nRVLen, &ptszSDBuffer, &nSDLen);
+
+			int nPort = 0;
+			BaseLib_OperatorIPAddr_SegAddr(tszIPPort, &nPort);
+			NetCore_UDPSelect_Send(xhUDP, ptszSDBuffer, nSDLen, tszIPPort, nPort);
+		}
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 

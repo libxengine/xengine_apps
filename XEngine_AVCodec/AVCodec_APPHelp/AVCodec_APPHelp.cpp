@@ -109,7 +109,7 @@ void Test_Parse()
 void Test_PPS264Info()
 {
 #ifdef _MSC_BUILD
-	LPCXSTR lpszSrcFile = "D:\\h264 file\\480p.264";
+	LPCXSTR lpszSrcFile = "D:\\h264 file\\720x480.264";
 #else
 	LPCXSTR lpszSrcFile = "480p.264";
 #endif

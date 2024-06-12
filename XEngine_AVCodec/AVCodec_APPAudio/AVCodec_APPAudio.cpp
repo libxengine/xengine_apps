@@ -158,7 +158,7 @@ void Audio_DeCodec()
 	st_AudioInfo.nChannel = 2;
 	st_AudioInfo.nSampleFmt = ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP;
 
-	if (!AudioCodec_Stream_DeInit(&xhCoder, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC, AudioCodec_Stream_Callback, pSt_FileDeCodec, &st_AudioInfo))
+	if (!AudioCodec_Stream_DeInit(&xhCoder, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC, AudioCodec_Stream_Callback, pSt_FileDeCodec))
 	{
 		printf("AudioCodec_Stream_DeInit\n");
 		return;
@@ -259,7 +259,7 @@ void OPUS_Encode()
 }
 int main()
 {
-	OPUS_Encode();
+	//OPUS_Encode();
 	//Audio_ListCodec();
 	//Audio_Encode();
 	Audio_DeCodec();

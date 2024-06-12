@@ -21,8 +21,8 @@ using namespace std;
 #include <XEngine_Include/XEngine_AVCodec/AudioCodec_Error.h>
 #include <XEngine_Include/XEngine_AVCodec/AVHelp_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVHelp_Error.h>
-#include <XEngine_Include/XEngine_AVCodec/AVPacket_Define.h>
-#include <XEngine_Include/XEngine_AVCodec/AVPacket_Error.h>
+#include <XEngine_Include/XEngine_AVCodec/AVFormat_Define.h>
+#include <XEngine_Include/XEngine_AVCodec/AVFormat_Error.h>
 #include <XEngine_Include/XEngine_AVCodec/AVFilter_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVFilter_Error.h>
 #ifdef _MSC_BUILD
@@ -31,7 +31,7 @@ using namespace std;
 #pragma comment(lib,"XEngine_AVCodec/XEngine_VideoCodec.lib")
 #pragma comment(lib,"XEngine_AVCodec/XEngine_AudioCodec.lib")
 #pragma comment(lib,"XEngine_AVCodec/XEngine_AVHelp.lib")
-#pragma comment(lib,"XEngine_AVCodec/XEngine_AVPacket.lib")
+#pragma comment(lib,"XEngine_AVCodec/XEngine_AVFormat.lib")
 #pragma comment(lib,"XEngine_AVCodec/XEngine_AVFilter.lib")
 #endif
 #else
@@ -47,8 +47,8 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVPacket/AVPacket_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVPacket/AVPacket_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFormat/AVFormat_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFormat/AVFormat_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFilter/AVFilter_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFilter/AVFilter_Error.h"
 #ifdef _MSC_BUILD
@@ -57,7 +57,7 @@ using namespace std;
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_VideoCodec.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AudioCodec.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVPacket.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVFormat.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVFilter.lib")
 #endif
 #endif
@@ -125,7 +125,7 @@ void CALLBACK XEngine_AVCollect_CBAudio(uint8_t* punStringAudio, int nVLen, AVCO
 	BaseLib_OperatorMemory_Free((void***)&ppSt_ListMsgBuffer, nListCount);
 }
 
-void CALLBACK XEngine_AVPacket_Callback(XHANDLE xhNet, int nCvtType, int nCvtFrame, double dlTime, XPVOID lParam)
+void CALLBACK XEngine_AVPacket_Callback(XHANDLE xhNet, int nCvtType, __int64x nCvtFrame, double dlTime, XPVOID lParam)
 {
 	printf(_X("提示:正在打包...第 %d 个%s,当前时间:%lf\r\n"), nCvtFrame, nCvtType == 1 ? _X("视频帧") : _X("音频帧"), dlTime);
 }
@@ -134,7 +134,7 @@ void XEngine_AVPacket_Thread()
 	while (1)
 	{
 		bool bIsRun = false;
-		if (AVPacket_FilePacket_GetStatus(xhPacket, &bIsRun))
+		if (AVFormat_INPacket_GetStatus(xhPacket, &bIsRun))
 		{
 			if (!bIsRun)
 			{
@@ -143,7 +143,7 @@ void XEngine_AVPacket_Thread()
 		}
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
-	AVPacket_FilePacket_Stop(xhPacket);
+	AVFormat_INPacket_Stop(xhPacket);
 }
 
 int main()
@@ -262,7 +262,7 @@ int main()
 	double dlVideoTime = 0;
 	double dlAudioTime = 0;
 
-	xhPacket = AVPacket_FilePacket_Init(XEngine_AVPacket_Callback);
+	xhPacket = AVFormat_INPacket_Init(XEngine_AVPacket_Callback);
 	if (NULL == xhPacket)
 	{
 		printf(_X("初始化打包工具失败"));
@@ -271,16 +271,16 @@ int main()
 
 	if (bAudio)
 	{
-		AVPacket_FilePacket_Input(xhPacket, lpszAudioFile, &dlAudioTime);
+		AVFormat_INPacket_Input(xhPacket, lpszAudioFile, &dlAudioTime);
 	}
-	AVPacket_FilePacket_Input(xhPacket, lpszVideoFile, &dlVideoTime);
+	AVFormat_INPacket_Input(xhPacket, lpszVideoFile, &dlVideoTime);
 
-	if (!AVPacket_FilePacket_Output(xhPacket, lpszMP4File))
+	if (!AVFormat_INPacket_Output(xhPacket, lpszMP4File))
 	{
 		printf(_X("设置输出失败"));
 		return -1;
 	}
-	if (!AVPacket_FilePacket_Start(xhPacket))
+	if (!AVFormat_INPacket_Start(xhPacket))
 	{
 		printf(_X("开始打包失败"));
 		return -1;

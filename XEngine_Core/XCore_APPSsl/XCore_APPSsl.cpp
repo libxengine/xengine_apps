@@ -163,6 +163,10 @@ void SignVer()
 	{
 		return;
 	}
+
+	OPenSsl_Cert_Convert("D:\\xengine_apps\\Debug\\server.crt", "D:\\xengine_apps\\Debug\\server.der");
+
+	return;
 }
 
 void VerSign()

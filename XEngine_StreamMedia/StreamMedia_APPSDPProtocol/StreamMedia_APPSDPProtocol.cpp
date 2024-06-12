@@ -40,12 +40,17 @@ void CreateSDP(XCHAR* ptszMsgBuffer, int* pInt_Len)
 	SDPProtocol_Packet_Session(xhToken, _X("h264"));
 	SDPProtocol_Packet_KeepTime(xhToken);
 	SDPProtocol_Packet_Control(xhToken, -1);
+	SDPProtocol_Packet_Bundle(xhToken);
 	//配置视频属性
 	XCHAR** pptszAVList;
-	BaseLib_OperatorMemory_Malloc((XPPPMEM)&pptszAVList, 1, 64);
+	BaseLib_OperatorMemory_Malloc((XPPPMEM)&pptszAVList, 5, 64);
 	strcpy(pptszAVList[0], "96");
+	strcpy(pptszAVList[1], "97");
+	strcpy(pptszAVList[2], "98");
+	strcpy(pptszAVList[3], "99");
+	strcpy(pptszAVList[4], "100");
 
-	SDPProtocol_Packet_AddMedia(xhToken, _X("video"), "RTP/AVP", &pptszAVList, 1);
+	SDPProtocol_Packet_AddMedia(xhToken, _X("video"), "RTP/AVP", &pptszAVList, 5, 0);
 	STREAMMEDIA_SDPPROTOCOL_MEDIAINFO st_SDPMediaVideo;
 	memset(&st_SDPMediaVideo, '\0', sizeof(STREAMMEDIA_SDPPROTOCOL_MEDIAINFO));
 
@@ -66,7 +71,7 @@ void CreateSDP(XCHAR* ptszMsgBuffer, int* pInt_Len)
 	SDPProtocol_Packet_VideoFmt(xhToken, 96, &st_SDPMediaVideo);
 	SDPProtocol_Packet_Control(xhToken, 0);
 	//配置音频属性
-	SDPProtocol_Packet_AddMedia(xhToken, _X("audio"), "RTP/AVP", &pptszAVList, 1);
+	SDPProtocol_Packet_AddMedia(xhToken, _X("audio"), "RTP/AVP", &pptszAVList, 1, 1);
 	SDPProtocol_Packet_CName(xhToken, 111111, _X("79a9722580589zr5"), _X("video-666q08to"));
 
 	STREAMMEDIA_SDPPROTOCOL_MEDIAINFO st_SDPMediaAudio;
@@ -85,6 +90,21 @@ void CreateSDP(XCHAR* ptszMsgBuffer, int* pInt_Len)
 	SDPProtocol_Packet_AudioFmt(xhToken, 98, &st_SDPMediaAudio);
 	SDPProtocol_Packet_CName(xhToken, 222222222);
 	SDPProtocol_Packet_Control(xhToken, 1);
+	
+	STREAMMEDIA_SDPPROTOCOL_RTCP st_RTCPAttr = {};
+
+	st_RTCPAttr.bCcmFir = true;
+	st_RTCPAttr.bGoogRemb = true;
+	st_RTCPAttr.bNAck = true;
+	st_RTCPAttr.bNAckPli = true;
+	st_RTCPAttr.bTransportCC = true;
+    sprintf(st_RTCPAttr.st_RTPMap.tszNameStr, "H264");
+	sprintf(st_RTCPAttr.st_RTPMap.tszSampleStr, "90000");
+
+	st_RTCPAttr.st_FMtp.nLevelCodec = 1;
+	st_RTCPAttr.st_FMtp.nPacketMode = 1;
+	memcpy(st_RTCPAttr.st_FMtp.tszProLevel, "42e01f", 6);
+	SDPProtocol_Packet_AVAttr(xhToken, 106, &st_RTCPAttr);
 	//附加信息
 	SDPProtocol_Packet_OptionalMediaName(xhToken, "medianame");
 	SDPProtocol_Packet_OptionalContact(xhToken, "486179@qq.com", "13699444444");
@@ -157,6 +177,10 @@ void ParseSDP(LPCXSTR lpszMsgBuffer, int nLen)
 	{
 		printf("Key:%s Value:%s\n", ppSt_ListAttr[i]->tszAttrKey, ppSt_ListAttr[i]->tszAttrValue);
 	}
+	int nIndex1 = -1;
+	int nIndex2 = -1;
+	SDPProtocol_Parse_AttrBundle(&ppSt_ListAttr, nACount, &nIndex1, &nIndex2);
+
 	STREAMMEDIA_SDPPROTOCOL_MEDIAINFO st_ATTRVideo = {};
 	SDPProtocol_Parse_RTPMapVideo(&ppSt_ListAttr, nACount, 96, &st_ATTRVideo);
 
@@ -165,8 +189,8 @@ void ParseSDP(LPCXSTR lpszMsgBuffer, int nLen)
 	SDPProtocol_Parse_RtcpComm(&ppSt_ListAttr, nACount, &bRTCPMux, &bRTCPRSize);
 	
 	STREAMMEDIA_SDPPROTOCOL_RTCP st_SDPRtcp = {};
-	SDPProtocol_Parse_RtcpAttr(&ppSt_ListAttr, nACount, 35, &st_SDPRtcp);
-	SDPProtocol_Parse_RtcpAttr(&ppSt_ListAttr, nACount, 9, &st_SDPRtcp);
+	SDPProtocol_Parse_AVAttr(&ppSt_ListAttr, nACount, 106, &st_SDPRtcp);
+	SDPProtocol_Parse_AVAttr(&ppSt_ListAttr, nACount, 9, &st_SDPRtcp);
 
 	int nSsrcCount = 0;
 	STREAMMEDIA_SDPPROTOCOL_CNAME** ppSt_CNameList;
