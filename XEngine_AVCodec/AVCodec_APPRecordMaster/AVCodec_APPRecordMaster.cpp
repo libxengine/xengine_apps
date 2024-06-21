@@ -134,7 +134,7 @@ void XEngine_AVPacket_Thread()
 	while (1)
 	{
 		bool bIsRun = false;
-		if (AVFormat_INPacket_GetStatus(xhPacket, &bIsRun))
+		if (AVFormat_Packet_GetStatus(xhPacket, &bIsRun))
 		{
 			if (!bIsRun)
 			{
@@ -143,7 +143,7 @@ void XEngine_AVPacket_Thread()
 		}
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
-	AVFormat_INPacket_Stop(xhPacket);
+	AVFormat_Packet_Stop(xhPacket);
 }
 
 int main()
@@ -262,7 +262,7 @@ int main()
 	double dlVideoTime = 0;
 	double dlAudioTime = 0;
 
-	xhPacket = AVFormat_INPacket_Init(XEngine_AVPacket_Callback);
+	xhPacket = AVFormat_Packet_Init(XEngine_AVPacket_Callback);
 	if (NULL == xhPacket)
 	{
 		printf(_X("初始化打包工具失败"));
@@ -271,16 +271,16 @@ int main()
 
 	if (bAudio)
 	{
-		AVFormat_INPacket_Input(xhPacket, lpszAudioFile, &dlAudioTime);
+		AVFormat_Packet_Input(xhPacket, lpszAudioFile, &dlAudioTime);
 	}
-	AVFormat_INPacket_Input(xhPacket, lpszVideoFile, &dlVideoTime);
+	AVFormat_Packet_Input(xhPacket, lpszVideoFile, &dlVideoTime);
 
-	if (!AVFormat_INPacket_Output(xhPacket, lpszMP4File))
+	if (!AVFormat_Packet_Output(xhPacket, lpszMP4File))
 	{
 		printf(_X("设置输出失败"));
 		return -1;
 	}
-	if (!AVFormat_INPacket_Start(xhPacket))
+	if (!AVFormat_Packet_Start(xhPacket))
 	{
 		printf(_X("开始打包失败"));
 		return -1;

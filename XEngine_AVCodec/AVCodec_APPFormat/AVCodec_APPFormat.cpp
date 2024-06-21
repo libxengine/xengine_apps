@@ -111,7 +111,7 @@ int AVPacket_Test_FileConvert()
 {
 	double nTotalAVTime = 0;
 #ifdef _MSC_BUILD
-	LPCXSTR lpszSrcFile = "D:\\h264 file\\720x480.264";
+	LPCXSTR lpszSrcFile = "D:\\h264 file\\2024-03-21 15-17-59.ts";
 	LPCXSTR lpszDstFile = "D:\\windows-ffmpeg\\x64\\1.mp4";
 #else
 	LPCXSTR lpszSrcFile = "480p.flv";
@@ -172,47 +172,47 @@ int AVPacket_Test_FilePacket()
 	LPCXSTR lpszDstFile = "480p.mp4";
 #endif
 
-	XHANDLE xhAVFile = AVFormat_INPacket_Init(AVPacket_Pack_CBNotify);
+	XHANDLE xhAVFile = AVFormat_Packet_Init(AVPacket_Pack_CBNotify);
 	if (NULL == xhAVFile)
 	{
-		printf("AVFormat_UNPacket_Init:%lX\n", AVFormat_GetLastError());
+		printf("AVFormat_UNPack_Init:%lX\n", AVFormat_GetLastError());
 		return -1;
 	}
 
-	if (!AVFormat_INPacket_Output(xhAVFile, lpszDstFile))
+	if (!AVFormat_Packet_Output(xhAVFile, lpszDstFile))
 	{
-		printf("AVFormat_UNPacket_Output:%lX\n", AVFormat_GetLastError());
+		printf("AVFormat_UNPack_Output:%lX\n", AVFormat_GetLastError());
 		return -1;
 	}
 
-	if (!AVFormat_INPacket_Input(xhAVFile, lpszAudioFile1))
+	if (!AVFormat_Packet_Input(xhAVFile, lpszAudioFile1))
 	{
-		printf("AVFormat_UNPacket_Input:%lX\n", AVFormat_GetLastError());
+		printf("AVFormat_UNPack_Input:%lX\n", AVFormat_GetLastError());
 		return -1;
 	}
-	if (!AVFormat_INPacket_Input(xhAVFile, lpszVideoFile))
+	if (!AVFormat_Packet_Input(xhAVFile, lpszVideoFile))
 	{
-		printf("AVFormat_UNPacket_Input:%lX\n", AVFormat_GetLastError());
+		printf("AVFormat_UNPack_Input:%lX\n", AVFormat_GetLastError());
 		return -1;
 	}
 	/*
-	if (!AVFormat_INPacket_Input(xhAVFile, lpszAudioFile2))
+	if (!AVFormat_Packet_Input(xhAVFile, lpszAudioFile2))
 	{
-		printf("AVFormat_UNPacket_Input:%lX\n", AVFormat_GetLastError());
+		printf("AVFormat_UNPack_Input:%lX\n", AVFormat_GetLastError());
 		return -1;
 	}
 	*/
 
-	if (!AVFormat_INPacket_Start(xhAVFile))
+	if (!AVFormat_Packet_Start(xhAVFile))
 	{
-		printf("AVFormat_UNPacket_Start:%lX\n", AVFormat_GetLastError());
+		printf("AVFormat_UNPack_Start:%lX\n", AVFormat_GetLastError());
 		return -1;
 	}
 
 	while (1)
 	{
 		bool bIsRun = false;
-		if (AVFormat_INPacket_GetStatus(xhAVFile, &bIsRun))
+		if (AVFormat_Packet_GetStatus(xhAVFile, &bIsRun))
 		{
 			if (!bIsRun)
 			{
@@ -221,7 +221,7 @@ int AVPacket_Test_FilePacket()
 		}
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
-	return AVFormat_INPacket_Stop(xhAVFile);
+	return AVFormat_Packet_Stop(xhAVFile);
 }
 
 int AVPacket_Test_UNPacket()
@@ -233,7 +233,7 @@ int AVPacket_Test_UNPacket()
 	LPCXSTR lpszVideoFile = "d:\\h264 file\\480p_1.264";
 	LPCXSTR lpszAudioFile1 = "d:\\h264 file\\test_1.aac";
 	LPCXSTR lpszAudioFile2 = "d:\\h264 file\\test_2.aac";
-	LPCXSTR lpszSrcFile = "D:\\windows-ffmpeg\\x64\\1.ts";
+	LPCXSTR lpszSrcFile = "D:\\h264 file\\2024-03-21 15-17-59.ts";
 #else
 	LPCXSTR lpszVideoFile = "480p_1.264";
 	LPCXSTR lpszAudioFile1 = "test_1.aac";
@@ -241,44 +241,47 @@ int AVPacket_Test_UNPacket()
 	LPCXSTR lpszSrcFile = "480p.mp4";
 #endif
 
-	XHANDLE xhAVFile = AVFormat_UNPacket_Init(AVPacket_Pack_CBNotify);
+	XHANDLE xhAVFile = AVFormat_UNPack_Init(AVPacket_Pack_CBNotify);
 	if (NULL == xhAVFile)
 	{
-		printf("AVFormat_UNPacket_Init:%lX\n", AVFormat_GetLastError());
+		printf("AVFormat_UNPack_Init:%lX\n", AVFormat_GetLastError());
 		return -1;
 	}
-	if (!AVFormat_UNPacket_Input(xhAVFile, lpszSrcFile))
+	if (!AVFormat_UNPack_Input(xhAVFile, lpszSrcFile))
 	{
-		printf("AVFormat_UNPacket_Input:%lX\n", AVFormat_GetLastError());
+		printf("AVFormat_UNPack_Input:%lX\n", AVFormat_GetLastError());
 		return -1;
 	}
-	if (!AVFormat_UNPacket_GetList(xhAVFile, &ppSt_ListFile, &nListCount))
+	if (!AVFormat_UNPack_GetList(xhAVFile, &ppSt_ListFile, &nListCount))
 	{
-		printf("AVFormat_UNPacket_GetList:%lX\n", AVFormat_GetLastError());
+		printf("AVFormat_UNPack_GetList:%lX\n", AVFormat_GetLastError());
 		return -1;
 	}
 	for (int i = 0; i < nListCount; i++)
 	{
 		printf("%d %d AVTime:%lf\n", ppSt_ListFile[i]->nAVCodecType, ppSt_ListFile[i]->nAVCodecID, ppSt_ListFile[i]->dlAVTime);
 	}
+	XHANDLE xhCodec = NULL;
+	AVFormat_UNPack_GetCodec(xhAVFile, 0, &xhCodec);
+	BaseLib_OperatorMemory_FreeCStyle(&xhCodec);
 	strcpy(ppSt_ListFile[0]->tszFileName, lpszVideoFile);
 	//strcpy(ppSt_ListFile[1]->tszFileName, lpszAudioFile1);
 	//strcpy(ppSt_ListFile[2]->tszFileName, lpszAudioFile2);
 
-	if (!AVFormat_UNPacket_Output(xhAVFile, &ppSt_ListFile, nListCount))
+	if (!AVFormat_UNPack_Output(xhAVFile, &ppSt_ListFile, nListCount))
 	{
-		printf("AVFormat_UNPacket_Output:%lX\n", AVFormat_GetLastError());
+		printf("AVFormat_UNPack_Output:%lX\n", AVFormat_GetLastError());
 		return -1;
 	}
-	if (!AVFormat_UNPacket_Start(xhAVFile))
+	if (!AVFormat_UNPack_Start(xhAVFile))
 	{
-		printf("AVFormat_UNPacket_Start:%lX\n", AVFormat_GetLastError());
+		printf("AVFormat_UNPack_Start:%lX\n", AVFormat_GetLastError());
 		return -1;
 	}
 	while (1)
 	{
 		bool bIsRun = false;
-		if (AVFormat_UNPacket_GetStatus(xhAVFile, &bIsRun))
+		if (AVFormat_UNPack_GetStatus(xhAVFile, &bIsRun))
 		{
 			if (!bIsRun)
 			{
@@ -288,14 +291,14 @@ int AVPacket_Test_UNPacket()
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListFile, nListCount);
-	return AVFormat_UNPacket_Stop(xhAVFile);
+	return AVFormat_UNPack_Stop(xhAVFile);
 }
 int main()
 {
 	//AVPacket_Test_FileLink();
-	AVPacket_Test_FileConvert();
+	//AVPacket_Test_FileConvert();
 	//AVPacket_Test_FilePacket();
-	//AVPacket_Test_UNPacket();
+	AVPacket_Test_UNPacket();
 
 	return 1;
 }

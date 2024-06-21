@@ -368,6 +368,8 @@ int test_handle()
 		BaseLib_OperatorHandle_Create(&xhToken);
 		_xtprintf(_X("%lld\n"), xhToken);
 	}
+	XCHAR tszKeyStr[64] = {};
+	BaseLib_OperatorHandle_CreateStr(tszKeyStr, 8, 1);
 	return 0;
 }
 int test_endain()
