@@ -65,6 +65,11 @@ void CreateSDP(XCHAR* ptszMsgBuffer, int* pInt_Len)
 	st_SDPMediaVideo.st_FmtpVideo.tszLeaveId[2] = 0x33;
 	st_SDPMediaVideo.st_FmtpVideo.nFrameXSize = 1080;
 	st_SDPMediaVideo.st_FmtpVideo.nFrameYSize = 720;
+	st_SDPMediaVideo.bCcmFir = true;
+	st_SDPMediaVideo.bGoogRemb = true;
+	st_SDPMediaVideo.bNAck = true;
+	st_SDPMediaVideo.bNAckPli = true;
+	st_SDPMediaVideo.bTransportCC = true;
 
 	strcpy(st_SDPMediaVideo.st_FmtpVideo.tszPPSBase, _X("aO48gA"));
 	strcpy(st_SDPMediaVideo.st_FmtpVideo.tszSPSBase, _X("Z01AM5p0FCNCAAEEugA9CQEeMGVA"));
@@ -90,21 +95,6 @@ void CreateSDP(XCHAR* ptszMsgBuffer, int* pInt_Len)
 	SDPProtocol_Packet_AudioFmt(xhToken, 98, &st_SDPMediaAudio);
 	SDPProtocol_Packet_CName(xhToken, 222222222);
 	SDPProtocol_Packet_Control(xhToken, 1);
-	
-	STREAMMEDIA_SDPPROTOCOL_RTCP st_RTCPAttr = {};
-
-	st_RTCPAttr.bCcmFir = true;
-	st_RTCPAttr.bGoogRemb = true;
-	st_RTCPAttr.bNAck = true;
-	st_RTCPAttr.bNAckPli = true;
-	st_RTCPAttr.bTransportCC = true;
-    sprintf(st_RTCPAttr.st_RTPMap.tszNameStr, "H264");
-	sprintf(st_RTCPAttr.st_RTPMap.tszSampleStr, "90000");
-
-	st_RTCPAttr.st_FMtp.nLevelCodec = 1;
-	st_RTCPAttr.st_FMtp.nPacketMode = 1;
-	memcpy(st_RTCPAttr.st_FMtp.tszProLevel, "42e01f", 6);
-	SDPProtocol_Packet_AVAttr(xhToken, 106, &st_RTCPAttr);
 	//附加信息
 	SDPProtocol_Packet_OptionalMediaName(xhToken, "medianame");
 	SDPProtocol_Packet_OptionalContact(xhToken, "486179@qq.com", "13699444444");
@@ -188,10 +178,6 @@ void ParseSDP(LPCXSTR lpszMsgBuffer, int nLen)
 	bool bRTCPRSize = false;
 	SDPProtocol_Parse_RtcpComm(&ppSt_ListAttr, nACount, &bRTCPMux, &bRTCPRSize);
 	
-	STREAMMEDIA_SDPPROTOCOL_RTCP st_SDPRtcp = {};
-	SDPProtocol_Parse_AVAttr(&ppSt_ListAttr, nACount, 106, &st_SDPRtcp);
-	SDPProtocol_Parse_AVAttr(&ppSt_ListAttr, nACount, 9, &st_SDPRtcp);
-
 	int nSsrcCount = 0;
 	STREAMMEDIA_SDPPROTOCOL_CNAME** ppSt_CNameList;
 	SDPProtocol_Parse_AttrCName(&ppSt_ListAttr, nACount, &ppSt_CNameList, &nSsrcCount);

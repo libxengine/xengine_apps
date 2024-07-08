@@ -21,11 +21,14 @@ using namespace std;
 #include <XEngine_Include/XEngine_AVCodec/AudioCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVHelp_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVHelp_Error.h>
+#include <XEngine_Include/XEngine_AVCodec/AVFrame_Define.h>
+#include <XEngine_Include/XEngine_AVCodec/AVFrame_Error.h>
 #include <XEngine_Include/XEngine_Client/StreamClient_Define.h>
 #include <XEngine_Include/XEngine_Client/StreamClient_Error.h>
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_Client/XClient_Stream.lib")
 #pragma comment(lib,"XEngine_AVCodec/XEngine_AVHelp.lib")
+#pragma comment(lib,"XEngine_AVCodec/XEngine_AVFrame.lib")
 #endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
@@ -37,11 +40,14 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFrame/AVFrame_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFrame/AVFrame_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Stream/StreamClient_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Stream/StreamClient_Error.h"
 #ifdef _MSC_BUILD
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XClient_Stream.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVFrame.lib")
 #endif
 #endif
 
@@ -165,8 +171,8 @@ int Test_CodecPush()
 
 	XNETHANDLE xhAParse = 0;
 	XNETHANDLE xhVParse = 0;
-	AVHelp_Parse_FrameInit(&xhAParse, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC);
-	AVHelp_Parse_FrameInit(&xhVParse, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
+	AVFrame_Frame_ParseInit(&xhAParse, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC);
+	AVFrame_Frame_ParseInit(&xhVParse, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
 
 	xhStream = XClient_StreamPush_CodecInit(lpszUrl, &st_MediaStream);
 	XClient_StreamPush_CodecWriteHdr(xhStream);
@@ -176,8 +182,8 @@ int Test_CodecPush()
 		if (st_MediaStream.st_VideoInfo.bEnable)
 		{
 			int nListCount = 0;
-			AVHELP_FRAMEDATA** ppSt_Frame;
-			AVHelp_Parse_FrameGet(xhVParse, tszVBuffer, nVLen, &ppSt_Frame, &nListCount);
+			AVFRAME_PARSEDATA** ppSt_Frame;
+			AVFrame_Frame_ParseGet(xhVParse, tszVBuffer, nVLen, &ppSt_Frame, &nListCount);
 			for (int i = 0; i < nListCount; i++)
 			{
 				XClient_StreamPush_CodecVideo(xhStream, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen);
@@ -193,8 +199,8 @@ int Test_CodecPush()
 		if (st_MediaStream.st_AudioInfo.bEnable)
 		{
 			int nListCount = 0;
-			AVHELP_FRAMEDATA** ppSt_Frame;
-			AVHelp_Parse_FrameGet(xhAParse, tszABuffer, nALen, &ppSt_Frame, &nListCount);
+			AVFRAME_PARSEDATA** ppSt_Frame;
+			AVFrame_Frame_ParseGet(xhAParse, tszABuffer, nALen, &ppSt_Frame, &nListCount);
 			for (int i = 0; i < nListCount; i++)
 			{
 				//不需要AAC头
@@ -210,8 +216,8 @@ int Test_CodecPush()
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(40));
 	}
-	AVHelp_Parse_FrameClose(xhVParse);
-	AVHelp_Parse_FrameClose(xhAParse);
+	AVFrame_Frame_ParseClose(xhVParse);
+	AVFrame_Frame_ParseClose(xhAParse);
 	XClient_StreamPush_CodecClose(xhStream);
 	return 0;
 }

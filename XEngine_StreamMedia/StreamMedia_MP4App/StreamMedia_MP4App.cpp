@@ -19,12 +19,15 @@ using namespace std;
 #include <XEngine_Include/XEngine_AVCodec/VideoCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVHelp_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVHelp_Error.h>
+#include <XEngine_Include/XEngine_AVCodec/AVFrame_Define.h>
+#include <XEngine_Include/XEngine_AVCodec/AVFrame_Error.h>
 #include <XEngine_Include/XEngine_StreamMedia/MP4Protocol_Define.h>
 #include <XEngine_Include/XEngine_StreamMedia/MP4Protocol_Error.h>
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"XEngine_AVCodec/XEngine_AVHelp.lib")
 #pragma comment(lib,"XEngine_StreamMedia/StreamMedia_MP4Protocol.lib")
+#pragma comment(lib,"XEngine_AVCodec/XEngine_AVFrame.lib")
 #endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
@@ -36,11 +39,14 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFrame/AVFrame_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFrame/AVFrame_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_MP4Protocol/MP4Protocol_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_MP4Protocol/MP4Protocol_Error.h"
 #ifdef _MSC_BUILD
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVFrame.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/StreamMedia_MP4Protocol.lib")
 #endif
 #endif
@@ -270,7 +276,7 @@ int MP4_Packet()
 	}
 	
 	MP4Protocol_Packet_Insert(lpszClientID);
-	AVHelp_Parse_FrameInit(&xhToken, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
+	AVFrame_Frame_ParseInit(&xhToken, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
 	
 	int nRVLen = 0;
 	int nSDLen = 0;
@@ -303,8 +309,8 @@ int MP4_Packet()
 			break;
 		}
 		int nListCount = 0;
-		AVHELP_FRAMEDATA** ppSt_Frame;
-		AVHelp_Parse_FrameGet(xhToken, tszRVBuffer, nRVLen, &ppSt_Frame, &nListCount);
+		AVFRAME_PARSEDATA** ppSt_Frame;
+		AVFrame_Frame_ParseGet(xhToken, tszRVBuffer, nRVLen, &ppSt_Frame, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
 			XENGINE_AVCODEC_VIDEOFRAMETYPE enVideoFrameType;
@@ -329,7 +335,7 @@ int MP4_Packet()
 
 	MP4_PacketMoov(lpszClientID, pSt_WFile, nFilePos);
 
-	AVHelp_Parse_FrameClose(xhToken);
+	AVFrame_Frame_ParseClose(xhToken);
 	MP4Protocol_Packet_Delete(lpszClientID);
 	fclose(pSt_WFile);
 	fclose(pSt_RFile);

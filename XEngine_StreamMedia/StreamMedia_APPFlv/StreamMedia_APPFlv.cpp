@@ -21,12 +21,12 @@ using namespace std;
 #include <XEngine_Include/XEngine_AVCodec/AVCollect_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/VideoCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AudioCodec_Define.h>
-#include <XEngine_Include/XEngine_AVCodec/AVHelp_Define.h>
-#include <XEngine_Include/XEngine_AVCodec/AVHelp_Error.h>
+#include <XEngine_Include/XEngine_AVCodec/AVFrame_Define.h>
+#include <XEngine_Include/XEngine_AVCodec/AVFrame_Error.h>
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"XEngine_StreamMedia/StreamMedia_FLVProtocol.lib")
-#pragma comment(lib,"XEngine_AVCodec/XEngine_AVHelp.lib")
+#pragma comment(lib,"XEngine_AVCodec/XEngine_AVFrame.lib")
 #endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
@@ -40,12 +40,12 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVCollect/AVCollect_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFrame/AVFrame_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFrame/AVFrame_Error.h"
 #ifdef _MSC_BUILD
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/StreamMedia_FLVProtocol.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVFrame.lib")
 #endif
 #endif
 
@@ -136,7 +136,7 @@ bool FLV_PacketVideo()
 	LPCXSTR lpszClientID = _X("client");
 
 	FLVProtocol_Packet_Insert(lpszClientID, false, true);
-	AVHelp_Parse_FrameInit(&xhVideo, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
+	AVFrame_Frame_ParseInit(&xhVideo, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
 
 	FILE* pSt_FLVFile = fopen(lpszFLVFile, _X("wb"));
 	if (NULL == pSt_FLVFile)
@@ -190,8 +190,8 @@ bool FLV_PacketVideo()
 			break;
 		}
 		int nListCount = 0;
-		AVHELP_FRAMEDATA** ppSt_Frame;
-		AVHelp_Parse_FrameGet(xhVideo, tszRBBuffer, nRBLen, &ppSt_Frame, &nListCount);
+		AVFRAME_PARSEDATA** ppSt_Frame;
+		AVFrame_Frame_ParseGet(xhVideo, tszRBBuffer, nRBLen, &ppSt_Frame, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
 			XCHAR tszMsgBuffer[102400];
@@ -205,7 +205,7 @@ bool FLV_PacketVideo()
 
 	fclose(pSt_VFile);
 	fclose(pSt_FLVFile);
-	AVHelp_Parse_FrameClose(xhVideo);
+	AVFrame_Frame_ParseClose(xhVideo);
 	FLVProtocol_Packet_Delete(lpszClientID);
 	return true;
 }
@@ -222,7 +222,7 @@ bool FLV_PacketAudio()
 	LPCXSTR lpszClientID = _X("client");
 
 	FLVProtocol_Packet_Insert(lpszClientID, false, true);
-	AVHelp_Parse_FrameInit(&xhAudio, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC);
+	AVFrame_Frame_ParseInit(&xhAudio, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC);
 
 	FILE* pSt_FLVFile = fopen(lpszFLVFile, _X("wb"));
 	if (NULL == pSt_FLVFile)
@@ -286,8 +286,8 @@ bool FLV_PacketAudio()
 			break;
 		}
 		int nListCount = 0;
-		AVHELP_FRAMEDATA** ppSt_Frame;
-		AVHelp_Parse_FrameGet(xhAudio, tszRBBuffer, nRBLen, &ppSt_Frame, &nListCount);
+		AVFRAME_PARSEDATA** ppSt_Frame;
+		AVFrame_Frame_ParseGet(xhAudio, tszRBBuffer, nRBLen, &ppSt_Frame, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
 			XCHAR tszMsgBuffer[102400];
@@ -299,7 +299,7 @@ bool FLV_PacketAudio()
 	fclose(pSt_AFile);
 	fclose(pSt_FLVFile);
 
-	AVHelp_Parse_FrameClose(xhAudio);
+	AVFrame_Frame_ParseClose(xhAudio);
 	FLVProtocol_Packet_Delete(lpszClientID);
 	return true;
 }

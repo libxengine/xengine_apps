@@ -21,12 +21,12 @@ using namespace std;
 #include <XEngine_Include/XEngine_AVCodec/AVCollect_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/VideoCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AudioCodec_Define.h>
-#include <XEngine_Include/XEngine_AVCodec/AVHelp_Define.h>
-#include <XEngine_Include/XEngine_AVCodec/AVHelp_Error.h>
+#include <XEngine_Include/XEngine_AVCodec/AVFrame_Define.h>
+#include <XEngine_Include/XEngine_AVCodec/AVFrame_Error.h>
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"XEngine_StreamMedia/StreamMedia_HLSProtocol.lib")
-#pragma comment(lib,"XEngine_AVCodec/XEngine_AVHelp.lib")
+#pragma comment(lib,"XEngine_AVCodec/XEngine_AVFrame.lib")
 #endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
@@ -40,12 +40,12 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVCollect/AVCollect_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFrame/AVFrame_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFrame/AVFrame_Error.h"
 #ifdef _MSC_BUILD
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/StreamMedia_HLSProtocol.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVFrame.lib")
 #endif
 #endif
 
@@ -232,7 +232,7 @@ bool TSFile_Packet()
 	FILE* pSt_WFile = fopen("D:\\windows-ffmpeg\\x64\\1.ts", "wb");
 	FILE* pSt_RVideo = fopen(lpszVideoFile, "rb");
 
-	AVHelp_Parse_FrameInit(&xhVideo, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
+	AVFrame_Frame_ParseInit(&xhVideo, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
 	HLSProtocol_TSPacket_Insert(lpszClientID, 0x1000, 0x1B, 0x0F, 0x101, 0);
 	HLSProtocol_TSPacket_SetTime(lpszClientID, 24, 0);
 	int nMsgLen = 0;
@@ -258,9 +258,9 @@ bool TSFile_Packet()
 			break;
 		}
 		int nListCount = 0;
-		AVHELP_FRAMEDATA** ppSt_Frame;
+		AVFRAME_PARSEDATA** ppSt_Frame;
 
-		AVHelp_Parse_FrameGet(xhVideo, tszVBuffer, nRet, &ppSt_Frame, &nListCount);
+		AVFrame_Frame_ParseGet(xhVideo, tszVBuffer, nRet, &ppSt_Frame, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
 			int nWLen = 0;
@@ -278,7 +278,7 @@ bool TSFile_Packet()
 	}
 
 	fclose(pSt_WFile);
-	AVHelp_Parse_FrameClose(xhVideo);
+	AVFrame_Frame_ParseClose(xhVideo);
 	return true;
 }
 

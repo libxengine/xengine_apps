@@ -18,14 +18,14 @@
 #include <XEngine_Include/XEngine_AVCodec/AVCollect_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/VideoCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AudioCodec_Define.h>
-#include <XEngine_Include/XEngine_AVCodec/AVHelp_Define.h>
-#include <XEngine_Include/XEngine_AVCodec/AVHelp_Error.h>
+#include <XEngine_Include/XEngine_AVCodec/AVFrame_Define.h>
+#include <XEngine_Include/XEngine_AVCodec/AVFrame_Error.h>
 #include <XEngine_Include/XEngine_StreamMedia/RTPProtocol_Define.h>
 #include <XEngine_Include/XEngine_StreamMedia/RTPProtocol_Error.h>
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"XEngine_StreamMedia/StreamMedia_RTPProtocol.lib")
-#pragma comment(lib,"XEngine_AVCodec/XEngine_AVHelp.lib")
+#pragma comment(lib,"XEngine_AVCodec/XEngine_AVFrame.lib")
 #endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
@@ -38,16 +38,16 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVCollect/AVCollect_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFrame/AVFrame_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFrame/AVFrame_Error.h"
 #ifdef _MSC_BUILD
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/StreamMedia_RTPProtocol.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVFrame.lib")
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g StreamMedia_APPRTPProtocol.cpp -o StreamMedia_APPRTPProtocol.exe -lXEngine_BaseLib -lStreamMedia_RTPProtocol -lXEngine_AVHelp 
+//Linux::g++ -std=c++17 -Wall -g StreamMedia_APPRTPProtocol.cpp -o StreamMedia_APPRTPProtocol.exe -lXEngine_BaseLib -lStreamMedia_RTPProtocol -lXEngine_AVFrame
 
 void TestPacket_RTP264()
 {
@@ -58,7 +58,7 @@ void TestPacket_RTP264()
 		printf("errrno");
 		return;
 	}
-	AVHelp_Parse_FrameInit(&xhFrame, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
+	AVFrame_Frame_ParseInit(&xhFrame, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
 	RTPProtocol_Packet_SetTime(lpszClientID, 25);
 
 #ifdef _MSC_BUILD
@@ -81,10 +81,10 @@ void TestPacket_RTP264()
 		}
 		int nFrameCount = 0;
 		int nPacketCount = 0;
-		AVHELP_FRAMEDATA** ppSt_Frame;
+		AVFRAME_PARSEDATA** ppSt_Frame;
 		STREAMMEDIA_RTPPROTOCOL_PACKET** ppSt_RTPPacket;
 
-		AVHelp_Parse_FrameGet(xhFrame, tszMsgBuffer, nRet, &ppSt_Frame, &nFrameCount);
+		AVFrame_Frame_ParseGet(xhFrame, tszMsgBuffer, nRet, &ppSt_Frame, &nFrameCount);
 		for (int i = 0; i < nFrameCount; i++)
 		{
 			RTPProtocol_Packet_Packet(lpszClientID, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer + 4, ppSt_Frame[i]->nMsgLen - 4, &ppSt_RTPPacket, &nPacketCount);
@@ -99,7 +99,7 @@ void TestPacket_RTP264()
 	}
 	fclose(pSt_264File);
 	fclose(pSt_RTPFile);
-	AVHelp_Parse_FrameClose(xhFrame);
+	AVFrame_Frame_ParseClose(xhFrame);
 	RTPProtocol_Packet_Delete(lpszClientID);
 }
 void TestParse_RTP264()
@@ -168,7 +168,7 @@ void TestPacket_RTP265()
 		printf("errrno");
 		return;
 	}
-	AVHelp_Parse_FrameInit(&xhFrame, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H265);
+	AVFrame_Frame_ParseInit(&xhFrame, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H265);
 	RTPProtocol_Packet_SetTime(lpszClientID, 25);
 
 #ifdef _MSC_BUILD
@@ -193,10 +193,10 @@ void TestPacket_RTP265()
 		}
 		int nFrameCount = 0;
 		int nPacketCount = 0;
-		AVHELP_FRAMEDATA** ppSt_Frame;
+		AVFRAME_PARSEDATA** ppSt_Frame;
 		STREAMMEDIA_RTPPROTOCOL_PACKET** ppSt_RTPPacket;
 
-		AVHelp_Parse_FrameGet(xhFrame, tszMsgBuffer, nRet, &ppSt_Frame, &nFrameCount);
+		AVFrame_Frame_ParseGet(xhFrame, tszMsgBuffer, nRet, &ppSt_Frame, &nFrameCount);
 		for (int i = 0; i < nFrameCount; i++)
 		{
 			RTPProtocol_Packet_Packet(lpszClientID, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen, &ppSt_RTPPacket, &nPacketCount);
@@ -211,7 +211,7 @@ void TestPacket_RTP265()
 	}
 	fclose(pSt_264File);
 	fclose(pSt_RTPFile);
-	AVHelp_Parse_FrameClose(xhFrame);
+	AVFrame_Frame_ParseClose(xhFrame);
 	RTPProtocol_Packet_Delete(lpszClientID);
 }
 void TestParse_RTP265()
@@ -281,7 +281,7 @@ void TestPacket_RTPAAC()
 		printf("errrno");
 		return;
 	}
-	AVHelp_Parse_FrameInit(&xhFrame, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC);
+	AVFrame_Frame_ParseInit(&xhFrame, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC);
 	RTPProtocol_Packet_SetTime(lpszClientID, 44100);
 
 #ifdef _MSC_BUILD
@@ -306,10 +306,10 @@ void TestPacket_RTPAAC()
 		}
 		int nFrameCount = 0;
 		int nPacketCount = 0;
-		AVHELP_FRAMEDATA** ppSt_Frame;
+		AVFRAME_PARSEDATA** ppSt_Frame;
 		STREAMMEDIA_RTPPROTOCOL_PACKET** ppSt_RTPPacket;
 
-		AVHelp_Parse_FrameGet(xhFrame, tszMsgBuffer, nRet, &ppSt_Frame, &nFrameCount);
+		AVFrame_Frame_ParseGet(xhFrame, tszMsgBuffer, nRet, &ppSt_Frame, &nFrameCount);
 		for (int i = 0; i < nFrameCount; i++)
 		{
 			RTPProtocol_Packet_Packet(lpszClientID, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen, &ppSt_RTPPacket, &nPacketCount);
@@ -324,7 +324,7 @@ void TestPacket_RTPAAC()
 	}
 	fclose(pSt_264File);
 	fclose(pSt_RTPFile);
-	AVHelp_Parse_FrameClose(xhFrame);
+	AVFrame_Frame_ParseClose(xhFrame);
 	RTPProtocol_Packet_Delete(lpszClientID);
 }
 void TestParse_RTPAAC()

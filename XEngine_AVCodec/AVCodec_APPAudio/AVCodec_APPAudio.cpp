@@ -17,12 +17,15 @@
 #include <XEngine_Include/XEngine_AVCodec/VideoCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVHelp_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVHelp_Error.h>
+#include <XEngine_Include/XEngine_AVCodec/AVFrame_Define.h>
+#include <XEngine_Include/XEngine_AVCodec/AVFrame_Error.h>
 #include <XEngine_Include/XEngine_AVCodec/AudioCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AudioCodec_Error.h>
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"XEngine_AVCodec/XEngine_AudioCodec.lib")
 #pragma comment(lib,"XEngine_AVCodec/XEngine_AVHelp.lib")
+#pragma comment(lib,"XEngine_AVCodec/XEngine_AVFrame.lib")
 #endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
@@ -33,23 +36,19 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFrame/AVFrame_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFrame/AVFrame_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Error.h"
 #ifdef _MSC_BUILD
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AudioCodec.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVFrame.lib")
 #endif
 #endif
 //Linux Macos:g++ -std=c++17 -Wall -g AVCodec_APPAudio.cpp -o AVCodec_APPAudio.exe -lXEngine_BaseLib -lXEngine_AVHelp -lXEngine_AudioCodec
 
-
-void CALLBACK AudioCodec_Stream_Callback(XNETHANDLE xhNet, uint8_t* pszBuffer, int nLen, AVCODEC_AUDIO_INFO* pSt_AudioInfo, XPVOID lParam)
-{
-	FILE* pSt_File = (FILE*)lParam;
-	printf("%llu write:%d\n", xhNet, nLen);
-	fwrite(pszBuffer, 1, nLen, pSt_File);
-}
 
 void Audio_ListCodec()
 {
@@ -158,7 +157,7 @@ void Audio_DeCodec()
 	st_AudioInfo.nChannel = 2;
 	st_AudioInfo.nSampleFmt = ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP;
 
-	if (!AudioCodec_Stream_DeInit(&xhCoder, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC, AudioCodec_Stream_Callback, pSt_FileDeCodec))
+	if (!AudioCodec_Stream_DeInit(&xhCoder, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC, &st_AudioInfo))
 	{
 		printf("AudioCodec_Stream_DeInit\n");
 		return;
@@ -173,7 +172,7 @@ void Audio_DeCodec()
 	{
 		nLen = 10240;
 	}
-	AVHelp_Parse_FrameInit(&xhParse, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC);
+	AVFrame_Frame_ParseInit(&xhParse, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC);
 
 	while (1)
 	{
@@ -186,11 +185,17 @@ void Audio_DeCodec()
 			break;
 		}
 		int nListCount = 0;
-		AVHELP_FRAMEDATA** ppSt_Frame;
-		AVHelp_Parse_FrameGet(xhParse, tszEnBuffer, nRet, &ppSt_Frame, &nListCount);
+		AVFRAME_PARSEDATA** ppSt_Frame;
+		AVFrame_Frame_ParseGet(xhParse, tszEnBuffer, nRet, &ppSt_Frame, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
-			AudioCodec_Stream_DeCodec(xhCoder, (uint8_t*)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen);
+			int nListCount = 0;
+			AVCODEC_AUDIO_MSGBUFFER** ppSt_ListMsgBuffer;
+			AudioCodec_Stream_DeCodec(xhCoder, (uint8_t*)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen, &ppSt_ListMsgBuffer, &nListCount);
+			for (int i = 0; i < nListCount; i++)
+			{
+				fwrite(ppSt_ListMsgBuffer[i]->ptszMsgBuffer, 1, ppSt_ListMsgBuffer[i]->nMsgLen, pSt_FileDeCodec);
+			}
 			BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->ptszMsgBuffer);
 		}
 		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_Frame, nListCount);
@@ -199,7 +204,7 @@ void Audio_DeCodec()
 	fclose(pSt_FileEnCode);
 	fclose(pSt_FileDeCodec);
 	AudioCodec_Stream_Destroy(xhCoder);
-	AVHelp_Parse_FrameClose(xhParse);
+	AVFrame_Frame_ParseClose(xhParse);
 }
 void OPUS_Encode()
 {

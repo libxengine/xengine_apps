@@ -74,38 +74,6 @@ void Test_MetaInfo()
 	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_MetaList, nListCount);
 }
 
-void Test_Parse()
-{
-	XNETHANDLE xhToken = 0;
-#ifdef _MSC_BUILD
-	FILE* pSt_File = fopen("D:\\h264 file\\480p.264", "rb");
-#else
-	FILE* pSt_File = fopen("480p.264", "rb");
-#endif
-
-	AVHelp_Parse_FrameInit(&xhToken, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
-
-	while (true)
-	{
-		XCHAR tszMsgBuffer[2048];
-		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-		int nRet = fread(tszMsgBuffer, 1, sizeof(tszMsgBuffer), pSt_File);
-		if (nRet <= 0)
-		{
-			break;
-		}
-		int nListCount = 0;
-		AVHELP_FRAMEDATA** ppSt_Frame;
-		AVHelp_Parse_FrameGet(xhToken, tszMsgBuffer, nRet, &ppSt_Frame, &nListCount);
-		for (int i = 0; i < nListCount; i++)
-		{
-			XENGINE_AVCODEC_VIDEOFRAMETYPE enVideoFrame;
-			AVHelp_Parse_NaluType((LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264, &enVideoFrame);
-		}
-	}
-	AVHelp_Parse_FrameClose(xhToken);
-}
-
 void Test_PPS264Info()
 {
 #ifdef _MSC_BUILD
@@ -261,7 +229,6 @@ void Test_AVList()
 int main()
 {
 	//Test_MetaInfo();
-	//Test_Parse();
 	Test_PPS264Info();
 	//Test_PPS265Info();
 	//Test_AudioInfo();

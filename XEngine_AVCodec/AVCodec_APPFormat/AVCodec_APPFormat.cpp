@@ -10,6 +10,7 @@
 using namespace std;
 #if 1 == _XENGINE_USER_DIR_SYSTEM
 #include <XEngine_Include/XEngine_CommHdr.h>
+#include <XEngine_Include/XEngine_ProtocolHdr.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
 #include <XEngine_Include/XEngine_AVCodec/AVFormat_Define.h>
@@ -20,6 +21,7 @@ using namespace std;
 #endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFormat/AVFormat_Define.h"
@@ -262,7 +264,7 @@ int AVPacket_Test_UNPacket()
 		printf("%d %d AVTime:%lf\n", ppSt_ListFile[i]->nAVCodecType, ppSt_ListFile[i]->nAVCodecID, ppSt_ListFile[i]->dlAVTime);
 	}
 	XHANDLE xhCodec = NULL;
-	AVFormat_UNPack_GetCodec(xhAVFile, 0, &xhCodec);
+	AVFormat_UNPack_GetAVCodec(xhAVFile, 0, &xhCodec);
 	BaseLib_OperatorMemory_FreeCStyle(&xhCodec);
 	strcpy(ppSt_ListFile[0]->tszFileName, lpszVideoFile);
 	//strcpy(ppSt_ListFile[1]->tszFileName, lpszAudioFile1);
