@@ -129,44 +129,33 @@ int Test_FilterMutliVideo()
 	ppSt_VideoInfo[0]->nHeight = 480;
 	ppSt_VideoInfo[0]->nFrame = 24;
 	ppSt_VideoInfo[0]->enAVPixForamt = ENUM_AVCOLLECT_VIDEO_FMT_YUV420P;
-	ppSt_VideoInfo[0]->bFilterEnable = true;
-	_tcsxcpy(ppSt_VideoInfo[0]->st_FilterInfo.tszARGName, "scale");
-	_tcsxcpy(ppSt_VideoInfo[0]->st_FilterInfo.tszARGPara, "360:240");
+	_tcsxcpy(ppSt_VideoInfo[0]->st_FilterInfo.tszARGName, "in0");
 
 	ppSt_VideoInfo[1]->nIndex = 1;
 	ppSt_VideoInfo[1]->nWidth = 720;
 	ppSt_VideoInfo[1]->nHeight = 480;
 	ppSt_VideoInfo[1]->nFrame = 24;
 	ppSt_VideoInfo[1]->enAVPixForamt = ENUM_AVCOLLECT_VIDEO_FMT_YUV420P;
-	ppSt_VideoInfo[1]->bFilterEnable = true;
-	_tcsxcpy(ppSt_VideoInfo[1]->st_FilterInfo.tszARGName, "scale");
-	_tcsxcpy(ppSt_VideoInfo[1]->st_FilterInfo.tszARGPara, "360:240");
+	_tcsxcpy(ppSt_VideoInfo[1]->st_FilterInfo.tszARGName, "in1");
 
 	ppSt_VideoInfo[2]->nIndex = 2;
 	ppSt_VideoInfo[2]->nWidth = 720;
 	ppSt_VideoInfo[2]->nHeight = 480;
 	ppSt_VideoInfo[2]->nFrame = 24;
 	ppSt_VideoInfo[2]->enAVPixForamt = ENUM_AVCOLLECT_VIDEO_FMT_YUV420P;
-	ppSt_VideoInfo[2]->bFilterEnable = true;
-	_tcsxcpy(ppSt_VideoInfo[2]->st_FilterInfo.tszARGName, "scale");
-	_tcsxcpy(ppSt_VideoInfo[2]->st_FilterInfo.tszARGPara, "360:240");
+	_tcsxcpy(ppSt_VideoInfo[2]->st_FilterInfo.tszARGName, "in2");
 
 	ppSt_VideoInfo[3]->nIndex = 3;
 	ppSt_VideoInfo[3]->nWidth = 720;
 	ppSt_VideoInfo[3]->nHeight = 480;
 	ppSt_VideoInfo[3]->nFrame = 24;
 	ppSt_VideoInfo[3]->enAVPixForamt = ENUM_AVCOLLECT_VIDEO_FMT_YUV420P;
-	ppSt_VideoInfo[3]->bFilterEnable = true;
-	_tcsxcpy(ppSt_VideoInfo[3]->st_FilterInfo.tszARGName, "scale");
-	_tcsxcpy(ppSt_VideoInfo[3]->st_FilterInfo.tszARGPara, "360:240");
+	_tcsxcpy(ppSt_VideoInfo[3]->st_FilterInfo.tszARGName, "in3");
 	
-	_tcsxcpy(st_AVFilter.tszARGName, "xstack");
-	_tcsxcpy(st_AVFilter.tszARGPara, "inputs=4:layout=0_0|w0_0|0_h0|w0_h0");
+	AVFilter_Video_MIXInit(&xhToken, &ppSt_VideoInfo, nVideoList, _X("out"), _X("[in0]scale=360:240[in0_scaled]; [in1]scale=360:240[in1_scaled];[in2]scale=360:240[in2_scaled];[in3]scale=360:240[in3_scaled];[in0_scaled][in1_scaled][in2_scaled][in3_scaled]xstack=inputs=4:layout=0_0|w0_0|0_h0|w0_h0[out]"));
 
-	AVFilter_Video_MIXInit(&xhToken, &ppSt_VideoInfo, nVideoList, &st_AVFilter);
-
-	FILE* pSt_RBFile = _xtfopen("D:\\h264 file\\output.yuv", _X("rb"));
-	FILE* pSt_WBFile = _xtfopen("D:\\h264 file\\output_w.yuv", _X("wb"));
+	FILE* pSt_RBFile = _xtfopen("D:\\h264 file\\input.yuv", _X("rb"));
+	FILE* pSt_WBFile = _xtfopen("D:\\h264 file\\output.yuv", _X("wb"));
 
 	int nSize = 720 * 480 * 3 / 2;
 	XCHAR* ptszWBBuffer = (XCHAR*)malloc(nSize);
@@ -294,7 +283,7 @@ int main()
 	//Test_FilterAudio();
 	//Test_FilterVideo();
 
-	Test_FilterMutliAudio();
+	//Test_FilterMutliAudio();
 	Test_FilterMutliVideo();
 	return 0;
 }

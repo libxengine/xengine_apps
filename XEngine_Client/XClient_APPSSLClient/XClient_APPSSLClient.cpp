@@ -113,9 +113,8 @@ int XClient_DTLTest()
 		printf("NetClient_OPenSsl_ConnectEx:%lX\n", XClientSsl_GetLastError());
 		return -1;
 	}
-	XBYTE byRVBuffer[128] = {};
-	XBYTE bySDBuffer[128] = {};
-	XClient_OPenSsl_GetKeyEx(xhNet, bySDBuffer, byRVBuffer);
+	XBYTE byKEYBuffer[128] = {};
+	XClient_OPenSsl_GetKeyEx(xhNet, byKEYBuffer);
 
 	std::string strWrite =
 		"GET https://www.baidu.com/ HTTP/1.1\r\n"

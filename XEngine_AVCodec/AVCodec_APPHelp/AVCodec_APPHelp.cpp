@@ -44,10 +44,10 @@ void Test_MetaInfo()
 {
 	int nListCount = 0;
 	AVHELP_METADATA st_AVMetaData;
-	AVHELP_METAINFO** ppSt_MetaList;
+	XENGINE_KEYVALUE** ppSt_MetaList;
 
 #ifdef _MSC_BUILD
-	LPCXSTR lpszFile = _X("D:\\h264 file\\480p.flv");
+	LPCXSTR lpszFile = _X("D:\\h264 file\\outputfile.mp4");
 #else
 	LPCXSTR lpszFile = _X("480p.flv");
 #endif
@@ -62,16 +62,26 @@ void Test_MetaInfo()
 #ifdef _MSC_BUILD
 		XCHAR tszAStr[1024];
 		memset(tszAStr, '\0', sizeof(tszAStr));
-		int nLen = strlen(ppSt_MetaList[i]->tszValue);
+		int nLen = strlen(ppSt_MetaList[i]->tszStrKey);
 
-		BaseLib_OperatorCharset_UTFToAnsi(ppSt_MetaList[i]->tszValue, tszAStr, &nLen);
-		printf("%s %s\n", ppSt_MetaList[i]->tszKey, tszAStr);
+		BaseLib_OperatorCharset_UTFToAnsi(ppSt_MetaList[i]->tszStrVlu, tszAStr, &nLen);
+		printf("%s %s\n", ppSt_MetaList[i]->tszStrKey, tszAStr);
 #else
-		printf("%s %s\n", ppSt_MetaList[i]->tszKey, ppSt_MetaList[i]->tszValue);
+		printf("%s %s\n", ppSt_MetaList[i]->tszStrKey, ppSt_MetaList[i]->tszStrVlu);
 #endif
 	}
 	BaseLib_OperatorMemory_Free((XPPPMEM)&st_AVMetaData.ppSt_AVList, st_AVMetaData.nNBStream);
 	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_MetaList, nListCount);
+
+	nListCount = 0;
+	AVHELP_STREAMINFO** ppSt_ListFile;
+	AVHelp_MetaInfo_GetStream(lpszFile, &ppSt_ListFile, &nListCount);
+	for (int i = 0; i < nListCount; i++)
+	{
+		XENGINE_PROTOCOL_AVINFO st_AVInfo = {};
+		AVHelp_MetaInfo_GetAVInfo(lpszFile, i, &st_AVInfo);
+	}
+	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListFile, nListCount);
 }
 
 void Test_PPS264Info()
@@ -215,11 +225,11 @@ void Test_AVList()
 	AVHelp_Device_EnumDevice(&ppSt_ListAudio, &ppSt_ListVideo, &nAudioCount, &nVideoCount);
 	for (int i = 0; i < nAudioCount; i++)
 	{
-		printf("%s %s\n", ppSt_ListAudio[i]->st_MetaInfo.tszKey, ppSt_ListAudio[i]->st_MetaInfo.tszValue);
+		printf("%s %s\n", ppSt_ListAudio[i]->st_MetaInfo.tszStrKey, ppSt_ListAudio[i]->st_MetaInfo.tszStrVlu);
 	}
 	for (int i = 0; i < nVideoCount; i++)
 	{
-		printf("%s %s\n", ppSt_ListVideo[i]->st_MetaInfo.tszKey, ppSt_ListVideo[i]->st_MetaInfo.tszValue);
+		printf("%s %s\n", ppSt_ListVideo[i]->st_MetaInfo.tszStrKey, ppSt_ListVideo[i]->st_MetaInfo.tszStrVlu);
 	}
 
 	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListAudio, nAudioCount);
@@ -228,7 +238,7 @@ void Test_AVList()
 
 int main()
 {
-	//Test_MetaInfo();
+	Test_MetaInfo();
 	Test_PPS264Info();
 	//Test_PPS265Info();
 	//Test_AudioInfo();

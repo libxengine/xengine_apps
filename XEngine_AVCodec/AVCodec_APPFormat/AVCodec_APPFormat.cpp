@@ -13,26 +13,34 @@ using namespace std;
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
+#include <XEngine_Include/XEngine_AVCodec/VideoCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVFormat_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVFormat_Error.h>
+#include <XEngine_Include/XEngine_AVCodec/AVHelp_Define.h>
+#include <XEngine_Include/XEngine_AVCodec/AVHelp_Error.h>
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"XEngine_AVCodec/XEngine_AVFormat.lib")
+#pragma comment(lib,"XEngine_AVCodec/XEngine_AVHelp.lib")
 #endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFormat/AVFormat_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFormat/AVFormat_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
 #ifdef _MSC_BUILD
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVFormat.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g AVCodec_APPPacket.cpp -o AVCodec_APPPacket.exe -lXEngine_BaseLib -lXEngine_AVFormat
+//Linux::g++ -std=c++17 -Wall -g AVCodec_APPPacket.cpp -o AVCodec_APPPacket.exe -lXEngine_BaseLib -lXEngine_AVFormat -lXEngine_AVHelp
 FILE* pSt_File;
 
 void CALLBACK AVPacket_Pack_CBNotify(XHANDLE xhNet, int nCvtType, __int64x nCvtFrame, double dlTime, XPVOID lParam)
@@ -133,12 +141,11 @@ int AVPacket_Test_FileConvert()
 	}
 
 	pSt_File = fopen(lpszSrcFile, "rb");
-	if (!AVFormat_Convert_Input(xhAVFile, NULL, &nTotalAVTime, AVFormat_Packet_RW))
+	if (!AVFormat_Convert_Input(xhAVFile, NULL, AVFormat_Packet_RW))
 	{
 		printf("AVFormat_Convert_Input:%lX\n", AVFormat_GetLastError());
 		return -1;
 	}
-	printf("AVTime:%lf\n", nTotalAVTime);
 
 	if (!AVFormat_Convert_Start(xhAVFile))
 	{
@@ -228,9 +235,6 @@ int AVPacket_Test_FilePacket()
 
 int AVPacket_Test_UNPacket()
 {
-	int nListCount = 0;
-	AVCODEC_FORMATINFO** ppSt_ListFile;
-
 #ifdef _MSC_BUILD
 	LPCXSTR lpszVideoFile = "d:\\h264 file\\480p_1.264";
 	LPCXSTR lpszAudioFile1 = "d:\\h264 file\\test_1.aac";
@@ -254,23 +258,25 @@ int AVPacket_Test_UNPacket()
 		printf("AVFormat_UNPack_Input:%lX\n", AVFormat_GetLastError());
 		return -1;
 	}
-	if (!AVFormat_UNPack_GetList(xhAVFile, &ppSt_ListFile, &nListCount))
+	int nListCount = 0;
+	AVHELP_STREAMINFO** ppSt_ListFile;
+	if (!AVHelp_MetaInfo_GetStream(lpszSrcFile, &ppSt_ListFile, &nListCount))
 	{
-		printf("AVFormat_UNPack_GetList:%lX\n", AVFormat_GetLastError());
+		printf("AVFormat_UNPack_GetList:%lX\n", AVHelp_GetLastError());
 		return -1;
 	}
 	for (int i = 0; i < nListCount; i++)
 	{
-		printf("%d %d AVTime:%lf\n", ppSt_ListFile[i]->nAVCodecType, ppSt_ListFile[i]->nAVCodecID, ppSt_ListFile[i]->dlAVTime);
+		printf("%d %d\n", ppSt_ListFile[i]->nAVCodecType, ppSt_ListFile[i]->nAVCodecID);
 	}
 	XHANDLE xhCodec = NULL;
 	AVFormat_UNPack_GetAVCodec(xhAVFile, 0, &xhCodec);
 	BaseLib_OperatorMemory_FreeCStyle(&xhCodec);
-	strcpy(ppSt_ListFile[0]->tszFileName, lpszVideoFile);
+
+	AVCODEC_FORMATINFO** ppSt_StreamFile;
 	//strcpy(ppSt_ListFile[1]->tszFileName, lpszAudioFile1);
 	//strcpy(ppSt_ListFile[2]->tszFileName, lpszAudioFile2);
-
-	if (!AVFormat_UNPack_Output(xhAVFile, &ppSt_ListFile, nListCount))
+	if (!AVFormat_UNPack_Output(xhAVFile, &ppSt_StreamFile, nListCount))
 	{
 		printf("AVFormat_UNPack_Output:%lX\n", AVFormat_GetLastError());
 		return -1;

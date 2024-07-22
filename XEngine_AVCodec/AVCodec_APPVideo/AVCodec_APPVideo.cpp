@@ -117,12 +117,12 @@ int Test_Codech264()
 	st_VideoInfo.enAVCodec = ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264;
 
 	AVFrame_Frame_ParseInit(&xhParse, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
-	if (!VideoCodec_Stream_EnInit(&xhEnVideo, &st_VideoInfo))
+	if (!VideoCodec_Stream_EnInit(&xhEnVideo, &st_VideoInfo, NULL, 0, 0, ENUM_AVCODEC_HWDEVICE_HWDEVICE_TYPE_AMD))
 	{
 		printf("VideoCodec_Stream_EnInit\n");
 		return -1;
 	}
-	if (!VideoCodec_Stream_DeInit(&xhDeVideo, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264))
+	if (!VideoCodec_Stream_DeInit(&xhDeVideo, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264, true, NULL, 0, NULL, ENUM_AVCODEC_HWDEVICE_HWDEVICE_TYPE_AMD))
 	{
 		printf("VideoCodec_Stream_DeInit\n");
 		return -1;

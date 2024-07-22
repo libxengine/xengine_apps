@@ -127,7 +127,7 @@ void CALLBACK XEngine_AVCollect_CBAudio(uint8_t* punStringAudio, int nVLen, AVCO
 
 void CALLBACK XEngine_AVPacket_Callback(XHANDLE xhNet, int nCvtType, __int64x nCvtFrame, double dlTime, XPVOID lParam)
 {
-	printf(_X("提示:正在打包...第 %d 个%s,当前时间:%lf\r\n"), nCvtFrame, nCvtType == 1 ? _X("视频帧") : _X("音频帧"), dlTime);
+	printf(_X("提示:正在打包...第 %lld 个%s,当前时间:%lf\r\n"), nCvtFrame, nCvtType == 1 ? _X("视频帧") : _X("音频帧"), dlTime);
 }
 void XEngine_AVPacket_Thread()
 {
@@ -157,11 +157,11 @@ int main()
 	AVHelp_Device_EnumDevice(&ppSt_AudioList, &ppSt_VideoList, &nACount, &nVCount);
 	for (int i = 0; i < nACount; i++)
 	{
-		printf("Audio:%s\n", ppSt_AudioList[i]->st_MetaInfo.tszKey);
+		printf("Audio:%s\n", ppSt_AudioList[i]->st_MetaInfo.tszStrKey);
 	}
 	for (int i = 0; i < nVCount; i++)
 	{
-		printf("Video:%s\n", ppSt_VideoList[i]->st_MetaInfo.tszKey);
+		printf("Video:%s\n", ppSt_VideoList[i]->st_MetaInfo.tszStrKey);
 	}
 	BaseLib_OperatorMemory_Free((void***)&ppSt_AudioList, nACount);
 	BaseLib_OperatorMemory_Free((void***)&ppSt_VideoList, nVCount);
@@ -257,11 +257,7 @@ int main()
 	{
 		fclose(pSt_AudioFile);
 	}
-
 	//是否需要打包
-	double dlVideoTime = 0;
-	double dlAudioTime = 0;
-
 	xhPacket = AVFormat_Packet_Init(XEngine_AVPacket_Callback);
 	if (NULL == xhPacket)
 	{
@@ -271,9 +267,9 @@ int main()
 
 	if (bAudio)
 	{
-		AVFormat_Packet_Input(xhPacket, lpszAudioFile, &dlAudioTime);
+		AVFormat_Packet_Input(xhPacket, lpszAudioFile);
 	}
-	AVFormat_Packet_Input(xhPacket, lpszVideoFile, &dlVideoTime);
+	AVFormat_Packet_Input(xhPacket, lpszVideoFile);
 
 	if (!AVFormat_Packet_Output(xhPacket, lpszMP4File))
 	{

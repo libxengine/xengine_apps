@@ -33,7 +33,7 @@ int main()
 	XCHAR tszDestStr[9] = {};
 	LPCXSTR lpszSourceStr = _X("12345");
 
-	_tcsxscpy(tszDestStr, lpszSourceStr, sizeof(tszDestStr));
+	_xstrcpy(tszDestStr, lpszSourceStr, sizeof(tszDestStr));
 	printf("%s\n", tszDestStr);
 	return 0;
 }

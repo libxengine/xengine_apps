@@ -51,14 +51,11 @@ int Test_BITStream()
 		printf("AVFrame_BITStream_Init:%lX\n", AVFrame_GetLastError());
 		return -1;
 	}
-	int nListCount = 0;
-	AVCODEC_FORMATINFO** ppSt_ListFile;
 	if (!AVFormat_UNPack_Input(xhPacket, "D:\\h264 file\\outputfile.mp4"))
 	{
 		printf("AVFormat_UNPack_Input:%lX\n", AVFormat_GetLastError());
 		return -1;
 	}
-	AVFormat_UNPack_GetList(xhPacket, &ppSt_ListFile, &nListCount);
 	XHANDLE pSt_AVCodecParameter = NULL;
 	AVFormat_UNPack_GetAVCodec(xhPacket, 0, &pSt_AVCodecParameter);
 	AVFrame_BITStream_Parameter(xhToken, pSt_AVCodecParameter, pSt_AVCodecParameter);
