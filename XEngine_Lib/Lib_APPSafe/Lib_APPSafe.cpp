@@ -30,8 +30,8 @@
 
 int main()
 {
-	XCHAR tszDestStr[9] = {};
-	LPCXSTR lpszSourceStr = _X("12345");
+	XCHAR tszDestStr[8] = {};
+	LPCXSTR lpszSourceStr = _X("123456789");
 
 	_xstrcpy(tszDestStr, lpszSourceStr, sizeof(tszDestStr));
 	printf("%s\n", tszDestStr);

@@ -125,7 +125,7 @@ int Test_SystemInfo()
 	memset(&st_LibTimer, '\0', sizeof(XENGINE_LIBTIMER));
 	memset(&st_MemoryInfo, '\0', sizeof(SYSTEMAPI_MEMORY_INFOMATION));
 
-	SystemApi_System_GetMemoryUsage(&st_MemoryInfo);
+	SystemApi_System_GetMemoryUsage(&st_MemoryInfo, XENGINE_SYSTEMSDK_API_SYSTEM_SIZE_MB);
 	SystemApi_System_GetCpuUsage(&nUsage);
 	SystemApi_System_GetCpuCount(&nCPUCount);
 	SystemApi_System_GetProcessCount(&nProcessCount);
