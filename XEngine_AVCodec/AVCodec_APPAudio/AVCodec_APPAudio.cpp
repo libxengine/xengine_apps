@@ -94,8 +94,8 @@ void Audio_Encode()
 		return;
 	}
 #ifdef _MSC_BUILD
-	FILE* pSt_File = fopen("d:\\output.pcm", "rb");
-	FILE* pSt_FileAac = fopen("d:\\output.aac", "wb");
+	FILE* pSt_File = fopen("d:\\audio\\output.pcm", "rb");
+	FILE* pSt_FileAac = fopen("d:\\audio\\output.aac", "wb");
 #else
 	FILE* pSt_File = fopen("44.1k_2_16.pcm", "rb");
 	FILE* pSt_FileAac = fopen("44.1k_2_16.aac", "wb");
@@ -130,6 +130,11 @@ void Audio_Encode()
 		}
 		AudioCodec_Stream_Free(&ppSt_ListAudio, nListCount);
 	}
+	int nListCount = 0;
+	AVCODEC_AUDIO_MSGBUFFER** ppSt_ListAudio;
+	AudioCodec_Stream_EnCodec(xhCoder, NULL, 0, &ppSt_ListAudio, &nListCount);
+	AudioCodec_Stream_Free(&ppSt_ListAudio, nListCount);
+
 	fclose(pSt_File);
 	fclose(pSt_FileAac);
 	AudioCodec_Stream_Destroy(xhCoder);
@@ -266,7 +271,7 @@ int main()
 {
 	//OPUS_Encode();
 	//Audio_ListCodec();
-	//Audio_Encode();
+	Audio_Encode();
 	Audio_DeCodec();
 	return 0;
 }

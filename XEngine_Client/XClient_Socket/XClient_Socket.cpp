@@ -29,7 +29,7 @@
 #endif
 #endif
 
-//Linux:g++ -std=gnu++17 -Wall -g XClient_Socket.cpp -o XClient_Socket.exe -lXEngine_BaseLib -lXClient_Socket
+//linux and macos:g++ -std=gnu++17 -Wall -g XClient_Socket.cpp -o XClient_Socket.exe -lXEngine_BaseLib -lXClient_Socket -Wl,-rpath,/usr/local/lib
 
 int XClient_ProxyClient()
 {
@@ -129,19 +129,26 @@ int TCPTest()
 	return 1;
 }
 
-void CALLBACK XClient_TCPCallback_Recv(XHANDLE xhToken, XNETHANDLE xhClient, XSOCKET hSocket, ENUM_NETCLIENT_TCPEVENTS enTCPClientEvents, LPCXSTR lpszMsgBuffer, int nLen, XPVOID lParam)
+void CALLBACK XClient_TCPCallback_Recv(XHANDLE xhToken, XNETHANDLE xhClient, XSOCKET hSocket, ENUM_XCLIENT_SOCKET_EVENTS enTCPClientEvents, LPCXSTR lpszMsgBuffer, int nLen, XPVOID lParam)
 {
-	if (ENUM_XENGINE_XCLIENT_SOCKET_TCP_EVENT_RECV == enTCPClientEvents)
+	if (ENUM_XCLIENT_SOCKET_EVENT_RECV == enTCPClientEvents)
 	{
 		printf("Recv:%d-%d = %d\n", hSocket, enTCPClientEvents, nLen);
+		XClient_TCPXCore_SendMsg(xhToken, lpszMsgBuffer, nLen);
 	}
-	else if (ENUM_XENGINE_XCLIENT_SOCKET_TCP_EVENT_CLOSE == enTCPClientEvents)
+	else if (ENUM_XCLIENT_SOCKET_EVENT_CLOSE == enTCPClientEvents)
 	{
 		printf("Close:%d-%d\n", hSocket, enTCPClientEvents);
 	}
-	else if (ENUM_XENGINE_XCLIENT_SOCKET_TCP_EVENT_CONNECT == enTCPClientEvents)
+	else if (ENUM_XCLIENT_SOCKET_EVENT_CONNECTED == enTCPClientEvents)
 	{
 		printf("connect:%d-%d\n", hSocket, enTCPClientEvents);
+	}
+	else if (ENUM_XCLIENT_SOCKET_EVENT_SEND == enTCPClientEvents)
+	{
+		printf("send:%d-%d\n", hSocket, enTCPClientEvents);
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+		XClient_TCPXCore_SendMsg(xhToken, "123456", 6);
 	}
 }
 int TCPTestEx()
@@ -175,6 +182,30 @@ int TCPTestEx()
 		XClient_TCPSelect_DeleteEx(xhToken, xhClient[i]);
 	}
 	XClient_TCPSelect_StopEx(xhToken);
+	return 1;
+}
+int TCPTestXCore()
+{
+	XHANDLE xhToken = XClient_TCPXCore_Connect(_X("10.0.1.88"), 5000, XClient_TCPCallback_Recv);
+	if (NULL == xhToken)
+	{
+		printf("XClient_TCPXCore_Connect:%lX\n", XClient_GetLastError());
+		return -1;
+	}
+	if (!XClient_TCPXCore_CBSend(xhToken, true))
+	{
+		printf("XClient_TCPXCore_CBSend1:%lX\n", XClient_GetLastError());
+		return -1;
+	}
+	std::this_thread::sleep_for(std::chrono::seconds(10));
+	if (!XClient_TCPXCore_CBSend(xhToken, false))
+	{
+		printf("XClient_TCPXCore_CBSend2:%lX\n", XClient_GetLastError());
+		return -1;
+	}
+
+	std::this_thread::sleep_for(std::chrono::seconds(5));
+	XClient_TCPXCore_Close(xhToken);
 	return 1;
 }
 
@@ -285,7 +316,8 @@ int main()
 
 	//XClient_ProxyClient();
 	//TCPTest();
-	TCPTestEx();
+	//TCPTestEx();
+	TCPTestXCore();
 	//Test_UDPClient();
 	//Test_Unix();
 	//udx_test();
