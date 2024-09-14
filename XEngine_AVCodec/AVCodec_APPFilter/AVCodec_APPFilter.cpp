@@ -80,8 +80,8 @@ int Test_FilterVideo()
 
 	AVFilter_Video_Init(&xhToken, _X("eq=brightness=1.5:contrast=1.2"), &st_VideoFilter);
 
-	FILE* pSt_RBFile = _xtfopen("D:\\windows-ffmpeg\\x64\\output.yuv", _X("rb"));
-	FILE* pSt_WBFile = _xtfopen("D:\\windows-ffmpeg\\x64\\output_w.yuv", _X("wb"));
+	FILE* pSt_RBFile = _xtfopen("D:\\h264 file\\input.yuv", _X("rb"));
+	FILE* pSt_WBFile = _xtfopen("D:\\h264 file\\output.yuv", _X("wb"));
 
 	int nSize = st_VideoFilter.nWidth * st_VideoFilter.nHeight * 3 / 2;
 	XCHAR* ptszWBBuffer = (XCHAR*)malloc(nSize);
@@ -275,7 +275,7 @@ void Test_FilterMutliAudio()
 int main()
 {
 	//Test_FilterAudio();
-	//Test_FilterVideo();
+	Test_FilterVideo();
 
 	Test_FilterMutliAudio();
 	//Test_FilterMutliVideo();
