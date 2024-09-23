@@ -31,14 +31,12 @@ using namespace std;
 FILE* pSt_File;
 int nWidth;
 int nHeight;
-void CALLBACK XEngine_AVCollect_CBVideo(uint8_t* punStringY, int nYLen, uint8_t* punStringU, int nULen, uint8_t* punStringV, int nVLen, AVCOLLECT_TIMEINFO* pSt_TimeInfo, XPVOID lParam)
+void CALLBACK XEngine_AVCollect_CBVideo(uint8_t* punStringY, int nAVLen, AVCOLLECT_TIMEINFO* pSt_TimeInfo, XPVOID lParam)
 {
-	fwrite(punStringY, 1, nWidth * nHeight, pSt_File);
-	fwrite(punStringU, 1, nWidth * nHeight / 4, pSt_File);
-	fwrite(punStringV, 1, nWidth * nHeight / 4, pSt_File);
-	printf("%d %d %d\n", nYLen, nULen, nVLen);
+	fwrite(punStringY, 1, nAVLen, pSt_File);
+	printf("%d\n", nAVLen);
 }
-void CALLBACK XEngine_AVCollect_CBAudio(uint8_t* punStringAudio, int nVLen, AVCOLLECT_TIMEINFO* pSt_TimeInfo, XPVOID lParam)
+void CALLBACK XEngine_AVCollect_CBAudio(uint8_t* ptszAVBuffer, int nAVLen, AVCOLLECT_TIMEINFO* pSt_TimeInfo, XPVOID lParam)
 {
 }
 int main()
@@ -56,7 +54,7 @@ int main()
 	memset(&st_AVScreen, '\0', sizeof(AVCOLLECT_SCREENINFO));
 
 #ifdef _MSC_BUILD
-	xhVideo = AVCollect_Video_Init("dshow", "video=screen-capture-recorder", &st_AVScreen, XEngine_AVCollect_CBVideo);
+	xhVideo = AVCollect_Video_Init("gdigrab", "desktop", &st_AVScreen, XEngine_AVCollect_CBVideo);
 #else
 	xhVideo = AVCollect_Video_Init("x11grab", ":0", &st_AVScreen, XEngine_AVCollect_CBVideo);
 #endif
@@ -68,7 +66,7 @@ int main()
 	AVCollect_Video_GetInfo(xhVideo, &st_AVInfo);
 	printf("AVCollect_Screen_GetInfo:%d %d %lld\n", st_AVInfo.st_VideoInfo.nWidth, st_AVInfo.st_VideoInfo.nHeight, st_AVInfo.st_VideoInfo.nBitRate);
 	AVCollect_Video_Start(xhVideo);
-	
+	/*
 	XHANDLE xhAudio = AVCollect_Audio_Init("dshow", _X("audio=virtual-audio-capturer"), XEngine_AVCollect_CBAudio);
 	if (NULL == xhAudio)
 	{
@@ -78,7 +76,7 @@ int main()
 	AVCollect_Audio_GetInfo(xhAudio, &st_AVInfo);
 	printf("AVCollect_Audio_GetInfo:%d %lld\n", st_AVInfo.st_AudioInfo.nSampleFmt, st_AVInfo.st_AudioInfo.nBitRate);
 	AVCollect_Audio_Start(xhAudio);
-	
+	*/
 	while (1)
 	{
 		std::this_thread::sleep_for(std::chrono::seconds(15));

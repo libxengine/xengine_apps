@@ -80,7 +80,7 @@ void Audio_Encode()
 	st_AudioInfo.nChannel = 2;
 	st_AudioInfo.nSampleRate = 48000;
 	st_AudioInfo.nBitRate = 64000;
-	st_AudioInfo.nSampleFmt = ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP;
+	st_AudioInfo.nSampleFmt = ENUM_AVCODEC_AUDIO_SAMPLEFMT_FLTP;
 	st_AudioInfo.enAVCodec = ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC;
 	if (!AudioCodec_Stream_EnInit(&xhCoder, &st_AudioInfo))
 	{
@@ -88,7 +88,7 @@ void Audio_Encode()
 		return;
 	}
 	int nLen = 0;
-	if (!AudioCodec_Stream_SetResample(xhCoder, &nLen, 48000, 48000, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_S16, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP, 2, 2))
+	if (!AudioCodec_Stream_SetResample(xhCoder, &nLen, 48000, 48000, ENUM_AVCODEC_AUDIO_SAMPLEFMT_S16, ENUM_AVCODEC_AUDIO_SAMPLEFMT_FLTP, 2, 2))
 	{
 		printf("AudioCodec_Stream_ResamplerInit\n");
 		return;
@@ -160,7 +160,7 @@ void Audio_DeCodec()
 	st_AudioInfo.nSampleRate = 44100;
 	st_AudioInfo.nFrameSize = 1024;
 	st_AudioInfo.nChannel = 2;
-	st_AudioInfo.nSampleFmt = ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP;
+	st_AudioInfo.nSampleFmt = ENUM_AVCODEC_AUDIO_SAMPLEFMT_FLTP;
 
 	if (!AudioCodec_Stream_DeInit(&xhCoder, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC, &st_AudioInfo))
 	{
@@ -168,7 +168,7 @@ void Audio_DeCodec()
 		return;
 	}
 	
-	if (!AudioCodec_Stream_SetResample(xhCoder, &nLen, st_AudioInfo.nSampleRate, 44100, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP, ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_S16, 2, 2))
+	if (!AudioCodec_Stream_SetResample(xhCoder, &nLen, st_AudioInfo.nSampleRate, 44100, ENUM_AVCODEC_AUDIO_SAMPLEFMT_FLTP, ENUM_AVCODEC_AUDIO_SAMPLEFMT_S16, 2, 2))
 	{
 		printf("AudioCodec_Stream_ResamplerInit\n");
 		return;
@@ -221,7 +221,7 @@ void OPUS_Encode()
 	st_AudioInfo.nChannel = 2;
 	st_AudioInfo.nSampleRate = 48000;
 	st_AudioInfo.nBitRate = 64000;
-	st_AudioInfo.nSampleFmt = ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_S16;
+	st_AudioInfo.nSampleFmt = ENUM_AVCODEC_AUDIO_SAMPLEFMT_S16;
 	st_AudioInfo.enAVCodec = ENUM_XENGINE_AVCODEC_AUDIO_TYPE_OPUS;
 	if (!AudioCodec_Stream_EnInit(&xhCoder, &st_AudioInfo))
 	{
@@ -269,7 +269,7 @@ void OPUS_Encode()
 }
 int main()
 {
-	//OPUS_Encode();
+	OPUS_Encode();
 	//Audio_ListCodec();
 	Audio_Encode();
 	Audio_DeCodec();

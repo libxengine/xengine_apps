@@ -153,7 +153,7 @@ int Test_CodecPush()
 	st_MediaStream.st_AudioInfo.nBitRate = 64000;
 	st_MediaStream.st_AudioInfo.nSampleRate = 44100;
 	st_MediaStream.st_AudioInfo.nFrameSize = 1024; //aac frame size
-	st_MediaStream.st_AudioInfo.nSampleFmt = ENUM_AVCOLLECT_AUDIO_SAMPLE_FMT_FLTP;
+	st_MediaStream.st_AudioInfo.nSampleFmt = ENUM_AVCODEC_AUDIO_SAMPLEFMT_FLTP;
 	st_MediaStream.st_AudioInfo.enAVCodec = ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC;
 	if (st_MediaStream.st_AudioInfo.bEnable)
 	{

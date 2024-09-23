@@ -84,7 +84,7 @@ int Test_H265Hevc()
 			{
 				for (int j = 0; j < nVideoCount; j++)
 				{
-					BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_MSGBuffer[j]->ptszYBuffer);
+					BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_MSGBuffer[j]->ptszAVBuffer);
 				}
 			}
 			BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->ptszMsgBuffer);
@@ -117,12 +117,12 @@ int Test_Codech264()
 	st_VideoInfo.enAVCodec = ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264;
 
 	AVFrame_Frame_ParseInit(&xhParse, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
-	if (!VideoCodec_Stream_EnInit(&xhEnVideo, &st_VideoInfo, NULL, 0, 0, ENUM_AVCODEC_HWDEVICE_HWDEVICE_TYPE_AMD))
+	if (!VideoCodec_Stream_EnInit(&xhEnVideo, &st_VideoInfo))
 	{
 		printf("VideoCodec_Stream_EnInit\n");
 		return -1;
 	}
-	if (!VideoCodec_Stream_DeInit(&xhDeVideo, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264, true, NULL, 0, NULL, ENUM_AVCODEC_HWDEVICE_HWDEVICE_TYPE_AMD))
+	if (!VideoCodec_Stream_DeInit(&xhDeVideo, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264))
 	{
 		printf("VideoCodec_Stream_DeInit\n");
 		return -1;
@@ -147,17 +147,17 @@ int Test_Codech264()
 			VideoCodec_Stream_DeCodec(xhDeVideo, ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen, &ppSt_MSGBuffer, &nDecodecCount);
 			for (int j = 0; j < nDecodecCount; j++)
 			{
-				fwrite(ppSt_MSGBuffer[j]->ptszYBuffer, 1, ppSt_MSGBuffer[j]->nYLen, pSt_YUVFile);
+				fwrite(ppSt_MSGBuffer[j]->ptszAVBuffer, 1, ppSt_MSGBuffer[j]->nAVLen, pSt_YUVFile);
 
 				int nEncoedcCount = 0;
 				AVCODEC_VIDEO_MSGBUFFER** ppSt_EncoedcBuffer;
-				VideoCodec_Stream_EnCodec(xhEnVideo, ppSt_MSGBuffer[j]->ptszYBuffer, NULL, NULL, ppSt_MSGBuffer[j]->nYLen, 0, 0, &ppSt_EncoedcBuffer, &nEncoedcCount);
+				VideoCodec_Stream_EnCodec(xhEnVideo, ppSt_MSGBuffer[j]->ptszAVBuffer, ppSt_MSGBuffer[j]->nAVLen, &ppSt_EncoedcBuffer, &nEncoedcCount);
 				for (int k = 0; k < nEncoedcCount; k++)
 				{
-					fwrite(ppSt_EncoedcBuffer[k]->ptszYBuffer, 1, ppSt_EncoedcBuffer[k]->nYLen, pSt_264File);
-					BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_MSGBuffer[j]->ptszYBuffer);
+					fwrite(ppSt_EncoedcBuffer[k]->ptszAVBuffer, 1, ppSt_EncoedcBuffer[k]->nAVLen, pSt_264File);
+					BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_EncoedcBuffer[j]->ptszAVBuffer);
 				}
-				BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_EncoedcBuffer[j]->ptszYBuffer);
+				BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_MSGBuffer[j]->ptszAVBuffer);
 				BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_EncoedcBuffer, nEncoedcCount);
 			}
 			BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_MSGBuffer, nDecodecCount);
@@ -221,9 +221,7 @@ int Test_CodechAVS()
 			VideoCodec_Stream_DeCodec(xhDeVideo, ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen, &ppSt_MSGBuffer, &nListCount);
 			for (int i = 0; i < nListCount; i++)
 			{
-				fwrite(ppSt_MSGBuffer[i]->ptszYBuffer, 1, ppSt_MSGBuffer[i]->nYLen, pSt_YUVFile);
-				fwrite(ppSt_MSGBuffer[i]->ptszUBuffer, 1, ppSt_MSGBuffer[i]->nULen, pSt_YUVFile);
-				fwrite(ppSt_MSGBuffer[i]->ptszVBuffer, 1, ppSt_MSGBuffer[i]->nVLen, pSt_YUVFile);
+				fwrite(ppSt_MSGBuffer[i]->ptszAVBuffer, 1, ppSt_MSGBuffer[i]->nAVLen, pSt_YUVFile);
 			}
 			BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->ptszMsgBuffer);
 		}
@@ -235,9 +233,6 @@ int Test_CodechAVS()
 }
 int main()
 {
-	Test_Codech264();
-	Test_CodechAVS();
-	Test_H265Hevc();
 	int nListCount = 0;
 	AVCODEC_VIDEO_HWCODEC** ppSt_ListHWCodec;
 	VideoCodec_Help_GetHWCodec(&ppSt_ListHWCodec, &nListCount);
@@ -245,6 +240,10 @@ int main()
 	{
 		printf("%d = %s\n", ppSt_ListHWCodec[i]->enHWDevice, ppSt_ListHWCodec[i]->tszHWName);
 	}
+
+	Test_Codech264();
+	Test_CodechAVS();
+	Test_H265Hevc();
 	
 	return 0;
 }
