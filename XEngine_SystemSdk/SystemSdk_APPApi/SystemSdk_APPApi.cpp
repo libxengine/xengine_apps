@@ -137,8 +137,18 @@ int Test_SystemInfo()
 	printf("Test_SystemInfo:%d %d %d %d %04d-%02d-%02d %02d:%02d:%02d\n", nUsage, nCPUCount, nCPUCount, nProcessCount, st_LibTimer.wYear, st_LibTimer.wMonth, st_LibTimer.wDay, st_LibTimer.wHour, st_LibTimer.wMinute, st_LibTimer.wSecond);
 	return 0;
 }
+int Test_FileInfo()
+{
+	LPCXSTR lpszDir = _X("D:\\xengine_apps\\Debug\\stroage\\123123\\abb");
+
+	SystemApi_File_CreateMutilFolder(lpszDir);
+	SystemApi_File_CreateMutilFolder(lpszDir);
+	SystemApi_File_DeleteMutilFolder("D:\\xengine_apps\\Debug\\stroage\\*");
+	return 0;
+}
 int main()
 {
+	Test_FileInfo();
 	Test_SerialInfo();
 	Test_DiskInfo();
 	Test_CPUInfo();

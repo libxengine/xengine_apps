@@ -226,10 +226,10 @@ int main()
 	memset(tszFilterStr, '\0', MAX_PATH);
 
 	AVFILTER_VIDEO_INFO st_VideoInfo = {};
-	st_VideoInfo.enAVPixForamt = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
-	st_VideoInfo.nFrame = 24;
-	st_VideoInfo.nHeight = st_AVInfo.st_VideoInfo.nHeight;
-	st_VideoInfo.nWidth = st_AVInfo.st_VideoInfo.nWidth;
+	st_VideoInfo.st_VideoInfo.nFormat = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
+	st_VideoInfo.st_VideoInfo.nFrameRate = 24;
+	st_VideoInfo.st_VideoInfo.nHeight = st_AVInfo.st_VideoInfo.nHeight;
+	st_VideoInfo.st_VideoInfo.nWidth = st_AVInfo.st_VideoInfo.nWidth;
 
 	sprintf(tszFilterStr, _X("drawtext=fontfile=Arial.ttf:fontcolor=green:fontsize=30:x=100:y=10:text='www.xyry.org'"));
 	if (!AVFilter_Video_Init(&xhFilter, tszFilterStr, &st_VideoInfo))

@@ -45,10 +45,10 @@ int Test_FilterAudio()
 	XNETHANDLE xhToken = 0;
 	AVFILTER_AUDIO_INFO st_AudioFilter = {};
 
-	st_AudioFilter.nChannle = 2;
-	st_AudioFilter.nNBSample = 1024;
-	st_AudioFilter.nSampleFmt = 1;
-	st_AudioFilter.nSampleRate = 44100;
+	st_AudioFilter.st_AudioInfo.nChannel = 2;
+	st_AudioFilter.st_AudioInfo.nFrameSize = 1024;
+	st_AudioFilter.st_AudioInfo.nSampleFmt = 1;
+	st_AudioFilter.st_AudioInfo.nSampleRate = 44100;
 
 	AVFilter_Audio_Init(&xhToken, _X("volume=2.0"), &st_AudioFilter);
 
@@ -75,17 +75,17 @@ int Test_FilterVideo()
 	XNETHANDLE xhToken = 0;
 	AVFILTER_VIDEO_INFO st_VideoFilter = {};
 
-	st_VideoFilter.nWidth = 720;
-	st_VideoFilter.nHeight = 480;
-	st_VideoFilter.nFrame = 24;
-	st_VideoFilter.enAVPixForamt = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
+	st_VideoFilter.st_VideoInfo.nWidth = 720;
+	st_VideoFilter.st_VideoInfo.nHeight = 480;
+	st_VideoFilter.st_VideoInfo.nFrameRate = 24;
+	st_VideoFilter.st_VideoInfo.nFormat = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
 
 	AVFilter_Video_Init(&xhToken, _X("eq=brightness=1.5:contrast=1.2"), &st_VideoFilter);
 
 	FILE* pSt_RBFile = _xtfopen("D:\\h264 file\\input.yuv", _X("rb"));
 	FILE* pSt_WBFile = _xtfopen("D:\\h264 file\\output.yuv", _X("wb"));
 
-	int nSize = st_VideoFilter.nWidth * st_VideoFilter.nHeight * 3 / 2;
+	int nSize = st_VideoFilter.st_VideoInfo.nWidth * st_VideoFilter.st_VideoInfo.nHeight * 3 / 2;
 	XCHAR* ptszWBBuffer = (XCHAR*)malloc(nSize);
 	XCHAR* ptszRBBuffer = (XCHAR*)malloc(nSize);
 	int nCount = 0;
@@ -126,31 +126,31 @@ int Test_FilterMutliVideo()
 	BaseLib_OperatorMemory_Malloc((XPPPMEM)&ppSt_VideoInfo, nVideoList, sizeof(AVFILTER_VIDEO_INFO));
 
 	ppSt_VideoInfo[0]->nIndex = 0;
-	ppSt_VideoInfo[0]->nWidth = 720;
-	ppSt_VideoInfo[0]->nHeight = 480;
-	ppSt_VideoInfo[0]->nFrame = 24;
-	ppSt_VideoInfo[0]->enAVPixForamt = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
+	ppSt_VideoInfo[0]->st_VideoInfo.nWidth = 720;
+	ppSt_VideoInfo[0]->st_VideoInfo.nHeight = 480;
+	ppSt_VideoInfo[0]->st_VideoInfo.nFrameRate = 24;
+	ppSt_VideoInfo[0]->st_VideoInfo.nFormat = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
 	_tcsxcpy(ppSt_VideoInfo[0]->tszFilterName, "in0");
 
 	ppSt_VideoInfo[1]->nIndex = 1;
-	ppSt_VideoInfo[1]->nWidth = 720;
-	ppSt_VideoInfo[1]->nHeight = 480;
-	ppSt_VideoInfo[1]->nFrame = 24;
-	ppSt_VideoInfo[1]->enAVPixForamt = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
+	ppSt_VideoInfo[1]->st_VideoInfo.nWidth = 720;
+	ppSt_VideoInfo[1]->st_VideoInfo.nHeight = 480;
+	ppSt_VideoInfo[1]->st_VideoInfo.nFrameRate = 24;
+	ppSt_VideoInfo[1]->st_VideoInfo.nFormat = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
 	_tcsxcpy(ppSt_VideoInfo[1]->tszFilterName, "in1");
 
 	ppSt_VideoInfo[2]->nIndex = 2;
-	ppSt_VideoInfo[2]->nWidth = 720;
-	ppSt_VideoInfo[2]->nHeight = 480;
-	ppSt_VideoInfo[2]->nFrame = 24;
-	ppSt_VideoInfo[2]->enAVPixForamt = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
+	ppSt_VideoInfo[2]->st_VideoInfo.nWidth = 720;
+	ppSt_VideoInfo[2]->st_VideoInfo.nHeight = 480;
+	ppSt_VideoInfo[2]->st_VideoInfo.nFrameRate = 24;
+	ppSt_VideoInfo[2]->st_VideoInfo.nFormat = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
 	_tcsxcpy(ppSt_VideoInfo[2]->tszFilterName, "in2");
 
 	ppSt_VideoInfo[3]->nIndex = 3;
-	ppSt_VideoInfo[3]->nWidth = 720;
-	ppSt_VideoInfo[3]->nHeight = 480;
-	ppSt_VideoInfo[3]->nFrame = 24;
-	ppSt_VideoInfo[3]->enAVPixForamt = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
+	ppSt_VideoInfo[3]->st_VideoInfo.nWidth = 720;
+	ppSt_VideoInfo[3]->st_VideoInfo.nHeight = 480;
+	ppSt_VideoInfo[3]->st_VideoInfo.nFrameRate = 24;
+	ppSt_VideoInfo[3]->st_VideoInfo.nFormat = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
 	_tcsxcpy(ppSt_VideoInfo[3]->tszFilterName, "in3");
 	
 	AVFilter_Video_MIXInit(&xhToken, &ppSt_VideoInfo, nVideoList, _X("out"), _X("[in0]scale=360:240[in0_scaled]; [in1]scale=360:240[in1_scaled];[in2]scale=360:240[in2_scaled];[in3]scale=360:240[in3_scaled];[in0_scaled][in1_scaled][in2_scaled][in3_scaled]xstack=inputs=4:layout=0_0|w0_0|0_h0|w0_h0[out]"));
@@ -212,17 +212,17 @@ void Test_FilterMutliAudio()
 	AVFILTER_AUDIO_INFO** ppSt_AudioFile;
 	BaseLib_OperatorMemory_Malloc((XPPPMEM)&ppSt_AudioFile, 2, sizeof(AVFILTER_AUDIO_INFO));
 
-	ppSt_AudioFile[0]->nSampleFmt = ENUM_AVCODEC_AUDIO_SAMPLEFMT_S16;
-	ppSt_AudioFile[0]->nSampleRate = 44100;
-	ppSt_AudioFile[0]->nNBSample = 1024;
-	ppSt_AudioFile[0]->nChannle = 2;
+	ppSt_AudioFile[0]->st_AudioInfo.nSampleFmt = ENUM_AVCODEC_AUDIO_SAMPLEFMT_S16;
+	ppSt_AudioFile[0]->st_AudioInfo.nSampleRate = 44100;
+	ppSt_AudioFile[0]->st_AudioInfo.nFrameSize = 1024;
+	ppSt_AudioFile[0]->st_AudioInfo.nChannel = 2;
 	ppSt_AudioFile[0]->nIndex = 0;
 	_tcsxcpy(ppSt_AudioFile[0]->tszFilterName, "in1");
 
-	ppSt_AudioFile[1]->nSampleFmt = ENUM_AVCODEC_AUDIO_SAMPLEFMT_S16;
-	ppSt_AudioFile[1]->nSampleRate = 44100;
-	ppSt_AudioFile[1]->nNBSample = 1024;
-	ppSt_AudioFile[1]->nChannle = 2;
+	ppSt_AudioFile[1]->st_AudioInfo.nSampleFmt = ENUM_AVCODEC_AUDIO_SAMPLEFMT_S16;
+	ppSt_AudioFile[1]->st_AudioInfo.nSampleRate = 44100;
+	ppSt_AudioFile[1]->st_AudioInfo.nFrameSize = 1024;
+	ppSt_AudioFile[1]->st_AudioInfo.nChannel = 2;
 	ppSt_AudioFile[1]->nIndex = 1;
 	_tcsxcpy(ppSt_AudioFile[1]->tszFilterName, "in2");
 

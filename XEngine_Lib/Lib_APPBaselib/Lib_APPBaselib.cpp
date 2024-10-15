@@ -402,6 +402,7 @@ int test_ipaddr()
 int Test_Ver()
 {
 	printf("%lld\n%s\n", BaseLib_OperatorVer_XNumberInt(), BaseLib_OperatorVer_XNumberStr());
+	printf("%s\n", BaseLib_OperatorVer_BuildTime());
 	return 0;
 }
 int main()
