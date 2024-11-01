@@ -58,15 +58,20 @@ int Test_FilterAudio()
 	while (true)
 	{
 		int nRSize = 8192;
-		int nWSize = 8192;
-		XCHAR tszWBBuffer[8192] = {};
+		int nWSize = 10240;
+		XCHAR tszWBBuffer[10240] = {};
 		XCHAR tszRDBuffer[8192] = {};
 		
 		int nRet = fread(tszRDBuffer, 1, nRSize, pSt_File);
+		if (nRet <= 0)
+		{
+			break;
+		}
 		AVFilter_Audio_Cvt(xhToken, (XBYTE*)tszRDBuffer, nRSize, (XBYTE*)tszWBBuffer, &nWSize);
 	}
 
 	AVFilter_Audio_Destroy(xhToken);
+	fclose(pSt_File);
 	return 0;
 }
 
@@ -276,10 +281,10 @@ void Test_FilterMutliAudio()
 }
 int main()
 {
-	//Test_FilterAudio();
+	Test_FilterAudio();
 	Test_FilterVideo();
 
 	Test_FilterMutliAudio();
-	//Test_FilterMutliVideo();
+	Test_FilterMutliVideo();
 	return 0;
 }

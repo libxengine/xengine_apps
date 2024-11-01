@@ -51,6 +51,10 @@ int main()
 	HelpComponents_XLog_StrongOPen(xhLog, "D:\\xengine_apps\\Debug\\stroage\\info.log", XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO);
 	HelpComponents_XLog_SetLogPriority(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_DEBUG);
 
+	HelpComponents_XLog_ValueInsert(xhLog, "$(int)", "1988");
+	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("xlog test 变量测试:$(int).得到值"));
+	HelpComponents_XLog_ValueDelete(xhLog, "$(int)");
+
 	HelpComponents_XLog_SetLogInterval(xhLog, 1000);
 	for (int i = 0; i < 100; i++)
 	{
@@ -58,6 +62,7 @@ int main()
 		//std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 	HelpComponents_XLog_StrongClose(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO);
+	
 	HelpComponents_XLog_SetLogInterval(xhLog, 0);
 
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("xlog test 1=XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO"));

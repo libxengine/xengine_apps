@@ -29,12 +29,14 @@ using namespace std;
 
 //Linux Macos:g++ -std=gnu++11 -Wall -g Lib_APPAlgorithm.cpp -o Lib_APPAlgorithm.exe -lXEngine_Algorithm
 
-void CALLBACK Test_CBPassive(XHANDLE xhToken, bool bSDFlow, bool bRVFlow, bool bTime, XPVOID lParam)
+void CALLBACK Test_CBPassive(XHANDLE xhToken, bool bSDFlow, bool bRVFlow, bool bTime, __int64u nSDFlow, __int64u nRVFlow, __int64u nTimeFlow, XPVOID lParam)
 {
 	XCHAR tszClientAddr[128];
 	memset(tszClientAddr, '\0', 128);
 
 	_tcsxcpy(tszClientAddr, (LPCXSTR)lParam);
+	printf("%s\n", tszClientAddr);
+	return;
 }
 
 int Test_Calulation()
@@ -68,11 +70,8 @@ int Test_Calulation()
 	}
 
 	Algorithm_Calculation_Reset(xhToken);
-	XCHAR* ptszMsgBuffer = (XCHAR*)malloc(128);
-	memset(ptszMsgBuffer, '\0', 128);
-
-	_tcsxcpy(ptszMsgBuffer, _X("127.0.0.1"));
-	Algorithm_Calculation_PassiveOPen(xhToken, Test_CBPassive, 1024, 0, 0, false, ptszMsgBuffer);
+	LPCXSTR lpszIPAddr = _X("127.0.0.1");
+	Algorithm_Calculation_PassiveOPen(xhToken, Test_CBPassive, 1024, 0, 0, false, (XPVOID)lpszIPAddr);
 	for (int i = 0; i < 500; i++)
 	{
 		Algorithm_Calculation_ADDSDFlow(xhToken, rand());
@@ -87,7 +86,7 @@ int Test_Calulation()
 
 int main()
 {
-	//Test_Calulation();
+	Test_Calulation();
 	int nIntA = 0;
 	int nIntB = 0;
 	LPCXSTR lpszIntBuffer = _X("123456798");

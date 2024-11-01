@@ -144,6 +144,15 @@ int Test_FileInfo()
 	SystemApi_File_CreateMutilFolder(lpszDir);
 	SystemApi_File_CreateMutilFolder(lpszDir);
 	SystemApi_File_DeleteMutilFolder("D:\\xengine_apps\\Debug\\stroage\\*");
+
+	int nListCount = 0;
+	XCHAR** pptszListFile;
+	SystemApi_File_EnumFile("D:\\xengine_apps", &pptszListFile, &nListCount, true, 1);
+	for (int i = 0; i < nListCount; i++)
+	{
+		printf("%d:%s\n", i, pptszListFile[i]);
+	}
+	BaseLib_OperatorMemory_Free((XPPPMEM)&pptszListFile, nListCount);
 	return 0;
 }
 int main()
