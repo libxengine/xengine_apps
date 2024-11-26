@@ -67,7 +67,14 @@ int Test_FilterAudio()
 		{
 			break;
 		}
-		AVFilter_Audio_Cvt(xhToken, (XBYTE*)tszRDBuffer, nRSize, (XBYTE*)tszWBBuffer, &nWSize);
+		int nListCount = 0;
+		AVFILTER_MSGBUFFER** ppSt_MSGBuffer;
+		AVFilter_Audio_Cvt(xhToken, (XBYTE*)tszRDBuffer, nRSize, &ppSt_MSGBuffer, &nListCount);
+		for (int i = 0; i < nListCount; i++)
+		{
+			printf("%d\n", ppSt_MSGBuffer[i]->nMSGLen);
+		}
+		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
 	}
 
 	AVFilter_Audio_Destroy(xhToken);
@@ -91,27 +98,27 @@ int Test_FilterVideo()
 	FILE* pSt_WBFile = _xtfopen("D:\\h264 file\\output.yuv", _X("wb"));
 
 	int nSize = st_VideoFilter.st_VideoInfo.nWidth * st_VideoFilter.st_VideoInfo.nHeight * 3 / 2;
-	XCHAR* ptszWBBuffer = (XCHAR*)malloc(nSize);
 	XCHAR* ptszRBBuffer = (XCHAR*)malloc(nSize);
 	int nCount = 0;
 
 	while (true)
 	{
 		int nRSize = nSize;
-		int nWSize = nSize;
-
 		int nRet = fread(ptszRBBuffer, 1, nSize, pSt_RBFile);
 		if (nRet <= 0)
 		{
 			break;
 		}
-		AVFilter_Video_Cvt(xhToken, (XBYTE*)ptszRBBuffer, nRSize, (XBYTE *)ptszWBBuffer, &nWSize);
-		if (nWSize > 0)
+		int nListCount = 0;
+		AVFILTER_MSGBUFFER** ppSt_MSGBuffer;
+		AVFilter_Video_Cvt(xhToken, (XBYTE*)ptszRBBuffer, nRSize, &ppSt_MSGBuffer, &nListCount);
+		for (int i = 0; i < nListCount; i++)
 		{
-			fwrite(ptszWBBuffer, 1, nWSize, pSt_WBFile);
-			nCount += nWSize;
+			fwrite(ppSt_MSGBuffer[i]->ptszMSGBuffer, 1, ppSt_MSGBuffer[i]->nMSGLen, pSt_WBFile);
+			nCount += ppSt_MSGBuffer[i]->nMSGLen;
 			printf("Count:%d\n", nCount);
 		}
+		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
 	}
 
 	AVFilter_Video_Destroy(xhToken);
@@ -119,7 +126,6 @@ int Test_FilterVideo()
 	fclose(pSt_WBFile);
 
 	free(ptszRBBuffer);
-	free(ptszWBBuffer);
 	return 0;
 }
 int Test_FilterMutliVideo()
@@ -133,6 +139,7 @@ int Test_FilterMutliVideo()
 	ppSt_VideoInfo[0]->nIndex = 0;
 	ppSt_VideoInfo[0]->st_VideoInfo.nWidth = 720;
 	ppSt_VideoInfo[0]->st_VideoInfo.nHeight = 480;
+	ppSt_VideoInfo[0]->st_VideoInfo.nFrameBase = 1;
 	ppSt_VideoInfo[0]->st_VideoInfo.nFrameRate = 24;
 	ppSt_VideoInfo[0]->st_VideoInfo.nFormat = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
 	_tcsxcpy(ppSt_VideoInfo[0]->tszFilterName, "in0");
@@ -140,6 +147,7 @@ int Test_FilterMutliVideo()
 	ppSt_VideoInfo[1]->nIndex = 1;
 	ppSt_VideoInfo[1]->st_VideoInfo.nWidth = 720;
 	ppSt_VideoInfo[1]->st_VideoInfo.nHeight = 480;
+	ppSt_VideoInfo[1]->st_VideoInfo.nFrameBase = 1;
 	ppSt_VideoInfo[1]->st_VideoInfo.nFrameRate = 24;
 	ppSt_VideoInfo[1]->st_VideoInfo.nFormat = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
 	_tcsxcpy(ppSt_VideoInfo[1]->tszFilterName, "in1");
@@ -147,6 +155,7 @@ int Test_FilterMutliVideo()
 	ppSt_VideoInfo[2]->nIndex = 2;
 	ppSt_VideoInfo[2]->st_VideoInfo.nWidth = 720;
 	ppSt_VideoInfo[2]->st_VideoInfo.nHeight = 480;
+	ppSt_VideoInfo[2]->st_VideoInfo.nFrameBase = 1;
 	ppSt_VideoInfo[2]->st_VideoInfo.nFrameRate = 24;
 	ppSt_VideoInfo[2]->st_VideoInfo.nFormat = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
 	_tcsxcpy(ppSt_VideoInfo[2]->tszFilterName, "in2");
@@ -154,25 +163,23 @@ int Test_FilterMutliVideo()
 	ppSt_VideoInfo[3]->nIndex = 3;
 	ppSt_VideoInfo[3]->st_VideoInfo.nWidth = 720;
 	ppSt_VideoInfo[3]->st_VideoInfo.nHeight = 480;
+	ppSt_VideoInfo[3]->st_VideoInfo.nFrameBase = 1;
 	ppSt_VideoInfo[3]->st_VideoInfo.nFrameRate = 24;
 	ppSt_VideoInfo[3]->st_VideoInfo.nFormat = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
 	_tcsxcpy(ppSt_VideoInfo[3]->tszFilterName, "in3");
 	
-	AVFilter_Video_MIXInit(&xhToken, &ppSt_VideoInfo, nVideoList, _X("out"), _X("[in0]scale=360:240[in0_scaled]; [in1]scale=360:240[in1_scaled];[in2]scale=360:240[in2_scaled];[in3]scale=360:240[in3_scaled];[in0_scaled][in1_scaled][in2_scaled][in3_scaled]xstack=inputs=4:layout=0_0|w0_0|0_h0|w0_h0[out]"));
+	AVFilter_Video_MIXInit(&xhToken, &ppSt_VideoInfo, nVideoList, _X("out"), _X("[in0]scale=360:240[in0_scaled];[in1]scale=360:240[in1_scaled];[in2]scale=360:240[in2_scaled];[in3]scale=360:240[in3_scaled];[in0_scaled][in1_scaled][in2_scaled][in3_scaled]xstack=inputs=4:layout=0_0|w0_0|0_h0|w0_h0[out]"));
 
 	FILE* pSt_RBFile = _xtfopen("D:\\h264 file\\input.yuv", _X("rb"));
 	FILE* pSt_WBFile = _xtfopen("D:\\h264 file\\output.yuv", _X("wb"));
 
 	int nSize = 720 * 480 * 3 / 2;
-	XCHAR* ptszWBBuffer = (XCHAR*)malloc(nSize);
 	XCHAR* ptszRBBuffer = (XCHAR*)malloc(nSize);
 	int nCount = 0;
 
 	while (true)
 	{
 		int nRSize = nSize;
-		int nWSize = nSize;
-
 		int nRet = fread(ptszRBBuffer, 1, nSize, pSt_RBFile);
 		if (nRet <= 0)
 		{
@@ -182,13 +189,17 @@ int Test_FilterMutliVideo()
 		{
 			AVFilter_Video_MIXSend(xhToken, i, (XBYTE*)ptszRBBuffer, nRSize);
 		}
-		bool bRet = AVFilter_Video_MIXRecv(xhToken, (XBYTE*)ptszWBBuffer, &nWSize);
-		if (nWSize > 0 && bRet)
+
+		int nListCount = 0;
+		AVFILTER_MSGBUFFER** ppSt_MSGBuffer;
+		bool bRet = AVFilter_Video_MIXRecv(xhToken, &ppSt_MSGBuffer, &nListCount);
+		for (int i = 0; i < nListCount; i++)
 		{
-			fwrite(ptszWBBuffer, 1, nWSize, pSt_WBFile);
-			nCount += nWSize;
+			fwrite(ppSt_MSGBuffer[i]->ptszMSGBuffer, 1, ppSt_MSGBuffer[i]->nMSGLen, pSt_WBFile);
+			nCount += ppSt_MSGBuffer[i]->nMSGLen;
 			printf("Count:%d\n", nCount);
 		}
+		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
 	}
 
 	AVFilter_Video_MIXDestroy(xhToken);
@@ -196,7 +207,6 @@ int Test_FilterMutliVideo()
 	fclose(pSt_WBFile);
 
 	free(ptszRBBuffer);
-	free(ptszWBBuffer);
 	return 0;
 }
 
@@ -267,12 +277,15 @@ void Test_FilterMutliAudio()
 		{
 			printf("errno\n");
 		}
-
-		int nFilterLen = 0;
-		if (AVFilter_Audio_MIXRecv(xhFilter, (uint8_t*)tszFilterBuffer, &nFilterLen))
+		int nListCount = 0;
+		AVFILTER_MSGBUFFER** ppSt_MSGBuffer;
+		AVFilter_Audio_MIXRecv(xhFilter, &ppSt_MSGBuffer, &nListCount);
+		for (int i = 0; i < nListCount; i++)
 		{
-			fwrite(tszFilterBuffer, 1, nFilterLen, pSt_FileAac);
+			fwrite(ppSt_MSGBuffer[i]->ptszMSGBuffer, 1, ppSt_MSGBuffer[i]->nMSGLen, pSt_FileAac);
+			printf("%d\n", ppSt_MSGBuffer[i]->nMSGLen);
 		}
+		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
 	}
 	AVFilter_Audio_MIXDestroy(xhFilter);
 	fclose(pSt_File1);

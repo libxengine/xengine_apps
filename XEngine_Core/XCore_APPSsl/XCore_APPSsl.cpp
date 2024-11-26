@@ -45,14 +45,14 @@ void md5cal()
 	memset(tszMD5Hex, '\0', MAX_PATH);
 	memset(tszMD5Str, '\0', MAX_PATH);
 
-	int nLen = 512;
 	LPCXSTR lpszFile = _X("D:\\XEngine_Storage\\XEngine_Source\\Debug\\XEngine_File2\\a.txt");
-
-	if (!OPenSsl_Api_Digest(lpszFile, tszMD5Hex, &nLen, true, XENGINE_OPENSSL_API_DIGEST_MD5))
+	int nLen = strlen(lpszFile);
+	
+	if (!OPenSsl_Api_Digest(lpszFile, tszMD5Hex, &nLen))
 	{
 		return;
 	}
-	BaseLib_OperatorString_StrToHex((char*)tszMD5Hex, nLen, tszMD5Str);
+	BaseLib_OperatorString_StrToHex((LPCXSTR)tszMD5Hex, nLen, tszMD5Str);
 	printf(_X("%s\n"), tszMD5Str);
 
 	nLen = MAX_PATH;

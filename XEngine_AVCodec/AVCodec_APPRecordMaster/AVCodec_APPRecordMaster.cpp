@@ -85,28 +85,21 @@ LPCXSTR lpszMP4File = "1.mp4";
 
 void CALLBACK XEngine_AVCollect_CBScreen(uint8_t* ptszAVBuffer, int nAVLen, AVCOLLECT_TIMEINFO* pSt_TimeInfo, XPVOID lParam)
 {
-	int nFLen = 1024 * 1024 * 10;
-	int nELen = 1024 * 1024 * 10;
-	XBYTE* ptszFilterBuffer = (XBYTE*)malloc(nFLen);
-	if (NULL == ptszFilterBuffer)
-	{
-		return;
-	}
-	memset(ptszFilterBuffer, '\0', nFLen);
-
-	if (AVFilter_Video_Cvt(xhFilter, ptszAVBuffer, nAVLen, (uint8_t*)ptszFilterBuffer, &nFLen))
+	int nCVTCount = 0;
+	AVFILTER_MSGBUFFER** ppSt_CVTBuffer;
+	AVFilter_Video_Cvt(xhFilter, ptszAVBuffer, nAVLen, &ppSt_CVTBuffer, &nCVTCount);
+	for (int i = 0; i < nCVTCount; i++)
 	{
 		int nListCount = 0;
 		AVCODEC_VIDEO_MSGBUFFER** ppSt_MSGBuffer;
-		VideoCodec_Stream_EnCodec(xhVideo, ptszFilterBuffer, nFLen, &ppSt_MSGBuffer, &nListCount);
+		VideoCodec_Stream_EnCodec(xhVideo, ppSt_CVTBuffer[i]->ptszMSGBuffer, ppSt_CVTBuffer[i]->nMSGLen, &ppSt_MSGBuffer, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
 			fwrite(ppSt_MSGBuffer[i]->ptszAVBuffer, 1, ppSt_MSGBuffer[i]->nAVLen, pSt_VideoFile);
 		}
 		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
 	}
-	free(ptszFilterBuffer);
-	ptszFilterBuffer = NULL;
+	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_CVTBuffer, nCVTCount);
 }
 void CALLBACK XEngine_AVCollect_CBAudio(uint8_t* ptszAVBuffer, int nAVLen, AVCOLLECT_TIMEINFO* pSt_TimeInfo, XPVOID lParam)
 {

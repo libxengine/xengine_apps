@@ -65,7 +65,7 @@ int XSocket_TestSocket()
 {
 	int nListCount = 0;
 	XSOCKET_CARDINFO** ppSt_ListIFInfo;
-	XSocket_Api_GetCardInfo(&ppSt_ListIFInfo, &nListCount);
+	XSocket_Api_GetCardInfo(&ppSt_ListIFInfo, &nListCount,2);
 	for (int i = 0; i < nListCount; i++)
 	{
 		printf("name:%s ip:%s board:%s dns:%s mac:%s type:%d\n", ppSt_ListIFInfo[i]->tszIFName, ppSt_ListIFInfo[i]->tszIPAddr, ppSt_ListIFInfo[i]->tszBroadAddr, ppSt_ListIFInfo[i]->tszDnsAddr, ppSt_ListIFInfo[i]->tszMacAddr, ppSt_ListIFInfo[i]->enCardType);

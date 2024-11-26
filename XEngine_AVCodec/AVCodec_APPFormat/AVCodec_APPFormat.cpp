@@ -121,8 +121,8 @@ int AVPacket_Test_FileConvert()
 {
 	double nTotalAVTime = 0;
 #ifdef _MSC_BUILD
-	LPCXSTR lpszSrcFile = "D:\\h264 file\\2024-03-21 15-17-59.ts";
-	LPCXSTR lpszDstFile = "D:\\windows-ffmpeg\\x64\\1.mp4";
+	LPCXSTR lpszSrcFile = "D:\\h264 file\\480p.mp4";
+	LPCXSTR lpszDstFile = "D:\\h264 file\\1.mp4";
 #else
 	LPCXSTR lpszSrcFile = "480p.flv";
 	LPCXSTR lpszDstFile = "conv.mp4";
@@ -141,7 +141,7 @@ int AVPacket_Test_FileConvert()
 	}
 
 	pSt_File = fopen(lpszSrcFile, "rb");
-	if (!AVFormat_Convert_Input(xhAVFile, NULL, AVFormat_Packet_RW))
+	if (!AVFormat_Convert_Input(xhAVFile, lpszSrcFile))
 	{
 		printf("AVFormat_Convert_Input:%lX\n", AVFormat_GetLastError());
 		return -1;
@@ -170,10 +170,10 @@ int AVPacket_Test_FileConvert()
 int AVPacket_Test_FilePacket()
 {
 #ifdef _MSC_BUILD
-	LPCXSTR lpszVideoFile = "D:\\h264 file\\480p.264";
+	LPCXSTR lpszVideoFile = "D:\\h264 file\\720x480.264";
 	LPCXSTR lpszAudioFile1 = "D:\\h264 file\\1.aac";
 	LPCXSTR lpszAudioFile2 = "D:\\h264 file\\test.aac";
-	LPCXSTR lpszDstFile = "D:\\h264 file\\480p.flv";
+	LPCXSTR lpszDstFile = "D:\\h264 file\\480p.mp4";
 #else
 	LPCXSTR lpszVideoFile = "480p.264";
 	LPCXSTR lpszAudioFile1 = "1.aac";
@@ -190,7 +190,7 @@ int AVPacket_Test_FilePacket()
 
 	if (!AVFormat_Packet_Output(xhAVFile, lpszDstFile))
 	{
-		printf("AVFormat_UNPack_Output:%lX\n", AVFormat_GetLastError());
+		printf("AVFormat_Packet_Output:%lX\n", AVFormat_GetLastError());
 		return -1;
 	}
 
@@ -204,13 +204,11 @@ int AVPacket_Test_FilePacket()
 		printf("AVFormat_UNPack_Input:%lX\n", AVFormat_GetLastError());
 		return -1;
 	}
-	/*
 	if (!AVFormat_Packet_Input(xhAVFile, lpszAudioFile2))
 	{
 		printf("AVFormat_UNPack_Input:%lX\n", AVFormat_GetLastError());
 		return -1;
 	}
-	*/
 
 	if (!AVFormat_Packet_Start(xhAVFile))
 	{
@@ -304,9 +302,9 @@ int AVPacket_Test_UNPacket()
 int main()
 {
 	//AVPacket_Test_FileLink();
-	//AVPacket_Test_FileConvert();
+	AVPacket_Test_FileConvert();
 	//AVPacket_Test_FilePacket();
-	AVPacket_Test_UNPacket();
+	//AVPacket_Test_UNPacket();
 
 	return 1;
 }
