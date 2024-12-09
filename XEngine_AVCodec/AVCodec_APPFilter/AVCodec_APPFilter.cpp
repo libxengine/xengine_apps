@@ -51,9 +51,13 @@ int Test_FilterAudio()
 	st_AudioFilter.st_AudioInfo.nSampleRate = 44100;
 
 	AVFilter_Audio_Init(&xhToken, _X("volume=2.0"), &st_AudioFilter);
+	//AVFilter_Audio_Init(&xhToken, _X("aresample=sample_rate=48000"), &st_AudioFilter);
 
-	LPCXSTR lpszFile = _X("D:\\audio\\44.1k_2_16.pcm");
-	FILE* pSt_File = _xtfopen(lpszFile, _X("rb"));
+	LPCXSTR lpszRFile = _X("D:\\audio\\44.1k_2_16.aac.pcm");
+	LPCXSTR lpszWFile = _X("D:\\audio\\44.1k_2_16.pcm");
+
+	FILE* pSt_RFile = _xtfopen(lpszRFile, _X("rb"));
+	FILE* pSt_WFile = _xtfopen(lpszWFile, _X("wb"));
 
 	while (true)
 	{
@@ -62,7 +66,7 @@ int Test_FilterAudio()
 		XCHAR tszWBBuffer[10240] = {};
 		XCHAR tszRDBuffer[8192] = {};
 		
-		int nRet = fread(tszRDBuffer, 1, nRSize, pSt_File);
+		int nRet = fread(tszRDBuffer, 1, nRSize, pSt_RFile);
 		if (nRet <= 0)
 		{
 			break;
@@ -72,13 +76,15 @@ int Test_FilterAudio()
 		AVFilter_Audio_Cvt(xhToken, (XBYTE*)tszRDBuffer, nRSize, &ppSt_MSGBuffer, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
+			fwrite(ppSt_MSGBuffer[i]->ptszMSGBuffer, 1, ppSt_MSGBuffer[i]->nMSGLen, pSt_WFile);
 			printf("%d\n", ppSt_MSGBuffer[i]->nMSGLen);
 		}
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
 	}
 
 	AVFilter_Audio_Destroy(xhToken);
-	fclose(pSt_File);
+	fclose(pSt_RFile);
+	fclose(pSt_WFile);
 	return 0;
 }
 
@@ -118,7 +124,7 @@ int Test_FilterVideo()
 			nCount += ppSt_MSGBuffer[i]->nMSGLen;
 			printf("Count:%d\n", nCount);
 		}
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
 	}
 
 	AVFilter_Video_Destroy(xhToken);
@@ -134,7 +140,7 @@ int Test_FilterMutliVideo()
 	int nVideoList = 4;
 	AVFILTER_VIDEO_INFO **ppSt_VideoInfo;
 
-	BaseLib_OperatorMemory_Malloc((XPPPMEM)&ppSt_VideoInfo, nVideoList, sizeof(AVFILTER_VIDEO_INFO));
+	BaseLib_Memory_Malloc((XPPPMEM)&ppSt_VideoInfo, nVideoList, sizeof(AVFILTER_VIDEO_INFO));
 
 	ppSt_VideoInfo[0]->nIndex = 0;
 	ppSt_VideoInfo[0]->st_VideoInfo.nWidth = 720;
@@ -199,7 +205,7 @@ int Test_FilterMutliVideo()
 			nCount += ppSt_MSGBuffer[i]->nMSGLen;
 			printf("Count:%d\n", nCount);
 		}
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
 	}
 
 	AVFilter_Video_MIXDestroy(xhToken);
@@ -225,7 +231,7 @@ void Test_FilterMutliAudio()
 #endif
 
 	AVFILTER_AUDIO_INFO** ppSt_AudioFile;
-	BaseLib_OperatorMemory_Malloc((XPPPMEM)&ppSt_AudioFile, 2, sizeof(AVFILTER_AUDIO_INFO));
+	BaseLib_Memory_Malloc((XPPPMEM)&ppSt_AudioFile, 2, sizeof(AVFILTER_AUDIO_INFO));
 
 	ppSt_AudioFile[0]->st_AudioInfo.nSampleFmt = ENUM_AVCODEC_AUDIO_SAMPLEFMT_S16;
 	ppSt_AudioFile[0]->st_AudioInfo.nSampleRate = 44100;
@@ -285,7 +291,7 @@ void Test_FilterMutliAudio()
 			fwrite(ppSt_MSGBuffer[i]->ptszMSGBuffer, 1, ppSt_MSGBuffer[i]->nMSGLen, pSt_FileAac);
 			printf("%d\n", ppSt_MSGBuffer[i]->nMSGLen);
 		}
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
 	}
 	AVFilter_Audio_MIXDestroy(xhFilter);
 	fclose(pSt_File1);

@@ -107,7 +107,7 @@ XHTHREAD CALLBACK XClient_TCPSelect_Thread()
 			else if (0 == _tcsnicmp(st_SIPProtocol.st_Request.tszMethod, XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_MESSAGE, strlen(XENGINE_RFCCOMPONENTS_SIP_PROTOCOL_STR_TYPE_MESSAGE)))
 			{
 				printf("NEW MESSAGE %s:%s\n", st_SIPProtocol.st_From.tszName, st_SIPProtocol.st_Context.ptszBodyBuffer);
-				BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&st_SIPProtocol.st_Context.ptszBodyBuffer);
+				BaseLib_Memory_FreeCStyle((XPPMEM)&st_SIPProtocol.st_Context.ptszBodyBuffer);
 				//清理SDP
 				memset(&st_SIPProtocol.st_Context, '\0', sizeof(st_SIPProtocol.st_Context));
 				RfcComponents_SIPProtocol_PacketResponse(&st_SIPProtocol, tszMsgBuffer, &nMsgLen, true);

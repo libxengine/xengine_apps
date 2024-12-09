@@ -56,9 +56,9 @@ int Test_Cache()
 	int nMsgLen = 0;
 	XCHAR* ptszMsgBuffer = NULL;
 	HelpComponents_Cache_GetMemoryEx(xhPacket, &ptszMsgBuffer, &nMsgLen);
-	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 	HelpComponents_Cache_GetMemoryEx(xhPacket, &ptszMsgBuffer, &nMsgLen);
-	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 
 	HelpComponents_Cache_WaitEventEx(xhPacket, 2000);
 	HelpComponents_Cache_DestoryEx(xhPacket);
@@ -190,7 +190,7 @@ int Test_Datas()
 			{
 				printf("Test_Datas:%d=%s\n", nMsgLen, ptszMsgBuffer);
 				//释放内存
-				BaseLib_OperatorMemory_FreeCStyle((VOID**)&ptszMsgBuffer);
+				BaseLib_Memory_FreeCStyle((VOID**)&ptszMsgBuffer);
 			}
 		}
 	}
@@ -344,7 +344,7 @@ int Test_PacketCustom()
 		int nHDRLen = 0;
 		HelpComponents_PKTCustom_GetMemoryEx(xhPacket, ppSt_ListAddr[i]->hSocket, &ptszMsgBuffer, &nMsgLen, &st_ProtocolHdr, &nHDRLen, &st_ProtocolTail);
 		printf("Test_PacketCustom:%d=%s\n", nMsgLen, tszMsgBuffer);
-		BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+		BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 	}
 	HelpComponents_PKTCustom_WaitEventEx(xhPacket, 1, 5000);
 	HelpComponents_PKTCustom_DeleteEx(xhPacket, hSocket);
@@ -433,7 +433,7 @@ int Test_PacketCustom2()
 			}
 			memcpy(&st_RTPPacket, tszHDRBuffer, sizeof(XENGINE_RTPPACKETHDR));
 			printf("Test_PacketCustom:%d T:%d P:%d %d\n", nMsgLen, st_RTPPacket.byType, st_RTPPacket.byPacket, nHDRLen);
-			BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+			BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 		}
 	}
 	HelpComponents_PKTCustom_DeleteEx(xhPacket, hSocket);

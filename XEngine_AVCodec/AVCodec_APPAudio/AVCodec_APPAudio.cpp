@@ -66,8 +66,8 @@ void Audio_ListCodec()
 	{
 		printf("AudioCodec_Help_GetList:%s %d\n", ppSt_Decoder[i]->tszCodecName, ppSt_Decoder[i]->nCodecType);
 	}
-	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_Encoder, nEnCount);
-	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_Decoder, nDeCount);
+	BaseLib_Memory_Free((XPPPMEM)&ppSt_Encoder, nEnCount);
+	BaseLib_Memory_Free((XPPPMEM)&ppSt_Decoder, nDeCount);
 }
 
 void Audio_Encode()
@@ -125,7 +125,7 @@ void Audio_Encode()
 
 				fwrite(byAACHdr, 1, 7, pSt_FileAac);
 				fwrite(ppSt_ListAudio[i]->ptszMsgBuffer, 1, ppSt_ListAudio[i]->nMsgLen, pSt_FileAac);
-				BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_ListAudio[i]->ptszMsgBuffer);
+				BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_ListAudio[i]->ptszMsgBuffer);
 			}
 		}
 		AudioCodec_Stream_Free(&ppSt_ListAudio, nListCount);
@@ -145,7 +145,7 @@ void Audio_DeCodec()
 	XNETHANDLE xhCoder;
 
 #ifdef _MSC_BUILD
-	FILE* pSt_FileEnCode = fopen("d:\\audio\\44.1k_2_16.aac", "rb");
+	FILE* pSt_FileEnCode = fopen("d:\\audio\\Audio.aac", "rb");
 	FILE* pSt_FileDeCodec = fopen("d:\\audio\\44.1k_2_16.aac.pcm", "wb");
 #else
 	FILE* pSt_FileEnCode = fopen("44.1k_2_16.aac", "rb");
@@ -162,7 +162,7 @@ void Audio_DeCodec()
 	st_AudioInfo.nChannel = 2;
 	st_AudioInfo.nSampleFmt = ENUM_AVCODEC_AUDIO_SAMPLEFMT_FLTP;
 
-	if (!AudioCodec_Stream_DeInit(&xhCoder, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC, &st_AudioInfo))
+	if (!AudioCodec_Stream_DeInit(&xhCoder, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC))
 	{
 		printf("AudioCodec_Stream_DeInit\n");
 		return;
@@ -201,9 +201,9 @@ void Audio_DeCodec()
 			{
 				fwrite(ppSt_ListMsgBuffer[i]->ptszMsgBuffer, 1, ppSt_ListMsgBuffer[i]->nMsgLen, pSt_FileDeCodec);
 			}
-			BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->ptszMsgBuffer);
+			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->ptszMsgBuffer);
 		}
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_Frame, nListCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
 		
 	}
 	fclose(pSt_FileEnCode);
@@ -258,7 +258,7 @@ void OPUS_Encode()
 			for (int i = 0; i < nListCount; i++)
 			{
 				fwrite(ppSt_ListAudio[i]->ptszMsgBuffer, 1, ppSt_ListAudio[i]->nMsgLen, pSt_FileAac);
-				BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_ListAudio[i]->ptszMsgBuffer);
+				BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_ListAudio[i]->ptszMsgBuffer);
 			}
 		}
 		AudioCodec_Stream_Free(&ppSt_ListAudio, nListCount);
@@ -269,9 +269,9 @@ void OPUS_Encode()
 }
 int main()
 {
-	OPUS_Encode();
+	//OPUS_Encode();
 	//Audio_ListCodec();
-	Audio_Encode();
+	//Audio_Encode();
 	Audio_DeCodec();
 	return 0;
 }

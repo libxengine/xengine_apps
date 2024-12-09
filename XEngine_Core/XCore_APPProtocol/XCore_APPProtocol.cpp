@@ -38,7 +38,7 @@ using namespace std;
 #endif
 #endif
 
-//linux:g++ -std=gnu++17 -Wall -g XCore_APPProtocol.cpp -o XCore_APPProtocol.exe -lXEngine_BaseLib -lXEngine_Protocol 
+//linux:g++ -std=c++20 -Wall -g XCore_APPProtocol.cpp -o XCore_APPProtocol.exe -lXEngine_BaseLib -lXEngine_Protocol 
 
 bool CALLBACK XEngine_Protocol_Callback_Trace(LPCXSTR lpszSource, LPCXSTR lpszDestAddr, LPCXSTR lpszRecvAddr, int nTTL, XENGINE_VALTIME st_VALTime, XPVOID lParam)
 {
@@ -47,8 +47,8 @@ bool CALLBACK XEngine_Protocol_Callback_Trace(LPCXSTR lpszSource, LPCXSTR lpszDe
 }
 int Protocol_TestPing()
 {
-	LPCXSTR lpszSourceAddr = _X("192.168.252.128");
-	LPCXSTR lpszDestAddr = _X("42.194.178.57");
+	LPCXSTR lpszSourceAddr = _X("10.0.1.88");
+	LPCXSTR lpszDestAddr = _X("118.25.14.242");
 	XENGINE_VALTIME st_VALTime;
 
 	memset(&st_VALTime, '\0', sizeof(XENGINE_VALTIME));
@@ -66,8 +66,8 @@ int Protocol_TestPing()
 
 int Protocol_TestTrace()
 {
-	LPCXSTR lpszSourceAddr = _X("192.168.252.128");
-	LPCXSTR lpszDestAddr = _X("42.194.178.57");
+	LPCXSTR lpszSourceAddr = _X("10.0.1.88");
+	LPCXSTR lpszDestAddr = _X("118.25.14.242");
 
 	if (!Protocol_Icmp_Traceroute(lpszSourceAddr, lpszDestAddr, XEngine_Protocol_Callback_Trace))
 	{
@@ -82,7 +82,7 @@ int Protocol_TestTCPRaw()
 {
 	XSOCKET hSDSocket;
 	XSOCKET hRVSocket;
-	LPCXSTR lpszSourceAddr = "192.168.1.8";
+	LPCXSTR lpszSourceAddr = "10.0.1.88";
 
 	if (!Protocol_TCPRaw_Init(&hSDSocket, &hRVSocket))
 	{
@@ -156,6 +156,6 @@ int main()
 #ifdef _MSC_BUILD
 	WSACleanup();
 #endif
-	std::this_thread::sleep_for(std::chrono::seconds(10));
+	std::this_thread::sleep_for(std::chrono::seconds(5));
 	return 0;
 }

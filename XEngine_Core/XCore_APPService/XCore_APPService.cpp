@@ -38,7 +38,7 @@ using namespace std;
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_Core.lib")
 #endif
 #endif
-//Linux:g++ -std=gnu++17 -Wall -g XCore_APPService.cpp -o XCore_APPService.exe -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_ManagePool -lXEngine_Core 
+//Linux:g++ -std=c++20 -Wall -g XCore_APPService.cpp -o XCore_APPService.exe -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_ManagePool -lXEngine_Core 
 
 XHANDLE xhTCPCore = NULL;
 XHANDLE xhUDPCore = NULL;
@@ -92,10 +92,7 @@ int test_tcpxcore()
 		printf(_X("NetCore_TCPXCore_StartEx Start Is Failed!\n"));
 	}
 	NetCore_TCPXCore_RegisterCallBackEx(xhTCPCore,TCPOverlapped_Login, TCPOverlapped_Recv, TCPOverlapped_Leave);
-
-	std::this_thread::sleep_for(std::chrono::seconds(30));
 	NetCore_TCPXCore_PasueRecvEx(xhTCPCore, tszClientAddr);
-	std::this_thread::sleep_for(std::chrono::seconds(10000));
 
 	int nCount = 0;
 	XCHAR** ppszListClient;
@@ -104,7 +101,7 @@ int test_tcpxcore()
 	{
 		printf("%d:%s\n", i, ppszListClient[i]);
 	}
-	BaseLib_OperatorMemory_Free((XPPPMEM)&ppszListClient, nCount);
+	BaseLib_Memory_Free((XPPPMEM)&ppszListClient, nCount);
 
 	NetCore_TCPXCore_CloseForClientEx(xhTCPCore, tszClientAddr);
 	return 0;
@@ -145,9 +142,9 @@ int test_unixdomain()
 int test_udx()
 {
 #ifdef _MSC_BUILD
-	LPCXSTR lpszFile = _X("d:\\xengine_apps\\Debug\\2.exe");
+	LPCXSTR lpszFile = _X("d:\\xengine_apps\\Debug\\XCore_APPService.exe");
 #else
-	LPCXSTR lpszFile = _X("2.exe");
+	LPCXSTR lpszFile = _X("XCore_APPService.exe");
 #endif
 	NETCORE_UDXCONFIG st_UDXConfig;
 	FILE* pSt_File = fopen(lpszFile, "wb");
@@ -192,13 +189,13 @@ int main()
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 
-	//test_tcpxpoll();
+	test_tcpxpoll();
 	test_tcpxcore();
-	//test_udpxcore();
-	//test_unixdomain();
-	//test_udx();
+	test_udpxcore();
+	test_unixdomain();
+	test_udx();
 	
-	std::this_thread::sleep_for(std::chrono::seconds(50000));
+	std::this_thread::sleep_for(std::chrono::seconds(5));
 	NetCore_TCPXPoll_Stop();
 	NetCore_TCPXCore_DestroyEx(xhTCPCore);
 	NetCore_UDPXCore_DestroyEx(xhUDPCore);

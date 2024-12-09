@@ -97,9 +97,9 @@ void CALLBACK XEngine_AVCollect_CBScreen(uint8_t* ptszAVBuffer, int nAVLen, AVCO
 		{
 			fwrite(ppSt_MSGBuffer[i]->ptszAVBuffer, 1, ppSt_MSGBuffer[i]->nAVLen, pSt_VideoFile);
 		}
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
 	}
-	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_CVTBuffer, nCVTCount);
+	BaseLib_Memory_Free((XPPPMEM)&ppSt_CVTBuffer, nCVTCount);
 }
 void CALLBACK XEngine_AVCollect_CBAudio(uint8_t* ptszAVBuffer, int nAVLen, AVCOLLECT_TIMEINFO* pSt_TimeInfo, XPVOID lParam)
 {
@@ -113,9 +113,9 @@ void CALLBACK XEngine_AVCollect_CBAudio(uint8_t* ptszAVBuffer, int nAVLen, AVCOL
 
 		fwrite(byAACHdr, 1, 7, pSt_AudioFile);
 		fwrite(ppSt_ListMsgBuffer[i]->ptszMsgBuffer, 1, ppSt_ListMsgBuffer[i]->nMsgLen, pSt_AudioFile);
-		BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_ListMsgBuffer[i]->ptszMsgBuffer);
+		BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_ListMsgBuffer[i]->ptszMsgBuffer);
 	}
-	BaseLib_OperatorMemory_Free((void***)&ppSt_ListMsgBuffer, nListCount);
+	BaseLib_Memory_Free((void***)&ppSt_ListMsgBuffer, nListCount);
 }
 
 void CALLBACK XEngine_AVPacket_Callback(XHANDLE xhNet, int nCvtType, __int64x nCvtFrame, double dlTime, XPVOID lParam)
@@ -156,8 +156,8 @@ int main()
 	{
 		printf("Video:%s\n", ppSt_VideoList[i]->st_MetaInfo.tszStrKey);
 	}
-	BaseLib_OperatorMemory_Free((void***)&ppSt_AudioList, nACount);
-	BaseLib_OperatorMemory_Free((void***)&ppSt_VideoList, nVCount);
+	BaseLib_Memory_Free((void***)&ppSt_AudioList, nACount);
+	BaseLib_Memory_Free((void***)&ppSt_VideoList, nVCount);
 	//启用音频
 	XHANDLE xhSound = NULL;
 	if (bAudio)

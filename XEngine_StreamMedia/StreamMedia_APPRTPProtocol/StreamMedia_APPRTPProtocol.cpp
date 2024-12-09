@@ -106,9 +106,9 @@ void TestPacket_RTP264()
 				fwrite(tszFSize, 1, nFSize, pSt_File);
 				fwrite(ppSt_RTPPacket[j]->tszMsgBuffer, 1, ppSt_RTPPacket[j]->nMsgLen, pSt_RTPFile);
 			}
-			BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_RTPPacket, nPacketCount);
+			BaseLib_Memory_Free((XPPPMEM)&ppSt_RTPPacket, nPacketCount);
 		}
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_Frame, nFrameCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nFrameCount);
 	}
 	fclose(pSt_264File);
 	fclose(pSt_RTPFile);
@@ -260,9 +260,9 @@ void TestPacket_RTP265()
 				printf("%d=%d\n", j, ppSt_RTPPacket[j]->nMsgLen);
 				fwrite(ppSt_RTPPacket[j]->tszMsgBuffer, 1, ppSt_RTPPacket[j]->nMsgLen, pSt_RTPFile);
 			}
-			BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_RTPPacket, nPacketCount);
+			BaseLib_Memory_Free((XPPPMEM)&ppSt_RTPPacket, nPacketCount);
 		}
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_Frame, nFrameCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nFrameCount);
 	}
 	fclose(pSt_264File);
 	fclose(pSt_RTPFile);
@@ -373,9 +373,9 @@ void TestPacket_RTPAAC()
 				printf("%d=%d\n", j, ppSt_RTPPacket[j]->nMsgLen);
 				fwrite(ppSt_RTPPacket[j]->tszMsgBuffer, 1, ppSt_RTPPacket[j]->nMsgLen, pSt_RTPFile);
 			}
-			BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_RTPPacket, nPacketCount);
+			BaseLib_Memory_Free((XPPPMEM)&ppSt_RTPPacket, nPacketCount);
 		}
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_Frame, nFrameCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nFrameCount);
 	}
 	fclose(pSt_264File);
 	fclose(pSt_RTPFile);

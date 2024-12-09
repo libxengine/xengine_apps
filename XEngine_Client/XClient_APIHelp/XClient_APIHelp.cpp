@@ -105,7 +105,7 @@ int Test_Http2Request()
 
 	APIClient_Http_Request(_X("GET"), lpszUrl, NULL, NULL, &ptszMsgBuffer, &nLen, NULL, NULL, &st_HTTPParam);
 	printf("%s\n", ptszMsgBuffer);
-	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 	return 0;
 }
 int Test_HttpRequest()
@@ -115,7 +115,7 @@ int Test_HttpRequest()
 
 	APIClient_Http_Request(_X("OPTIONS"), lpszUrl, NULL, NULL, &ptszMsgBuffer);
 	printf("%s\n", ptszMsgBuffer);
-	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 	return 0;
 }
 int Test_HttpCreate()
@@ -139,7 +139,7 @@ int Test_HttpCreate()
 		}
 	}
 	APIClient_Http_Close(xhToken);
-	BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 	return 0;
 }
 

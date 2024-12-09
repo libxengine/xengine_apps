@@ -127,7 +127,7 @@ XHTHREAD CALLBACK NetCore_Thread()
 					}
 				}
 			}
-			BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListClient, nListCount);
+			BaseLib_Memory_Free((XPPPMEM)&ppSt_ListClient, nListCount);
 			i++;
 		}
 	}

@@ -64,7 +64,7 @@ int main()
 
 	XCHAR tszTmpBuffer[128] = {};
 	XCHAR tszRandomStr[10] = {};
-	BaseLib_OperatorHandle_CreateStr(tszRandomStr, 8, 0, 2);
+	BaseLib_Handle_CreateStr(tszRandomStr, 8, 0, 2);
 	NatProtocol_StunNat_BuildAttr(tszTmpBuffer, &nMsgLen, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_ATTR_USERNAME, "j107le40:qhto", 13);
 
 	//NatProtocol_StunNat_BuildMapAddress(tszTmpBuffer + nMsgLen, &nMsgLen, "127.0.0.1", 5501);
@@ -75,7 +75,7 @@ int main()
 	NatProtocol_StunNat_BuildAttr(tszTmpBuffer + nMsgLen, &nMsgLen, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_ATTR_USER_CANDIDATE);
 
 	XCHAR tszTokenStr[64] = {};
-	BaseLib_OperatorHandle_CreateStr(tszTokenStr, 12, 0, 2);
+	BaseLib_Handle_CreateStr(tszTokenStr, 12, 0, 2);
 	if (!NatProtocol_StunNat_Packet(tszMsgBuffer, &nMsgLen, tszTokenStr, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_CLASS_REQUEST, RFCCOMPONENTS_NATCLIENT_PROTOCOL_STUN_ATTR_MAPPED_ADDRESS, tszTmpBuffer))
 	{
 		printf("构建请求包缓冲区错误!\n");
@@ -150,7 +150,7 @@ int main()
 			printf("%d %s\n", nIPVer, tszIPAddr);
 		}
 	}
-	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListAttr, nListCount);
+	BaseLib_Memory_Free((XPPPMEM)&ppSt_ListAttr, nListCount);
 
 	int nA1Len = 0;
 	int nA2Len = 0;

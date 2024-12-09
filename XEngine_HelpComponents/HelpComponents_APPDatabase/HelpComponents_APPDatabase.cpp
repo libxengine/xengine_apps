@@ -144,7 +144,7 @@ int mongodb_test()
 	{
 		printf("%s\n", ppszResult[i]);
 	}
-	BaseLib_OperatorMemory_Free((void***)&ppszResult, nListCount);
+	BaseLib_Memory_Free((void***)&ppszResult, nListCount);
 	DataBase_Mongo_Close(xhToken);
 	return 0;
 }
@@ -186,7 +186,7 @@ int postgredb_test()
 		printf("Name:%s Value:%s Len:%d Type:%d\n", ppSt_ListData[i]->ptszName, ppSt_ListData[i]->ptszValue, ppSt_ListData[i]->unLen, ppSt_ListData[i]->unOidType);
 	}
 	DataBase_Postgre_FreeResult(xhToken, xhTable);
-	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListData, nListCount);
+	BaseLib_Memory_Free((XPPPMEM)&ppSt_ListData, nListCount);
 	DataBase_Postgre_Close(xhToken);
 	return 0;
 }

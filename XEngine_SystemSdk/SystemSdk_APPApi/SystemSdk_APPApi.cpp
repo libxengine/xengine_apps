@@ -84,7 +84,7 @@ int Test_DiskInfo()
 #endif
 		printf("Test_DiskInfo:%s %llu\n", ppszRootName[i], st_DiskInfo.dwDiskTotal);
 	}
-	BaseLib_OperatorMemory_Free((XPPPMEM)&ppszRootName, nDiskCount);
+	BaseLib_Memory_Free((XPPPMEM)&ppszRootName, nDiskCount);
 
 	return 0;
 }
@@ -152,7 +152,70 @@ int Test_FileInfo()
 	{
 		printf("%d:%s\n", i, pptszListFile[i]);
 	}
-	BaseLib_OperatorMemory_Free((XPPPMEM)&pptszListFile, nListCount);
+	BaseLib_Memory_Free((XPPPMEM)&pptszListFile, nListCount);
+	return 0;
+}
+bool CALLBACK EnumFile(LPCXSTR lpFileOrPath, bool bFindPath, XPVOID lParam)
+{
+	if (bFindPath)
+	{
+		printf(_X("Path %s\r\n"), lpFileOrPath);
+	}
+	else
+	{
+		printf(_X("File %s\r\n"), lpFileOrPath);
+	}
+	return true;
+}
+
+int Test_EnumFile()
+{
+	int nCount = 0;
+	XCHAR** ppszListDir;
+	SYSTEMAPI_FILE_ATTR st_FileAttr = {};
+	SystemApi_File_GetFileAttr(_X("D:\\xengine_apps"), &st_FileAttr);
+
+#ifdef _MSC_BUILD
+	SystemApi_File_EnumFile("D:\\test\\*", &ppszListDir, &nCount, true, 1);
+#else
+	SystemApi_File_EnumFile("/tmp", &ppszListDir, &nCount);
+#endif
+
+	for (int i = 0; i < nCount; i++)
+	{
+		printf("%s\n", ppszListDir[i]);
+	}
+	BaseLib_Memory_Free((XPPPMEM)&ppszListDir, nCount);
+
+#ifdef _MSC_BUILD
+	LPCXSTR lpszFile = _X("D:\\xengine_apps\\Debug\\1.txt");
+#else
+	LPCXSTR lpszFile = _X("1.txt");
+#endif
+
+	if (!SystemApi_File_CreateSparseFile(lpszFile, 10240))
+	{
+		return -1;
+	}
+
+	FILE* pSt_FileStart = fopen(lpszFile, _X("rb+"));
+	if (NULL == pSt_FileStart)
+	{
+		return -1;
+	}
+
+	FILE* pSt_FileEnd = fopen(lpszFile, _X("rb+"));
+	if (NULL == pSt_FileEnd)
+	{
+		return -1;
+	}
+	fseek(pSt_FileEnd, 5, SEEK_CUR);
+
+	int nRet = fwrite("01234", 1, 5, pSt_FileStart);
+	nRet = fwrite("56789", 1, 5, pSt_FileEnd);
+
+	fclose(pSt_FileStart);
+	fclose(pSt_FileEnd);
 	return 0;
 }
 int main()
@@ -163,5 +226,6 @@ int main()
 	Test_CPUInfo();
 	Test_ProcessInfo();
 	Test_SystemInfo();
+	Test_EnumFile();
 	return 0;
 }

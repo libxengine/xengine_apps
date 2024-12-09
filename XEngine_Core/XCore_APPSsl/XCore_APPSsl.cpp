@@ -17,25 +17,25 @@ using namespace std;
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
-#include <XEngine_Include/XEngine_Core/OPenSsl_Define.h>
-#include <XEngine_Include/XEngine_Core/OPenSsl_Error.h>
+#include <XEngine_Include/XEngine_Core/Cryption_Define.h>
+#include <XEngine_Include/XEngine_Core/Cryption_Error.h>
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
-#pragma comment(lib,"XEngine_Core/XEngine_OPenSsl.lib")
+#pragma comment(lib,"XEngine_Core/XEngine_Cryption.lib")
 #endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_OPenSsl/OPenSsl_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_OPenSsl/OPenSsl_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Cryption/Cryption_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Cryption/Cryption_Error.h"
 #ifdef _MSC_BUILD
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_OPenSsl.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_Cryption.lib")
 #endif
 #endif
-//Linux::g++ -std=gnu++17 -Wall -g XCore_APPSsl.cpp -o XCore_APPSsl.exe -lXEngine_BaseLib -lXEngine_OPenSsl 
+//Linux::g++ -std=c++20 -Wall -g XCore_APPSsl.cpp -o XCore_APPSsl.exe -lXEngine_BaseLib -lXEngine_Cryption
 
 void md5cal()
 {
@@ -48,23 +48,23 @@ void md5cal()
 	LPCXSTR lpszFile = _X("D:\\XEngine_Storage\\XEngine_Source\\Debug\\XEngine_File2\\a.txt");
 	int nLen = strlen(lpszFile);
 	
-	if (!OPenSsl_Api_Digest(lpszFile, tszMD5Hex, &nLen))
+	if (!Cryption_Api_Digest(lpszFile, tszMD5Hex, &nLen))
 	{
 		return;
 	}
-	BaseLib_OperatorString_StrToHex((LPCXSTR)tszMD5Hex, nLen, tszMD5Str);
+	BaseLib_String_StrToHex((LPCXSTR)tszMD5Hex, nLen, tszMD5Str);
 	printf(_X("%s\n"), tszMD5Str);
 
 	nLen = MAX_PATH;
 	memset(tszMD5Hex, '\0', MAX_PATH);
 	memset(tszMD5Str, '\0', MAX_PATH);
 
-	if (!OPenSsl_Api_Digest("D:\\xengine_apps\\Debug\\XEngine_BaseLib.dll", tszMD5Hex, NULL, true, XENGINE_OPENSSL_API_DIGEST_SHA1))
+	if (!Cryption_Api_Digest("D:\\xengine_apps\\Debug\\XEngine_BaseLib.dll", tszMD5Hex, NULL, true, ENUM_XENGINE_CRYPTION_DIGEST_SHA1))
 	{
 		return;
 	}
 
-	BaseLib_OperatorString_StrToHex((char*)tszMD5Hex, 20, tszMD5Str);
+	BaseLib_String_StrToHex((char*)tszMD5Hex, 20, tszMD5Str);
 	printf("%s\n", tszMD5Str);
 
 	printf(_X("HASH END\n"));
@@ -84,13 +84,13 @@ void Cryptto()
 	memset(tszDeString, '\0', 1024);
 	memset(tszOutString, '\0', 1024);
 
-	if (!OPenSsl_Api_CryptEncodec(tszSourceBuffer, tszOutString, &nLen, lpszKey, XENGINE_OPENSSL_API_CRYPT_3DES))
+	if (!Cryption_Api_CryptEncodec(tszSourceBuffer, tszOutString, &nLen, lpszKey, ENUM_XENGINE_CRYPTION_SYMMETRIC_3DES))
 	{
 		return;
 	}
 	printf(_X("加密后的数据长度：%d,数据为：%s\n"), nLen, tszOutString);
 
-	if (!OPenSsl_Api_CryptDecodec(tszOutString, tszDeString, &nLen, lpszKey, XENGINE_OPENSSL_API_CRYPT_3DES))
+	if (!Cryption_Api_CryptDecodec(tszOutString, tszDeString, &nLen, lpszKey, ENUM_XENGINE_CRYPTION_SYMMETRIC_3DES))
 	{
 		return;
 	}
@@ -111,26 +111,26 @@ void RsaSSL()
 #endif
 	int nSize = 0;
 	XCHAR tszRSABuffer[4096] = {};
-	OPenSsl_Api_RSAFileCreate(lpszPrivateKey);
-	OPenSsl_Api_RSAMemoryCreate(tszRSABuffer, &nSize);
+	Cryption_Api_RSAFileCreate(lpszPrivateKey);
+	Cryption_Api_RSAMemoryCreate(tszRSABuffer, &nSize);
 
-	OPenSsl_Api_RSAPubFile(lpszPrivateKey, lpszPublicKey);
+	Cryption_Api_RSAPubFile(lpszPrivateKey, lpszPublicKey);
 
 	int nPLen = 4096;
 	XCHAR tszPUBBuffer[4096] = {};
-	OPenSsl_Api_RSAPubMemory(tszPUBBuffer, &nPLen, tszRSABuffer, nSize);
+	Cryption_Api_RSAPubMemory(tszPUBBuffer, &nPLen, tszRSABuffer, nSize);
 
 	int nRsaLen = strlen(lpszSource);
 	XBYTE puszRsaEnString[1024];
 	memset(puszRsaEnString, '\0', sizeof(puszRsaEnString));
-	if (!OPenSsl_Api_RSAEncodec(lpszPublicKey, lpszSource, &nRsaLen, puszRsaEnString, true))
+	if (!Cryption_Api_RSAEncodec(lpszPublicKey, lpszSource, &nRsaLen, puszRsaEnString, true))
 	{
 		return;
 	}
 	printf("RSA:%s\n", puszRsaEnString);
 	XCHAR tszDeString[1024];
 	memset(tszDeString, '\0', sizeof(tszDeString));
-	if (!OPenSsl_Api_RSADecodec(lpszPrivateKey, (LPCXSTR)puszRsaEnString, &nRsaLen, tszDeString, false))
+	if (!Cryption_Api_RSADecodec(lpszPrivateKey, (LPCXSTR)puszRsaEnString, &nRsaLen, tszDeString, false))
 	{
 		return;
 	}
@@ -155,16 +155,16 @@ void SignVer()
 	LPCXSTR lpszPublicKey = _X("test_pub.Key");
 #endif
 
-	if (!OPenSsl_Cert_SignEncoder(lpszSource,nLen, tszSource, &nOLen, lpszPrivateKey, lpszPass))
+	if (!Cryption_Cert_SignEncoder(lpszSource,nLen, tszSource, &nOLen, lpszPrivateKey, lpszPass))
 	{
 		return;
 	}
-	if (!OPenSsl_Cert_SignVerifly(lpszSource, 11, tszSource, nOLen, lpszPublicKey, lpszPass))
+	if (!Cryption_Cert_SignVerifly(lpszSource, 11, tszSource, nOLen, lpszPublicKey, lpszPass))
 	{
 		return;
 	}
 
-	OPenSsl_Cert_Convert("D:\\xengine_apps\\Debug\\server.crt", "D:\\xengine_apps\\Debug\\server.der");
+	Cryption_Cert_Convert("D:\\xengine_apps\\Debug\\server.crt", "D:\\xengine_apps\\Debug\\server.der");
 
 	return;
 }
@@ -183,8 +183,8 @@ void VerSign()
 	LPCXSTR lpszUserFile = _X("test.crt");
 #endif
 
-	OPENSSL_X509CCINL st_X509Info;
-	memset(&st_X509Info, '\0', sizeof(OPENSSL_X509CCINL));
+	XCRYPTION_X509ATTR st_X509Info;
+	memset(&st_X509Info, '\0', sizeof(XCRYPTION_X509ATTR));
 
 	strcpy(st_X509Info.tszCommonName, "www.xyry.org");
 	strcpy(st_X509Info.tszCountryName, "china");
@@ -194,9 +194,9 @@ void VerSign()
 	strcpy(st_X509Info.tszOrgUnitName, "soft");
 	strcpy(st_X509Info.tszEmailAddress, "486179@qq.com");
 
-	OPenSsl_Cert_MakeCACert(lpszCAFile, 120102, 60 * 60 * 24 * 10, &st_X509Info, lpszPrivateKey);
-	OPenSsl_Cert_X509Create(lpszReqFile, &st_X509Info, lpszPrivateKey, NULL, false);
-	OPenSsl_Cert_X509Sign(lpszCAFile, lpszReqFile, lpszUserFile, 60 * 60 * 24 * 10, lpszPrivateKey);
+	Cryption_Cert_MakeCACert(lpszCAFile, 120102, 60 * 60 * 24 * 10, &st_X509Info, lpszPrivateKey);
+	Cryption_Cert_X509Create(lpszReqFile, &st_X509Info, lpszPrivateKey, NULL, false);
+	Cryption_Cert_X509Sign(lpszCAFile, lpszReqFile, lpszUserFile, 60 * 60 * 24 * 10, lpszPrivateKey);
 }
 void CertVer()
 {
@@ -208,7 +208,7 @@ void CertVer()
 	LPCXSTR lpszUserKey = _X("test.crt");
 #endif
 
-	if (!OPenSsl_Cert_X509Verifly(lpszRootKey, lpszUserKey))
+	if (!Cryption_Cert_X509Verifly(lpszRootKey, lpszUserKey))
 	{
 		return;
 	}
@@ -220,10 +220,10 @@ void GetCert()
 #else
 	LPCXSTR lpszKey = _X("test.crt");
 #endif
-	OPENSSL_X509CCINFO st_X509Info;
-	memset(&st_X509Info, '\0', sizeof(OPENSSL_X509CCINFO));
+	XCRYPTION_X509INFO st_X509Info;
+	memset(&st_X509Info, '\0', sizeof(XCRYPTION_X509INFO));
 
-	if (!OPenSsl_Cert_GetCerInfomachine(lpszKey, &st_X509Info))
+	if (!Cryption_Cert_GetCerInfomachine(lpszKey, &st_X509Info))
 	{
 		return;
 	}
@@ -242,7 +242,7 @@ int XCrypto_Test()
 	memset(tszEncoder, '\0', sizeof(tszEncoder));
 	memset(tszDecoder, '\0', sizeof(tszDecoder));
 
-	if (!OPenSsl_XCrypto_Encoder(lpszFile, &nLen, tszEncoder, "123123"))
+	if (!Cryption_XCrypto_Encoder(lpszFile, &nLen, tszEncoder, "123123"))
 	{
 		return -1;
 	}
@@ -252,7 +252,7 @@ int XCrypto_Test()
 	}
 	printf("\r\n%s\n", tszEncoder);
 		
-	OPenSsl_XCrypto_Decoder((LPCXSTR)tszEncoder, &nLen, tszDecoder, "123123");
+	Cryption_XCrypto_Decoder((LPCXSTR)tszEncoder, &nLen, tszDecoder, "123123");
 	printf("%s\n", tszDecoder);
 	return 0;
 }

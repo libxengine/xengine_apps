@@ -19,15 +19,15 @@ using namespace std;
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
 #include <XEngine_Include/XEngine_Core/NetCore_Define.h>
 #include <XEngine_Include/XEngine_Core/NetCore_Error.h>
-#include <XEngine_Include/XEngine_Core/OPenSsl_Define.h>
-#include <XEngine_Include/XEngine_Core/OPenSsl_Error.h>
+#include <XEngine_Include/XEngine_Core/Cryption_Define.h>
+#include <XEngine_Include/XEngine_Core/Cryption_Error.h>
 #include <XEngine_Include/XEngine_Core/ManagePool_Define.h>
 #include <XEngine_Include/XEngine_RfcComponents/HttpProtocol_Define.h>
 #include <XEngine_Include/XEngine_RfcComponents/HttpProtocol_Error.h>
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"XEngine_Core/XEngine_Core.lib")
-#pragma comment(lib,"XEngine_Core/XEngine_OPenSsl.lib")
+#pragma comment(lib,"XEngine_Core/XEngine_Cryption.lib")
 #pragma comment(lib,"XEngine_RfcComponents/RfcComponents_HttpProtocol.lib")
 #endif
 #else
@@ -37,19 +37,19 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_OPenSsl/OPenSsl_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_OPenSsl/OPenSsl_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Cryption/Cryption_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Cryption/Cryption_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_ManagePool/ManagePool_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_HttpProtocol/HttpProtocol_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_HttpProtocol/HttpProtocol_Error.h"
 #ifdef _MSC_BUILD
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_Core.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_OPenSsl.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_Cryption.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_HttpProtocol.lib")
 #endif
 #endif
-//Linux::g++ -std=c++17 -Wall -g RfcComponents_APPHttp2.cpp -o RfcComponents_APPHttp2.exe -lXEngine_BaseLib -lXEngine_Core -lXEngine_OPenSsl -lRfcComponents_HttpProtocol -lpthread
+//Linux::g++ -std=c++17 -Wall -g RfcComponents_APPHttp2.cpp -o RfcComponents_APPHttp2.exe -lXEngine_BaseLib -lXEngine_Core -lXEngine_Cryption -lRfcComponents_HttpProtocol -lpthread
 
 bool bSsl = false;
 bool bIsRun = false;
@@ -70,7 +70,7 @@ bool CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID l
 
 	if (bSsl)
 	{
-		OPenSsl_Server_AcceptEx(xhSsl, hSocket, lpszClientAddr);
+		Cryption_Server_AcceptEx(xhSsl, hSocket, lpszClientAddr);
 	}
 	printf("NetCore_CB_Login:%s\n", lpszClientAddr);
 	HttpProtocol_Server2_CreateClientEx(xhHttp, lpszClientAddr, 1);
@@ -84,7 +84,7 @@ void CALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR l
 
 	if (bSsl)
 	{
-		OPenSsl_Server_RecvMsgEx(xhSsl, lpszClientAddr, tszMsgBuffer, &nRVLen, lpszRecvMsg, nMsgLen);
+		Cryption_Server_RecvMsgEx(xhSsl, lpszClientAddr, tszMsgBuffer, &nRVLen, lpszRecvMsg, nMsgLen);
 		if (!HttpProtocol_Server2_InsertQueueEx(xhHttp, lpszClientAddr, tszMsgBuffer, nRVLen))
 		{
 			printf("HttpProtocol_Server2_InserQueueEx:%lX\n", HttpProtocol_GetLastError());
@@ -103,7 +103,7 @@ void CALLBACK NetCore_CB_Close(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID l
 	printf("NetCore_CB_Close:%s\n", lpszClientAddr);
 	if (bSsl)
 	{
-		OPenSsl_Server_CloseClientEx(xhSsl, lpszClientAddr);
+		Cryption_Server_CloseClientEx(xhSsl, lpszClientAddr);
 	}
 	HttpProtocol_Server2_CloseClientEx(xhHttp, lpszClientAddr);
 }
@@ -164,7 +164,7 @@ XHTHREAD NetCore_Thread()
 									HttpProtocol_Server2_PKTSettingEx(xhHttp, tszSDBuffer, &nSDLen, 100, 1024000, 1024000, 8196);
 									if (bSsl)
 									{
-										OPenSsl_Server_SendMsgEx(xhSsl, ppSt_ListClient[i]->tszClientAddr, tszSDBuffer, nSDLen, tszSSLBuffer, &nSSLLen);
+										Cryption_Server_SendMsgEx(xhSsl, ppSt_ListClient[i]->tszClientAddr, tszSDBuffer, nSDLen, tszSSLBuffer, &nSSLLen);
 										NetCore_TCPXCore_SendEx(xhToken, ppSt_ListClient[i]->tszClientAddr, tszSSLBuffer, nSSLLen);
 									}
 									else
@@ -178,7 +178,7 @@ XHTHREAD NetCore_Thread()
 								HttpProtocol_Server2_PKTHeaderEx(xhHttp, tszSDBuffer, &nSDLen, &st_HDRParam, 6);
 								if (bSsl)
 								{
-									OPenSsl_Server_SendMsgEx(xhSsl, ppSt_ListClient[i]->tszClientAddr, tszSDBuffer, nSDLen, tszSSLBuffer, &nSSLLen);
+									Cryption_Server_SendMsgEx(xhSsl, ppSt_ListClient[i]->tszClientAddr, tszSDBuffer, nSDLen, tszSSLBuffer, &nSSLLen);
 									NetCore_TCPXCore_SendEx(xhToken, ppSt_ListClient[i]->tszClientAddr, tszSSLBuffer, nSSLLen);
 								}
 								else
@@ -189,7 +189,7 @@ XHTHREAD NetCore_Thread()
 								HttpProtocol_Server2_PKTDataEx(xhHttp, tszSDBuffer, &nSDLen, st_HDRParam.nStreamID, "123456", 6);
 								if (bSsl)
 								{
-									OPenSsl_Server_SendMsgEx(xhSsl, ppSt_ListClient[i]->tszClientAddr, tszSDBuffer, nSDLen, tszSSLBuffer, &nSSLLen);
+									Cryption_Server_SendMsgEx(xhSsl, ppSt_ListClient[i]->tszClientAddr, tszSDBuffer, nSDLen, tszSSLBuffer, &nSSLLen);
 									NetCore_TCPXCore_SendEx(xhToken, ppSt_ListClient[i]->tszClientAddr, tszSSLBuffer, nSSLLen);
 								}
 								else
@@ -200,18 +200,18 @@ XHTHREAD NetCore_Thread()
 							if (nMsgLen > 0)
 							{
 								printf("%s\n", ptszMsgBuffer);
-								BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+								BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 							}
 							if (nHdrCount > 0)
 							{
-								BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListHdr, nHdrCount);
+								BaseLib_Memory_Free((XPPPMEM)&ppSt_ListHdr, nHdrCount);
 							}
 						}
 					}
-					BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_PKTStream, nStreamCount);
+					BaseLib_Memory_Free((XPPPMEM)&ppSt_PKTStream, nStreamCount);
 				}
 			}
-			BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListClient, nListCount);
+			BaseLib_Memory_Free((XPPPMEM)&ppSt_ListClient, nListCount);
 		}
 	}
 	printf("exit\n");
@@ -257,10 +257,10 @@ int main()
 	LPCXSTR lpszSrvFile = _X("test.xyry.org.crt");
 	LPCXSTR lpszKeyFile = _X("test.xyry.org.key");
 #endif
-	xhSsl = OPenSsl_Server_InitEx(lpszCAFile, lpszSrvFile, lpszKeyFile, false, false);
+	xhSsl = Cryption_Server_InitEx(lpszCAFile, lpszSrvFile, lpszKeyFile, false, false);
 	if (NULL == xhSsl)
 	{
-		printf("OPenSsl_Server_InitEx:%lX\n", OPenSsl_GetLastError());
+		printf("Cryption_Server_InitEx:%lX\n", Cryption_GetLastError());
 		return 0;
 	}
 	NetCore_Thread();
@@ -268,7 +268,7 @@ int main()
 	bIsRun = false;
 	NetCore_TCPXCore_DestroyEx(xhToken);
 	HttpProtocol_Server2_DestroyEx(xhHttp);
-	OPenSsl_Server_StopEx(xhSsl);
+	Cryption_Server_StopEx(xhSsl);
 
 #ifdef _MSC_BUILD
 	WSACleanup();

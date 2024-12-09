@@ -28,7 +28,7 @@ using namespace std;
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_ManagePool.lib")
 #endif
 #endif
-//linux macos:g++ -std=gnu++17 -Wall -g XCore_APPPool.cpp -o XCore_APPPool.exe -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_ManagePool
+//linux macos:g++ -std=c++20 -Wall -g XCore_APPPool.cpp -o XCore_APPPool.exe -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_ManagePool
 
 XHTHREAD CALLBACK ManagePool_ThreadPool(XPVOID lParam)
 {
@@ -52,7 +52,7 @@ void ThreadPool_Test()
 		*pInt = i;
 		ManagePool_Thread_DTPostTask(xhPool, ManagePool_ThreadPool, pInt);
 	}
-	std::this_thread::sleep_for(std::chrono::seconds(5));
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 	ManagePool_Thread_DTDestroy(xhPool);
 
 	ManagePool_Thread_CTCreate(2);
@@ -62,7 +62,7 @@ void ThreadPool_Test()
 		*pInt = i;
 		ManagePool_Thread_CTPostTask(ManagePool_ThreadPool, pInt);
 	}
-	std::this_thread::sleep_for(std::chrono::seconds(5));
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 	ManagePool_Thread_CTDestroy();
 }
 
@@ -80,16 +80,7 @@ void SocketPool_Test()
 		printf("ManagePool_Socket_GetIdleSocket!@\n");
 		return;
 	}
-	sockaddr_in st_SockProxy;
 
-	st_SockProxy.sin_addr.s_addr = inet_addr("192.168.1.4");
-	st_SockProxy.sin_port = htons(5002);
-	st_SockProxy.sin_family = AF_INET;
-
-	if (SOCKET_ERROR == connect(hSocket, (sockaddr*)&st_SockProxy, sizeof(st_SockProxy)))
-	{
-	}
-	send(hSocket, "hello", 5, 0);
 	if (!ManagePool_Socket_RetIdleSocket(xhPool, hSocket))
 	{
 		printf("ManagePool_Socket_GetIdleSocket!@\n");
@@ -154,10 +145,6 @@ int main()
 	MemoryPool_Test();
 	ThreadPool_Test();
 	SocketPool_Test();
-	while (1)
-	{
-		std::this_thread::sleep_for(std::chrono::seconds(1));
-	}
 #ifdef _MSC_BUILD
 	WSACleanup();
 #endif

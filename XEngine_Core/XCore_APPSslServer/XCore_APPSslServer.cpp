@@ -21,12 +21,15 @@ using namespace std;
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
 #include <XEngine_Include/XEngine_Core/NetCore_Define.h>
 #include <XEngine_Include/XEngine_Core/NetCore_Error.h>
-#include <XEngine_Include/XEngine_Core/OPenSsl_Define.h>
-#include <XEngine_Include/XEngine_Core/OPenSsl_Error.h>
+#include <XEngine_Include/XEngine_Core/Cryption_Define.h>
+#include <XEngine_Include/XEngine_Core/Cryption_Error.h>
+#include <XEngine_Include/XEngine_NetHelp/APIAddr_Define.h>
+#include <XEngine_Include/XEngine_NetHelp/APIAddr_Error.h>
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"XEngine_Core/XEngine_Core.lib")
-#pragma comment(lib,"XEngine_Core/XEngine_OPenSsl.lib")
+#pragma comment(lib,"XEngine_Core/XEngine_Cryption.lib")
+#pragma comment(lib,"XEngine_Core/NetHelp_APIAddr.lib")
 #endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
@@ -36,16 +39,19 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Core/NetCore_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_OPenSsl/OPenSsl_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_OPenSsl/OPenSsl_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Cryption/Cryption_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Cryption/Cryption_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_APIAddr/APIAddr_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_APIAddr/APIAddr_Error.h"
 #ifdef _MSC_BUILD
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_Core.lib")
-#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_OPenSsl.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_Cryption.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/NetHelp_APIAddr.lib")
 #endif
 #endif
 
-//Linux::g++ -std=gnu++17 -Wall -g XCore_APPSslServer.cpp -o XCore_APPSslServer.exe -lXEngine_BaseLib -lXEngine_Core -lXEngine_OPenSsl 
+//Linux::g++ -std=gnu++17 -Wall -g XCore_APPSslServer.cpp -o XCore_APPSslServer.exe -lXEngine_BaseLib -lXEngine_Core -lXEngine_Cryption -lNetHelp_APIAddr
 
 XHANDLE xhSSL = NULL;
 bool CALLBACK TCPSelect_CBLogin(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
@@ -59,8 +65,8 @@ bool CALLBACK TCPSelect_CBLogin(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID 
 	memset(tszIssus, '\0', sizeof(tszIssus));
 	memset(tszAlg, '\0', sizeof(tszAlg));
 
-	OPenSsl_Server_AcceptEx(xhSSL, hSocket, lpszClientAddr);
-	OPenSsl_Server_GetSSLInfoEx(xhSSL, lpszClientAddr, tszSubject, tszIssus, tszAlg);
+	Cryption_Server_AcceptEx(xhSSL, hSocket, lpszClientAddr);
+	Cryption_Server_GetSSLInfoEx(xhSSL, lpszClientAddr, tszSubject, tszIssus, tszAlg);
 	printf("TCPSelect_CBLogin:%s %s %s\n", tszSubject, tszIssus, tszAlg);
 	return true;
 }
@@ -69,13 +75,13 @@ void CALLBACK TCPSelect_CBRecv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR 
 	int nLen = 2048;
 	XCHAR tszMsgBuffer[2048];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-	if (OPenSsl_Server_RecvMsgEx(xhSSL, lpszClientAddr, tszMsgBuffer, &nLen, lpszRecvMsg, nMsgLen))
+	if (Cryption_Server_RecvMsgEx(xhSSL, lpszClientAddr, tszMsgBuffer, &nLen, lpszRecvMsg, nMsgLen))
 	{
 		printf("TCPSelect_CBRecv:%s\n", tszMsgBuffer);
 	}
 	int nSLen = 2048;
 	XCHAR tszSDBuffer[2048] = {};
-	OPenSsl_Server_SendMsgEx(xhSSL, lpszClientAddr, tszMsgBuffer, nLen, tszSDBuffer, &nSLen);
+	Cryption_Server_SendMsgEx(xhSSL, lpszClientAddr, tszMsgBuffer, nLen, tszSDBuffer, &nSLen);
 	NetCore_TCPSelect_Send(lpszClientAddr, tszSDBuffer, nSLen);
 }
 void CALLBACK TCPSelect_CBLeave(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
@@ -86,17 +92,17 @@ void CALLBACK TCPSelect_CBLeave(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID 
 int XCore_DTSLTest(LPCXSTR lpszCAFile, LPCXSTR lpszSrvFile, LPCXSTR lpszKeyFile)
 {
 	bool bSocket = false;
-	xhSSL = OPenSsl_Server_InitEx(lpszCAFile, lpszSrvFile, lpszKeyFile, false, bSocket, XENGINE_OPENSSL_PROTOCOL_DTL_SERVER);
+	xhSSL = Cryption_Server_InitEx(lpszCAFile, lpszSrvFile, lpszKeyFile, false, bSocket, XENGINE_CRYPTION_PROTOCOL_DTL);
 	if (NULL == xhSSL)
 	{
-		printf("OPenSsl_Server_Init %lX\n", OPenSsl_GetLastError());
+		printf("Cryption_Server_Init %lX\n", Cryption_GetLastError());
 		return -1;
 	}
-	OPenSsl_Server_ConfigEx(xhSSL);
+	Cryption_Server_ConfigEx(xhSSL);
 	XHANDLE xhUDP = NetCore_UDPSelect_Start(5604);
 	if (NULL == xhUDP)
 	{
-		printf("NetCore_UDPSelect_Start %lX\n", OPenSsl_GetLastError());
+		printf("NetCore_UDPSelect_Start %lX\n", Cryption_GetLastError());
 		return -1;
 	}
 	XCHAR tszSubject[2048];
@@ -115,7 +121,7 @@ int XCore_DTSLTest(LPCXSTR lpszCAFile, LPCXSTR lpszSrvFile, LPCXSTR lpszKeyFile)
 
 	if (bSocket)
 	{
-		OPenSsl_Server_AcceptEx(xhSSL, hSocket, NULL, tszIPPort);
+		Cryption_Server_AcceptEx(xhSSL, hSocket, NULL, tszIPPort);
 	}
 	else
 	{
@@ -128,15 +134,15 @@ int XCore_DTSLTest(LPCXSTR lpszCAFile, LPCXSTR lpszSrvFile, LPCXSTR lpszKeyFile)
 			NetCore_UDPSelect_Recv(xhUDP, tszIPPort, tszRVBuffer, &nRVLen);
 			printf("%d-%s\n", nRVLen, tszRVBuffer);
 
-			bool bRet = OPenSsl_Server_AcceptMemoryEx(xhSSL, hSocket, tszIPPort, tszSDBuffer, &nSDLen, tszRVBuffer, nRVLen);
+			bool bRet = Cryption_Server_AcceptMemoryEx(xhSSL, hSocket, tszIPPort, tszSDBuffer, &nSDLen, tszRVBuffer, nRVLen);
 			
 			int nPort = 0;
-			BaseLib_OperatorIPAddr_SegAddr(tszIPPort, &nPort);
+			APIAddr_IPAddr_SegAddr(tszIPPort, &nPort);
 			NetCore_UDPSelect_Send(xhUDP, tszSDBuffer, nSDLen, tszIPPort, nPort);
 
 			if (bRet)
 			{
-				OPenSsl_Server_GetKeyEx(xhSSL, tszIPPort, tszSDKey);
+				Cryption_Server_GetKeyEx(xhSSL, tszIPPort, tszSDKey);
 				break;
 			}
 		}
@@ -150,9 +156,9 @@ int XCore_DTSLTest(LPCXSTR lpszCAFile, LPCXSTR lpszSrvFile, LPCXSTR lpszKeyFile)
 
 		if (bSocket)
 		{
-			OPenSsl_Server_RecvMsgEx(xhSSL, tszIPPort, tszMSGBuffer, &nMSGLen);
+			Cryption_Server_RecvMsgEx(xhSSL, tszIPPort, tszMSGBuffer, &nMSGLen);
 			printf("%d-%s\n", nMSGLen, tszMSGBuffer);
-			OPenSsl_Server_SendMsgEx(xhSSL, tszIPPort, tszMSGBuffer, nMSGLen);
+			Cryption_Server_SendMsgEx(xhSSL, tszIPPort, tszMSGBuffer, nMSGLen);
 		}
 		else
 		{
@@ -162,13 +168,13 @@ int XCore_DTSLTest(LPCXSTR lpszCAFile, LPCXSTR lpszSrvFile, LPCXSTR lpszKeyFile)
 			int nSDLen = 0;
 			XCHAR* ptszRVBuffer = NULL;
 			XCHAR* ptszSDBuffer = NULL;
-			OPenSsl_Server_RecvMemoryEx(xhSSL, tszIPPort, &ptszRVBuffer, &nRVLen, tszMSGBuffer, nMSGLen);
+			Cryption_Server_RecvMemoryEx(xhSSL, tszIPPort, &ptszRVBuffer, &nRVLen, tszMSGBuffer, nMSGLen);
 
 			printf("%d-%s\n", nMSGLen, tszMSGBuffer);
-			OPenSsl_Server_SendMemoryEx(xhSSL, tszIPPort, ptszRVBuffer, nRVLen, &ptszSDBuffer, &nSDLen);
+			Cryption_Server_SendMemoryEx(xhSSL, tszIPPort, ptszRVBuffer, nRVLen, &ptszSDBuffer, &nSDLen);
 
 			int nPort = 0;
-			BaseLib_OperatorIPAddr_SegAddr(tszIPPort, &nPort);
+			APIAddr_IPAddr_SegAddr(tszIPPort, &nPort);
 			NetCore_UDPSelect_Send(xhUDP, ptszSDBuffer, nSDLen, tszIPPort, nPort);
 		}
 		std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -179,15 +185,15 @@ int XCore_DTSLTest(LPCXSTR lpszCAFile, LPCXSTR lpszSrvFile, LPCXSTR lpszKeyFile)
 }
 int XCore_TSLTest(LPCXSTR lpszCAFile, LPCXSTR lpszSrvFile, LPCXSTR lpszKeyFile)
 {
-	xhSSL = OPenSsl_Server_InitEx(lpszCAFile, lpszSrvFile, lpszKeyFile, false, true);
+	xhSSL = Cryption_Server_InitEx(lpszCAFile, lpszSrvFile, lpszKeyFile, false, true);
 	if (NULL == xhSSL)
 	{
-		printf("OPenSsl_Server_Init %lX\n", OPenSsl_GetLastError());
+		printf("Cryption_Server_Init %lX\n", Cryption_GetLastError());
 		return -1;
 	}
 	if (!NetCore_TCPSelect_Start(5604))
 	{
-		printf("NetCore_TCPIocp_StartEx %lX\n", OPenSsl_GetLastError());
+		printf("NetCore_TCPIocp_StartEx %lX\n", Cryption_GetLastError());
 		return -1;
 	}
 	NetCore_TCPSelect_RegisterCallBack(TCPSelect_CBLogin, TCPSelect_CBRecv, TCPSelect_CBLeave);
@@ -216,7 +222,6 @@ int main()
 #endif
 	XCore_DTSLTest(lpszCAFile, NULL, lpszKeyFile);
 	//XCore_TSLTest(lpszCAFile, NULL, lpszKeyFile);
-
 
 #ifdef _MSC_BUILD
 	WSACleanup();

@@ -269,7 +269,7 @@ int AVPacket_Test_UNPacket()
 	}
 	XHANDLE xhCodec = NULL;
 	AVFormat_UNPack_GetAVCodec(xhAVFile, 0, &xhCodec);
-	BaseLib_OperatorMemory_FreeCStyle(&xhCodec);
+	BaseLib_Memory_FreeCStyle(&xhCodec);
 
 	AVCODEC_FORMATINFO** ppSt_StreamFile;
 	//strcpy(ppSt_ListFile[1]->tszFileName, lpszAudioFile1);
@@ -296,7 +296,7 @@ int AVPacket_Test_UNPacket()
 		}
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
-	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListFile, nListCount);
+	BaseLib_Memory_Free((XPPPMEM)&ppSt_ListFile, nListCount);
 	return AVFormat_UNPack_Stop(xhAVFile);
 }
 int main()

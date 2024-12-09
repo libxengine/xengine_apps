@@ -70,7 +70,7 @@ int XSocket_TestSocket()
 	{
 		printf("name:%s ip:%s board:%s dns:%s mac:%s type:%d\n", ppSt_ListIFInfo[i]->tszIFName, ppSt_ListIFInfo[i]->tszIPAddr, ppSt_ListIFInfo[i]->tszBroadAddr, ppSt_ListIFInfo[i]->tszDnsAddr, ppSt_ListIFInfo[i]->tszMacAddr, ppSt_ListIFInfo[i]->enCardType);
 	}
-	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListIFInfo, nListCount);
+	BaseLib_Memory_Free((XPPPMEM)&ppSt_ListIFInfo, nListCount);
 
 	if (XSocket_Api_IsPortOccupation(5001, NETHELP_XSOCKET_API_NETSTATE_PROTOCOL_TCP))
 	{
@@ -100,8 +100,8 @@ int XSocket_TestSocket()
 	int nUDPCount = 0;
 	XSocket_Api_NetList(&ppSt_ListTCPProcess, &ppSt_ListUDPProcess, &nTCPCount, &nUDPCount);
 
-	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListTCPProcess, nTCPCount);
-	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListUDPProcess, nUDPCount);
+	BaseLib_Memory_Free((XPPPMEM)&ppSt_ListTCPProcess, nTCPCount);
+	BaseLib_Memory_Free((XPPPMEM)&ppSt_ListUDPProcess, nUDPCount);
 
 	nListCount = 0;
 	XCHAR** ppszListAddr;
@@ -110,7 +110,7 @@ int XSocket_TestSocket()
 	{
 		printf("XSocket_Api_DomainToAddr:%s\n", ppszListAddr[i]);
 	}
-	BaseLib_OperatorMemory_Free((XPPPMEM)&ppszListAddr, nListCount);
+	BaseLib_Memory_Free((XPPPMEM)&ppszListAddr, nListCount);
 	return 0;
 }
 

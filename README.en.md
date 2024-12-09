@@ -1,10 +1,10 @@
 # XEngine_Apps
 
-XEngine V8 Version example
+XEngine V9 Version example
 
 #### Engine Example
 The example code of the engine contains the following examples, and the corresponding component module examples can be found through the following directory structure as needed  
-please use vs2022 open it,and use x86 and debug mode.  
+please use vs2022 open it,and use x86 or x64 and debug mode.  
 
 1. XEngine_AVCodec                  audio and video   
 2. XEngine_Client                   client  
@@ -18,7 +18,6 @@ please use vs2022 open it,and use x86 and debug mode.
 
 #### use
 To use our code example. You may need to make some modifications. WINDOWS can be opened and compiled directly with VS, and LINUX or MacOS can be compiled with commands  
-Due to different environments, the directory structure of each user may be different. Therefore, the header file and the module directory are also different. Before you compile, you need to modify the loaded directory structure in our code according to your own directory structure to be correct Compile and use. Not only the loading directory of WINDOWS, but the compiling command of linux and MacOS also needs to modify the directory address as needed.
 
 ## WINDOWS
 To use it under WINDOWS, you need to install VS. You can directly to compile,provided that your engine directory is configured, and you need to modify the engine directory of the loaded header file to your own directory.

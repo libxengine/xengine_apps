@@ -37,7 +37,7 @@ void TestUDP_ParseREQProtocol(LPCXSTR lpszMsgBuffer, int nMsgLen)
 	int nListCount = 4;
 	XCHAR** pptszListStr;
 
-	BaseLib_OperatorMemory_Malloc((XPPPMEM)&pptszListStr, nListCount, MAX_PATH);
+	BaseLib_Memory_Malloc((XPPPMEM)&pptszListStr, nListCount, MAX_PATH);
 
 	strcpy((pptszListStr)[0], _X("CSeq: 5\r\n"));
 	strcpy((pptszListStr)[1], _X("User-Agent: LibVLC/3.0.20 (LIVE555 Streaming Media v2016.11.28)\r\n"));
@@ -50,7 +50,7 @@ void TestUDP_ParseREQProtocol(LPCXSTR lpszMsgBuffer, int nMsgLen)
 	LPCXSTR lpszVERStr = _X("RTSP/1.0");
 
 	RTSPProtocol_REQParse_Request(&st_RTSPRequest, lpszMethodStr, lpszURLStr, lpszVERStr, &pptszListStr, nListCount);
-	BaseLib_OperatorMemory_Free((XPPPMEM)&pptszListStr, nListCount);
+	BaseLib_Memory_Free((XPPPMEM)&pptszListStr, nListCount);
 	return;
 }
 void TestUDP_ParseREPProtocol(LPCXSTR lpszMsgBuffer, int nMsgLen)
@@ -62,7 +62,7 @@ void TestUDP_ParseREPProtocol(LPCXSTR lpszMsgBuffer, int nMsgLen)
 	{
 		printf("%s\n", st_RTSPResponse.ppSt_RTPInfo[i]->tszURLStr);
 	}
-	BaseLib_OperatorMemory_Free((XPPPMEM)&st_RTSPResponse.ppSt_RTPInfo, st_RTSPResponse.nRTPCount);
+	BaseLib_Memory_Free((XPPPMEM)&st_RTSPResponse.ppSt_RTPInfo, st_RTSPResponse.nRTPCount);
 	return;
 }
 void TestUDP_PacketREPProtocol(XCHAR* ptszMsgBuffer, int* pInt_MSGLen)
@@ -75,7 +75,7 @@ void TestUDP_PacketREPProtocol(XCHAR* ptszMsgBuffer, int* pInt_MSGLen)
 	st_RTSPResponse.nRTPCount = 2;
 	st_RTSPResponse.nTimeout = 65;
 
-	BaseLib_OperatorMemory_Malloc((XPPPMEM)&st_RTSPResponse.ppSt_RTPInfo, st_RTSPResponse.nRTPCount, sizeof(RTSPPROTOCOL_RTPINFO));
+	BaseLib_Memory_Malloc((XPPPMEM)&st_RTSPResponse.ppSt_RTPInfo, st_RTSPResponse.nRTPCount, sizeof(RTSPPROTOCOL_RTPINFO));
 
 	st_RTSPResponse.ppSt_RTPInfo[0]->nCSeq = 35011;
 	st_RTSPResponse.ppSt_RTPInfo[0]->nNTPTime = 12312312345;
@@ -109,7 +109,7 @@ void TestUDP_PacketREPProtocol(XCHAR* ptszMsgBuffer, int* pInt_MSGLen)
 	strcpy(st_RTSPResponse.tszSession, "fM9tTFsntU2y");
 
 	RTSPProtocol_REPPacket_Response(ptszMsgBuffer, pInt_MSGLen, &st_RTSPResponse);
-	BaseLib_OperatorMemory_Free((XPPPMEM)&st_RTSPResponse.ppSt_RTPInfo, st_RTSPResponse.nRTPCount);
+	BaseLib_Memory_Free((XPPPMEM)&st_RTSPResponse.ppSt_RTPInfo, st_RTSPResponse.nRTPCount);
 	printf("%s\n", ptszMsgBuffer);
 }
 void TestUDP_PacketREQProtocol(XCHAR* ptszMsgBuffer, int* pInt_MSGLen)

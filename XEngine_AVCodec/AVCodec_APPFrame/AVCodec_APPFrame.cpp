@@ -110,9 +110,9 @@ int Test_Frame()
 		for (int i = 0; i < nListCount; i++)
 		{
 			printf("Frame:%d\n", ppSt_Frame[i]->nMsgLen);
-			BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->ptszMsgBuffer);
+			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->ptszMsgBuffer);
 		}
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_Frame, nListCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
 	}
 	AVFrame_Frame_ParseClose(xhParse);
 	return 0;

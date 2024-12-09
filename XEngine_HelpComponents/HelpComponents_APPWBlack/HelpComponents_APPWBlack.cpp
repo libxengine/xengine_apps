@@ -12,12 +12,13 @@
 #include <locale.h>
 #include <thread>
 using namespace std;
-
 #if 1 == _XENGINE_USER_DIR_SYSTEM
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
+#include <XEngine_Include/XEngine_NetHelp/APIAddr_Define.h>
+#include <XEngine_Include/XEngine_NetHelp/APIAddr_Error.h>
 #include <XEngine_Include/XEngine_HelpComponents/WBlackList_Define.h>
 #include <XEngine_Include/XEngine_HelpComponents/WBlackList_Error.h>
 #ifdef _MSC_BUILD
@@ -29,6 +30,8 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_APIAddr/APIAddr_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_APIAddr/APIAddr_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_WBlackList/WBlackList_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_WBlackList/WBlackList_Error.h"
 #ifdef _MSC_BUILD

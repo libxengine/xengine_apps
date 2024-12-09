@@ -114,7 +114,7 @@ int M3U8File_Parse()
 	{
 		printf("%d:%s\n", ppSt_ListFile[i]->nBandwidth, ppSt_ListFile[i]->tszStreamAddr);
 	}
-	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListFile, nListCount);
+	BaseLib_Memory_Free((XPPPMEM)&ppSt_ListFile, nListCount);
 
 	HLSPROTOCOL_M3U8INFO st_M3u8Info = {};
 	LPCXSTR lpszFileInfo = _X("D:\\xengine_apps\\Debug\\live\\normal\\live.m3u8");
@@ -272,9 +272,9 @@ bool TSFile_Packet()
 			{
 				fwrite(ptszMsgBuffer[j], 1, 188, pSt_WFile);
 			}
-			BaseLib_OperatorMemory_Free((XPPPMEM)&ptszMsgBuffer, nMSGCount);
+			BaseLib_Memory_Free((XPPPMEM)&ptszMsgBuffer, nMSGCount);
 		}
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_Frame, nListCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
 	}
 
 	fclose(pSt_WFile);

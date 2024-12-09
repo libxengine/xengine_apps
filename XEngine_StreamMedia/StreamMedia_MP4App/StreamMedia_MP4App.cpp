@@ -16,6 +16,8 @@ using namespace std;
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
 #include <XEngine_Include/XEngine_Core/ManagePool_Define.h>
+#include <XEngine_Include/XEngine_NetHelp/APIHelp_Define.h>
+#include <XEngine_Include/XEngine_NetHelp/APIHelp_Error.h>
 #include <XEngine_Include/XEngine_AVCodec/VideoCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVHelp_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVHelp_Error.h>
@@ -25,6 +27,7 @@ using namespace std;
 #include <XEngine_Include/XEngine_StreamMedia/MP4Protocol_Error.h>
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
+#pragma comment(lib,"XEngine_NetHelp/NetHelp_APIHelp.lib")
 #pragma comment(lib,"XEngine_AVCodec/XEngine_AVHelp.lib")
 #pragma comment(lib,"XEngine_StreamMedia/StreamMedia_MP4Protocol.lib")
 #pragma comment(lib,"XEngine_AVCodec/XEngine_AVFrame.lib")
@@ -36,6 +39,8 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_ManagePool/ManagePool_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_APIHelp/APIHelp_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_APIHelp/APIHelp_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
@@ -45,13 +50,14 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_MP4Protocol/MP4Protocol_Error.h"
 #ifdef _MSC_BUILD
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/NetHelp_APIHelp.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVFrame.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/StreamMedia_MP4Protocol.lib")
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g StreamMedia_MP4App.cpp -o StreamMedia_MP4App.exe -lXEngine_BaseLib -lStreamMedia_MP4Protocol -XEngine_AVHelp
+//Linux::g++ -std=c++17 -Wall -g StreamMedia_MP4App.cpp -o StreamMedia_MP4App.exe -lXEngine_BaseLib -lNetHelp_APIHelp -lStreamMedia_MP4Protocol -XEngine_AVHelp
 
 int MP4_Parse()
 {
@@ -325,7 +331,7 @@ int MP4_Packet()
 			fwrite(ptszSDBuffer, 1, nSDLen, pSt_WFile);
 			nFilePos += nSDLen;
 		}
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_Frame, nListCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
 	}
 	MP4Protocol_Packet_HDRBox(lpszClientID, ptszSDBuffer, &nSDLen, "mdat", NULL, nFilePos - nMDatPos - 8);
 

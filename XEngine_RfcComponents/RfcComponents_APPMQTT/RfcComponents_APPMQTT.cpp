@@ -75,7 +75,7 @@ void CALLBACK NetCore_CB_Close(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID l
 
 void Packet_Property(MQTTPROTOCOL_HDRPROPERTY*** pppSt_HDRProperty, int nListCount)
 {
-	BaseLib_OperatorMemory_Malloc((XPPPMEM)pppSt_HDRProperty, nListCount, sizeof(MQTTPROTOCOL_HDRPROPERTY));
+	BaseLib_Memory_Malloc((XPPPMEM)pppSt_HDRProperty, nListCount, sizeof(MQTTPROTOCOL_HDRPROPERTY));
 
 	(*pppSt_HDRProperty)[0]->nProLen = 4;
 	(*pppSt_HDRProperty)[0]->st_unValue.nValue = 1024000;
@@ -124,7 +124,7 @@ bool RfcComponents_APPMQTT_Process(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer
 			MQTTPROTOCOL_USERINFO st_USerInfo = {};
 
 			MQTTProtocol_Parse_Connect(ptszMSGBuffer, nMsgLen, &st_HDRConnect, &st_USerInfo, &ppSt_HDRProperty, &nListCount);
-			BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_HDRProperty, nListCount);
+			BaseLib_Memory_Free((XPPPMEM)&ppSt_HDRProperty, nListCount);
 
 			nListCount = 0;
 			Packet_Property(&ppSt_HDRProperty, nListCount);

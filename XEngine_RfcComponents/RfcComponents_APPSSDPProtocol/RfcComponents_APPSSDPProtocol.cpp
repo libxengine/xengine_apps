@@ -100,7 +100,7 @@ int main()
 				XCHAR* ptszMsgBuffer = NULL;
 				APIClient_Http_Request("GET", tszValueStr, NULL, NULL, &ptszMsgBuffer, &nBLen);
 				printf("%s\n", ptszMsgBuffer);
-				BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+				BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 				continue;
 			}
 		}

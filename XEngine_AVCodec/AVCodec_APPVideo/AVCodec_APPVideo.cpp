@@ -84,13 +84,13 @@ int Test_H265Hevc()
 			{
 				for (int j = 0; j < nVideoCount; j++)
 				{
-					BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_MSGBuffer[j]->ptszAVBuffer);
+					BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_MSGBuffer[j]->ptszAVBuffer);
 				}
 			}
-			BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->ptszMsgBuffer);
-			BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_MSGBuffer, nVideoCount);
+			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->ptszMsgBuffer);
+			BaseLib_Memory_Free((XPPPMEM)&ppSt_MSGBuffer, nVideoCount);
 		}
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_Frame, nListCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
 	}
 	VideoCodec_Stream_Destroy(xhDeVideo);
 	AVFrame_Frame_ParseClose(xhParse);
@@ -155,15 +155,15 @@ int Test_Codech264()
 				for (int k = 0; k < nEncoedcCount; k++)
 				{
 					fwrite(ppSt_EncoedcBuffer[k]->ptszAVBuffer, 1, ppSt_EncoedcBuffer[k]->nAVLen, pSt_264File);
-					BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_EncoedcBuffer[j]->ptszAVBuffer);
+					BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_EncoedcBuffer[j]->ptszAVBuffer);
 				}
-				BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_MSGBuffer[j]->ptszAVBuffer);
-				BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_EncoedcBuffer, nEncoedcCount);
+				BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_MSGBuffer[j]->ptszAVBuffer);
+				BaseLib_Memory_Free((XPPPMEM)&ppSt_EncoedcBuffer, nEncoedcCount);
 			}
-			BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_MSGBuffer, nDecodecCount);
-			BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->ptszMsgBuffer);
+			BaseLib_Memory_Free((XPPPMEM)&ppSt_MSGBuffer, nDecodecCount);
+			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->ptszMsgBuffer);
 		}
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_Frame, nListCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
 	}
 	fclose(pSt_File);
 	fclose(pSt_264File);
@@ -223,9 +223,9 @@ int Test_CodechAVS()
 			{
 				fwrite(ppSt_MSGBuffer[i]->ptszAVBuffer, 1, ppSt_MSGBuffer[i]->nAVLen, pSt_YUVFile);
 			}
-			BaseLib_OperatorMemory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->ptszMsgBuffer);
+			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->ptszMsgBuffer);
 		}
-		BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_Frame, nListCount);
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
 	}
 	VideoCodec_Stream_Destroy(xhDeVideo);
 	AVFrame_Frame_ParseClose(xhParse);

@@ -26,7 +26,7 @@
 #endif
 #endif
 
-//Linux MacOS:g++ -std=c++17 -Wall -g Lib_APPSafe.cpp -o Lib_APPSafe.exe -lXEngine_BaseSafe
+//Linux MacOS:g++ -std=c++20 -Wall -g Lib_APPSafe.cpp -o Lib_APPSafe.exe -lXEngine_BaseSafe
 
 int main()
 {

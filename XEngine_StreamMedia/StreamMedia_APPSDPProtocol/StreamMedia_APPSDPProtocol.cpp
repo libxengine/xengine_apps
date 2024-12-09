@@ -43,7 +43,7 @@ void CreateSDP(XCHAR* ptszMsgBuffer, int* pInt_Len)
 	SDPProtocol_Packet_Bundle(xhToken);
 	//配置视频属性
 	XCHAR** pptszAVList;
-	BaseLib_OperatorMemory_Malloc((XPPPMEM)&pptszAVList, 5, 64);
+	BaseLib_Memory_Malloc((XPPPMEM)&pptszAVList, 5, 64);
 	strcpy(pptszAVList[0], "96");
 	strcpy(pptszAVList[1], "97");
 	strcpy(pptszAVList[2], "98");
@@ -182,10 +182,10 @@ void ParseSDP(LPCXSTR lpszMsgBuffer, int nLen)
 	STREAMMEDIA_SDPPROTOCOL_CNAME** ppSt_CNameList;
 	SDPProtocol_Parse_AttrCName(&ppSt_ListAttr, nACount, &ppSt_CNameList, &nSsrcCount);
 
-	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_AVMedia[0]->pptszAVList, ppSt_AVMedia[0]->nListCount);
-	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_ListAttr, nACount);
-	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_AVMedia, nListCount);
-	BaseLib_OperatorMemory_Free((XPPPMEM)&ppSt_CNameList, nSsrcCount);
+	BaseLib_Memory_Free((XPPPMEM)&ppSt_AVMedia[0]->pptszAVList, ppSt_AVMedia[0]->nListCount);
+	BaseLib_Memory_Free((XPPPMEM)&ppSt_ListAttr, nACount);
+	BaseLib_Memory_Free((XPPPMEM)&ppSt_AVMedia, nListCount);
+	BaseLib_Memory_Free((XPPPMEM)&ppSt_CNameList, nSsrcCount);
 
 	XCHAR tszMediaName[64];
 	memset(tszMediaName, '\0', sizeof(tszMediaName));

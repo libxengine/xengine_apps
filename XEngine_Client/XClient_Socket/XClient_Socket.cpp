@@ -29,7 +29,7 @@
 #endif
 #endif
 
-//linux and macos:g++ -std=gnu++17 -Wall -g XClient_Socket.cpp -o XClient_Socket.exe -lXEngine_BaseLib -lXClient_Socket -Wl,-rpath,/usr/local/lib
+//linux and macos:g++ -std=c++20 -Wall -g XClient_Socket.cpp -o XClient_Socket.exe -lXEngine_BaseLib -lXClient_Socket -Wl,-rpath,/usr/local/lib
 
 int XClient_ProxyClient()
 {

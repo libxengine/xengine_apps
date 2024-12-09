@@ -162,7 +162,7 @@ int main()
 	{
 		printf("%s\n", pptszListParam[i]);
 	}
-	BaseLib_OperatorMemory_Free((XPPPMEM)&pptszListParam, nListCount);
+	BaseLib_Memory_Free((XPPPMEM)&pptszListParam, nListCount);
 
 	for (int i = 0; i < 10; i++)
 	{
