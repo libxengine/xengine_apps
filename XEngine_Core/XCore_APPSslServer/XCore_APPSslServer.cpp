@@ -12,7 +12,6 @@
 #include <locale.h>
 #include <thread>
 using namespace std;
-
 #if 1 == _XENGINE_USER_DIR_SYSTEM
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_Types.h>
@@ -29,7 +28,7 @@ using namespace std;
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"XEngine_Core/XEngine_Core.lib")
 #pragma comment(lib,"XEngine_Core/XEngine_Cryption.lib")
-#pragma comment(lib,"XEngine_Core/NetHelp_APIAddr.lib")
+#pragma comment(lib,"XEngine_NetHelp/NetHelp_APIAddr.lib")
 #endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"

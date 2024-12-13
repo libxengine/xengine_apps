@@ -33,7 +33,7 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFilter/AVFilter_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFilter/AVFilter_Error.h"
 #ifdef _MSC_BUILD
-#ifdef _MSC_BUILD
+#ifdef _WIN64
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_AVFilter.lib")
 #else

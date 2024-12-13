@@ -22,7 +22,7 @@
 #include <XEngine_Include/XEngine_Core/Cryption_Error.h>
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_Client/XClient_Socket.lib")
-#pragma comment(lib,"XEngine_Client/XEngine_Cryption.lib")
+#pragma comment(lib,"XEngine_Core/XEngine_Cryption.lib")
 #endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
