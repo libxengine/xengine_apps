@@ -31,7 +31,7 @@
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_SnmpProtocol.lib")
 #endif
 #endif
-//Linux::g++ -std=c++17 -Wall -g RfcComponents_APPSnmp.cpp -o RfcComponents_APPSnmp.exe -lXEngine_BaseLib -lXClient_Socket -lRfcComponents_SnmpProtocol 
+//Linux::g++ -std=c++20 -Wall -g RfcComponents_APPSnmp.cpp -o RfcComponents_APPSnmp.exe -lXEngine_BaseLib -lXClient_Socket -lRfcComponents_SnmpProtocol 
 
 int main()
 {
@@ -43,14 +43,14 @@ int main()
 	int nMsgLen = 0;
 	int nPort = 161;
 	XCHAR tszMsgBuffer[1024];
-	LPCXSTR lpszSnmpAddr = "192.168.252.128";
+	LPCXSTR lpszSnmpAddr = "118.25.14.242";
 	LPCXSTR lpszOIDStr = "1.3.6.1.2.1.1.1";
 	RFCSNMP_PROTOCOL st_SNMPProtocol;
 
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 	memset(&st_SNMPProtocol, '\0', sizeof(RFCSNMP_PROTOCOL));
 
-	st_SNMPProtocol.byVersion = XENGINE_RFCCOMPONENTS_SNMP_PROTOCOL_V3;
+	st_SNMPProtocol.byVersion = XENGINE_RFCCOMPONENTS_SNMP_PROTOCOL_V2;
 	st_SNMPProtocol.byOPCode = XENGINE_SNMP_PROTOCOL_BER_TYPE_GETNEXT;
 	strcpy(st_SNMPProtocol.tszCommname, "public");
 

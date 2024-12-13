@@ -29,7 +29,7 @@
 #endif
 #endif
 
-//linux and macos:g++ -std=c++20 -Wall -g XClient_Socket.cpp -o XClient_Socket.exe -lXEngine_BaseLib -lXClient_Socket -Wl,-rpath,/usr/local/lib
+//linux and macos:g++ -std=c++20 -Wall -g XClient_Socket.cpp -o XClient_Socket.exe -lXEngine_BaseLib -lXClient_Socket
 
 int XClient_ProxyClient()
 {
@@ -38,7 +38,7 @@ int XClient_ProxyClient()
 		"Content-Length: 0\r\n"
 		"Host: 42.194.178.57\r\n"
 		"Proxy-Authorization: Basic MTIzMTIzYWE6MTIzMTIz\r\n"
-		"User-Agent: XClient V7 - HTTP C Client Module.Windows 10 2004\r\n\r\n");
+		"User-Agent: XClient V9 - HTTP C Client Module.Windows 11 24H2\r\n\r\n");
 	int nMsgLen = strlen(lpszRequestMsg);
 	XCHAR tszMsgBuffer[10240];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));

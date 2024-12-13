@@ -38,7 +38,7 @@
 #endif
 #endif
 
-//Linux Macos:g++ -std=c++17 -Wall -g AVCodec_APPHelp.cpp -o AVCodec_APPHelp.exe -lXEngine_BaseLib -lXEngine_AVHelp
+//Linux Macos:g++ -std=c++20 -Wall -g AVCodec_APPHelp.cpp -o AVCodec_APPHelp.exe -lXEngine_BaseLib -lXEngine_AVHelp
 
 void Test_MetaInfo()
 {
@@ -47,9 +47,9 @@ void Test_MetaInfo()
 	XENGINE_KEYVALUE** ppSt_MetaList;
 
 #ifdef _MSC_BUILD
-	LPCXSTR lpszFile = _X("D:\\h264 file\\outputfile.mp4");
+	LPCXSTR lpszFile = _X("D:\\h264 file\\output.mp4");
 #else
-	LPCXSTR lpszFile = _X("480p.flv");
+	LPCXSTR lpszFile = _X("output.mp4");
 #endif
 
 	memset(&st_AVMetaData, '\0', sizeof(AVHELP_METADATA));
@@ -87,7 +87,7 @@ void Test_MetaInfo()
 void Test_PPS264Info()
 {
 #ifdef _MSC_BUILD
-	LPCXSTR lpszSrcFile = "D:\\h264 file\\720x480.264";
+	LPCXSTR lpszSrcFile = "D:\\h264 file\\480p.264";
 #else
 	LPCXSTR lpszSrcFile = "480p.264";
 #endif
@@ -240,9 +240,9 @@ int main()
 {
 	Test_MetaInfo();
 	Test_PPS264Info();
-	//Test_PPS265Info();
-	//Test_AudioInfo();
-	//Test_AVList();
+	Test_PPS265Info();
+	Test_AudioInfo();
+	Test_AVList();
 
 	return 0;
 }

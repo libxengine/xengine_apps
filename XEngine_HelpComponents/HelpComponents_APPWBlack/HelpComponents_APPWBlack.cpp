@@ -39,7 +39,7 @@ using namespace std;
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/HelpComponents_WBlackList.lib")
 #endif
 #endif
-//Linux::g++ -std=gnu++17 -Wall -g HelpComponents_APPWBlack.cpp -o HelpComponents_APPWBlack.exe -lXEngine_BaseLib -lHelpComponents_WBlackList
+//Linux::g++ -std=c++20 -Wall -g HelpComponents_APPWBlack.cpp -o HelpComponents_APPWBlack.exe -lXEngine_BaseLib -lHelpComponents_WBlackList
 
 int Test_IPV4BlackList()
 {

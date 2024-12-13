@@ -25,7 +25,7 @@
 #endif
 #endif
 
-//Linux::g++ -std=gnu++17 -Wall -g HelpComponents_APPLog.cpp -o HelpComponents_APPLog.exe -lXEngine_BaseLib -lXEngine_SystemApi -lHelpComponents_XLog 
+//Linux::g++ -std=c++20 -Wall -g HelpComponents_APPLog.cpp -o HelpComponents_APPLog.exe -lXEngine_BaseLib -lXEngine_SystemApi -lHelpComponents_XLog 
 
 int main()
 {

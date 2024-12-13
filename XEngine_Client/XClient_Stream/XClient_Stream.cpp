@@ -51,7 +51,7 @@ using namespace std;
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g XClient_Stream.cpp -o XClient_Stream.exe -lXEngine_BaseLib -lXClient_Stream -lXEngine_AVHelp
+//Linux::g++ -std=c++20 -Wall -g XClient_Stream.cpp -o XClient_Stream.exe -lXEngine_BaseLib -lXClient_Stream -lXEngine_AVHelp -lXEngine_AVFrame
 
 FILE* pSt_VFile;
 FILE* pSt_AFile;

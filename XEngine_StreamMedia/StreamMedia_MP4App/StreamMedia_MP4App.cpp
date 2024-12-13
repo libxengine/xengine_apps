@@ -57,13 +57,16 @@ using namespace std;
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g StreamMedia_MP4App.cpp -o StreamMedia_MP4App.exe -lXEngine_BaseLib -lNetHelp_APIHelp -lStreamMedia_MP4Protocol -XEngine_AVHelp
+//Linux::g++ -std=c++20 -Wall -g StreamMedia_MP4App.cpp -o StreamMedia_MP4App.exe -lXEngine_BaseLib -lNetHelp_APIHelp -lStreamMedia_MP4Protocol -lXEngine_AVHelp -lXEngine_AVFrame
 
 int MP4_Parse()
 {
 	LPCXSTR lpszClientID = _X("127777");
-	FILE* pSt_File = _xtfopen(_X("D:\\h264 file\\720x480.mp4"), _X("rb"));
-	//FILE* pSt_File = _xtfopen(_X("D:\\h264 file\\outputfile.mp4"), _X("rb"));
+#ifdef _MSC_BUILD
+	FILE* pSt_File = _xtfopen(_X("D:\\h264 file\\480p.mp4"), _X("rb"));
+#else
+	FILE* pSt_File = _xtfopen(_X("480p.mp4"), _X("rb"));
+#endif
 	if (NULL == pSt_File)
 	{
 		return -1;
@@ -90,7 +93,6 @@ int MP4_Parse()
 		}
 		MP4Protocol_Parse_Send(lpszClientID, tszMSGBuffer, nRet);
 
-		bool bDPos = false;
 		bool bBreak = false;
 		__int64u nFPos = 0;
 		XENGINE_MP4HDR st_MP4Hdr = {};
@@ -194,7 +196,11 @@ void MP4_PacketMoov(LPCXSTR lpszClientID, FILE* pSt_File, int nPos)
 	nPos += nSize;
 	//读取H264的SPS,PPS
 	XENGINE_PROTOCOL_AVINFO st_AVInfo = {};
-	FILE* pSt_HFile = _xtfopen("D:\\h264 file\\720x480.264", "rb");
+#ifdef _MSC_BUILD
+	FILE* pSt_HFile = _xtfopen("D:\\h264 file\\480p.264", "rb");
+#else
+	FILE* pSt_HFile = _xtfopen("480p.264", "rb");
+#endif
 	st_AVInfo.st_VideoInfo.nVLen = fread(st_AVInfo.st_VideoInfo.tszVInfo, 1, 39, pSt_HFile);
 	fclose(pSt_HFile);
 
@@ -270,12 +276,17 @@ int MP4_Packet()
 	XNETHANDLE xhToken = 0;
 	LPCXSTR lpszClientID = _X("127777");
 
-	FILE* pSt_RFile = _xtfopen(_X("D:\\h264 file\\720x480.264"), _X("rb"));
+#ifdef _MSC_BUILD
+	FILE* pSt_RFile = _xtfopen(_X("D:\\h264 file\\480p.264"), _X("rb"));
+	FILE* pSt_WFile = _xtfopen(_X("D:\\h264 file\\480p.mp4"), _X("wb"));
+#else
+	FILE* pSt_RFile = _xtfopen(_X("480p.264"), _X("rb"));
+	FILE* pSt_WFile = _xtfopen(_X("480p.mp4"), _X("wb"));
+#endif
 	if (NULL == pSt_RFile)
 	{
 		return -1;
 	}
-	FILE* pSt_WFile = _xtfopen(_X("D:\\h264 file\\720x480.mp4"), _X("wb"));
 	if (NULL == pSt_WFile)
 	{
 		return -1;
@@ -350,7 +361,7 @@ int MP4_Packet()
 int main()
 {
 	MP4_Packet();
-	//MP4_Parse();
+	MP4_Parse();
 
 	return 0;
 }

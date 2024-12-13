@@ -62,9 +62,9 @@ using namespace std;
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g StreamMedia_APPRtmp.cpp -o StreamMedia_APPRtmp.exe -lXEngine_BaseLib -lXEngine_Core -lXClient_Socket -lNetHelp_APIHelp -lStreamMedia_RTMPProtocol -lXEngine_AVHelp
+//Linux::g++ -std=c++20 -Wall -g StreamMedia_APPRtmp.cpp -o StreamMedia_APPRtmp.exe -lXEngine_BaseLib -lXEngine_Core -lXClient_Socket -lNetHelp_APIHelp -lStreamMedia_RTMPProtocol -lXEngine_AVHelp
 
-bool bServer = false;
+bool bServer = true;
 XSOCKET hClient = 0;
 XHANDLE xhXCore = NULL;
 bool bConnect = false;
@@ -81,8 +81,10 @@ bool CALLBACK XEngine_TCPXCore_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XP
 }
 void CALLBACK XEngine_TCPXCore_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
-	//printf("XEngine_TCPXCore_Recv:%s = %d\n", lpszClientAddr, nMsgLen);
-	RTMPProtocol_Parse_Send(lpszClientAddr, lpszRecvMsg, nMsgLen);
+	if (!RTMPProtocol_Parse_Send(lpszClientAddr, lpszRecvMsg, nMsgLen))
+	{
+		printf("XEngine_TCPXCore_Recv:%s = %d\n", lpszClientAddr, nMsgLen);
+	}
 }
 void CALLBACK XEngine_TCPXCore_Leave(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
@@ -141,6 +143,7 @@ void RTMPProtocol_Thread_Process()
 							RTMPProtocol_Help_PKTConnect(tszSDBuffer, &nSDLen, &st_RTMPClient, byVersion, &st_RTMPServer);
 
 							NetCore_TCPXCore_SendEx(xhXCore, tszClientAddr, tszSDBuffer, nSDLen);
+							printf("XENGINE_STREAMMEDIA_RTMP_MSGTYPE_CONNREQ:%s\n", ppSt_ListAddr[i]->tszClientAddr);
 						}
 						else if (XENGINE_STREAMMEDIA_RTMP_MSGTYPE_CONNACK == st_RTMPHdr.byTypeID)
 						{
@@ -157,6 +160,7 @@ void RTMPProtocol_Thread_Process()
 								bConnect = true;
 								XClient_TCPSelect_SendMsg(hClient, (LPCXSTR)&st_RTMPServer, sizeof(XENGINE_RTMPCONNECT));
 							}
+							printf("XENGINE_STREAMMEDIA_RTMP_MSGTYPE_CONNACK:%s\n", ppSt_ListAddr[i]->tszClientAddr);
 						}
 						else if (XENGINE_STREAMMEDIA_RTMP_MSGTYPE_CONTROL == st_RTMPHdr.byTypeID)
 						{
@@ -164,6 +168,7 @@ void RTMPProtocol_Thread_Process()
 							memset(&st_RTMPControl, '\0', sizeof(XENGINE_RTMPPROTOCOLCONTROL));
 
 							RTMPProtocol_Help_ParseProtocolControl(&st_RTMPControl, st_RTMPHdr.byTypeID, ptszMsgBuffer, nMsgLen);
+							printf("XENGINE_STREAMMEDIA_RTMP_MSGTYPE_CONTROL:%s\n", ppSt_ListAddr[i]->tszClientAddr);
 						}
 						else if (XENGINE_STREAMMEDIA_RTMP_MSGTYPE_DATA == st_RTMPHdr.byTypeID)
 						{
@@ -199,14 +204,18 @@ void RTMPProtocol_Thread_Process()
 							memcpy(&st_RTMPVideo, ptszMsgBuffer, sizeof(XENGINE_RTMPVIDEO));
 							RTMPProtocol_Help_ParseVideo(&st_RTMPVideo, ptszFBuffer, &nFLen, ptszMsgBuffer + sizeof(XENGINE_RTMPVIDEO), nMsgLen - sizeof(XENGINE_RTMPVIDEO), &st_RTMPVParam);
 							
-							if (st_RTMPVideo.byAVCType == 1)
+							if (NULL != pSt_File)
 							{
-								fwrite(ptszFBuffer, 1, nFLen, pSt_File);
+								if (st_RTMPVideo.byAVCType == 1)
+								{
+									fwrite(ptszFBuffer, 1, nFLen, pSt_File);
+								}
+								else
+								{
+									fwrite(ptszFBuffer, 1, nFLen, pSt_File);
+								}
 							}
-							else
-							{
-								fwrite(ptszFBuffer, 1, nFLen, pSt_File);
-							}
+							
 							free(ptszFBuffer);
 							printf("ENUM_XENGINE_STREAMMEDIA_RTMP_PARSE_PKTTYPE_VIDEO:%d = %d %d %d\n", nMsgLen, st_RTMPVideo.byCodecID, st_RTMPVideo.byFrameType, st_RTMPVideo.byAVCType);
 						}

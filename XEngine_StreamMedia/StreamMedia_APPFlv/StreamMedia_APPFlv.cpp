@@ -49,14 +49,14 @@ using namespace std;
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g StreamMedia_APPFlv.cpp -o StreamMedia_APPFlv.exe -lXEngine_BaseLib -lStreamMedia_FLVProtocol -lXEngine_AVHelp
+//Linux::g++ -std=c++20 -Wall -g StreamMedia_APPFlv.cpp -o StreamMedia_APPFlv.exe -lXEngine_BaseLib -lStreamMedia_FLVProtocol -lXEngine_AVFrame
 
 bool FLV_Parse()
 {
 #ifdef _MSC_BUILD
-	LPCXSTR lpszFile = _X("D:\\XEngine_StreamMedia\\XEngine_APPClient\\Debug\\1.flv");
+	LPCXSTR lpszFile = _X("D:\\h264 file\\480.flv");
 #else
-	LPCXSTR lpszFile = _X("480p.flv");
+	LPCXSTR lpszFile = _X("480.flv");
 #endif
 
 	FILE* pSt_File = fopen(lpszFile, _X("rb"));
@@ -129,13 +129,13 @@ bool FLV_PacketVideo()
 	LPCXSTR lpszVFile = _X("D:\\h264 file\\480p.264");
 	LPCXSTR lpszFLVFile = _X("D:\\h264 file\\480.flv");
 #else
-	LPCXSTR lpszVFile = _X("480p.flv");
+	LPCXSTR lpszVFile = _X("480p.264");
 	LPCXSTR lpszFLVFile = _X("480.flv");
 #endif
 	XNETHANDLE xhVideo = 0;
 	LPCXSTR lpszClientID = _X("client");
 
-	FLVProtocol_Packet_Insert(lpszClientID, false, true);
+	FLVProtocol_Packet_Insert(lpszClientID, true, false);
 	AVFrame_Frame_ParseInit(&xhVideo, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
 
 	FILE* pSt_FLVFile = fopen(lpszFLVFile, _X("wb"));
@@ -162,15 +162,17 @@ bool FLV_PacketVideo()
 	XENGINE_PROTOCOL_AVINFO st_AVInfo;
 	memset(&st_AVInfo, '\0', sizeof(XENGINE_PROTOCOL_AVINFO));
 
-	st_AVInfo.nSize = 821591;
-	st_AVInfo.dlTime = 99.84600;
-	strcpy(st_AVInfo.tszPktName, "Lavf59.27.100");
+	st_AVInfo.nSize = 12530276;
+	st_AVInfo.dlTime = 90.09000;
+	strcpy(st_AVInfo.tszPktName, "Lavf60.16.100");
 
 	st_AVInfo.st_VideoInfo.bEnable = true;
 	st_AVInfo.st_VideoInfo.nWidth = 720;
 	st_AVInfo.st_VideoInfo.nHeight = 480;
 	st_AVInfo.st_VideoInfo.enAVCodec = 7;
+	st_AVInfo.st_VideoInfo.nFrameRate = 24;
 
+	FLVProtocol_Packet_SetTime(lpszClientID, 24, 0);
 	memset(tszWBBuffer, '\0', sizeof(tszWBBuffer));
 	FLVProtocol_Packet_FrameScript(lpszClientID, tszWBBuffer, &nWBLen, &st_AVInfo);
 	fwrite(tszWBBuffer, 1, nWBLen, pSt_FLVFile);
@@ -306,8 +308,9 @@ bool FLV_PacketAudio()
 
 int main()
 {
-	//FLV_Parse();
-	//FLV_PacketVideo();
-	FLV_PacketAudio();
+	FLV_PacketVideo();
+	FLV_Parse();
+	//FLV_PacketAudio();
+	
 	return 0;
 }

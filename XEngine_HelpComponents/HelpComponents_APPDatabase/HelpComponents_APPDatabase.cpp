@@ -29,7 +29,7 @@
 #endif
 #endif
 
-//Linux::g++ -std=gnu++17 -Wall -g HelpComponents_APPDatabase.cpp -o HelpComponents_APPDatabase.exe -lXEngine_BaseLib -lHelpComponents_DataBase 
+//Linux::g++ -std=c++20 -Wall -g HelpComponents_APPDatabase.cpp -o HelpComponents_APPDatabase.exe -lXEngine_BaseLib -lHelpComponents_DataBase 
 
 int Test_SQLite()
 {

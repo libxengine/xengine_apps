@@ -34,7 +34,7 @@
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g SystemSdk_APPApi.cpp -o SystemSdk_APPApi.exe -lXEngine_BaseLib -lXEngine_SystemApi
+//Linux::g++ -std=c++20 -Wall -g SystemSdk_APPApi.cpp -o SystemSdk_APPApi.exe -lXEngine_BaseLib -lXEngine_SystemApi
 
 int Test_SerialInfo()
 {
@@ -64,7 +64,7 @@ int Test_SerialInfo()
 	{
 		return -1;
 	}
-	printf("Test_SerialInfo:%s %s %s %s\n", st_SDKSerial.tszBoardSerial, st_SDKSerial.tszSystemSerial, st_SDKSerial.tszCpuSerial, st_SDKSerial.tszDiskSerial);
+	printf("Test_SerialInfo:%s %s %s %s\n", st_SDKSerial.tszBoardSerial, st_SDKSerial.tszSystemSerial, st_SDKSerial.tszCPUSerial, st_SDKSerial.tszDiskSerial);
 	return 0;
 }
 int Test_DiskInfo()
@@ -94,7 +94,7 @@ int Test_CPUInfo()
 	memset(&st_CPUInfo, '\0', sizeof(SYSTEMAPI_CPU_INFOMATION));
 	SystemApi_HardWare_GetCpuInfomation(&st_CPUInfo);
 
-	printf("Test_CPUInfo:%s %d %d\n", st_CPUInfo.tszCpuName, st_CPUInfo.nCpuNumber, st_CPUInfo.nCpuSpeed);
+	printf("Test_CPUInfo:%s %d %d %d\n", st_CPUInfo.tszCPUName, st_CPUInfo.nCPUNumber, st_CPUInfo.nCPUThread, st_CPUInfo.nCPUSpeed);
 	return 0;
 }
 int Test_ProcessInfo()
@@ -110,14 +110,13 @@ int Test_ProcessInfo()
 	SystemApi_Process_GetProcessCpuUsage(&nUsage);
 	SystemApi_Process_GetUpTime(&st_LibTimer);
 
-	printf("Test_ProcessInfo:%d %s %s %d %d\n", st_ProcessInfo.nPid, st_ProcessInfo.tszAppName, st_ProcessInfo.tszAppUser, st_ProcessInfo.nThreadCount, st_ProcessInfo.st_MemoryInfo.nUsePhysicalMemory);
+	printf("Test_ProcessInfo:%d %s %s %d %d\n", st_ProcessInfo.nPid, st_ProcessInfo.tszAPPName, st_ProcessInfo.tszAPPUser, st_ProcessInfo.nThreadCount, st_ProcessInfo.st_MemoryInfo.nUsePhysicalMemory);
 	printf("Test_ProcessInfo:%d %04d-%02d-%02d %02d:%02d:%02d\n", nUsage, st_LibTimer.wYear, st_LibTimer.wMonth, st_LibTimer.wDay, st_LibTimer.wHour, st_LibTimer.wMinute, st_LibTimer.wSecond);
 	return 0;
 }
 int Test_SystemInfo()
 {
 	int nUsage = 0;
-	int nCPUCount = 0;
 	int nProcessCount = 0;
 	XENGINE_LIBTIMER st_LibTimer;
 	SYSTEMAPI_MEMORY_INFOMATION st_MemoryInfo;
@@ -127,45 +126,35 @@ int Test_SystemInfo()
 
 	SystemApi_System_GetMemoryUsage(&st_MemoryInfo, XENGINE_SYSTEMSDK_API_SYSTEM_SIZE_MB);
 	SystemApi_System_GetCpuUsage(&nUsage);
-	SystemApi_System_GetCpuCount(&nCPUCount);
 	SystemApi_System_GetProcessCount(&nProcessCount);
 	SystemApi_System_GetUpTime(&st_LibTimer);
 
+#ifdef _MSC_BUILD
 	XCHAR tszValueStr[128] = {};
 	SystemApi_System_WMIQuery("SELECT * FROM Win32_Processor", "MaxClockSpeed", tszValueStr, 1);
+#endif
 	printf("Test_SystemInfo:%llu %llu %d\n", st_MemoryInfo.dwMemory_Total, st_MemoryInfo.dwMemory_Free, st_MemoryInfo.nMemoryUsage);
-	printf("Test_SystemInfo:%d %d %d %d %04d-%02d-%02d %02d:%02d:%02d\n", nUsage, nCPUCount, nCPUCount, nProcessCount, st_LibTimer.wYear, st_LibTimer.wMonth, st_LibTimer.wDay, st_LibTimer.wHour, st_LibTimer.wMinute, st_LibTimer.wSecond);
+	printf("Test_SystemInfo:%d %d %04d-%02d-%02d %02d:%02d:%02d\n", nUsage, nProcessCount, st_LibTimer.wYear, st_LibTimer.wMonth, st_LibTimer.wDay, st_LibTimer.wHour, st_LibTimer.wMinute, st_LibTimer.wSecond);
 	return 0;
 }
 int Test_FileInfo()
 {
+#ifdef _MSC_BUILD
 	LPCXSTR lpszDir = _X("D:\\xengine_apps\\Debug\\stroage\\123123\\abb");
+#else
+	LPCXSTR lpszDir = _X("./stroage/123123/abb");
+#endif
 
 	SystemApi_File_CreateMutilFolder(lpszDir);
 	SystemApi_File_CreateMutilFolder(lpszDir);
-	SystemApi_File_DeleteMutilFolder("D:\\xengine_apps\\Debug\\stroage\\*");
+	
+#ifdef _MSC_BUILD
+	SystemApi_File_DeleteMutilFolder("D:\\xengine_apps\\Debug\\stroage\\");
+#else
+	SystemApi_File_DeleteMutilFolder("./stroage/");
+#endif
 
-	int nListCount = 0;
-	XCHAR** pptszListFile;
-	SystemApi_File_EnumFile("D:\\xengine_apps", &pptszListFile, &nListCount, true, 1);
-	for (int i = 0; i < nListCount; i++)
-	{
-		printf("%d:%s\n", i, pptszListFile[i]);
-	}
-	BaseLib_Memory_Free((XPPPMEM)&pptszListFile, nListCount);
 	return 0;
-}
-bool CALLBACK EnumFile(LPCXSTR lpFileOrPath, bool bFindPath, XPVOID lParam)
-{
-	if (bFindPath)
-	{
-		printf(_X("Path %s\r\n"), lpFileOrPath);
-	}
-	else
-	{
-		printf(_X("File %s\r\n"), lpFileOrPath);
-	}
-	return true;
 }
 
 int Test_EnumFile()
@@ -176,9 +165,9 @@ int Test_EnumFile()
 	SystemApi_File_GetFileAttr(_X("D:\\xengine_apps"), &st_FileAttr);
 
 #ifdef _MSC_BUILD
-	SystemApi_File_EnumFile("D:\\test\\*", &ppszListDir, &nCount, true, 1);
+	SystemApi_File_EnumFile("D:\\test\\", &ppszListDir, &nCount, true, 1);
 #else
-	SystemApi_File_EnumFile("/tmp", &ppszListDir, &nCount);
+	SystemApi_File_EnumFile("/tmp/", &ppszListDir, &nCount);
 #endif
 
 	for (int i = 0; i < nCount; i++)

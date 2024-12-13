@@ -39,7 +39,7 @@
 #endif
 #endif
 
-//Linux macos:g++ -std=gnu++17 -Wall -g XClient_APPSSLClient.cpp -o XClient_APPSSLClient.exe -lXEngine_BaseLib -lXClient_Socket -lXEngine_Cryption
+//Linux macos:g++ -std=gnu++20 -Wall -g XCore_SslClient.cpp -o XCore_SslClient.exe -lXEngine_BaseLib -lXClient_Socket -lXEngine_Cryption
 
 int XClient_TSLTest()
 {
@@ -130,20 +130,19 @@ int XClient_DTLTest()
 		printf("NetClient_OpenSsl_SendMsg:%lX\n", Cryption_GetLastError());
 		return -1;
 	}
-	while (1)
-	{
-		int nLen = 2048;
-		char tszMsgBuffer[2048];
-		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+	int nLen = 2048;
+	char tszMsgBuffer[2048];
+	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
-		if (!Cryption_Client_RecvMsgEx(xhNet, tszMsgBuffer, &nLen))
-		{
-			break;
-		}
-		printf("%s\n", tszMsgBuffer);
+	if (!Cryption_Client_RecvMsgEx(xhNet, tszMsgBuffer, &nLen))
+	{
+
 	}
-	Cryption_Client_CloseEx(xhNet);
+	printf("%s\n", tszMsgBuffer);
+
 	XClient_UDPSelect_Close(m_Socket);
+	Cryption_Client_CloseEx(xhNet);
+	
 	return 0;
 }
 
@@ -154,8 +153,8 @@ int main()
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 
-	XClient_DTLTest();
-	//XClient_TSLTest();
+	//XClient_DTLTest();
+	XClient_TSLTest();
 #ifdef _MSC_BUILD
 	WSACleanup();
 #endif

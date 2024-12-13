@@ -62,7 +62,7 @@ using namespace std;
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g AVCodec_APPRecordMaster.cpp -o AVCodec_APPRecordMaster.exe -lXEngine_BaseLib -lXEngine_AVCollect -lXEngine_VideoCodec -lXEngine_AudioCodec -lXEngine_AVHelp -lXEngine_AVPacket -lpthread
+//Linux::g++ -std=c++20 -Wall -g AVCodec_APPRecordMaster.cpp -o AVCodec_APPRecordMaster.exe -lXEngine_BaseLib -lXEngine_AVCollect -lXEngine_VideoCodec -lXEngine_AudioCodec -lXEngine_AVHelp -lXEngine_AVFilter -lXEngine_AVFormat -lpthread
 bool bAudio = false;
 XNETHANDLE xhVideo = 0;
 XNETHANDLE xhAudio = 0;

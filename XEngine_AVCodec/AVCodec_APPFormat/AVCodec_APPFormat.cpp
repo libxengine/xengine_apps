@@ -40,7 +40,7 @@ using namespace std;
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g AVCodec_APPPacket.cpp -o AVCodec_APPPacket.exe -lXEngine_BaseLib -lXEngine_AVFormat -lXEngine_AVHelp
+//Linux::g++ -std=c++20 -Wall -g AVCodec_APPFormat.cpp -o AVCodec_APPFormat.exe -lXEngine_BaseLib -lXEngine_AVFormat -lXEngine_AVHelp
 FILE* pSt_File;
 
 void CALLBACK AVPacket_Pack_CBNotify(XHANDLE xhNet, int nCvtType, __int64x nCvtFrame, double dlTime, XPVOID lParam)
@@ -61,12 +61,11 @@ int AVPacket_Test_FileLink()
 #ifdef _MSC_BUILD
 	LPCXSTR lpszSrcFile1 = "D:\\h264 file\\1.mp4";
 	LPCXSTR lpszSrcFile2 = "D:\\h264 file\\2.mp4";
-	LPCXSTR lpszSrcFile3 = "D:\\h264 file\\3.mp4";
 	LPCXSTR lpszDstFile = "D:\\h264 file\\out.mp4";
 #else
-	LPCXSTR lpszSrcFile1 = "480p.flv";
-	LPCXSTR lpszSrcFile2 = "480p1.flv";
-	LPCXSTR lpszDstFile = "480m.flv";
+	LPCXSTR lpszSrcFile1 = "1.mp4";
+	LPCXSTR lpszSrcFile2 = "2.mp4";
+	LPCXSTR lpszDstFile = "out.mp4";
 #endif
 
 	XHANDLE xhAVFile = AVFormat_Link_Init(AVPacket_Pack_CBNotify);
@@ -86,11 +85,6 @@ int AVPacket_Test_FileLink()
 		return -1;
 	}
 	if (!AVFormat_Link_Input(xhAVFile, lpszSrcFile2))
-	{
-		printf("AVFormat_Convert_Input:%lX\n", AVFormat_GetLastError());
-		return -1;
-	}
-	if (!AVFormat_Link_Input(xhAVFile, lpszSrcFile3))
 	{
 		printf("AVFormat_Convert_Input:%lX\n", AVFormat_GetLastError());
 		return -1;
@@ -121,10 +115,10 @@ int AVPacket_Test_FileConvert()
 {
 	double nTotalAVTime = 0;
 #ifdef _MSC_BUILD
-	LPCXSTR lpszSrcFile = "D:\\h264 file\\480p.mp4";
-	LPCXSTR lpszDstFile = "D:\\h264 file\\1.mp4";
+	LPCXSTR lpszSrcFile = "D:\\h264 file\\480p.264";
+	LPCXSTR lpszDstFile = "D:\\h264 file\\conv.mp4";
 #else
-	LPCXSTR lpszSrcFile = "480p.flv";
+	LPCXSTR lpszSrcFile = "480p.264";
 	LPCXSTR lpszDstFile = "conv.mp4";
 #endif
 
@@ -170,7 +164,7 @@ int AVPacket_Test_FileConvert()
 int AVPacket_Test_FilePacket()
 {
 #ifdef _MSC_BUILD
-	LPCXSTR lpszVideoFile = "D:\\h264 file\\720x480.264";
+	LPCXSTR lpszVideoFile = "D:\\h264 file\\480p.264";
 	LPCXSTR lpszAudioFile1 = "D:\\h264 file\\1.aac";
 	LPCXSTR lpszAudioFile2 = "D:\\h264 file\\test.aac";
 	LPCXSTR lpszDstFile = "D:\\h264 file\\480p.mp4";
@@ -237,7 +231,7 @@ int AVPacket_Test_UNPacket()
 	LPCXSTR lpszVideoFile = "d:\\h264 file\\480p_1.264";
 	LPCXSTR lpszAudioFile1 = "d:\\h264 file\\test_1.aac";
 	LPCXSTR lpszAudioFile2 = "d:\\h264 file\\test_2.aac";
-	LPCXSTR lpszSrcFile = "D:\\h264 file\\2024-03-21 15-17-59.ts";
+	LPCXSTR lpszSrcFile = "D:\\h264 file\\480p.mp4";
 #else
 	LPCXSTR lpszVideoFile = "480p_1.264";
 	LPCXSTR lpszAudioFile1 = "test_1.aac";
@@ -263,17 +257,25 @@ int AVPacket_Test_UNPacket()
 		printf("AVFormat_UNPack_GetList:%lX\n", AVHelp_GetLastError());
 		return -1;
 	}
+
+	AVCODEC_FORMATINFO** ppSt_StreamFile;
+	BaseLib_Memory_Malloc((XPPPMEM)&ppSt_StreamFile, nListCount, sizeof(AVCODEC_FORMATINFO));
+
 	for (int i = 0; i < nListCount; i++)
 	{
-		printf("%d %d\n", ppSt_ListFile[i]->nAVCodecType, ppSt_ListFile[i]->nAVCodecID);
+		printf("%d %d %d\n", i, ppSt_ListFile[i]->nAVCodecType, ppSt_ListFile[i]->nAVCodecID);
 	}
 	XHANDLE xhCodec = NULL;
 	AVFormat_UNPack_GetAVCodec(xhAVFile, 0, &xhCodec);
 	BaseLib_Memory_FreeCStyle(&xhCodec);
 
-	AVCODEC_FORMATINFO** ppSt_StreamFile;
-	//strcpy(ppSt_ListFile[1]->tszFileName, lpszAudioFile1);
-	//strcpy(ppSt_ListFile[2]->tszFileName, lpszAudioFile2);
+	ppSt_StreamFile[0]->nAVIndex = 0;
+	strcpy(ppSt_StreamFile[0]->tszFileName, lpszAudioFile1);
+	ppSt_StreamFile[1]->nAVIndex = 1;
+	strcpy(ppSt_StreamFile[1]->tszFileName, lpszVideoFile);
+	ppSt_StreamFile[2]->nAVIndex = 2;
+	strcpy(ppSt_StreamFile[2]->tszFileName, lpszAudioFile2);
+
 	if (!AVFormat_UNPack_Output(xhAVFile, &ppSt_StreamFile, nListCount))
 	{
 		printf("AVFormat_UNPack_Output:%lX\n", AVFormat_GetLastError());
@@ -301,10 +303,10 @@ int AVPacket_Test_UNPacket()
 }
 int main()
 {
-	//AVPacket_Test_FileLink();
+	AVPacket_Test_FileLink();
 	AVPacket_Test_FileConvert();
-	//AVPacket_Test_FilePacket();
-	//AVPacket_Test_UNPacket();
+	AVPacket_Test_FilePacket();
+	AVPacket_Test_UNPacket();
 
 	return 1;
 }

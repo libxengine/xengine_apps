@@ -35,7 +35,7 @@ using namespace std;
 #endif
 #endif
 
-//Linux MACOS:g++ -std=c++17 -Wall -g NetHelp_APPFlow.cpp -o NetHelp_APPFlow.exe -lXEngine_BaseLib  -lNetHelp_APIFlow
+//Linux MACOS:g++ -std=c++20 -Wall -g NetHelp_APPFlow.cpp -o NetHelp_APPFlow.exe -lXEngine_BaseLib  -lNetHelp_APIFlow
 
 int Test_NetFlow()
 {

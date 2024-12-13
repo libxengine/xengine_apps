@@ -29,7 +29,7 @@
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g XClient_APIHelp.cpp -o XClient_APIHelp.exe -lXEngine_BaseLib -lXClient_APIHelp
+//Linux::g++ -std=c++20 -Wall -g XClient_APIHelp.cpp -o XClient_APIHelp.exe -lXEngine_BaseLib -lXClient_APIHelp
 
 void CALLBACK NetHelp_APPClient_CBRecv(XHANDLE xhToken, LPCXSTR lpszMsgBuffer, int nMsgLen, XPVOID lParam)
 {
@@ -110,10 +110,10 @@ int Test_Http2Request()
 }
 int Test_HttpRequest()
 {
-	LPCXSTR lpszUrl = _X("https://10.0.3.155:1986/rtc/v1/play/");
+	LPCXSTR lpszUrl = _X("https://www.libxengine.com");
 	XCHAR* ptszMsgBuffer = NULL;
 
-	APIClient_Http_Request(_X("OPTIONS"), lpszUrl, NULL, NULL, &ptszMsgBuffer);
+	APIClient_Http_Request(_X("GET"), lpszUrl, NULL, NULL, &ptszMsgBuffer);
 	printf("%s\n", ptszMsgBuffer);
 	BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
 	return 0;
@@ -226,11 +226,11 @@ int upload_http()
 
 int main()
 {
-	upload_http();
+	//upload_http();
 	//download_http();
 
 	//Test_Http2Request();
-	//Test_HttpRequest();
+	Test_HttpRequest();
 	//Test_HttpCreate();
 
 	//NetHelp_APPClient_EMailPop3();

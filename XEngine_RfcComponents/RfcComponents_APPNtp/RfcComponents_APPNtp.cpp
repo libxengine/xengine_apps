@@ -36,7 +36,7 @@
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_NTPProtocol.lib")
 #endif
 #endif
-//Linux::g++ -std=c++17 -Wall -g RfcComponents_APPNat.cpp -o RfcComponents_APPNat.exe -lXEngine_BaseLib -lXClient_Socket -lRfcComponents_NTPProtocol
+//Linux::g++ -std=c++20 -Wall -g RfcComponents_APPNtp.cpp -o RfcComponents_APPNtp.exe -lXEngine_BaseLib -lXClient_Socket -lRfcComponents_NTPProtocol
 
 
 int main()
@@ -85,6 +85,7 @@ int main()
 
 	NTPProtocol_Parse_Header(tszMsgBuffer, nMsgLen, &st_REFTime, &st_REVTime, &st_ORGTime, &st_TRSTime, &nTimePoll, &dlTimePrecision, tszIPAddr);
 	NTPProtocol_Parse_TimeInfo(&st_REVTime, &st_ORGTime, &st_TRSTime, &nTimeoffset, &nTimeDelay);
+	printf("nTimeoffset:%lld,nTimeDelay:%lld\n", nTimeoffset, nTimeDelay);
 	XClient_UDPSelect_Close(m_Socket);
 #ifdef _MSC_BUILD
 	WSACleanup();

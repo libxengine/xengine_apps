@@ -52,7 +52,7 @@ using namespace std;
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g RfcComponents_SIPServer.cpp -o RfcComponents_SIPServer.exe -lXEngine_BaseLib -lXEngine_Core -lRfcComponents_HttpProtocol -lRfcComponents_SIPPorotocol -lpthread 
+//Linux::g++ -std=c++20 -Wall -g RfcComponents_SIPServer.cpp -o RfcComponents_SIPServer.exe -lXEngine_BaseLib -lXEngine_Core -lRfcComponents_HttpProtocol -lRfcComponents_SIPPorotocol -lpthread 
 
 bool bIsRun = false;
 XHANDLE xhHttp = NULL;

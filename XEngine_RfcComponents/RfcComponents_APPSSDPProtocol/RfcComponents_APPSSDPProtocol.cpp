@@ -50,7 +50,7 @@ using namespace std;
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g RfcComponents_APPSSDPProtocol.cpp -o RfcComponents_APPSSDPProtocol.exe -lXEngine_BaseLib -lXEngine_Core -lRfcComponents_SSDPProtocol -lNetHelp_APIClient -lpthread
+//Linux::g++ -std=c++20 -Wall -g RfcComponents_APPSSDPProtocol.cpp -o RfcComponents_APPSSDPProtocol.exe -lXEngine_BaseLib -lXEngine_Core -lRfcComponents_SSDPProtocol -lNetHelp_APIClient -lpthread
 
 int main()
 {
@@ -60,7 +60,7 @@ int main()
 #endif
 	XSOCKET hSocket;
 	//准备
-	if (!NetCore_GroupCast_Create(&hSocket, 1900, _X("239.255.255.250"), _X("192.168.252.128")))
+	if (!NetCore_GroupCast_Create(&hSocket, 1900, _X("239.255.255.250"), _X("10.0.1.88")))
 	{
 		printf("NetCore_GroupCast_Create:%lX\n", NetCore_GetLastError());
 		return -1;

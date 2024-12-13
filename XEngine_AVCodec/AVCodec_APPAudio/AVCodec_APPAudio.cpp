@@ -41,13 +41,20 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Error.h"
 #ifdef _MSC_BUILD
+#ifdef _WIN64
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_BaseLib.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_AudioCodec.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_AVHelp.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_AVFrame.lib")
+#else
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AudioCodec.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVFrame.lib")
 #endif
 #endif
-//Linux Macos:g++ -std=c++17 -Wall -g AVCodec_APPAudio.cpp -o AVCodec_APPAudio.exe -lXEngine_BaseLib -lXEngine_AVHelp -lXEngine_AudioCodec
+#endif
+//Linux Macos:g++ -std=c++20 -Wall -g AVCodec_APPAudio.cpp -o AVCodec_APPAudio.exe -lXEngine_BaseLib -lXEngine_AVHelp -lXEngine_AudioCodec -lXEngine_AVFrame
 
 
 void Audio_ListCodec()
@@ -97,8 +104,8 @@ void Audio_Encode()
 	FILE* pSt_File = fopen("d:\\audio\\output.pcm", "rb");
 	FILE* pSt_FileAac = fopen("d:\\audio\\output.aac", "wb");
 #else
-	FILE* pSt_File = fopen("44.1k_2_16.pcm", "rb");
-	FILE* pSt_FileAac = fopen("44.1k_2_16.aac", "wb");
+	FILE* pSt_File = fopen("output.pcm", "rb");
+	FILE* pSt_FileAac = fopen("output.aac", "wb");
 #endif
 
 	while (1)
@@ -145,11 +152,11 @@ void Audio_DeCodec()
 	XNETHANDLE xhCoder;
 
 #ifdef _MSC_BUILD
-	FILE* pSt_FileEnCode = fopen("d:\\audio\\Audio.aac", "rb");
-	FILE* pSt_FileDeCodec = fopen("d:\\audio\\44.1k_2_16.aac.pcm", "wb");
+	FILE* pSt_FileEnCode = fopen("d:\\audio\\output.aac", "rb");
+	FILE* pSt_FileDeCodec = fopen("d:\\audio\\output_de.pcm", "wb");
 #else
-	FILE* pSt_FileEnCode = fopen("44.1k_2_16.aac", "rb");
-	FILE* pSt_FileDeCodec = fopen("44.1k_2_16.aac.pcm", "wb");
+	FILE* pSt_FileEnCode = fopen("output.aac", "rb");
+	FILE* pSt_FileDeCodec = fopen("output_de.pcm", "wb");
 #endif
 
 	int nLen = 2048;
@@ -232,8 +239,8 @@ void OPUS_Encode()
 	FILE* pSt_File = fopen("d:\\audio\\mix.pcm", "rb");
 	FILE* pSt_FileAac = fopen("d:\\audio\\output1.opus", "wb");
 #else
-	FILE* pSt_File = fopen("44.1k_2_16.pcm", "rb");
-	FILE* pSt_FileAac = fopen("44.1k_2_16.aac", "wb");
+	FILE* pSt_File = fopen("mix.pcm", "rb");
+	FILE* pSt_FileAac = fopen("output1.opus", "wb");
 #endif
 
 	int nSize = 0;
@@ -269,9 +276,9 @@ void OPUS_Encode()
 }
 int main()
 {
-	//OPUS_Encode();
-	//Audio_ListCodec();
-	//Audio_Encode();
+	OPUS_Encode();
+	Audio_ListCodec();
+	Audio_Encode();
 	Audio_DeCodec();
 	return 0;
 }

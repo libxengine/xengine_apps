@@ -49,7 +49,7 @@ using namespace std;
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_SIPPorotocol.lib")
 #endif
 #endif
-//Linux::g++ -std=c++17 -Wall -g RfcComponents_SIPClient.cpp -o RfcComponents_SIPClient.exe -lXEngine_BaseLib -lXClient_Socket -lRfcComponents_HttpProtocol -lRfcComponents_SIPPorotocol -lpthread 
+//Linux::g++ -std=c++20 -Wall -g RfcComponents_SIPClient.cpp -o RfcComponents_SIPClient.exe -lXEngine_BaseLib -lXClient_Socket -lRfcComponents_HttpProtocol -lRfcComponents_SIPPorotocol -lpthread 
 
 
 XSOCKET hTCPSocket = 0;

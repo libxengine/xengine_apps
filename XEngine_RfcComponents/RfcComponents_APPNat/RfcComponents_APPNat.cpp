@@ -37,7 +37,7 @@
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_NatProtocol.lib")
 #endif
 #endif
-//Linux::g++ -std=c++17 -Wall -g RfcComponents_APPNat.cpp -o RfcComponents_APPNat.exe -lXEngine_BaseLib -lXClient_Socket -lRfcComponents_NatProtocol
+//Linux::g++ -std=c++20 -Wall -g RfcComponents_APPNat.cpp -o RfcComponents_APPNat.exe -lXEngine_BaseLib -lXClient_Socket -lRfcComponents_NatProtocol
 
 
 int main()

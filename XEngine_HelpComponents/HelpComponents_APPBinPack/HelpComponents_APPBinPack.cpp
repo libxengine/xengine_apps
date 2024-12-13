@@ -25,7 +25,7 @@
 #endif
 #endif
 
-//Linux::g++ -std=gnu++17 -Wall -g HelpComponents_APPBinPack.cpp -o HelpComponents_APPBinPack.exe -lXEngine_BaseLib -lHelpComponents_BINPack 
+//Linux::g++ -std=c++20 -Wall -g HelpComponents_APPBinPack.cpp -o HelpComponents_APPBinPack.exe -lXEngine_BaseLib -lHelpComponents_BINPack 
 
 #ifdef _MSC_BUILD
 LPCXSTR lpszFile = _X("D:\\xengine_apps\\Debug\\Pics.xBin");

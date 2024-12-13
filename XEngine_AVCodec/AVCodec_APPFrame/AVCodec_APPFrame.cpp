@@ -40,10 +40,16 @@
 #endif
 #endif
 
-//Linux MacOS:g++ -std=c++17 -Wall -g AVCodec_APPFrame.cpp -o AVCodec_APPFrame.exe -lXEngine_BaseLib -lXEngine_AVFrame
+//Linux MacOS:g++ -std=c++20 -Wall -g AVCodec_APPFrame.cpp -o AVCodec_APPFrame.exe -lXEngine_BaseLib -lXEngine_AVFrame -lXEngine_AVFormat
 
 int Test_BITStream()
 {
+#ifdef _MSC_BUILD
+	LPCXSTR lpszFile = _X("D:\\h264 file\\output.mp4");
+#else
+	LPCXSTR lpszFile = _X("output.mp4");
+#endif
+
 	XNETHANDLE xhToken = 0;
 	XHANDLE xhPacket = AVFormat_UNPack_Init();
 	if (!AVFrame_BITStream_Init(&xhToken, "h264_mp4toannexb"))
@@ -51,7 +57,7 @@ int Test_BITStream()
 		printf("AVFrame_BITStream_Init:%lX\n", AVFrame_GetLastError());
 		return -1;
 	}
-	if (!AVFormat_UNPack_Input(xhPacket, "D:\\h264 file\\outputfile.mp4"))
+	if (!AVFormat_UNPack_Input(xhPacket, lpszFile))
 	{
 		printf("AVFormat_UNPack_Input:%lX\n", AVFormat_GetLastError());
 		return -1;
@@ -72,8 +78,10 @@ int Test_BITStream()
 		}
 		if (0 == nAVIndex)
 		{
+			printf("BIT:%d\n", nMSGLen);
 			AVFrame_BITStream_Convert(xhToken, ptszMSGBuffer, nMSGLen);
 		}
+		free(ptszMSGBuffer);
 	}
 
 	AVFormat_UNPack_Stop(xhPacket);
@@ -83,9 +91,9 @@ int Test_BITStream()
 int Test_Frame()
 {
 #ifdef _MSC_BUILD
-	FILE* pSt_File = fopen("D:\\h264 file\\720x480.264", "rb");
+	FILE* pSt_File = fopen("D:\\h264 file\\480p.264", "rb");
 #else
-	FILE* pSt_File = fopen("720x480.264", "rb");
+	FILE* pSt_File = fopen("480p.264", "rb");
 #endif
 	XNETHANDLE xhParse = 0;
 	if (!AVFrame_Frame_ParseInit(&xhParse, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264))

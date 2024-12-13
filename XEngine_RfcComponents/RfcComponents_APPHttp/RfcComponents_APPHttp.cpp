@@ -43,7 +43,7 @@ using namespace std;
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g RfcComponents_APPHttp.cpp -o RfcComponents_APPHttp.exe -lXEngine_BaseLib -lXEngine_Core -lXEngine_OPenSsl -lRfcComponents_HttpProtocol -lpthread
+//Linux::g++ -std=c++20 -Wall -g RfcComponents_APPHttp.cpp -o RfcComponents_APPHttp.exe -lXEngine_BaseLib -lXEngine_Core -lRfcComponents_HttpProtocol -lpthread
 
 bool bIsRun = false;
 int nRVMode = 0;

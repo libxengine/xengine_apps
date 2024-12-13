@@ -22,7 +22,7 @@
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/NetHelp_APIHelp.lib")
 #endif
 #endif
-//Linux::g++ -std=c++17 -Wall -g NetHelp_APPApi.cpp -o NetHelp_APPApi.exe -lXEngine_BaseLib -lNetHelp_APIHelp
+//Linux::g++ -std=c++20 -Wall -g NetHelp_APPHelp.cpp -o NetHelp_APPHelp.exe -lXEngine_BaseLib -lNetHelp_APIHelp
 
 int test_endain()
 {
@@ -33,7 +33,6 @@ int test_endain()
 	APIHelp_Endain_ToHexW64((XBYTE*)tszMsgBuffer, *(__int64u*)&nValue64, true);
 	return 0;
 }
-
 
 int main()
 {

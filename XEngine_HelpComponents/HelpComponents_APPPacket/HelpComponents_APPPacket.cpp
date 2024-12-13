@@ -33,7 +33,7 @@
 #endif
 #endif
 
-//Linux::g++ -std=gnu++17 -Wall -g HelpComponents_APPPacket.cpp -o HelpComponents_APPPacket.exe -lXEngine_BaseLib -lHelpComponents_Packets 
+//Linux::g++ -std=c++20 -Wall -g HelpComponents_APPPacket.cpp -o HelpComponents_APPPacket.exe -lXEngine_BaseLib -lHelpComponents_Packets 
 
 
 int Test_Cache()

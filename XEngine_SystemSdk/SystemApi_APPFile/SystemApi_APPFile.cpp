@@ -30,18 +30,18 @@
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g SystemApi_APPFile.cpp -o SystemApi_APPFile.exe -lXEngine_BaseLib -lXEngine_SystemConfig
+//Linux::g++ -std=c++20 -Wall -g SystemApi_APPFile.cpp -o SystemApi_APPFile.exe -lXEngine_BaseLib -lXEngine_SystemConfig
 
 int profiletest()
 {
 #ifdef _MSC_BUILD
-	LPCXSTR lpszFile = "D:\\xengine_apps\\x64\\Debug\\1.txt";
+	LPCXSTR lpszFile = "D:\\xengine_apps\\Debug\\1.txt";
 #else
 	LPCXSTR lpszFile = "./1.txt";
 #endif
-	SystemConfig_File_WriteProfileFromFile(lpszFile, "test", "a", "1");
-	SystemConfig_File_WriteProfileFromFile(lpszFile, "test", "b", "2");
-	SystemConfig_File_WriteProfileFromFile(lpszFile, "test", "c", "3");
+	SystemConfig_File_WriteProfileFromFile(lpszFile, "test", "a", "10");
+	SystemConfig_File_WriteProfileFromFile(lpszFile, "test", "b", "20");
+	SystemConfig_File_WriteProfileFromFile(lpszFile, "test", "c", "30");
 
 	SystemConfig_File_WriteProfileFromFile(lpszFile, "test2", "1", "a");
 	SystemConfig_File_WriteProfileFromFile(lpszFile, "test2", "2", "b");

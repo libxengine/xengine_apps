@@ -44,14 +44,21 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_APIAddr/APIAddr_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_APIAddr/APIAddr_Error.h"
 #ifdef _MSC_BUILD
+#ifdef _WIN64
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_BaseLib.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_Core.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_Cryption.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/NetHelp_APIAddr.lib")
+#else
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_Core.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_Cryption.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/NetHelp_APIAddr.lib")
 #endif
 #endif
+#endif
 
-//Linux::g++ -std=gnu++17 -Wall -g XCore_APPSslServer.cpp -o XCore_APPSslServer.exe -lXEngine_BaseLib -lXEngine_Core -lXEngine_Cryption -lNetHelp_APIAddr
+//Linux::g++ -std=c++20 -Wall -g XCore_APPSslServer.cpp -o XCore_APPSslServer.exe -lXEngine_BaseLib -lXEngine_Core -lXEngine_Cryption -lNetHelp_APIAddr
 
 XHANDLE xhSSL = NULL;
 bool CALLBACK TCPSelect_CBLogin(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
@@ -149,43 +156,41 @@ int XCore_DTSLTest(LPCXSTR lpszCAFile, LPCXSTR lpszSrvFile, LPCXSTR lpszKeyFile)
 	}
 	
 	printf("ok\n");
-	while (1)
+	int nMSGLen = 1024;
+	XCHAR tszMSGBuffer[1024] = {};
+
+	if (bSocket)
 	{
-		int nMSGLen = 1024;
-		XCHAR tszMSGBuffer[1024] = {};
-
-		if (bSocket)
-		{
-			Cryption_Server_RecvMsgEx(xhSSL, tszIPPort, tszMSGBuffer, &nMSGLen);
-			printf("%d-%s\n", nMSGLen, tszMSGBuffer);
-			Cryption_Server_SendMsgEx(xhSSL, tszIPPort, tszMSGBuffer, nMSGLen);
-		}
-		else
-		{
-			NetCore_UDPSelect_Recv(xhUDP, tszIPPort, tszMSGBuffer, &nMSGLen);
-
-			int nRVLen = 0;
-			int nSDLen = 0;
-			XCHAR* ptszRVBuffer = NULL;
-			XCHAR* ptszSDBuffer = NULL;
-			Cryption_Server_RecvMemoryEx(xhSSL, tszIPPort, &ptszRVBuffer, &nRVLen, tszMSGBuffer, nMSGLen);
-
-			printf("%d-%s\n", nMSGLen, tszMSGBuffer);
-			Cryption_Server_SendMemoryEx(xhSSL, tszIPPort, ptszRVBuffer, nRVLen, &ptszSDBuffer, &nSDLen);
-
-			int nPort = 0;
-			APIAddr_IPAddr_SegAddr(tszIPPort, &nPort);
-			NetCore_UDPSelect_Send(xhUDP, ptszSDBuffer, nSDLen, tszIPPort, nPort);
-		}
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		Cryption_Server_RecvMsgEx(xhSSL, tszIPPort, tszMSGBuffer, &nMSGLen);
+		printf("%d-%s\n", nMSGLen, tszMSGBuffer);
+		Cryption_Server_SendMsgEx(xhSSL, tszIPPort, tszMSGBuffer, nMSGLen);
 	}
+	else
+	{
+		NetCore_UDPSelect_Recv(xhUDP, tszIPPort, tszMSGBuffer, &nMSGLen);
 
-	NetCore_UDPSelect_Stop(xhSSL);
+		int nRVLen = 0;
+		int nSDLen = 0;
+		XCHAR* ptszRVBuffer = NULL;
+		XCHAR* ptszSDBuffer = NULL;
+		Cryption_Server_RecvMemoryEx(xhSSL, tszIPPort, &ptszRVBuffer, &nRVLen, tszMSGBuffer, nMSGLen);
+
+		printf("%d-%s\n", nMSGLen, tszMSGBuffer);
+		Cryption_Server_SendMemoryEx(xhSSL, tszIPPort, ptszRVBuffer, nRVLen, &ptszSDBuffer, &nSDLen);
+
+		int nPort = 0;
+		APIAddr_IPAddr_SegAddr(tszIPPort, &nPort);
+		NetCore_UDPSelect_Send(xhUDP, ptszSDBuffer, nSDLen, tszIPPort, nPort);
+	}
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+
+	NetCore_UDPSelect_Stop(xhUDP);
+	Cryption_Server_StopEx(xhSSL);
 	return 0;
 }
 int XCore_TSLTest(LPCXSTR lpszCAFile, LPCXSTR lpszSrvFile, LPCXSTR lpszKeyFile)
 {
-	xhSSL = Cryption_Server_InitEx(lpszCAFile, lpszSrvFile, lpszKeyFile, false, true);
+	xhSSL = Cryption_Server_InitEx(lpszCAFile, lpszSrvFile, lpszKeyFile, false, false);
 	if (NULL == xhSSL)
 	{
 		printf("Cryption_Server_Init %lX\n", Cryption_GetLastError());
@@ -216,12 +221,11 @@ int main()
 	LPCXSTR lpszSrvFile = _X("d:\\xengine_apps\\Debug\\test.xyry.org.crt");
 	LPCXSTR lpszKeyFile = _X("d:\\xengine_apps\\Debug\\server.key");
 #else
-	LPCXSTR lpszCAFile = _X("root_bundle.crt");
-	LPCXSTR lpszSrvFile = _X("test.xyry.org.crt");
-	LPCXSTR lpszKeyFile = _X("test.xyry.org.key");
+	LPCXSTR lpszCAFile = _X("server.crt");
+	LPCXSTR lpszKeyFile = _X("server.key");
 #endif
-	XCore_DTSLTest(lpszCAFile, NULL, lpszKeyFile);
-	//XCore_TSLTest(lpszCAFile, NULL, lpszKeyFile);
+	//XCore_DTSLTest(lpszCAFile, NULL, lpszKeyFile);
+	XCore_TSLTest(lpszCAFile, NULL, lpszKeyFile);
 
 #ifdef _MSC_BUILD
 	WSACleanup();

@@ -38,7 +38,7 @@
 #endif
 #endif
 
-//Linux MacOS:g++ -std=c++17 -Wall -g AVCodec_APPFilter.cpp -o AVCodec_APPFilter.exe -lXEngine_BaseLib -lXEngine_AVFilter 
+//Linux MacOS:g++ -std=c++20 -Wall -g AVCodec_APPFilter.cpp -o AVCodec_APPFilter.exe -lXEngine_BaseLib -lXEngine_AVFilter 
 
 int Test_FilterAudio()
 {
@@ -53,8 +53,13 @@ int Test_FilterAudio()
 	AVFilter_Audio_Init(&xhToken, _X("volume=2.0"), &st_AudioFilter);
 	//AVFilter_Audio_Init(&xhToken, _X("aresample=sample_rate=48000"), &st_AudioFilter);
 
-	LPCXSTR lpszRFile = _X("D:\\audio\\44.1k_2_16.aac.pcm");
-	LPCXSTR lpszWFile = _X("D:\\audio\\44.1k_2_16.pcm");
+#ifdef _MSC_BUILD
+	LPCXSTR lpszRFile = _X("D:\\audio\\3.pcm");
+	LPCXSTR lpszWFile = _X("D:\\audio\\3_out.pcm");
+#else
+	LPCXSTR lpszRFile = _X("3.pcm");
+	LPCXSTR lpszWFile = _X("3_out.pcm");
+#endif
 
 	FILE* pSt_RFile = _xtfopen(lpszRFile, _X("rb"));
 	FILE* pSt_WFile = _xtfopen(lpszWFile, _X("wb"));
@@ -100,8 +105,13 @@ int Test_FilterVideo()
 
 	AVFilter_Video_Init(&xhToken, _X("eq=brightness=1.5:contrast=1.2"), &st_VideoFilter);
 
+#ifdef _MSC_BUILD
 	FILE* pSt_RBFile = _xtfopen("D:\\h264 file\\input.yuv", _X("rb"));
 	FILE* pSt_WBFile = _xtfopen("D:\\h264 file\\output.yuv", _X("wb"));
+#else
+	FILE* pSt_RBFile = _xtfopen("input.yuv", _X("rb"));
+	FILE* pSt_WBFile = _xtfopen("output.yuv", _X("wb"));
+#endif
 
 	int nSize = st_VideoFilter.st_VideoInfo.nWidth * st_VideoFilter.st_VideoInfo.nHeight * 3 / 2;
 	XCHAR* ptszRBBuffer = (XCHAR*)malloc(nSize);
@@ -176,8 +186,13 @@ int Test_FilterMutliVideo()
 	
 	AVFilter_Video_MIXInit(&xhToken, &ppSt_VideoInfo, nVideoList, _X("out"), _X("[in0]scale=360:240[in0_scaled];[in1]scale=360:240[in1_scaled];[in2]scale=360:240[in2_scaled];[in3]scale=360:240[in3_scaled];[in0_scaled][in1_scaled][in2_scaled][in3_scaled]xstack=inputs=4:layout=0_0|w0_0|0_h0|w0_h0[out]"));
 
+#ifdef _MSC_BUILD
 	FILE* pSt_RBFile = _xtfopen("D:\\h264 file\\input.yuv", _X("rb"));
 	FILE* pSt_WBFile = _xtfopen("D:\\h264 file\\output.yuv", _X("wb"));
+#else
+	FILE* pSt_RBFile = _xtfopen("input.yuv", _X("rb"));
+	FILE* pSt_WBFile = _xtfopen("output.yuv", _X("wb"));
+#endif
 
 	int nSize = 720 * 480 * 3 / 2;
 	XCHAR* ptszRBBuffer = (XCHAR*)malloc(nSize);
@@ -301,7 +316,7 @@ void Test_FilterMutliAudio()
 int main()
 {
 	Test_FilterAudio();
-	Test_FilterVideo();
+	//Test_FilterVideo();
 
 	Test_FilterMutliAudio();
 	Test_FilterMutliVideo();

@@ -34,7 +34,7 @@
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_SystemApi.lib")
 #endif
 #endif
-//linux Macos:g++ -std=gnu++17 -Wall -g HelpComponents_APPCompress.cpp -o HelpComponents_APPCompress.exe -lXEngine_BaseLib -lXEngine_SystemApi -lHelpComponents_Compress 
+//linux Macos:g++ -std=c++20 -Wall -g HelpComponents_APPCompress.cpp -o HelpComponents_APPCompress.exe -lXEngine_BaseLib -lXEngine_SystemApi -lHelpComponents_Compress 
 
 void CompressBuffer_Test()
 {

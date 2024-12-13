@@ -26,7 +26,7 @@ using namespace std;
 #endif
 #endif
 
-//Linux MacOS:g++ -std=c++17 -Wall -g AVCodec_APPCollect.cpp -o AVCodec_APPCollect.exe -lXEngine_BaseLib -lXEngine_AVCollect
+//Linux MacOS:g++ -std=c++20 -Wall -g AVCodec_APPCollect.cpp -o AVCodec_APPCollect.exe -lXEngine_BaseLib -lXEngine_AVCollect
 
 FILE* pSt_File;
 int nWidth;
@@ -56,7 +56,7 @@ int main()
 #ifdef _MSC_BUILD
 	xhVideo = AVCollect_Video_Init("gdigrab", "desktop", &st_AVScreen, XEngine_AVCollect_CBVideo);
 #else
-	xhVideo = AVCollect_Video_Init("x11grab", ":0", &st_AVScreen, XEngine_AVCollect_CBVideo);
+	xhVideo = AVCollect_Video_Init("x11grab", ":0.0", &st_AVScreen, XEngine_AVCollect_CBVideo);
 #endif
 	if (NULL == xhVideo)
 	{
@@ -77,10 +77,8 @@ int main()
 	printf("AVCollect_Audio_GetInfo:%d %lld\n", st_AVInfo.st_AudioInfo.nSampleFmt, st_AVInfo.st_AudioInfo.nBitRate);
 	AVCollect_Audio_Start(xhAudio);
 	*/
-	while (1)
-	{
-		std::this_thread::sleep_for(std::chrono::seconds(15));
-	}
+	std::this_thread::sleep_for(std::chrono::seconds(15));
 	AVCollect_Video_Destory(xhVideo);
+	fclose(pSt_File);
 	return 0;
 }

@@ -37,7 +37,7 @@ using namespace std;
 #endif
 #endif
 
-//Linux MACOS:g++ -std=c++17 -Wall -g NetHelp_APPXSocket.cpp -o NetHelp_APPXSocket.exe -lXEngine_BaseLib  -lNetHelp_XSocket
+//Linux MACOS:g++ -std=c++20 -Wall -g NetHelp_APPXSocket.cpp -o NetHelp_APPXSocket.exe -lXEngine_BaseLib  -lNetHelp_XSocket
 
 static void CALLBACK XSocket_Sniffer_Callback(XHANDLE xhToken, XSOCKET_PROTOCOLINFO* pSt_ProtoInfo, LPCXSTR lpszMsgBuffer, XPVOID lParam)
 {

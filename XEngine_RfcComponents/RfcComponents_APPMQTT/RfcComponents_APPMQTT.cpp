@@ -50,7 +50,7 @@ using namespace std;
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g RfcComponents_APPMQTT.cpp -o RfcComponents_APPMQTT.exe -lXEngine_BaseLib -lXEngine_Core -lXClient_Socket -lRfcComponents_MQTTProtocol -lpthread 
+//Linux::g++ -std=c++20 -Wall -g RfcComponents_APPMQTT.cpp -o RfcComponents_APPMQTT.exe -lXEngine_BaseLib -lXEngine_Core -lXClient_Socket -lRfcComponents_MQTTProtocol -lpthread 
 
 bool RfcComponents_APPMQTT_Process(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int nMsgLen);
 

@@ -49,7 +49,7 @@ using namespace std;
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_HttpProtocol.lib")
 #endif
 #endif
-//Linux::g++ -std=c++17 -Wall -g RfcComponents_APPHttp2.cpp -o RfcComponents_APPHttp2.exe -lXEngine_BaseLib -lXEngine_Core -lXEngine_Cryption -lRfcComponents_HttpProtocol -lpthread
+//Linux::g++ -std=c++20 -Wall -g RfcComponents_APPHttp2.cpp -o RfcComponents_APPHttp2.exe -lXEngine_BaseLib -lXEngine_Core -lXEngine_Cryption -lRfcComponents_HttpProtocol -lpthread
 
 bool bSsl = false;
 bool bIsRun = false;

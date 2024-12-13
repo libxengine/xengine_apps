@@ -30,7 +30,7 @@
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/StreamMedia_RTSPProtocol.lib")
 #endif
 #endif
-//Linux::g++ -std=c++17 -Wall -g StreamMedia_APPRtsp.cpp -o StreamMedia_APPRtsp.exe -lXEngine_BaseLib -lStreamMedia_RTSPProtocol 
+//Linux::g++ -std=c++20 -Wall -g StreamMedia_APPRtsp.cpp -o StreamMedia_APPRtsp.exe -lXEngine_BaseLib -lStreamMedia_RTSPProtocol 
 
 void TestUDP_ParseREQProtocol(LPCXSTR lpszMsgBuffer, int nMsgLen)
 {

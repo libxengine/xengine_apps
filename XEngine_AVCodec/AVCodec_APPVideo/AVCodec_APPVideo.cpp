@@ -40,7 +40,7 @@
 #endif
 #endif
 
-//Linux MacOS:g++ -std=c++17 -Wall -g AVCodec_APPVideo.cpp -o AVCodec_APPVideo.exe -lXEngine_BaseLib -lXEngine_VideoCodec 
+//Linux MacOS:g++ -std=c++20 -Wall -g AVCodec_APPVideo.cpp -o AVCodec_APPVideo.exe -lXEngine_BaseLib -lXEngine_VideoCodec -lXEngine_AVFrame
 
 XNETHANDLE xhDeVideo;
 XNETHANDLE xhEnVideo;
@@ -51,11 +51,11 @@ FILE* pSt_264File;
 int Test_H265Hevc()
 {
 #ifdef _MSC_BUILD
-	FILE* pSt_File = _tfopen("d:\\1.hevc", "rb");
-	pSt_YUVFile = _tfopen("d:\\ds.yuv", "wb");
+	FILE* pSt_File = _tfopen("D:\\h264 file\\2.hevc", "rb");
+	pSt_YUVFile = _tfopen("D:\\h264 file\\2.yuv", "wb");
 #else
-	FILE* pSt_File = fopen("1.hevc", "rb");
-	pSt_YUVFile = fopen("ds.yuv", "wb");
+	FILE* pSt_File = fopen("2.hevc", "rb");
+	pSt_YUVFile = fopen("2.yuv", "wb");
 #endif
 	AVFrame_Frame_ParseInit(&xhParse, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H265);
 	if (!VideoCodec_Stream_DeInit(&xhDeVideo, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H265))
@@ -84,6 +84,8 @@ int Test_H265Hevc()
 			{
 				for (int j = 0; j < nVideoCount; j++)
 				{
+					printf("h265:%d\n", ppSt_MSGBuffer[j]->nAVLen);
+					fwrite(ppSt_MSGBuffer[j]->ptszAVBuffer, 1, ppSt_MSGBuffer[j]->nAVLen, pSt_YUVFile);
 					BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_MSGBuffer[j]->ptszAVBuffer);
 				}
 			}
@@ -94,18 +96,20 @@ int Test_H265Hevc()
 	}
 	VideoCodec_Stream_Destroy(xhDeVideo);
 	AVFrame_Frame_ParseClose(xhParse);
+	fclose(pSt_YUVFile);
+	fclose(pSt_File);
 	return 0;
 }
 int Test_Codech264()
 {
 #ifdef _MSC_BUILD
-	FILE* pSt_File = _tfopen("D:\\h264 file\\720x480.264", "rb");
-	pSt_264File = fopen("D:\\h264 file\\en.h264", "wb");
-	pSt_YUVFile = _tfopen("D:\\h264 file\\ds.yuv", "wb");
+	FILE* pSt_File = _tfopen("D:\\h264 file\\480p.264", "rb");
+	pSt_264File = fopen("D:\\h264 file\\480p.h264", "wb");
+	pSt_YUVFile = _tfopen("D:\\h264 file\\480p.yuv", "wb");
 #else
 	FILE* pSt_File = fopen("480p.264", "rb");
-	pSt_264File = fopen("en.h264", "wb");
-	pSt_YUVFile = fopen("ds.yuv", "wb");
+	pSt_264File = fopen("480p.h264", "wb");
+	pSt_YUVFile = fopen("480p.yuv", "wb");
 #endif
 	AVCODEC_VIDEO_INFO st_VideoInfo;
 	memset(&st_VideoInfo, '\0', sizeof(AVCODEC_VIDEO_INFO));
@@ -154,6 +158,7 @@ int Test_Codech264()
 				VideoCodec_Stream_EnCodec(xhEnVideo, ppSt_MSGBuffer[j]->ptszAVBuffer, ppSt_MSGBuffer[j]->nAVLen, &ppSt_EncoedcBuffer, &nEncoedcCount);
 				for (int k = 0; k < nEncoedcCount; k++)
 				{
+					printf("h264:%d\n", ppSt_EncoedcBuffer[k]->nAVLen);
 					fwrite(ppSt_EncoedcBuffer[k]->ptszAVBuffer, 1, ppSt_EncoedcBuffer[k]->nAVLen, pSt_264File);
 					BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_EncoedcBuffer[j]->ptszAVBuffer);
 				}
@@ -175,11 +180,11 @@ int Test_Codech264()
 int Test_CodechAVS()
 {
 #ifdef _MSC_BUILD
-	FILE* pSt_File = _tfopen("D:\\windows-ffmpeg\\x86\\hunan_avs.es", "rb");
-	pSt_YUVFile = _tfopen("d:\\ds.yuv", "wb");
+	FILE* pSt_File = _tfopen("D:\\h264 file\\avs.es", "rb");
+	pSt_YUVFile = _tfopen("D:\\h264 file\\avs.yuv", "wb");
 #else
-	FILE* pSt_File = fopen("output.avs", "rb");
-	pSt_YUVFile = fopen("ds.yuv", "wb");
+	FILE* pSt_File = fopen("avs.avs", "rb");
+	pSt_YUVFile = fopen("avs.yuv", "wb");
 #endif
 	AVCODEC_VIDEO_INFO st_VideoInfo;
 	memset(&st_VideoInfo, '\0', sizeof(AVCODEC_VIDEO_INFO));
@@ -242,8 +247,7 @@ int main()
 	}
 
 	Test_Codech264();
-	Test_CodechAVS();
 	Test_H265Hevc();
-	
+	//Test_CodechAVS();
 	return 0;
 }

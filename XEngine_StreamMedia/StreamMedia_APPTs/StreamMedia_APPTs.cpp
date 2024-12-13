@@ -49,17 +49,15 @@ using namespace std;
 #endif
 #endif
 
-//Linux::g++ -std=c++17 -Wall -g StreamMedia_APPTs.cpp -o StreamMedia_APPTs.exe -lXEngine_BaseLib -lNetHelp_APIHelp -lStreamMedia_HLSProtocol -lXEngine_AVHelp
+//Linux::g++ -std=c++20 -Wall -g StreamMedia_APPTs.cpp -o StreamMedia_APPTs.exe -lXEngine_BaseLib -lNetHelp_APIHelp -lStreamMedia_HLSProtocol -lXEngine_AVFrame
 
 int M3U8File_Packet()
 {
 #ifdef _MSC_BUILD
-	LPCXSTR lpszVideoFile = _X("D:\\h264 file\\480p.264");
 	LPCXSTR lpszRootFile = _X("D:\\xengine_apps\\Debug\\live\\root.m3u8");
 	LPCXSTR lpszLowFile = _X("D:\\xengine_apps\\Debug\\live\\low\\live.m3u8");
 	LPCXSTR lpszNormalFile = _X("D:\\xengine_apps\\Debug\\live\\normal\\live.m3u8");
 #else
-	LPCXSTR lpszVideoFile = _X("480p.264");
 	LPCXSTR lpszRootFile = _X("./live/root.m3u8");
 	LPCXSTR lpszLowFile = _X("./live/low/live.m3u8");
 	LPCXSTR lpszNormalFile = _X("./live/normal/live.m3u8");
@@ -103,7 +101,13 @@ int M3U8File_Parse()
 		return -1;
 	}
 	bool bStream = false;
+#ifdef _MSC_BUILD
 	LPCXSTR lpszFile = _X("D:\\xengine_apps\\Debug\\live\\root.m3u8");
+	LPCXSTR lpszFileInfo = _X("D:\\xengine_apps\\Debug\\live\\normal\\live.m3u8");
+#else
+	LPCXSTR lpszFile = _X("./live/root.m3u8");
+	LPCXSTR lpszFileInfo = _X("./live/normal/live.m3u8");
+#endif
 	HLSProtocol_M3U8Parse_ReadStream(xhToken, &bStream, lpszFile);
 
 	XBYTE byVersion = 0;
@@ -117,7 +121,6 @@ int M3U8File_Parse()
 	BaseLib_Memory_Free((XPPPMEM)&ppSt_ListFile, nListCount);
 
 	HLSPROTOCOL_M3U8INFO st_M3u8Info = {};
-	LPCXSTR lpszFileInfo = _X("D:\\xengine_apps\\Debug\\live\\normal\\live.m3u8");
 	HLSProtocol_M3U8Parse_ReadLive(xhToken, &st_M3u8Info, lpszFileInfo);
 
 	while (true)
@@ -133,31 +136,21 @@ int M3U8File_Parse()
 			break;
 		}
 	}
-
-	HLSProtocol_M3U8Parse_ReadLive(xhToken, &st_M3u8Info, lpszFileInfo);
-	while (true)
-	{
-		double dlTime = 0;
-		XCHAR tszStreamAddr[MAX_PATH] = {};
-		if (HLSProtocol_M3U8Parse_GetLive(xhToken, tszStreamAddr, &dlTime))
-		{
-			printf("%s %lf\n", tszStreamAddr, dlTime);
-		}
-		else
-		{
-			break;
-		}
-	}
-
 	return 0;
 }
 
 bool TSFile_Parse()
 {
 	LPCXSTR lpszClientID = _X("client");
-    FILE* pSt_RFile = fopen("D:\\XEngine_StreamMedia\\XEngine_Source\\Debug\\1.ts", "rb");
-    FILE* pSt_VFile = fopen("D:\\2.h264", "wb");
-    FILE* pSt_AFile = fopen("D:\\2.aac", "wb");
+#ifdef _MSC_BUILD
+	FILE* pSt_RFile = fopen("D:\\h264 file\\480p.ts", "rb");
+	FILE* pSt_VFile = fopen("D:\\h264 fileD:\\2.h264", "wb");
+	FILE* pSt_AFile = fopen("D:\\h264 fileD:\\2.aac", "wb");
+#else
+	FILE* pSt_RFile = fopen("480p.ts", "rb");
+	FILE* pSt_VFile = fopen("2.h264", "wb");
+	FILE* pSt_AFile = fopen("2.aac", "wb");
+#endif
 
 	if (NULL == pSt_RFile)
 	{
@@ -227,9 +220,16 @@ bool TSFile_Parse()
 bool TSFile_Packet()
 {
 	XNETHANDLE xhVideo = 0;
-	LPCXSTR lpszVideoFile = _X("D:\\h264 file\\720x480.264");
+
+#ifdef _MSC_BUILD
+	LPCXSTR lpszVideoFile = _X("D:\\h264 file\\480p.264");
+	FILE* pSt_WFile = fopen("D:\\h264 file\\480p.ts", "wb");
+#else
+	LPCXSTR lpszVideoFile = _X("./480p.264");
+	FILE* pSt_WFile = fopen("./480p.ts", "wb");
+#endif
+
 	LPCXSTR lpszClientID = _X("client");
-	FILE* pSt_WFile = fopen("D:\\windows-ffmpeg\\x64\\1.ts", "wb");
 	FILE* pSt_RVideo = fopen(lpszVideoFile, "rb");
 
 	AVFrame_Frame_ParseInit(&xhVideo, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
@@ -263,7 +263,6 @@ bool TSFile_Packet()
 		AVFrame_Frame_ParseGet(xhVideo, tszVBuffer, nRet, &ppSt_Frame, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
-			int nWLen = 0;
 			int nMSGCount = 0;
 			XBYTE** ptszMsgBuffer;
 
@@ -284,18 +283,10 @@ bool TSFile_Packet()
 
 int main()
 {
-	//M3U8File_Packet();
+	M3U8File_Packet();
 	M3U8File_Parse();
 
-	bool bServer = false;
-	if (bServer)
-	{
-		//TSFile_Parse();
-	}
-	else
-	{
-		//TSFile_Packet();
-	}
-
+	TSFile_Packet();
+	TSFile_Parse();
 	return 0;
 }
