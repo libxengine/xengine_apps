@@ -26,8 +26,13 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_RTSPProtocol/RTSPProtocol_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_RTSPProtocol/RTSPProtocol_Error.h"
 #ifdef _MSC_BUILD
+#ifdef _WIN64
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_BaseLib.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/StreamMedia_RTSPProtocol.lib")
+#else
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/StreamMedia_RTSPProtocol.lib")
+#endif
 #endif
 #endif
 //Linux::g++ -std=c++20 -Wall -g StreamMedia_APPRtsp.cpp -o StreamMedia_APPRtsp.exe -lXEngine_BaseLib -lStreamMedia_RTSPProtocol 

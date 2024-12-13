@@ -25,8 +25,13 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_SDPProtocol/SDPProtocol_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_SDPProtocol/SDPProtocol_Error.h"
 #ifdef _MSC_BUILD
+#ifdef _WIN64
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_BaseLib.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/StreamMedia_SDPProtocol.lib")
+#else
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/StreamMedia_SDPProtocol.lib")
+#endif
 #endif
 #endif
 //Linux::g++ -std=c++20 -Wall -g StreamMedia_APPSDPProtocol.cpp -o StreamMedia_APPSDPProtocol.exe -lXEngine_BaseLib -lStreamMedia_SDPProtocol

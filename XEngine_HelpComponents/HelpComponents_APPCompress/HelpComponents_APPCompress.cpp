@@ -30,8 +30,13 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_Compress/HelpCompress_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_Compress/HelpCompress_Error.h"
 #ifdef _MSC_BUILD
+#ifdef _WIN64
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/HelpComponents_Compress.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_SystemApi.lib")
+#else
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/HelpComponents_Compress.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_SystemApi.lib")
+#endif
 #endif
 #endif
 //linux Macos:g++ -std=c++20 -Wall -g HelpComponents_APPCompress.cpp -o HelpComponents_APPCompress.exe -lXEngine_BaseLib -lXEngine_SystemApi -lHelpComponents_Compress 

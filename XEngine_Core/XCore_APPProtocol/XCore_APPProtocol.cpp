@@ -33,8 +33,13 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Protocol/Protocol_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_Protocol/Protocol_Error.h"
 #ifdef _MSC_BUILD
+#ifdef _WIN64
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_BaseLib.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_Protocol.lib")
+#else
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_Protocol.lib")
+#endif
 #endif
 #endif
 

@@ -32,9 +32,15 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_NatProtocol/NatProtocol_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_NatProtocol/NatProtocol_Error.h"
 #ifdef _MSC_BUILD
+#ifdef _WIN64
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_BaseLib.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XClient_Socket.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/RfcComponents_NatProtocol.lib")
+#else
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XClient_Socket.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_NatProtocol.lib")
+#endif
 #endif
 #endif
 //Linux::g++ -std=c++20 -Wall -g RfcComponents_APPNat.cpp -o RfcComponents_APPNat.exe -lXEngine_BaseLib -lXClient_Socket -lRfcComponents_NatProtocol

@@ -25,7 +25,11 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_ManagePool/ManagePool_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_ManagePool/ManagePool_Error.h"
 #ifdef _MSC_BUILD
+#ifdef _WIN64
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_ManagePool.lib")
+#else
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_ManagePool.lib")
+#endif
 #endif
 #endif
 //linux macos:g++ -std=c++20 -Wall -g XCore_APPPool.cpp -o XCore_APPPool.exe -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_ManagePool

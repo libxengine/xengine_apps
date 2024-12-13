@@ -35,8 +35,13 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_WBlackList/WBlackList_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_HelpComponents/HelpComponents_WBlackList/WBlackList_Error.h"
 #ifdef _MSC_BUILD
+#ifdef _WIN64
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_BaseLib.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/HelpComponents_WBlackList.lib")
+#else
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/HelpComponents_WBlackList.lib")
+#endif
 #endif
 #endif
 //Linux::g++ -std=c++20 -Wall -g HelpComponents_APPWBlack.cpp -o HelpComponents_APPWBlack.exe -lXEngine_BaseLib -lHelpComponents_WBlackList

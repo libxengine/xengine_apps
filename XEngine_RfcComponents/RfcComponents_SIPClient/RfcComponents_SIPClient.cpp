@@ -43,10 +43,17 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_SIPPorotocol/SIPProtocol_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_SIPPorotocol/SIPProtocol_Error.h"
 #ifdef _MSC_BUILD
+#ifdef _WIN64
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_BaseLib.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XClient_Socket.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/RfcComponents_HttpProtocol.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/RfcComponents_SIPPorotocol.lib")
+#else
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XClient_Socket.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_HttpProtocol.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_SIPPorotocol.lib")
+#endif
 #endif
 #endif
 //Linux::g++ -std=c++20 -Wall -g RfcComponents_SIPClient.cpp -o RfcComponents_SIPClient.exe -lXEngine_BaseLib -lXClient_Socket -lRfcComponents_HttpProtocol -lRfcComponents_SIPPorotocol -lpthread 

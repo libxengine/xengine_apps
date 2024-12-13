@@ -10,7 +10,7 @@ xengine v9 例子代码
 2. XEngine_Client                   客户端组件  
 3. XEngine_Core                     核心服务组件  
 5. XEngine_HelpComponents           帮助组件  
-6. XEngine_Lib                      基础组件  
+6. XEngine_BaseLib                  基础组件  
 7. XEngine_NetHelp                  网络组件  
 9. XEngine_RfcComponents            协议标准组件  
 10. XEngine_StreamMedia             流媒体组件  

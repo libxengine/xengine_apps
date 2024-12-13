@@ -30,8 +30,13 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_APIFlow/APIFlow_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_APIFlow/APIFlow_Error.h"
 #ifdef _MSC_BUILD
+#ifdef _WIN64
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_BaseLib.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/NetHelp_APIFlow.lib")
+#else
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/NetHelp_APIFlow.lib")
+#endif
 #endif
 #endif
 

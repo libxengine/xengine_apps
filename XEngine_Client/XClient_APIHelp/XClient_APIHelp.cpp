@@ -24,8 +24,13 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_APIHelp/APIClient_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_APIHelp/APIClient_Error.h"
 #ifdef _MSC_BUILD
+#ifdef _WIN64
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_BaseLib.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XClient_APIHelp.lib")
+#else
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XClient_APIHelp.lib")
+#endif
 #endif
 #endif
 

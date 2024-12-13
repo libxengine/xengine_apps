@@ -19,7 +19,11 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_APIHelp/APIHelp_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_APIHelp/APIHelp_Error.h"
 #ifdef _MSC_BUILD
+#ifdef _WIN64
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/NetHelp_APIHelp.lib")
+#else
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/NetHelp_APIHelp.lib")
+#endif
 #endif
 #endif
 //Linux::g++ -std=c++20 -Wall -g NetHelp_APPHelp.cpp -o NetHelp_APPHelp.exe -lXEngine_BaseLib -lNetHelp_APIHelp

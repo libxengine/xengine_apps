@@ -27,8 +27,13 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_SnmpProtocol/SnmpProtocol_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_RfcComponents/RfcComponents_SnmpProtocol/SnmpProtocol_Error.h"
 #ifdef _MSC_BUILD
+#ifdef _WIN64
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XClient_Socket.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/RfcComponents_SnmpProtocol.lib")
+#else
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XClient_Socket.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/RfcComponents_SnmpProtocol.lib")
+#endif
 #endif
 #endif
 //Linux::g++ -std=c++20 -Wall -g RfcComponents_APPSnmp.cpp -o RfcComponents_APPSnmp.exe -lXEngine_BaseLib -lXClient_Socket -lRfcComponents_SnmpProtocol 

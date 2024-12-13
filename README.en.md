@@ -10,7 +10,7 @@ please use vs2022 open it,and use x86 or x64 and debug mode.
 2. XEngine_Client                   client  
 3. XEngine_Core                     service  
 5. XEngine_HelpComponents           help  
-6. XEngine_Lib                      base library  
+6. XEngine_BaseLib                  base library  
 7. XEngine_NetHelp                  nethelp  
 9. XEngine_RfcComponents            rfc protocol    
 10. XEngine_StreamMedia             stream media  
