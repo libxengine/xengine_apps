@@ -230,19 +230,19 @@ int test_Memory()
 int test_TTrigger()
 {
 	XHANDLE xhToken;
-	if (!BaseLib_TTigger_Create(&xhToken))
+	if (!BaseLib_TimeTigger_Create(&xhToken))
 	{
 		return -1;
 	}
-	if (!BaseLib_TTigger_Set(xhToken, 1))
+	if (!BaseLib_TimeTigger_Set(xhToken, 1))
 	{
 		return -2;
 	}
 
 	__int64x nTTimer = 0;
-	BaseLib_TTigger_Get(xhToken, 1, &nTTimer);
+	BaseLib_TimeTigger_Get(xhToken, 1, &nTTimer);
 
-	BaseLib_TTigger_Destory(xhToken);
+	BaseLib_TimeTigger_Destory(xhToken);
 	return 0;
 }
 
