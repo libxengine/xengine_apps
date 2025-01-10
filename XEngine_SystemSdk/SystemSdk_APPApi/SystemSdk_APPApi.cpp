@@ -105,10 +105,10 @@ int Test_CPUInfo()
 int Test_ProcessInfo()
 {
 	int nUsage = 0;
-	XENGINE_LIBTIMER st_LibTimer;
+	XENGINE_LIBTIME st_LibTimer;
 	SYSTEMAPI_PROCESS_INFOMATION st_ProcessInfo;
 
-	memset(&st_LibTimer, '\0', sizeof(XENGINE_LIBTIMER));
+	memset(&st_LibTimer, '\0', sizeof(XENGINE_LIBTIME));
 	memset(&st_ProcessInfo, '\0', sizeof(SYSTEMAPI_PROCESS_INFOMATION));
 
 	SystemApi_Process_GetProcessInfo(&st_ProcessInfo);
@@ -123,10 +123,10 @@ int Test_SystemInfo()
 {
 	int nUsage = 0;
 	int nProcessCount = 0;
-	XENGINE_LIBTIMER st_LibTimer;
+	XENGINE_LIBTIME st_LibTimer;
 	SYSTEMAPI_MEMORY_INFOMATION st_MemoryInfo;
 
-	memset(&st_LibTimer, '\0', sizeof(XENGINE_LIBTIMER));
+	memset(&st_LibTimer, '\0', sizeof(XENGINE_LIBTIME));
 	memset(&st_MemoryInfo, '\0', sizeof(SYSTEMAPI_MEMORY_INFOMATION));
 
 	SystemApi_System_GetMemoryUsage(&st_MemoryInfo, XENGINE_SYSTEMSDK_API_SYSTEM_SIZE_MB);
@@ -167,10 +167,10 @@ int Test_EnumFile()
 	int nCount = 0;
 	XCHAR** ppszListDir;
 	SYSTEMAPI_FILE_ATTR st_FileAttr = {};
-	SystemApi_File_GetFileAttr(_X("D:\\xengine_apps"), &st_FileAttr);
+	SystemApi_File_GetFileAttr(_X("D:\\xengine_apps\\x64"), &st_FileAttr);
 
 #ifdef _MSC_BUILD
-	SystemApi_File_EnumFile("D:\\test\\", &ppszListDir, &nCount, true, 1);
+	SystemApi_File_EnumFile("D:\\xengine_apps\\x64", &ppszListDir, &nCount, true, 1);
 #else
 	SystemApi_File_EnumFile("/tmp/", &ppszListDir, &nCount);
 #endif

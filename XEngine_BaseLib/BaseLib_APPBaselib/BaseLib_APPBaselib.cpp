@@ -52,8 +52,8 @@ void TimeSpanTest()
 	__int64x nHourTTime = 0;
 	LPCXSTR lpszStartTime = _X("2019-11-01 12:31:10");
 	LPCXSTR lpszEndTime = _X("2020-10-02 12:31:10");
-	XENGINE_LIBTIMER st_LibTimer;
-	memset(&st_LibTimer, '\0', sizeof(XENGINE_LIBTIMER));
+	XENGINE_LIBTIME st_LibTimer;
+	memset(&st_LibTimer, '\0', sizeof(XENGINE_LIBTIME));
 
 	BaseLib_TimeSpan_GetForStr(lpszStartTime, lpszEndTime, &nDayTTime, 0);
 	BaseLib_TimeSpan_GetForStr(lpszStartTime, lpszEndTime, &nHourTTime, 1);
@@ -68,8 +68,8 @@ void TimeSpanTest()
 void TimeTest()
 {
 	time_t nTime = 2706010596;
-	XENGINE_LIBTIMER st_LibTimer;
-	memset(&st_LibTimer, '\0', sizeof(XENGINE_LIBTIMER));
+	XENGINE_LIBTIME st_LibTimer;
+	memset(&st_LibTimer, '\0', sizeof(XENGINE_LIBTIME));
 
 	BaseLib_Time_GetSysTime(&st_LibTimer);
 	BaseLib_Time_TTimeToStuTime(nTime, &st_LibTimer);
@@ -249,11 +249,11 @@ int test_TTrigger()
 void Test_GetTimeofday()
 {
 	XENGINE_VALTIME st_Timeval;
-	XENGINE_LIBTIMER st_LibTime;
+	XENGINE_LIBTIME st_LibTime;
 	XCHAR tszMsgTimer[128];
 
 	memset(&st_Timeval, '\0', sizeof(XENGINE_VALTIME));
-	memset(&st_LibTime, '\0', sizeof(XENGINE_LIBTIMER));
+	memset(&st_LibTime, '\0', sizeof(XENGINE_LIBTIME));
 	memset(tszMsgTimer, '\0', sizeof(tszMsgTimer));
 
 	BaseLib_Time_GetTimeOfday(&st_Timeval);
