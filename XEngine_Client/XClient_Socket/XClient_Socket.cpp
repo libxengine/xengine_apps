@@ -14,20 +14,27 @@
 #if 1 == _XENGINE_USER_DIR_SYSTEM
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
+#include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
+#include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
 #include <XEngine_Include/XEngine_Client/XClient_Define.h>
 #include <XEngine_Include/XEngine_Client/XClient_Error.h>
 #ifdef _MSC_BUILD
+#pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"XEngine_Client/XClient_Socket.lib")
 #endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Error.h"
 #ifdef _MSC_BUILD
 #ifdef _WIN64
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XClient_Socket.lib")
 #else
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XClient_Socket.lib")
 #endif
 #endif
@@ -61,7 +68,7 @@ int XClient_ProxyClient()
 	nMsgLen = 10240;
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
-	if (XClient_OPTSocket_IOSelect(m_Socket, true))
+	if (BaseLib_IO_Select(m_Socket, true))
 	{
 		if (XClient_TCPSelect_RecvMsg(m_Socket, tszMsgBuffer, &nMsgLen))
 		{
@@ -101,7 +108,7 @@ int TCPTest()
 	memset(tszSDBuffer, '\0', sizeof(tszSDBuffer));
 
 	XSOCKET m_Socket;
-	if (!XClient_TCPSelect_Create(&m_Socket, _X("127.0.0.1"), 5000))
+	if (!XClient_TCPSelect_Create(&m_Socket, _X("127.0.0.1"), 5200, 3))
 	{
 		printf(_X("连接失败！\n"));
 		return -1;
@@ -319,9 +326,9 @@ int main()
 #endif
 
 	//XClient_ProxyClient();
-	//TCPTest();
+	TCPTest();
 	//TCPTestEx();
-	TCPTestXCore();
+	//TCPTestXCore();
 	//Test_UDPClient();
 	//Test_Unix();
 	//udx_test();

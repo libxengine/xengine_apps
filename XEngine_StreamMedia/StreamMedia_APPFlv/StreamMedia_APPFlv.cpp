@@ -156,6 +156,7 @@ bool FLV_PacketVideo()
 	}
 	int nRBLen = 0;
 	int nWBLen = 0;
+	int nPos = 0;
 	XCHAR tszRBBuffer[2048];
 	XCHAR tszWBBuffer[2048];
 
@@ -164,6 +165,7 @@ bool FLV_PacketVideo()
 	FLVProtocol_Packet_FrameHdr(lpszClientID, tszWBBuffer, &nWBLen);
 
 	fwrite(tszWBBuffer, 1, nWBLen, pSt_FLVFile);
+	nPos += nWBLen;
 	//音视频信息配置
 	XENGINE_PROTOCOL_AVINFO st_AVInfo;
 	memset(&st_AVInfo, '\0', sizeof(XENGINE_PROTOCOL_AVINFO));
