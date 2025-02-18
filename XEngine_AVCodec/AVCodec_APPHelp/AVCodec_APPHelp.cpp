@@ -48,7 +48,6 @@
 void Test_MetaInfo()
 {
 	int nListCount = 0;
-	AVHELP_METADATA st_AVMetaData;
 	XENGINE_KEYVALUE** ppSt_MetaList;
 
 #ifdef _MSC_BUILD
@@ -57,8 +56,7 @@ void Test_MetaInfo()
 	LPCXSTR lpszFile = _X("output.mp4");
 #endif
 
-	memset(&st_AVMetaData, '\0', sizeof(AVHELP_METADATA));
-	if (!AVHelp_MetaInfo_Get(lpszFile, &st_AVMetaData, &ppSt_MetaList, &nListCount))
+	if (!AVHelp_MetaInfo_Get(lpszFile, &ppSt_MetaList, &nListCount))
 	{
 		return;
 	}
@@ -75,7 +73,6 @@ void Test_MetaInfo()
 		printf("%s %s\n", ppSt_MetaList[i]->tszStrKey, ppSt_MetaList[i]->tszStrVlu);
 #endif
 	}
-	BaseLib_Memory_Free((XPPPMEM)&st_AVMetaData.ppSt_AVList, st_AVMetaData.nNBStream);
 	BaseLib_Memory_Free((XPPPMEM)&ppSt_MetaList, nListCount);
 
 	nListCount = 0;

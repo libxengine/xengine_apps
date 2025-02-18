@@ -290,10 +290,115 @@ int Test_Ver()
 	printf("%s\n", BaseLib_Version_BuildTime());
 	return 0;
 }
+
+bool GetFileAndPath(LPCXSTR lpszUrl, XCHAR* ptszPath = NULL, XCHAR* ptszFile = NULL, XCHAR* ptszDrive = NULL, XCHAR* ptszFileExt = NULL , bool bOnlyName  = false )
+{
+	int i = 0;
+	int nLen = (int)_tcsxlen(lpszUrl);
+	//获得驱动器
+	if (NULL != ptszDrive)
+	{
+		//linux下面/是开始路径
+		if (lpszUrl[0] == '/')
+		{
+			_tcsxcpy(ptszDrive, _X("/"));
+		}
+		else if ((0 != isupper(lpszUrl[0])) || (0 != islower(lpszUrl[0])))
+		{
+			//是否字母,全路径
+			_tcsxncpy(ptszDrive, lpszUrl, 3);
+		}
+		else if (lpszUrl[0] == '.' && lpszUrl[1] == '/')
+		{
+			//相对路径的路径地址
+			_tcsxncpy(ptszDrive, lpszUrl, 2);
+		}
+	}
+	//获得扩展名
+	if (NULL != ptszFileExt)
+	{
+		int nCount = nLen;
+		while (nCount > 0)
+		{
+			//如果先找到路径分隔符,说明没有后缀名
+			if (lpszUrl[nCount] == '\\' || lpszUrl[nCount] == '/')
+			{
+				break;
+			}
+			if (lpszUrl[nCount] == '.')
+			{
+				_tcsxncpy(ptszFileExt, lpszUrl + nCount + 1, nLen - nCount - 1);
+				break;
+			}
+			nCount--;
+		}
+	}
+	//查找文件名
+	while (nLen > 0)
+	{
+		printf("%C\n", lpszUrl[nLen]);
+		if ((lpszUrl[nLen] == '/') || (lpszUrl[nLen] == '\\'))
+		{
+			break;
+		}
+		nLen--;
+		i++;
+	}
+	//是否只有文件
+	if (nLen <= 0)
+	{
+		//没有找到路径分隔符,说明是文件名
+		if (NULL != ptszFile)
+		{
+			_tcsxcpy(ptszFile, lpszUrl);
+		}
+	}
+	else
+	{
+		//找到分隔符了
+		if (NULL != ptszPath)
+		{
+			_tcsxncpy(ptszPath, lpszUrl, nLen + 1);
+		}
+		if (NULL != ptszFile)
+		{
+			if (bOnlyName)
+			{
+				// 在找到文件名的同时，查找文件名中最后一个 '.' 的位置
+				int nFileLen = i - 1;
+				int nDotPos = -1;
+				for (int j = 0; j < nFileLen; ++j)
+				{
+					if (lpszUrl[nLen + 1 + j] == '.')
+					{
+						nDotPos = j;
+					}
+				}
+				// 如果找到了 '.'，则只复制文件名到 '.' 的位置
+				if (nDotPos != -1)
+				{
+					_tcsxncpy(ptszFile, lpszUrl + nLen + 1, nDotPos);
+				}
+				else
+				{
+					// 否则复制整个文件名
+					_tcsxncpy(ptszFile, lpszUrl + nLen + 1, i - 1);
+				}
+			}
+			else
+			{
+				_tcsxncpy(ptszFile, lpszUrl + nLen + 1, i - 1);
+			}
+		}
+	}
+	return true;
+}
 int main()
 {
-	setlocale(LC_ALL, "");
-
+	if (setlocale(LC_ALL, ".UTF8") == NULL)
+	{
+		return -1;
+	}
 	Test_Ver();
 	test_handle();
 	StringTest();
