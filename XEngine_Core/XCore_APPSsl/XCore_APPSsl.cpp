@@ -261,9 +261,26 @@ int XCrypto_Test()
 	printf("%s\n", tszDecoder);
 	return 0;
 }
+int codec_test()
+{
+	LPCXSTR lpszHTTPCodec = _X("https://www.xyry.org/api?function=oil&param=北京");
+	XCHAR tszEncoder[2048];
+	XCHAR tszDecoder[2048];
+
+	memset(tszEncoder, '\0', sizeof(tszEncoder));
+	memset(tszDecoder, '\0', sizeof(tszDecoder));
+
+	Cryption_Codec_UrlEnCodec(lpszHTTPCodec, strlen(lpszHTTPCodec), tszEncoder);
+	printf("%s\n", tszEncoder);
+
+	Cryption_Codec_UrlDeCodec(tszEncoder, strlen(tszEncoder), tszDecoder);
+	printf("%s\n", tszDecoder);
+	return 0;
+}
 
 int main()
 {
+	codec_test();
 	XCrypto_Test();
 	md5cal();
 	Cryptto();

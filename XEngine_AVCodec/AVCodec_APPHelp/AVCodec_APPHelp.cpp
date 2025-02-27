@@ -51,7 +51,7 @@ void Test_MetaInfo()
 	XENGINE_KEYVALUE** ppSt_MetaList;
 
 #ifdef _MSC_BUILD
-	LPCXSTR lpszFile = _X("D:\\h264 file\\output.mp4");
+	LPCXSTR lpszFile = _X("D:\\h264 file\\1.mp4");
 #else
 	LPCXSTR lpszFile = _X("output.mp4");
 #endif
@@ -84,6 +84,12 @@ void Test_MetaInfo()
 		AVHelp_MetaInfo_GetAVInfo(lpszFile, i, &st_AVInfo);
 	}
 	BaseLib_Memory_Free((XPPPMEM)&ppSt_ListFile, nListCount);
+
+	double dlAVTime = 0;
+	AVHelp_MetaInfo_GetTime(lpszFile, 0, &dlAVTime);
+
+	double dlStartTime = 0;
+	AVHelp_MetaInfo_GetStartTime(lpszFile, 0, &dlStartTime);
 }
 
 void Test_PPS264Info()
