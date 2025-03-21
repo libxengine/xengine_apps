@@ -55,7 +55,7 @@ int XClient_ProxyClient()
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	XSOCKET m_Socket;
-	if (!XClient_TCPSelect_Create(&m_Socket, _X("192.168.1.8"), 5401))
+	if (!XClient_TCPSelect_Create(&m_Socket, _X("10.0.4.69"), 7890))
 	{
 		printf(_X("连接失败！\n"));
 		return -1;
@@ -325,8 +325,8 @@ int main()
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 
-	//XClient_ProxyClient();
-	TCPTest();
+	XClient_ProxyClient();
+	//TCPTest();
 	//TCPTestEx();
 	//TCPTestXCore();
 	//Test_UDPClient();

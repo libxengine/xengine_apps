@@ -86,18 +86,12 @@ void Audio_Encode()
 
 	st_AudioInfo.nChannel = 2;
 	st_AudioInfo.nSampleRate = 48000;
-	st_AudioInfo.nBitRate = 64000;
-	st_AudioInfo.nSampleFmt = ENUM_AVCODEC_AUDIO_SAMPLEFMT_FLTP;
+	st_AudioInfo.nBitRate = 128000;
+	st_AudioInfo.nSampleFmt = ENUM_AVCODEC_AUDIO_SAMPLEFMT_S16;
 	st_AudioInfo.enAVCodec = ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC;
 	if (!AudioCodec_Stream_EnInit(&xhCoder, &st_AudioInfo))
 	{
 		printf("AudioCodec_Stream_EnInit\n");
-		return;
-	}
-	int nLen = 0;
-	if (!AudioCodec_Stream_SetResample(xhCoder, &nLen, 48000, 48000, ENUM_AVCODEC_AUDIO_SAMPLEFMT_S16, ENUM_AVCODEC_AUDIO_SAMPLEFMT_FLTP, 2, 2))
-	{
-		printf("AudioCodec_Stream_ResamplerInit\n");
 		return;
 	}
 #ifdef _MSC_BUILD
@@ -164,22 +158,17 @@ void Audio_DeCodec()
 	AVCODEC_AUDIO_INFO st_AudioInfo;
 	memset(&st_AudioInfo, '\0', sizeof(AVCODEC_AUDIO_INFO));
 
-	st_AudioInfo.nSampleRate = 44100;
+	st_AudioInfo.nSampleRate = 48000;
 	st_AudioInfo.nFrameSize = 1024;
 	st_AudioInfo.nChannel = 2;
-	st_AudioInfo.nSampleFmt = ENUM_AVCODEC_AUDIO_SAMPLEFMT_FLTP;
+	st_AudioInfo.nSampleFmt = ENUM_AVCODEC_AUDIO_SAMPLEFMT_S16;
 
-	if (!AudioCodec_Stream_DeInit(&xhCoder, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC))
+	if (!AudioCodec_Stream_DeInit(&xhCoder, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC, &st_AudioInfo))
 	{
 		printf("AudioCodec_Stream_DeInit\n");
 		return;
 	}
-	
-	if (!AudioCodec_Stream_SetResample(xhCoder, &nLen, st_AudioInfo.nSampleRate, 44100, ENUM_AVCODEC_AUDIO_SAMPLEFMT_FLTP, ENUM_AVCODEC_AUDIO_SAMPLEFMT_S16, 2, 2))
-	{
-		printf("AudioCodec_Stream_ResamplerInit\n");
-		return;
-	}
+
 	if (nLen <= 0)
 	{
 		nLen = 10240;
@@ -276,9 +265,10 @@ void OPUS_Encode()
 }
 int main()
 {
-	OPUS_Encode();
-	Audio_ListCodec();
 	Audio_Encode();
 	Audio_DeCodec();
+	OPUS_Encode();
+	Audio_ListCodec();
+
 	return 0;
 }

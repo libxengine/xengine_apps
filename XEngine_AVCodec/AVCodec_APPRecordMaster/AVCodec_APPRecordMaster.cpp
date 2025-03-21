@@ -181,17 +181,11 @@ int main()
 		AVCollect_Audio_GetInfo(xhSound, &st_AVInfo);
 		//文件保存需要的属性
 		st_AVInfo.st_AudioInfo.enAVCodec = ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC;
-		st_AVInfo.st_AudioInfo.nSampleFmt = ENUM_AVCODEC_AUDIO_SAMPLEFMT_FLTP;
+		st_AVInfo.st_AudioInfo.nSampleFmt = ENUM_AVCODEC_AUDIO_SAMPLEFMT_S16;
 
 		if (!AudioCodec_Stream_EnInit(&xhAudio, &st_AVInfo.st_AudioInfo))
 		{
 			printf(_X("初始化编码器失败"));
-			return -1;
-		}
-		int nLen = 0;
-		if (!AudioCodec_Stream_SetResample(xhAudio, &nLen, st_AVInfo.st_AudioInfo.nSampleRate, st_AVInfo.st_AudioInfo.nSampleRate, (ENUM_AVCODEC_AUDIO_SAMPLEFMT)st_AVInfo.st_AudioInfo.nSampleFmt, ENUM_AVCODEC_AUDIO_SAMPLEFMT_FLTP, st_AVInfo.st_AudioInfo.nChannel, st_AVInfo.st_AudioInfo.nChannel))
-		{
-			printf(_X("初始化重采样工具失败"));
 			return -1;
 		}
 		//是否需要保存为文件
