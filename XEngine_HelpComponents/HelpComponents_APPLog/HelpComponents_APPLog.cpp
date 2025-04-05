@@ -59,11 +59,11 @@ int main()
 	XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("xlog test 变量测试:$(int).得到值"));
 	HelpComponents_XLog_ValueDelete(xhLog, "$(int)");
 
-	HelpComponents_XLog_SetLogInterval(xhLog, 1000);
+	HelpComponents_XLog_SetLogInterval(xhLog, 1000, 1000, 1000, 1000);
 	for (int i = 0; i < 100; i++)
 	{
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("xlog test 1=%d XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO中文测试"), i);
-		//std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 	HelpComponents_XLog_StrongClose(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO);
 	HelpComponents_XLog_SetLogInterval(xhLog, 0);
