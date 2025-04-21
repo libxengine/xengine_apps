@@ -265,6 +265,15 @@ void OPUS_Encode()
 }
 int main()
 {
+	int nListCount = 0;
+	ENUM_AVCODEC_AUDIO_SAMPLEFMT** ppenListSamples;
+	AudioCodec_Help_GetFmtList(ENUM_XENGINE_AVCODEC_AUDIO_TYPE_MP2, &ppenListSamples, &nListCount);
+	for (int i = 0; i < nListCount; i++)
+	{
+		printf("%d\n", *ppenListSamples[i]);
+	}
+	BaseLib_Memory_Free((XPPPMEM)&ppenListSamples, nListCount);
+
 	Audio_Encode();
 	Audio_DeCodec();
 	OPUS_Encode();

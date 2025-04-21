@@ -251,6 +251,16 @@ int main()
 	{
 		printf("%d = %s\n", ppSt_ListHWCodec[i]->enHWDevice, ppSt_ListHWCodec[i]->tszHWName);
 	}
+	BaseLib_Memory_Free((XPPPMEM)&ppSt_ListHWCodec, nListCount);
+
+	nListCount = 0;
+	ENUM_AVCODEC_VIDEO_SAMPLEFMT** ppenListPixs;
+	VideoCodec_Help_GetFmtList(ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264, &ppenListPixs, &nListCount);
+	for (int i = 0; i < nListCount; i++)
+	{
+		printf("%d\n", *ppenListPixs[i]);
+	}
+	BaseLib_Memory_Free((XPPPMEM)&ppenListPixs, nListCount);
 
 	Test_Codech264();
 	Test_H265Hevc();
