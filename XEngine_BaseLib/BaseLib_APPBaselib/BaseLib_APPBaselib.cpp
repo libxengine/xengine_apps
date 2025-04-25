@@ -227,21 +227,47 @@ int test_Memory()
 	BaseLib_Memory_Free((void***)&ppSt_Memory, 3);
 	return 0;
 }
+
+int nRunTime = 0;
+void CALLBACK BaseLib_TimeTrigger(int nIDEvent, LPCXSTR lpszTimeStr, __int64x nTimeOffset, int nTTNumber, XPVOID lParam)
+{
+	_xtprintf(_X("触发器ID:%d 触发器时间:%s 时间偏移:%lld 触发器次数:%d\n"), nIDEvent, lpszTimeStr, nTimeOffset, nTTNumber);
+	nRunTime++;
+}
 int test_TTrigger()
 {
-	XHANDLE xhToken;
-	if (!BaseLib_TimeTigger_Create(&xhToken))
+	XHANDLE xhToken = BaseLib_TimeTigger_Create(BaseLib_TimeTrigger);
+	if (NULL == xhToken)
 	{
 		return -1;
 	}
-	if (!BaseLib_TimeTigger_Set(xhToken, 1))
+	XENGINE_LIBTIGGER st_TimeTigger = {};
+	st_TimeTigger.nTiggerCount = 1;
+	st_TimeTigger.enTiggerType = ENUM_XENGINE_BASELIB_TIME_TYPE_TIME;
+	_xstprintf(st_TimeTigger.tszTimeStr, _X("2025-04-22 16:23:05"));
+	BaseLib_TimeTigger_Set(xhToken, 1, &st_TimeTigger);
+	while (true)
 	{
-		return -2;
+		if (1 == nRunTime)
+		{
+			break;
+		}
+		Sleep(1000);
 	}
-
-	__int64x nTTimer = 0;
-	BaseLib_TimeTigger_Get(xhToken, 1, &nTTimer);
-
+	nRunTime = 0;
+	st_TimeTigger.nTiggerCount = 10;
+	st_TimeTigger.enTiggerType = ENUM_XENGINE_BASELIB_TIME_TYPE_SECOND;
+	_xstprintf(st_TimeTigger.tszTimeStr, _X("1"));
+	BaseLib_TimeTigger_Set(xhToken, 2, &st_TimeTigger);
+	
+	while (true)
+	{
+		if (10 == nRunTime)
+		{
+			break;
+		}
+		Sleep(1000);
+	}
 	BaseLib_TimeTigger_Destory(xhToken);
 	return 0;
 }

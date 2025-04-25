@@ -262,6 +262,15 @@ int main()
 	}
 	BaseLib_Memory_Free((XPPPMEM)&ppenListPixs, nListCount);
 
+	nListCount = 0;
+	AVCODEC_TIMEBASE** ppSt_TimeBase;
+	VideoCodec_Help_GetRateList(ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264, &ppSt_TimeBase, &nListCount);
+	for (int i = 0; i < nListCount; i++)
+	{
+		printf("%d %d\n", ppSt_TimeBase[i]->nDen, ppSt_TimeBase[i]->nNum);
+	}
+	BaseLib_Memory_Free((XPPPMEM)&ppenListPixs, nListCount);
+
 	Test_Codech264();
 	Test_H265Hevc();
 	//Test_CodechAVS();

@@ -274,6 +274,24 @@ int main()
 	}
 	BaseLib_Memory_Free((XPPPMEM)&ppenListSamples, nListCount);
 
+	int** ppInt_RateList;
+	nListCount = 0;
+	AudioCodec_Help_GetRateList(ENUM_XENGINE_AVCODEC_AUDIO_TYPE_MP2, &ppInt_RateList, &nListCount);
+	for (int i = 0; i < nListCount; i++)
+	{
+		printf("%d\n", *ppInt_RateList[i]);
+	}
+	BaseLib_Memory_Free((XPPPMEM)&ppInt_RateList, nListCount);
+
+	XCHAR** pptszChList;
+	nListCount = 0;
+	AudioCodec_Help_GetChList(ENUM_XENGINE_AVCODEC_AUDIO_TYPE_MP3, &pptszChList, &nListCount);
+	for (int i = 0; i < nListCount; i++)
+	{
+		printf("%s\n", pptszChList[i]);
+	}
+	BaseLib_Memory_Free((XPPPMEM)&pptszChList, nListCount);
+
 	Audio_Encode();
 	Audio_DeCodec();
 	OPUS_Encode();

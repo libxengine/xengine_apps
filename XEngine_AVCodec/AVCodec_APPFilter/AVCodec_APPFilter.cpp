@@ -82,12 +82,12 @@ int Test_FilterAudio()
 			break;
 		}
 		int nListCount = 0;
-		AVFILTER_MSGBUFFER** ppSt_MSGBuffer;
+		AVCODEC_AUDIO_MSGBUFFER** ppSt_MSGBuffer;
 		AVFilter_Audio_Cvt(xhToken, (XBYTE*)tszRDBuffer, nRSize, &ppSt_MSGBuffer, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
-			fwrite(ppSt_MSGBuffer[i]->ptszMSGBuffer, 1, ppSt_MSGBuffer[i]->nMSGLen, pSt_WFile);
-			printf("%d\n", ppSt_MSGBuffer[i]->nMSGLen);
+			fwrite(ppSt_MSGBuffer[i]->ptszMsgBuffer, 1, ppSt_MSGBuffer[i]->nMsgLen, pSt_WFile);
+			printf("%d\n", ppSt_MSGBuffer[i]->nMsgLen);
 		}
 		BaseLib_Memory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
 	}
@@ -131,12 +131,12 @@ int Test_FilterVideo()
 			break;
 		}
 		int nListCount = 0;
-		AVFILTER_MSGBUFFER** ppSt_MSGBuffer;
+		AVCODEC_VIDEO_MSGBUFFER** ppSt_MSGBuffer;
 		AVFilter_Video_Cvt(xhToken, (XBYTE*)ptszRBBuffer, nRSize, &ppSt_MSGBuffer, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
-			fwrite(ppSt_MSGBuffer[i]->ptszMSGBuffer, 1, ppSt_MSGBuffer[i]->nMSGLen, pSt_WBFile);
-			nCount += ppSt_MSGBuffer[i]->nMSGLen;
+			fwrite(ppSt_MSGBuffer[i]->ptszAVBuffer, 1, ppSt_MSGBuffer[i]->nAVLen, pSt_WBFile);
+			nCount += ppSt_MSGBuffer[i]->nAVLen;
 			printf("Count:%d\n", nCount);
 		}
 		BaseLib_Memory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
@@ -217,12 +217,12 @@ int Test_FilterMutliVideo()
 		}
 
 		int nListCount = 0;
-		AVFILTER_MSGBUFFER** ppSt_MSGBuffer;
+		AVCODEC_VIDEO_MSGBUFFER** ppSt_MSGBuffer;
 		bool bRet = AVFilter_Video_MIXRecv(xhToken, &ppSt_MSGBuffer, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
-			fwrite(ppSt_MSGBuffer[i]->ptszMSGBuffer, 1, ppSt_MSGBuffer[i]->nMSGLen, pSt_WBFile);
-			nCount += ppSt_MSGBuffer[i]->nMSGLen;
+			fwrite(ppSt_MSGBuffer[i]->ptszAVBuffer, 1, ppSt_MSGBuffer[i]->nAVLen, pSt_WBFile);
+			nCount += ppSt_MSGBuffer[i]->nAVLen;
 			printf("Count:%d\n", nCount);
 		}
 		BaseLib_Memory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
@@ -304,12 +304,12 @@ void Test_FilterMutliAudio()
 			printf("errno\n");
 		}
 		int nListCount = 0;
-		AVFILTER_MSGBUFFER** ppSt_MSGBuffer;
+		AVCODEC_AUDIO_MSGBUFFER** ppSt_MSGBuffer;
 		AVFilter_Audio_MIXRecv(xhFilter, &ppSt_MSGBuffer, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
-			fwrite(ppSt_MSGBuffer[i]->ptszMSGBuffer, 1, ppSt_MSGBuffer[i]->nMSGLen, pSt_FileAac);
-			printf("%d\n", ppSt_MSGBuffer[i]->nMSGLen);
+			fwrite(ppSt_MSGBuffer[i]->ptszMsgBuffer, 1, ppSt_MSGBuffer[i]->nMsgLen, pSt_FileAac);
+			printf("%d\n", ppSt_MSGBuffer[i]->nMsgLen);
 		}
 		BaseLib_Memory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
 	}

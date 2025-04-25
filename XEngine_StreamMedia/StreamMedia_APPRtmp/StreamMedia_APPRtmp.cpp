@@ -531,12 +531,242 @@ bool RTMP_Packet()
 	return true;
 }
 
+void RTMP_Parse_File()
+{
+	LPCXSTR lpszAddr = _X("D:\\xengine_apps\\Debug\\1.h264");
+
+	RTMPProtocol_Parse_Init(1);
+	RTMPProtocol_Parse_Insert(lpszAddr, true);
+
+	FILE* pSt_WFile = fopen("D:\\xengine_apps\\Debug\\2.h264", "wb");;
+	pSt_File = fopen(lpszAddr, "rb");
+	if (NULL == pSt_File)
+	{
+		printf("open file error\n");
+		return;
+	}
+
+	int nMSGLen = 0;
+	XCHAR tszMsgBuffer[1537] = {};
+	nMSGLen = fread(tszMsgBuffer, 1, sizeof(tszMsgBuffer), pSt_File);
+	RTMPProtocol_Parse_Send(lpszAddr, tszMsgBuffer, nMSGLen);
+
+	int nMsgLen = 0;
+	XCHAR* ptszMsgBuffer = NULL;
+	XENGINE_RTMPHDR st_RTMPHdr = {};
+	if (RTMPProtocol_Parse_Recv(lpszAddr, &ptszMsgBuffer, &nMsgLen, &st_RTMPHdr))
+	{
+		BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+	}
+
+	nMSGLen = fread(tszMsgBuffer, 1, 1536, pSt_File);
+	RTMPProtocol_Parse_Send(lpszAddr, tszMsgBuffer, nMSGLen);
+	if (RTMPProtocol_Parse_Recv(lpszAddr, &ptszMsgBuffer, &nMsgLen, &st_RTMPHdr))
+	{
+		BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+	}
+
+	while (true)
+	{
+		int nMSGLen = 4096;
+		XCHAR tszMsgBuffer[4096];
+		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+		nMSGLen = fread(tszMsgBuffer, 1, sizeof(tszMsgBuffer), pSt_File);
+		if (nMSGLen <= 0)
+		{
+			break;
+		}
+		RTMPProtocol_Parse_Send(lpszAddr, tszMsgBuffer, nMSGLen);
+
+		while (true)
+		{
+			if (RTMPProtocol_Parse_WaitEvent(1, 1))
+			{
+				int nListCount = 0;
+				XENGINE_MANAGEPOOL_TASKEVENT** ppSt_ListAddr;
+				RTMPProtocol_Parse_GetPool(1, &ppSt_ListAddr, &nListCount);
+				for (int i = 0; i < nListCount; i++)
+				{
+					for (int j = 0; j < ppSt_ListAddr[i]->nPktCount; j++)
+					{
+						int nMsgLen = 0;
+						XCHAR* ptszMsgBuffer = NULL;
+						XENGINE_RTMPHDR st_RTMPHdr;
+						memset(&st_RTMPHdr, '\0', sizeof(XENGINE_RTMPHDR));
+						if (RTMPProtocol_Parse_Recv(ppSt_ListAddr[i]->tszClientAddr, &ptszMsgBuffer, &nMsgLen, &st_RTMPHdr))
+						{
+							if (XENGINE_STREAMMEDIA_RTMP_MSGTYPE_CONTROL == st_RTMPHdr.byTypeID)
+							{
+								XENGINE_RTMPPROTOCOLCONTROL st_RTMPControl;
+								memset(&st_RTMPControl, '\0', sizeof(XENGINE_RTMPPROTOCOLCONTROL));
+
+								RTMPProtocol_Help_ParseProtocolControl(&st_RTMPControl, st_RTMPHdr.byTypeID, ptszMsgBuffer, nMsgLen);
+								printf("XENGINE_STREAMMEDIA_RTMP_MSGTYPE_CONTROL:%s\n", ppSt_ListAddr[i]->tszClientAddr);
+							}
+							else if (XENGINE_STREAMMEDIA_RTMP_MSGTYPE_DATA == st_RTMPHdr.byTypeID)
+							{
+								XENGINE_RTMPDATA st_RTMPData;
+								memset(&st_RTMPData, '\0', sizeof(XENGINE_RTMPDATA));
+
+								RTMPProtocol_Help_ParseData(&st_RTMPData, ptszMsgBuffer, nMsgLen);
+								printf("RTMPProtocol_Help_ParseData:%s %s \n", st_RTMPData.tszDataName, st_RTMPData.tszDataValue);
+								for (int i = 0; i < st_RTMPData.nCount; i++)
+								{
+									printf("ENUM_XENGINE_STREAMMEDIA_RTMP_PARSE_PKTTYPE_DATA,Name:%s,Value:%s\n", st_RTMPData.ppSt_CMDProperty[i]->tszKeyBuffer, st_RTMPData.ppSt_CMDProperty[i]->st_CMDOBJect.tszMsgBuffer);
+								}
+							}
+							else if (XENGINE_STREAMMEDIA_RTMP_MSGTYPE_AUDIO == st_RTMPHdr.byTypeID)
+							{
+								XENGINE_RTMPAUDIO st_RTMPAudio;
+								memset(&st_RTMPAudio, '\0', sizeof(XENGINE_RTMPAUDIO));
+								//ptszMsgBuffer + XENGINE_RTMPAUDIO
+								memcpy(&st_RTMPAudio, ptszMsgBuffer, sizeof(XENGINE_RTMPAUDIO));
+
+								printf("ENUM_XENGINE_STREAMMEDIA_RTMP_PARSE_PKTTYPE_AUDIO:%d = %d %d %d %d\n", nMsgLen, st_RTMPAudio.byAudioFmt, st_RTMPAudio.byAudioRate, st_RTMPAudio.byAudioSize, st_RTMPAudio.byAudioType);
+							}
+							else if (XENGINE_STREAMMEDIA_RTMP_MSGTYPE_VIDEO == st_RTMPHdr.byTypeID)
+							{
+								int nFLen = XENGINE_MEMORY_SIZE_MAX;
+								XCHAR* ptszFBuffer = (XCHAR*)malloc(XENGINE_MEMORY_SIZE_MAX);
+								XENGINE_RTMPVIDEO st_RTMPVideo;
+								XENGINE_RTMPVIDEOPARAM st_RTMPVParam;
+
+								memset(&st_RTMPVParam, '\0', sizeof(XENGINE_RTMPVIDEOPARAM));
+								memset(&st_RTMPVideo, '\0', sizeof(XENGINE_RTMPVIDEO));
+
+								memcpy(&st_RTMPVideo, ptszMsgBuffer, sizeof(XENGINE_RTMPVIDEO));
+								RTMPProtocol_Help_ParseVideo(&st_RTMPVideo, ptszFBuffer, &nFLen, ptszMsgBuffer + sizeof(XENGINE_RTMPVIDEO), nMsgLen - sizeof(XENGINE_RTMPVIDEO), &st_RTMPVParam);
+
+								if (NULL != pSt_WFile)
+								{
+									if (st_RTMPVideo.byAVCType == 1)
+									{
+										fwrite(ptszFBuffer, 1, nFLen, pSt_WFile);
+									}
+									else
+									{
+										fwrite(ptszFBuffer, 1, nFLen, pSt_WFile);
+									}
+								}
+
+								free(ptszFBuffer);
+								printf("ENUM_XENGINE_STREAMMEDIA_RTMP_PARSE_PKTTYPE_VIDEO:%d = %d %d %d\n", nMsgLen, st_RTMPVideo.byCodecID, st_RTMPVideo.byFrameType, st_RTMPVideo.byAVCType);
+							}
+							else if (XENGINE_STREAMMEDIA_RTMP_MSGTYPE_COMMAND == st_RTMPHdr.byTypeID)
+							{
+								XENGINE_RTMPCOMMAND st_RTMPCommand;
+								memset(&st_RTMPCommand, '\0', sizeof(XENGINE_RTMPCOMMAND));
+
+								RTMPProtocol_Help_ParseCommand(&st_RTMPCommand, ptszMsgBuffer, nMsgLen);
+								for (int i = 0; i < st_RTMPCommand.nProCount; i++)
+								{
+									printf("ppSt_CMDProperty,Name:%s,Value:%s %s\n", st_RTMPCommand.tszCMDName, st_RTMPCommand.ppSt_CMDProperty[i]->tszKeyBuffer, st_RTMPCommand.ppSt_CMDProperty[i]->st_CMDOBJect.tszMsgBuffer);
+								}
+								for (int i = 0; i < st_RTMPCommand.nObCount; i++)
+								{
+									printf("ppSt_CMDObject,Name:%s,Value:%d %s\n", st_RTMPCommand.tszCMDName, st_RTMPCommand.ppSt_CMDObject[i]->byType, st_RTMPCommand.ppSt_CMDObject[i]->tszMsgBuffer);
+								}
+
+								BaseLib_Memory_Free((XPPPMEM)&st_RTMPCommand.ppSt_CMDProperty, st_RTMPCommand.nProCount);
+								BaseLib_Memory_Free((XPPPMEM)&st_RTMPCommand.ppSt_CMDObject, st_RTMPCommand.nObCount);
+
+								if (bServer)
+								{
+									st_RTMPCommand.nProCount = 0;
+									st_RTMPCommand.nObCount = 0;
+									if (0 == _tcsxnicmp(XENGINE_STREAMMEDIA_RTMP_COMMAND_PUBLISH, st_RTMPCommand.tszCMDName, strlen(XENGINE_STREAMMEDIA_RTMP_COMMAND_PUBLISH)))
+									{
+										st_RTMPCommand.nProCount = 2;
+										BaseLib_Memory_Malloc((XPPPMEM)&st_RTMPCommand.ppSt_CMDProperty, st_RTMPCommand.nProCount, sizeof(XENGINE_RTMPCMDPROPERTY));
+
+										st_RTMPCommand.nCMDId = 0;
+										strcpy(st_RTMPCommand.tszCMDName, XENGINE_STREAMMEDIA_RTMP_COMMAND_ONPUBLISH);
+
+										_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[0]->tszKeyBuffer, "code");
+										st_RTMPCommand.ppSt_CMDProperty[0]->st_CMDOBJect.byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_STRING;
+										st_RTMPCommand.ppSt_CMDProperty[0]->st_CMDOBJect.nMLen = 23;
+										_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[0]->st_CMDOBJect.tszMsgBuffer, "NetStream.Publish.Start");
+
+										_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[1]->tszKeyBuffer, "description");
+										st_RTMPCommand.ppSt_CMDProperty[1]->st_CMDOBJect.byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_STRING;
+										st_RTMPCommand.ppSt_CMDProperty[1]->st_CMDOBJect.nMLen = 26;
+										_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[1]->st_CMDOBJect.tszMsgBuffer, "Started publishing stream.");
+
+										BaseLib_Memory_Free((XPPPMEM)&st_RTMPCommand.ppSt_CMDProperty, st_RTMPCommand.nProCount);
+										BaseLib_Memory_Free((XPPPMEM)&st_RTMPCommand.ppSt_CMDObject, st_RTMPCommand.nObCount);
+										//////////////////////////////////////////////////////////////////////////
+										st_RTMPCommand.nProCount = 4;
+										st_RTMPCommand.nObCount = 0;
+										BaseLib_Memory_Malloc((XPPPMEM)&st_RTMPCommand.ppSt_CMDProperty, st_RTMPCommand.nProCount, sizeof(XENGINE_RTMPCMDPROPERTY));
+
+										strcpy(st_RTMPCommand.tszCMDName, XENGINE_STREAMMEDIA_RTMP_COMMAND_ONSTATUS);
+
+										_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[0]->tszKeyBuffer, "level");
+										st_RTMPCommand.ppSt_CMDProperty[0]->st_CMDOBJect.byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_STRING;
+										st_RTMPCommand.ppSt_CMDProperty[0]->st_CMDOBJect.nMLen = 6;
+										_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[0]->st_CMDOBJect.tszMsgBuffer, "status");
+
+										_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[1]->tszKeyBuffer, "code");
+										st_RTMPCommand.ppSt_CMDProperty[1]->st_CMDOBJect.byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_STRING;
+										st_RTMPCommand.ppSt_CMDProperty[1]->st_CMDOBJect.nMLen = 23;
+										_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[1]->st_CMDOBJect.tszMsgBuffer, "NetStream.Publish.Start");
+
+										_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[2]->tszKeyBuffer, "description");
+										st_RTMPCommand.ppSt_CMDProperty[2]->st_CMDOBJect.byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_STRING;
+										st_RTMPCommand.ppSt_CMDProperty[2]->st_CMDOBJect.nMLen = 26;
+										_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[2]->st_CMDOBJect.tszMsgBuffer, "Started publishing stream.");
+
+										_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[3]->tszKeyBuffer, "clientid");
+										st_RTMPCommand.ppSt_CMDProperty[3]->st_CMDOBJect.byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_STRING;
+										st_RTMPCommand.ppSt_CMDProperty[3]->st_CMDOBJect.nMLen = 8;
+										_tcsxcpy(st_RTMPCommand.ppSt_CMDProperty[3]->st_CMDOBJect.tszMsgBuffer, "ASAICiss");
+
+										BaseLib_Memory_Free((XPPPMEM)&st_RTMPCommand.ppSt_CMDProperty, st_RTMPCommand.nProCount);
+										BaseLib_Memory_Free((XPPPMEM)&st_RTMPCommand.ppSt_CMDObject, st_RTMPCommand.nObCount);
+									}
+									else if (0 == _tcsxnicmp(XENGINE_STREAMMEDIA_RTMP_COMMAND_CREATE, st_RTMPCommand.tszCMDName, strlen(XENGINE_STREAMMEDIA_RTMP_COMMAND_CREATE)))
+									{
+										st_RTMPCommand.nObCount = 1;
+										BaseLib_Memory_Malloc((XPPPMEM)&st_RTMPCommand.ppSt_CMDObject, st_RTMPCommand.nObCount, sizeof(XENGINE_RTMPCMDOBJECT));
+
+										strcpy(st_RTMPCommand.tszCMDName, XENGINE_STREAMMEDIA_RTMP_COMMAND_RESULT);
+
+										double dlValue = 1;
+										st_RTMPCommand.ppSt_CMDObject[0]->byType = XENGINE_STREAMMEDIA_RTMP_PLTYPE_AFM0_INT64;
+										st_RTMPCommand.ppSt_CMDObject[0]->nMLen = 8;
+										memcpy(st_RTMPCommand.ppSt_CMDObject[0]->tszMsgBuffer, &dlValue, 8);
+									}
+									else if (0 == _tcsxnicmp(XENGINE_STREAMMEDIA_RTMP_COMMAND_CONNECT, st_RTMPCommand.tszCMDName, strlen(XENGINE_STREAMMEDIA_RTMP_COMMAND_CONNECT)))
+									{
+
+									}
+									else
+									{
+										strcpy(st_RTMPCommand.tszCMDName, XENGINE_STREAMMEDIA_RTMP_COMMAND_RESULT);
+									}
+								}
+							}
+							BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+						}
+					}
+				}
+				BaseLib_Memory_Free((XPPPMEM)&ppSt_ListAddr, nListCount);
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+}
 int main()
 {
 #ifdef _MSC_BUILD
 	WSADATA st_WSAData;
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
+
+	RTMP_Parse_File();
 	if (bServer)
 	{
 		RTMP_Parse();

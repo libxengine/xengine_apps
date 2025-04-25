@@ -96,13 +96,13 @@ LPCXSTR lpszMP4File = "1.mp4";
 void CALLBACK XEngine_AVCollect_CBScreen(uint8_t* ptszAVBuffer, int nAVLen, AVCOLLECT_TIMEINFO* pSt_TimeInfo, XPVOID lParam)
 {
 	int nCVTCount = 0;
-	AVFILTER_MSGBUFFER** ppSt_CVTBuffer;
+	AVCODEC_VIDEO_MSGBUFFER** ppSt_CVTBuffer;
 	AVFilter_Video_Cvt(xhFilter, ptszAVBuffer, nAVLen, &ppSt_CVTBuffer, &nCVTCount);
 	for (int i = 0; i < nCVTCount; i++)
 	{
 		int nListCount = 0;
 		AVCODEC_VIDEO_MSGBUFFER** ppSt_MSGBuffer;
-		VideoCodec_Stream_EnCodec(xhVideo, ppSt_CVTBuffer[i]->ptszMSGBuffer, ppSt_CVTBuffer[i]->nMSGLen, &ppSt_MSGBuffer, &nListCount);
+		VideoCodec_Stream_EnCodec(xhVideo, ppSt_CVTBuffer[i]->ptszAVBuffer, ppSt_CVTBuffer[i]->nAVLen, &ppSt_MSGBuffer, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
 			fwrite(ppSt_MSGBuffer[i]->ptszAVBuffer, 1, ppSt_MSGBuffer[i]->nAVLen, pSt_VideoFile);
