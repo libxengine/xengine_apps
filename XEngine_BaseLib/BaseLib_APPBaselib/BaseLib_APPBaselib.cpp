@@ -294,6 +294,10 @@ void Test_GetTimeofday()
 }
 int test_handle()
 {
+	XCHAR tszGUIDStr[MAX_PATH] = {};
+	BaseLib_Handle_CreateGuid(tszGUIDStr);
+	printf("GUID:%s\n", tszGUIDStr);
+
 	for (int i = 0; i < 10; i++)
 	{
 		XNETHANDLE xhToken = 0;
@@ -303,7 +307,7 @@ int test_handle()
 	for (int i = 0; i < 4; i++)
 	{
 		XCHAR tszKeyStr[64] = {};
-		BaseLib_Handle_CreateStr(tszKeyStr, 6, 0, 1);
+		BaseLib_Handle_CreateStr(tszKeyStr, 8, 0, 2);
 		printf("%s\n", tszKeyStr);
 	}
 
