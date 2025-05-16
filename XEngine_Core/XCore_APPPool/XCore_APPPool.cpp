@@ -93,7 +93,7 @@ void SocketPool_Test()
 	ManagePool_Socket_Destroy(xhPool);
 }
 
-void CALLBACK fun(void* p)
+void CALLBACK fun(XPVOID lPMemory, int nMemSize, XPVOID lParam)
 {
 	printf("call fun\n");
 }
@@ -109,7 +109,7 @@ int MemoryPool_Test()
 	p2 = (XCHAR*)ManagePool_Memory_Alloc(xmPool, 200);/*分配内存，在可分配内，但pool中没有足够的内存空间*/
 	memcpy(p2, "p2", 2);
 	printf("%s\n", p2);
-
+	//std::this_thread::sleep_for(std::chrono::seconds(10));
 	ManagePool_Memory_Free(xmPool, p1);
 	ManagePool_Memory_Free(xmPool, p2);
 

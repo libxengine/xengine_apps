@@ -80,8 +80,14 @@ void TimeTest()
 	BaseLib_Time_StrToInt(lpszTimeStr, &nTTime);
 	BaseLib_Time_IntToStr(nTTime, tszTimeStr);
 
-	BaseLib_Time_GetSysTime(&st_LibTimer);
-	BaseLib_Time_TimezoneCvt(&st_LibTimer, 4);
+	XNETHANDLE xhXTPTime = 0;
+	BaseLib_Time_SetXTPTime(&xhXTPTime);
+	BaseLib_Time_GetXTPTime(xhXTPTime, &st_LibTimer);
+
+	bool bZone = false;
+	int nHour = 0;
+	int nMinute = 0;
+	BaseLib_Time_TimezoneGet(&bZone, &nHour, &nMinute);
 	return;
 }
 void StringTest()

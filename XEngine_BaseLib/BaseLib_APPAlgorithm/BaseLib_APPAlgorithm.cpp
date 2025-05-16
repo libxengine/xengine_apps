@@ -87,10 +87,9 @@ int Test_Calulation()
 
 	return 0;
 }
-
 int main()
 {
-	Test_Calulation();
+	//Test_Calulation();
 	int nIntA = 0;
 	int nIntB = 0;
 	LPCXSTR lpszIntBuffer = _X("123456798");
