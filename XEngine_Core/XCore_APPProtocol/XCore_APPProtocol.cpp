@@ -45,7 +45,7 @@ using namespace std;
 
 //linux:g++ -std=c++20 -Wall -g XCore_APPProtocol.cpp -o XCore_APPProtocol.exe -lXEngine_BaseLib -lXEngine_Protocol 
 
-bool CALLBACK XEngine_Protocol_Callback_Trace(LPCXSTR lpszSource, LPCXSTR lpszDestAddr, LPCXSTR lpszRecvAddr, int nTTL, XENGINE_VALTIME st_VALTime, XPVOID lParam)
+bool XCALLBACK XEngine_Protocol_Callback_Trace(LPCXSTR lpszSource, LPCXSTR lpszDestAddr, LPCXSTR lpszRecvAddr, int nTTL, XENGINE_VALTIME st_VALTime, XPVOID lParam)
 {
 	printf("Src:%s Dst:%s Rcv:%s TTL:%d Time:%lld.%llu\n", lpszSource, lpszDestAddr, lpszRecvAddr, nTTL, st_VALTime.tv_sec, st_VALTime.tv_usec);
 	return true;

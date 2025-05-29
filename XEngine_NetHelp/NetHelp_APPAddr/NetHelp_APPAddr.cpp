@@ -104,11 +104,11 @@ int test_ipaddr()
 }
 int Test_Domain()
 {
-	XCHAR tszUrlPath[MAX_PATH];
+	XCHAR tszUrlPath[XPATH_MAX];
 	APIADDR_DOMAIN st_APIDomain;
 	ENUM_NETHELP_APIADDR_DOMAIN_TYPE enAPIDomain;
 
-	memset(tszUrlPath, '\0', MAX_PATH);
+	memset(tszUrlPath, '\0', XPATH_MAX);
 	memset(&st_APIDomain, '\0', sizeof(APIADDR_DOMAIN));
 
 	APIAddr_Domain_GetInfo("http://www.xyry.org/Api/Task/Query", &st_APIDomain, &enAPIDomain, tszUrlPath);
@@ -118,11 +118,11 @@ int Test_Domain()
 int Test_Email()
 {
 	LPCXSTR lpszEMailStr = _X("486179@qq.com");
-	XCHAR tszNameStr[MAX_PATH];
-	XCHAR tszDomainStr[MAX_PATH];
+	XCHAR tszNameStr[XPATH_MAX];
+	XCHAR tszDomainStr[XPATH_MAX];
 
-	memset(tszNameStr, '\0', MAX_PATH);
-	memset(tszDomainStr, '\0', MAX_PATH);
+	memset(tszNameStr, '\0', XPATH_MAX);
+	memset(tszDomainStr, '\0', XPATH_MAX);
 
 	if (APIAddr_EMail_IsEMailAddr(lpszEMailStr))
 	{

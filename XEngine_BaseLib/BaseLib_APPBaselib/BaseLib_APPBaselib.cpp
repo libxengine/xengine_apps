@@ -119,32 +119,32 @@ void StringTest()
 	BaseLib_String_GetStartEnd(tszMsgBuffer, tszValue, NULL, "321", false);
 	BaseLib_String_Change(tszMsgBuffer, &nLen, "ccccc", "123", "321", false);
 
-	XCHAR tszFileDir[MAX_PATH];
-	XCHAR tszFileName[MAX_PATH];
-	XCHAR tszFileDrive[MAX_PATH];
-	XCHAR tszFileExt[MAX_PATH];
+	XCHAR tszFileDir[XPATH_MAX];
+	XCHAR tszFileName[XPATH_MAX];
+	XCHAR tszFileDrive[XPATH_MAX];
+	XCHAR tszFileExt[XPATH_MAX];
 
-	memset(tszFileDir, '\0', MAX_PATH);
-	memset(tszFileName, '\0', MAX_PATH);
-	memset(tszFileDrive, '\0', MAX_PATH);
-	memset(tszFileExt, '\0', MAX_PATH);
+	memset(tszFileDir, '\0', XPATH_MAX);
+	memset(tszFileName, '\0', XPATH_MAX);
+	memset(tszFileDrive, '\0', XPATH_MAX);
+	memset(tszFileExt, '\0', XPATH_MAX);
 	BaseLib_String_GetFileAndPath(lpszFile1, tszFileDir, tszFileName, tszFileDrive, tszFileExt);
 
-	memset(tszFileDir, '\0', MAX_PATH);
-	memset(tszFileName, '\0', MAX_PATH);
-	memset(tszFileDrive, '\0', MAX_PATH);
-	memset(tszFileExt, '\0', MAX_PATH);
+	memset(tszFileDir, '\0', XPATH_MAX);
+	memset(tszFileName, '\0', XPATH_MAX);
+	memset(tszFileDrive, '\0', XPATH_MAX);
+	memset(tszFileExt, '\0', XPATH_MAX);
 	BaseLib_String_GetFileAndPath(lpszFile2, tszFileDir, tszFileName, tszFileDrive, tszFileExt);
 
-	memset(tszFileDir, '\0', MAX_PATH);
-	memset(tszFileName, '\0', MAX_PATH);
+	memset(tszFileDir, '\0', XPATH_MAX);
+	memset(tszFileName, '\0', XPATH_MAX);
 	BaseLib_String_GetFileAndPath(lpszFile3, tszFileDir, tszFileName);
 
-	memset(tszFileDir, '\0', MAX_PATH);
-	memset(tszFileName, '\0', MAX_PATH);
+	memset(tszFileDir, '\0', XPATH_MAX);
+	memset(tszFileName, '\0', XPATH_MAX);
 	BaseLib_String_GetFileAndPath(lpszFile4, tszFileDir, tszFileName);
 
-	XCHAR tszFileStr[MAX_PATH] = {};
+	XCHAR tszFileStr[XPATH_MAX] = {};
 	BaseLib_String_GetSeparatorStr("123456/789/abc/ddd", "/", tszFileStr, 2, true);
 
 	BaseLib_String_GetSeparatorStr("123456/789/abc/ddd", "/", tszFileStr, 1, false);
@@ -235,7 +235,7 @@ int test_Memory()
 }
 
 int nRunTime = 0;
-void CALLBACK BaseLib_TimeTrigger(int nIDEvent, LPCXSTR lpszTimeStr, __int64x nTimeOffset, int nTTNumber, XPVOID lParam)
+void XCALLBACK BaseLib_TimeTrigger(int nIDEvent, LPCXSTR lpszTimeStr, __int64x nTimeOffset, int nTTNumber, XPVOID lParam)
 {
 	_xtprintf(_X("触发器ID:%d 触发器时间:%s 时间偏移:%lld 触发器次数:%d\n"), nIDEvent, lpszTimeStr, nTimeOffset, nTTNumber);
 	nRunTime++;
@@ -300,7 +300,7 @@ void Test_GetTimeofday()
 }
 int test_handle()
 {
-	XCHAR tszGUIDStr[MAX_PATH] = {};
+	XCHAR tszGUIDStr[XPATH_MAX] = {};
 	BaseLib_Handle_CreateGuid(tszGUIDStr);
 	printf("GUID:%s\n", tszGUIDStr);
 

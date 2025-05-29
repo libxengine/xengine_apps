@@ -60,7 +60,7 @@ using namespace std;
 //Linux::g++ -std=c++20 -Wall -g XCore_APPSslServer.cpp -o XCore_APPSslServer.exe -lXEngine_BaseLib -lXEngine_Core -lXEngine_Cryption -lNetHelp_APIAddr
 
 XHANDLE xhSSL = NULL;
-bool CALLBACK TCPSelect_CBLogin(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+bool XCALLBACK TCPSelect_CBLogin(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("recv_Login:%s\n", lpszClientAddr);
 	XCHAR tszSubject[2048];
@@ -76,7 +76,7 @@ bool CALLBACK TCPSelect_CBLogin(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID 
 	printf("TCPSelect_CBLogin:%s %s %s\n", tszSubject, tszIssus, tszAlg);
 	return true;
 }
-void CALLBACK TCPSelect_CBRecv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
+void XCALLBACK TCPSelect_CBRecv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
 	int nLen = 2048;
 	XCHAR tszMsgBuffer[2048];
@@ -90,7 +90,7 @@ void CALLBACK TCPSelect_CBRecv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR 
 	Cryption_Server_SendMsgEx(xhSSL, lpszClientAddr, tszMsgBuffer, nLen, tszSDBuffer, &nSLen);
 	NetCore_TCPSelect_Send(lpszClientAddr, tszSDBuffer, nSLen);
 }
-void CALLBACK TCPSelect_CBLeave(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+void XCALLBACK TCPSelect_CBLeave(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("TCPSelect_CBLeave:%s\n", lpszClientAddr);
 }

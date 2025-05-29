@@ -63,18 +63,18 @@ bool RfcComponents_APPMQTT_Process(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer
 
 XHANDLE xhToken = NULL;
 
-bool CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+bool XCALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("NetCore_CB_Login:%s\n", lpszClientAddr);
 	MQTTProtocol_Parse_Insert(lpszClientAddr);
 	return true;
 }
-void CALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
+void XCALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
 	printf("NetCore_CB_Recv:%s-%d\n", lpszClientAddr, nMsgLen);
 	RfcComponents_APPMQTT_Process(lpszClientAddr, lpszRecvMsg, nMsgLen);
 }
-void CALLBACK NetCore_CB_Close(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+void XCALLBACK NetCore_CB_Close(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("NetCore_CB_Close:%s\n", lpszClientAddr);
 	MQTTProtocol_Parse_Delete(lpszClientAddr);

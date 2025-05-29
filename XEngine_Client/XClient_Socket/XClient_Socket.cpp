@@ -140,7 +140,7 @@ int TCPTest()
 	return 1;
 }
 
-void CALLBACK XClient_TCPCallback_Recv(XHANDLE xhToken, XNETHANDLE xhClient, XSOCKET hSocket, ENUM_XCLIENT_SOCKET_EVENTS enTCPClientEvents, LPCXSTR lpszMsgBuffer, int nLen, XPVOID lParam)
+void XCALLBACK XClient_TCPCallback_Recv(XHANDLE xhToken, XNETHANDLE xhClient, XSOCKET hSocket, ENUM_XCLIENT_SOCKET_EVENTS enTCPClientEvents, LPCXSTR lpszMsgBuffer, int nLen, XPVOID lParam)
 {
 	if (ENUM_XCLIENT_SOCKET_EVENT_RECV == enTCPClientEvents)
 	{

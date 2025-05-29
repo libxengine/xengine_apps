@@ -80,21 +80,21 @@ FILE* pSt_File;
 
 XCHAR tszClientAddr[128];
 
-bool CALLBACK XEngine_TCPXCore_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+bool XCALLBACK XEngine_TCPXCore_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	strcpy(tszClientAddr, lpszClientAddr);
 	RTMPProtocol_Parse_Insert(lpszClientAddr, hSocket);
 	printf("XEngine_TCPXCore_Login:%s = %d\n", lpszClientAddr, hSocket);
 	return true;
 }
-void CALLBACK XEngine_TCPXCore_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
+void XCALLBACK XEngine_TCPXCore_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
 	if (!RTMPProtocol_Parse_Send(lpszClientAddr, lpszRecvMsg, nMsgLen))
 	{
 		printf("XEngine_TCPXCore_Recv:%s = %d\n", lpszClientAddr, nMsgLen);
 	}
 }
-void CALLBACK XEngine_TCPXCore_Leave(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+void XCALLBACK XEngine_TCPXCore_Leave(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("XEngine_TCPXCore_Leave:%s\n", lpszClientAddr);
 }

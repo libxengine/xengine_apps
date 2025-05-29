@@ -161,9 +161,9 @@ int main()
 	int nA1Len = 0;
 	int nA2Len = 0;
 	int nA3Len = 0;
-	XCHAR tszAttrBuffer[MAX_PATH];
+	XCHAR tszAttrBuffer[XPATH_MAX];
 
-	memset(tszAttrBuffer, '\0', MAX_PATH);
+	memset(tszAttrBuffer, '\0', XPATH_MAX);
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	NatProtocol_StunNat_BuildTransPort(tszAttrBuffer, &nA1Len);

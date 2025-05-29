@@ -42,7 +42,7 @@ void TestUDP_ParseREQProtocol(LPCXSTR lpszMsgBuffer, int nMsgLen)
 	int nListCount = 4;
 	XCHAR** pptszListStr;
 
-	BaseLib_Memory_Malloc((XPPPMEM)&pptszListStr, nListCount, MAX_PATH);
+	BaseLib_Memory_Malloc((XPPPMEM)&pptszListStr, nListCount, XPATH_MAX);
 
 	strcpy((pptszListStr)[0], _X("CSeq: 5\r\n"));
 	strcpy((pptszListStr)[1], _X("User-Agent: LibVLC/3.0.20 (LIVE555 Streaming Media v2016.11.28)\r\n"));

@@ -426,11 +426,11 @@ int Test_PacketCustom2()
 			int nHDRLen = 0;
 			int nMsgLen = 0;
 			XCHAR* ptszMsgBuffer;
-			XCHAR tszHDRBuffer[MAX_PATH];
+			XCHAR tszHDRBuffer[XPATH_MAX];
 			XENGINE_RTPPACKETHDR st_RTPPacket;
 
 			memset(&st_RTPPacket, '\0', sizeof(XENGINE_RTPPACKETHDR));
-			memset(tszHDRBuffer, '\0', MAX_PATH);
+			memset(tszHDRBuffer, '\0', XPATH_MAX);
 
 			if (!HelpComponents_PKTCustom_GetMemoryEx(xhPacket, hSocket, &ptszMsgBuffer, &nMsgLen, tszHDRBuffer, &nHDRLen))
 			{
@@ -446,7 +446,7 @@ int Test_PacketCustom2()
 	return 0;
 }
 
-void CALLBACK Packet_CBChunk(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int nMsgLen, int nChunkCode, XPVOID lParam)
+void XCALLBACK Packet_CBChunk(LPCXSTR lpszClientAddr, LPCXSTR lpszMsgBuffer, int nMsgLen, int nChunkCode, XPVOID lParam)
 {
 	printf("%s:%d-%d\n", lpszClientAddr, nChunkCode, nMsgLen);
 }

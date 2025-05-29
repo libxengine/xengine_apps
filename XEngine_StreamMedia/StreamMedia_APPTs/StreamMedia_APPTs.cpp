@@ -132,7 +132,7 @@ int M3U8File_Parse()
 	while (true)
 	{
 		double dlTime = 0;
-		XCHAR tszStreamAddr[MAX_PATH] = {};
+		XCHAR tszStreamAddr[XPATH_MAX] = {};
 		if (HLSProtocol_M3U8Parse_GetLive(xhToken, tszStreamAddr, &dlTime))
 		{
 			printf("%s %lf\n", tszStreamAddr, dlTime);

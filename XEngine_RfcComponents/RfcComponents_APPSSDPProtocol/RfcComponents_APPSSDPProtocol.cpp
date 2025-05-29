@@ -91,10 +91,10 @@ int main()
 		{
 			int nListCount = 0;
 			XCHAR** pptszHDRList;
-			XCHAR tszValueStr[MAX_PATH];
+			XCHAR tszValueStr[XPATH_MAX];
 			RFCCOMPONENTS_SSDP_HDRPARAM st_SSDPHdr;
 
-			memset(tszValueStr, '\0', MAX_PATH);
+			memset(tszValueStr, '\0', XPATH_MAX);
 			memset(&st_SSDPHdr, '\0', sizeof(RFCCOMPONENTS_SSDP_HDRPARAM));
 
 			SSDPProtocol_Parse_Hdr(tszMsgBuffer, nMsgLen, &st_SSDPHdr, &pptszHDRList, &nListCount);

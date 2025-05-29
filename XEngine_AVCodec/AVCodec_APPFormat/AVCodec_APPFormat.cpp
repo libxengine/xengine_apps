@@ -49,7 +49,7 @@ using namespace std;
 //Linux::g++ -std=c++20 -Wall -g AVCodec_APPFormat.cpp -o AVCodec_APPFormat.exe -lXEngine_BaseLib -lXEngine_AVFormat -lXEngine_AVHelp
 FILE* pSt_File;
 
-void CALLBACK AVPacket_Pack_CBNotify(XHANDLE xhNet, int nCvtType, __int64x nCvtFrame, double dlTime, XPVOID lParam)
+void XCALLBACK AVPacket_Pack_CBNotify(XHANDLE xhNet, int nCvtType, __int64x nCvtFrame, double dlTime, XPVOID lParam)
 {
 	printf("AVPacket_Pack_CBConvert:%d %lld %lf\n", nCvtType, nCvtFrame, dlTime);
 }

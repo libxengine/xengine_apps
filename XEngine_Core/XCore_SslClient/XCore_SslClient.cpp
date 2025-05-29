@@ -50,9 +50,9 @@ int XClient_TSLTest()
 {
 	XHANDLE xhNet;
 	XSOCKET m_Socket;
-	XCHAR tszSslSubJect[MAX_PATH] = {};
-	XCHAR tszSslIssuer[MAX_PATH] = {};
-	XCHAR tszSslAlgorithm[MAX_PATH] = {};
+	XCHAR tszSslSubJect[XPATH_MAX] = {};
+	XCHAR tszSslIssuer[XPATH_MAX] = {};
+	XCHAR tszSslAlgorithm[XPATH_MAX] = {};
 
 	xhNet = Cryption_Client_InitEx(XENGINE_CRYPTION_PROTOCOL_TLS);
 	if (NULL == xhNet)
@@ -100,9 +100,9 @@ int XClient_DTLTest()
 {
 	XHANDLE xhNet;
 	XSOCKET m_Socket;
-	XCHAR tszSslSubJect[MAX_PATH] = {};
-	XCHAR tszSslIssuer[MAX_PATH] = {};
-	XCHAR tszSslAlgorithm[MAX_PATH] = {};
+	XCHAR tszSslSubJect[XPATH_MAX] = {};
+	XCHAR tszSslIssuer[XPATH_MAX] = {};
+	XCHAR tszSslAlgorithm[XPATH_MAX] = {};
 
 	xhNet = Cryption_Client_InitEx(XENGINE_CRYPTION_PROTOCOL_DTL);
 	if (NULL == xhNet)

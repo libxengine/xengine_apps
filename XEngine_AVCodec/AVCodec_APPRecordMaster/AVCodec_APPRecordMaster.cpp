@@ -93,7 +93,7 @@ LPCXSTR lpszAudioFile = "Audio.aac";
 LPCXSTR lpszMP4File = "1.mp4";
 #endif
 
-void CALLBACK XEngine_AVCollect_CBScreen(uint8_t* ptszAVBuffer, int nAVLen, AVCOLLECT_TIMEINFO* pSt_TimeInfo, XPVOID lParam)
+void XCALLBACK XEngine_AVCollect_CBScreen(uint8_t* ptszAVBuffer, int nAVLen, AVCOLLECT_TIMEINFO* pSt_TimeInfo, XPVOID lParam)
 {
 	int nCVTCount = 0;
 	AVCODEC_VIDEO_MSGBUFFER** ppSt_CVTBuffer;
@@ -111,7 +111,7 @@ void CALLBACK XEngine_AVCollect_CBScreen(uint8_t* ptszAVBuffer, int nAVLen, AVCO
 	}
 	BaseLib_Memory_Free((XPPPMEM)&ppSt_CVTBuffer, nCVTCount);
 }
-void CALLBACK XEngine_AVCollect_CBAudio(uint8_t* ptszAVBuffer, int nAVLen, AVCOLLECT_TIMEINFO* pSt_TimeInfo, XPVOID lParam)
+void XCALLBACK XEngine_AVCollect_CBAudio(uint8_t* ptszAVBuffer, int nAVLen, AVCOLLECT_TIMEINFO* pSt_TimeInfo, XPVOID lParam)
 {
 	int nListCount = 0;
 	AVCODEC_AUDIO_MSGBUFFER** ppSt_ListMsgBuffer;
@@ -128,7 +128,7 @@ void CALLBACK XEngine_AVCollect_CBAudio(uint8_t* ptszAVBuffer, int nAVLen, AVCOL
 	BaseLib_Memory_Free((void***)&ppSt_ListMsgBuffer, nListCount);
 }
 
-void CALLBACK XEngine_AVPacket_Callback(XHANDLE xhNet, int nCvtType, __int64x nCvtFrame, double dlTime, XPVOID lParam)
+void XCALLBACK XEngine_AVPacket_Callback(XHANDLE xhNet, int nCvtType, __int64x nCvtFrame, double dlTime, XPVOID lParam)
 {
 	printf(_X("提示:正在打包...第 %lld 个%s,当前时间:%lf\r\n"), nCvtFrame, nCvtType == 1 ? _X("视频帧") : _X("音频帧"), dlTime);
 }
@@ -219,8 +219,8 @@ int main()
 		printf(_X("初始化失败"));
 		return -1;
 	}
-	XCHAR tszFilterStr[MAX_PATH];
-	memset(tszFilterStr, '\0', MAX_PATH);
+	XCHAR tszFilterStr[XPATH_MAX];
+	memset(tszFilterStr, '\0', XPATH_MAX);
 
 	AVFILTER_VIDEO_INFO st_VideoInfo = {};
 	st_VideoInfo.st_VideoInfo.nFormat = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;

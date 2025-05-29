@@ -33,7 +33,7 @@ using namespace std;
 
 //Linux Macos:g++ -std=c++20 -Wall -g Lib_APPAlgorithm.cpp -o Lib_APPAlgorithm.exe -lXEngine_Algorithm
 
-void CALLBACK Test_CBPassive(XHANDLE xhToken, bool bSDFlow, bool bRVFlow, bool bTime, __int64u nSDFlow, __int64u nRVFlow, __int64u nTimeFlow, XPVOID lParam)
+void XCALLBACK Test_CBPassive(XHANDLE xhToken, bool bSDFlow, bool bRVFlow, bool bTime, __int64u nSDFlow, __int64u nRVFlow, __int64u nTimeFlow, XPVOID lParam)
 {
 	XCHAR tszClientAddr[128];
 	memset(tszClientAddr, '\0', 128);

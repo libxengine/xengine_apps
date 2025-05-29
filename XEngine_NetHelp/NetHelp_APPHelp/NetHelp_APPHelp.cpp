@@ -30,7 +30,7 @@
 int test_endain()
 {
 	double nValue64 = 1920;
-	XCHAR tszMsgBuffer[MAX_PATH];
+	XCHAR tszMsgBuffer[XPATH_MAX];
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
 	APIHelp_Endain_ToHexW64((XBYTE*)tszMsgBuffer, *(__int64u*)&nValue64, true);

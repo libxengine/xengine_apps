@@ -44,7 +44,7 @@ using namespace std;
 
 //Linux MACOS:g++ -std=c++20 -Wall -g NetHelp_APPXSocket.cpp -o NetHelp_APPXSocket.exe -lXEngine_BaseLib  -lNetHelp_XSocket
 
-static void CALLBACK XSocket_Sniffer_Callback(XHANDLE xhToken, XSOCKET_PROTOCOLINFO* pSt_ProtoInfo, LPCXSTR lpszMsgBuffer, XPVOID lParam)
+static void XCALLBACK XSocket_Sniffer_Callback(XHANDLE xhToken, XSOCKET_PROTOCOLINFO* pSt_ProtoInfo, LPCXSTR lpszMsgBuffer, XPVOID lParam)
 {
 	printf("XSocket_Sniffer_Callback:Source:%s Dest:%s nHdrLen:%d nMsgLen:%d\n", pSt_ProtoInfo->tszSourceAddr, pSt_ProtoInfo->tszDestAddr, pSt_ProtoInfo->nHdrLen, pSt_ProtoInfo->nMsgLen);
 	for (int i = 0; i < pSt_ProtoInfo->nMsgLen; i++)

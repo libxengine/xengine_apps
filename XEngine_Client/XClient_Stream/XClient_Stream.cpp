@@ -69,7 +69,7 @@ LPCXSTR lpszVFile = _X("480p.264");
 LPCXSTR lpszAFile = _X("test.aac");
 #endif
 
-void CALLBACK CBStream_Pull(uint8_t* puszMsgBuffer, int nSize, int nAVType, __int64x nPts, __int64x nDts, __int64x nDuration, double dlTime, XPVOID lParam)
+void XCALLBACK CBStream_Pull(uint8_t* puszMsgBuffer, int nSize, int nAVType, __int64x nPts, __int64x nDts, __int64x nDuration, double dlTime, XPVOID lParam)
 {
 	//fwrite(puszMsgBuffer, 1, nSize, pSt_VFile);
 	printf("Size:%d,AV:%d,Time:%lf\n", nSize, nAVType, dlTime);
@@ -123,14 +123,14 @@ int Test_CodecPush()
 	int nALen = 0;
 	XCHAR tszVBuffer[8096];
 	XCHAR tszABuffer[8096];
-	XBYTE tszSPSBuffer[MAX_PATH];
-	XBYTE tszPPSBuffer[MAX_PATH];
+	XBYTE tszSPSBuffer[XPATH_MAX];
+	XBYTE tszPPSBuffer[XPATH_MAX];
 	XENGINE_PROTOCOL_AVINFO st_MediaStream;
 
 	memset(tszVBuffer, '\0', sizeof(tszVBuffer));
 	memset(tszABuffer, '\0', sizeof(tszABuffer));
-	memset(tszSPSBuffer, '\0', MAX_PATH);
-	memset(tszPPSBuffer, '\0', MAX_PATH);
+	memset(tszSPSBuffer, '\0', XPATH_MAX);
+	memset(tszPPSBuffer, '\0', XPATH_MAX);
 	memset(&st_MediaStream, '\0', sizeof(XENGINE_PROTOCOL_AVINFO));
 
 	st_MediaStream.st_VideoInfo.bEnable = true;

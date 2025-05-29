@@ -63,14 +63,14 @@ XHANDLE xhToken = NULL;
 XHANDLE xhWBPacket = NULL;
 XCHAR tszClientAddr[64];
 
-bool CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+bool XCALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	strcpy(tszClientAddr, lpszClientAddr);
 	printf("NetCore_CB_Login:%s\n", lpszClientAddr);
 	RfcComponents_WSPacket_CreateEx(xhWBPacket, lpszClientAddr, 1);
 	return true;
 }
-void CALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
+void XCALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
 	printf("NetCore_CB_Recv:%s-%d\n", lpszClientAddr, nMsgLen);
 	bool bLogin = false;
@@ -94,13 +94,13 @@ void CALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR l
 		printf("login:%s-%d\n", lpszClientAddr, nMsgLen);
 	}
 }
-void CALLBACK NetCore_CB_Close(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+void XCALLBACK NetCore_CB_Close(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("NetCore_CB_Close:%s\n", lpszClientAddr);
 	RfcComponents_WSPacket_DeleteEx(xhWBPacket, lpszClientAddr);
 }
 
-XHTHREAD CALLBACK NetCore_Thread()
+XHTHREAD XCALLBACK NetCore_Thread()
 {
 	int i = 0;
 	while (true)

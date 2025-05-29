@@ -44,11 +44,11 @@ using namespace std;
 
 void md5cal()
 {
-	XBYTE tszMD5Hex[MAX_PATH];
-	XCHAR tszMD5Str[MAX_PATH];
+	XBYTE tszMD5Hex[XPATH_MAX];
+	XCHAR tszMD5Str[XPATH_MAX];
 
-	memset(tszMD5Hex, '\0', MAX_PATH);
-	memset(tszMD5Str, '\0', MAX_PATH);
+	memset(tszMD5Hex, '\0', XPATH_MAX);
+	memset(tszMD5Str, '\0', XPATH_MAX);
 
 	LPCXSTR lpszFile = _X("D:\\XEngine_Storage\\XEngine_Source\\Debug\\XEngine_File2\\a.txt");
 	int nLen = strlen(lpszFile);
@@ -60,9 +60,9 @@ void md5cal()
 	BaseLib_String_StrToHex((LPCXSTR)tszMD5Hex, nLen, tszMD5Str);
 	printf(_X("%s\n"), tszMD5Str);
 
-	nLen = MAX_PATH;
-	memset(tszMD5Hex, '\0', MAX_PATH);
-	memset(tszMD5Str, '\0', MAX_PATH);
+	nLen = XPATH_MAX;
+	memset(tszMD5Hex, '\0', XPATH_MAX);
+	memset(tszMD5Str, '\0', XPATH_MAX);
 
 	if (!Cryption_Api_Digest("D:\\xengine_apps\\Debug\\XEngine_BaseLib.dll", tszMD5Hex, NULL, true, ENUM_XENGINE_CRYPTION_DIGEST_SHA1))
 	{

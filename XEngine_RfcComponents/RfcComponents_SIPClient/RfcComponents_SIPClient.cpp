@@ -62,7 +62,7 @@ using namespace std;
 XSOCKET hTCPSocket = 0;
 XNETHANDLE xhToken = 0;
 
-XHTHREAD CALLBACK XClient_TCPSelect_Thread()
+XHTHREAD XCALLBACK XClient_TCPSelect_Thread()
 {
 	XCHAR tszMsgBuffer[2048];
 

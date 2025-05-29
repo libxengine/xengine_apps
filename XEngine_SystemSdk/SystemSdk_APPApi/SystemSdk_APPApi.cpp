@@ -47,13 +47,13 @@ int Test_SerialInfo()
 	memset(&st_SDKSerial, '\0', sizeof(SYSTEMAPI_SERIAL_INFOMATION));
 
 	XLONG dwOSProcessor = 0;
-	XCHAR tszOSBuffer[MAX_PATH];
-	XCHAR tszOSVersion[MAX_PATH];
-	XCHAR tszOSVBuild[MAX_PATH];
+	XCHAR tszOSBuffer[XPATH_MAX];
+	XCHAR tszOSVersion[XPATH_MAX];
+	XCHAR tszOSVBuild[XPATH_MAX];
 
-	memset(tszOSBuffer, '\0', MAX_PATH);
-	memset(tszOSVersion, '\0', MAX_PATH);
-	memset(tszOSVBuild, '\0', MAX_PATH);
+	memset(tszOSBuffer, '\0', XPATH_MAX);
+	memset(tszOSVersion, '\0', XPATH_MAX);
+	memset(tszOSVBuild, '\0', XPATH_MAX);
 
 	SystemApi_System_GetSystemVer(tszOSBuffer, tszOSVersion, tszOSVBuild, &dwOSProcessor);
 	printf("%s %s %s %lu\n", tszOSBuffer, tszOSVersion, tszOSVBuild, dwOSProcessor);

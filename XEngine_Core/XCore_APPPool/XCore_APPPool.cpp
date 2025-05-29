@@ -34,7 +34,7 @@ using namespace std;
 #endif
 //linux macos:g++ -std=c++20 -Wall -g XCore_APPPool.cpp -o XCore_APPPool.exe -lXEngine_BaseLib -lXEngine_Algorithm -lXEngine_ManagePool
 
-XHTHREAD CALLBACK ManagePool_ThreadPool(XPVOID lParam)
+XHTHREAD XCALLBACK ManagePool_ThreadPool(XPVOID lParam)
 {
 	int *pInt_Number = (int*)lParam;
 	printf(_X("%d\n"), *pInt_Number);
@@ -93,7 +93,7 @@ void SocketPool_Test()
 	ManagePool_Socket_Destroy(xhPool);
 }
 
-void CALLBACK fun(XPVOID lPMemory, int nMemSize, XPVOID lParam)
+void XCALLBACK fun(XPVOID lPMemory, int nMemSize, XPVOID lParam)
 {
 	printf("call fun\n");
 }

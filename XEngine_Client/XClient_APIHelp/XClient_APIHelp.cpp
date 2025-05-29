@@ -36,7 +36,7 @@
 
 //Linux::g++ -std=c++20 -Wall -g XClient_APIHelp.cpp -o XClient_APIHelp.exe -lXEngine_BaseLib -lXClient_APIHelp
 
-void CALLBACK NetHelp_APPClient_CBRecv(XHANDLE xhToken, LPCXSTR lpszMsgBuffer, int nMsgLen, XPVOID lParam)
+void XCALLBACK NetHelp_APPClient_CBRecv(XHANDLE xhToken, LPCXSTR lpszMsgBuffer, int nMsgLen, XPVOID lParam)
 {
 	printf("NetHelp_APPClient_CBRecv:%d,%s\n", nMsgLen, lpszMsgBuffer);
 	if (-1 == nMsgLen)
@@ -44,7 +44,7 @@ void CALLBACK NetHelp_APPClient_CBRecv(XHANDLE xhToken, LPCXSTR lpszMsgBuffer, i
 		printf(_X("接受完毕！\n"));
 	}
 }
-void CALLBACK NetHelp_HttpGet_Chunked(XNETHANDLE xhToken, XPVOID lpszMsgBuffer, int nMsgLen, XPVOID lParam)
+void XCALLBACK NetHelp_HttpGet_Chunked(XNETHANDLE xhToken, XPVOID lpszMsgBuffer, int nMsgLen, XPVOID lParam)
 {
 	printf("%d\n%s\n", nMsgLen, (LPCXSTR)lpszMsgBuffer);
 }
@@ -149,7 +149,7 @@ int Test_HttpCreate()
 }
 
 bool bRun = false;
-void CALLBACK Download_Progress(XHANDLE xhToken, double dlTotal, double dlNow, double ulTotal, double ulNow, ENUM_XCLIENT_APIHELP_FILE_STATUS en_DownHttpStatus, XPVOID lParam)
+void XCALLBACK Download_Progress(XHANDLE xhToken, double dlTotal, double dlNow, double ulTotal, double ulNow, ENUM_XCLIENT_APIHELP_FILE_STATUS en_DownHttpStatus, XPVOID lParam)
 {
 	printf("下载任务：%p,总大小：%lf，已经下载大小：%lf，下载标识符：%d\n", xhToken, dlTotal, dlNow, en_DownHttpStatus);
 

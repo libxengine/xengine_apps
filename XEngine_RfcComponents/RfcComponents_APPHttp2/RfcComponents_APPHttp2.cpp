@@ -65,15 +65,15 @@ XHANDLE xhHttp = NULL;
 XHANDLE xhSsl = NULL;
 FILE* pSt_File = NULL;
 
-bool CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+bool XCALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
-	XCHAR tszSubject[MAX_PATH];
-	XCHAR tszIssuer[MAX_PATH];
-	XCHAR tszAlgorithm[MAX_PATH];
+	XCHAR tszSubject[XPATH_MAX];
+	XCHAR tszIssuer[XPATH_MAX];
+	XCHAR tszAlgorithm[XPATH_MAX];
 
-	memset(tszSubject, '\0', MAX_PATH);
-	memset(tszIssuer, '\0', MAX_PATH);
-	memset(tszAlgorithm, '\0', MAX_PATH);
+	memset(tszSubject, '\0', XPATH_MAX);
+	memset(tszIssuer, '\0', XPATH_MAX);
+	memset(tszAlgorithm, '\0', XPATH_MAX);
 
 	if (bSsl)
 	{
@@ -83,7 +83,7 @@ bool CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID l
 	HttpProtocol_Server2_CreateClientEx(xhHttp, lpszClientAddr, 1);
 	return true;
 }
-void CALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
+void XCALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
 	int nRVLen = 2048;
 	XCHAR tszMsgBuffer[2048];
@@ -105,7 +105,7 @@ void CALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR l
 		}
 	}
 }
-void CALLBACK NetCore_CB_Close(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+void XCALLBACK NetCore_CB_Close(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("NetCore_CB_Close:%s\n", lpszClientAddr);
 	if (bSsl)

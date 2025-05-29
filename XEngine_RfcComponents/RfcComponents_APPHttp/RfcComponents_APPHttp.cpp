@@ -57,14 +57,14 @@ XHANDLE xhToken = NULL;
 XHANDLE xhHttp = NULL;
 FILE* pSt_File = NULL;
 
-bool CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+bool XCALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("NetCore_CB_Login:%s\n", lpszClientAddr);
 	HttpProtocol_Server_CreateClientEx(xhHttp, lpszClientAddr, 0);
 	HttpProtocol_Server_SetRecvModeEx(xhHttp, lpszClientAddr, nRVMode);
 	return true;
 }
-void CALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
+void XCALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
 	printf("NetCore_CB_Recv:%s-%d\n", lpszClientAddr, nMsgLen);
 	if (!HttpProtocol_Server_InserQueueEx(xhHttp, lpszClientAddr, lpszRecvMsg, nMsgLen))
@@ -72,13 +72,13 @@ void CALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR l
 		printf("RfcComponents_WSPacket_Post:%lX\n", HttpProtocol_GetLastError());
 	}
 }
-void CALLBACK NetCore_CB_Close(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+void XCALLBACK NetCore_CB_Close(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("NetCore_CB_Close:%s\n", lpszClientAddr);
 	HttpProtocol_Server_CloseClinetEx(xhHttp, lpszClientAddr);
 }
 
-XHTHREAD CALLBACK NetCore_Thread()
+XHTHREAD XCALLBACK NetCore_Thread()
 {
 	while (bIsRun)
 	{
@@ -162,7 +162,7 @@ int main()
 	LPCXSTR lpszUrl = _X("http://bbs.xyry.org/forum.php?mod=viewthread&tid=2&extra=page%3D1");
 	int nListCount = 0;
 	XCHAR** pptszListParam;
-	XCHAR tszUrlAddr[MAX_PATH];
+	XCHAR tszUrlAddr[XPATH_MAX];
 	HttpProtocol_ServerHelp_GetParament(lpszUrl, &pptszListParam, &nListCount, tszUrlAddr);
 	for (int i = 0; i < nListCount; i++)
 	{
@@ -172,11 +172,11 @@ int main()
 
 	for (int i = 0; i < 10; i++)
 	{
-		XCHAR tszDomainUrl[MAX_PATH];
-		XCHAR tszDomainKey[MAX_PATH];
+		XCHAR tszDomainUrl[XPATH_MAX];
+		XCHAR tszDomainKey[XPATH_MAX];
 
-		memset(tszDomainUrl, '\0', MAX_PATH);
-		memset(tszDomainKey, '\0', MAX_PATH);
+		memset(tszDomainUrl, '\0', XPATH_MAX);
+		memset(tszDomainKey, '\0', XPATH_MAX);
 		HttpProtocol_ServerHelp_ShortLink(lpszUrl, tszDomainUrl, tszDomainKey);
 		printf("%s %s\n", tszDomainUrl, tszDomainKey);
 	}

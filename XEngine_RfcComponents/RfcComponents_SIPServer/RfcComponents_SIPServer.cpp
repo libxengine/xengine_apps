@@ -98,7 +98,7 @@ int Test_SIPRegister()
 	return 0;
 }
 
-bool CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+bool XCALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	HttpProtocol_Server_CreateClientEx(xhHttp, lpszClientAddr, 0);
 	if (!RfcComponents_SIPServer_Exist(lpszClientAddr))
@@ -108,7 +108,7 @@ bool CALLBACK NetCore_CB_Login(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID l
 	}
 	return true;
 }
-void CALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
+void XCALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR lpszRecvMsg, int nMsgLen, XPVOID lParam)
 {
 	printf("NetCore_CB_Recv:%s-%d\n", lpszClientAddr, nMsgLen);
 	if (!HttpProtocol_Server_InserQueueEx(xhHttp, lpszClientAddr, lpszRecvMsg, nMsgLen))
@@ -116,14 +116,14 @@ void CALLBACK NetCore_CB_Recv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR l
 		printf("RfcComponents_WSPacket_Post:%lX\n", HttpProtocol_GetLastError());
 	}
 }
-void CALLBACK NetCore_CB_Close(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
+void XCALLBACK NetCore_CB_Close(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	HttpProtocol_Server_CloseClinetEx(xhHttp, lpszClientAddr);
 	RfcComponents_SIPServer_Delete(lpszClientAddr);
 	printf("用户离开:%s\n", lpszClientAddr);
 }
 
-XHTHREAD CALLBACK NetCore_Thread()
+XHTHREAD XCALLBACK NetCore_Thread()
 {
 	while (bIsRun)
 	{
