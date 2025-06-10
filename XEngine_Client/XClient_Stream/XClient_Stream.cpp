@@ -69,51 +69,27 @@ LPCXSTR lpszVFile = _X("480p.264");
 LPCXSTR lpszAFile = _X("test.aac");
 #endif
 
+XHANDLE xhStream;
+XHANDLE xhPush;
+
 void XCALLBACK CBStream_Pull(uint8_t* puszMsgBuffer, int nSize, int nAVType, __int64x nPts, __int64x nDts, __int64x nDuration, double dlTime, XPVOID lParam)
 {
 	//fwrite(puszMsgBuffer, 1, nSize, pSt_VFile);
 	printf("Size:%d,AV:%d,Time:%lf\n", nSize, nAVType, dlTime);
+
+	if (0 == nAVType)
+	{
+		XClient_StreamPush_CodecVideo(xhPush, (LPCXSTR)puszMsgBuffer, nSize, nPts, nDts, nDuration);
+	}
+	else
+	{
+		XClient_StreamPush_CodecAudio(xhPush, (LPCXSTR)puszMsgBuffer, nSize, nPts, nDuration);
+	}
 	return;
-}
-int Test_RTMPPush()
-{
-	XHANDLE xhStream = NULL;
-	LPCXSTR lpszUrl = _X("rtmp://app.xyry.org/live/qyt");
-
-	xhStream = XClient_StreamPush_FileInit();
-	if (NULL == xhStream)
-	{
-		printf("XClient_StreamPush_FileInit:%lX\n", StreamClient_GetLastError());
-		return -1;
-	}
-	if (!XClient_StreamPush_FileInput(xhStream, lpszVFile))
-	{
-		printf("XClient_StreamPush_FileInput:%lX\n", StreamClient_GetLastError());
-		return -1;
-	}
-	if (!XClient_StreamPush_FileOutput(xhStream, lpszUrl))
-	{
-		printf("XClient_StreamPush_FileOutput:%lX\n", StreamClient_GetLastError());
-		return -1;
-	}
-	if (!XClient_StreamPush_FileStart(xhStream))
-	{
-		printf("XClient_StreamPush_FileStart:%lX\n", StreamClient_GetLastError());
-		return -1;
-	}
-
-	bool bIsPush = true;
-	while (bIsPush)
-	{
-		XClient_StreamPush_FileGetStatus(xhStream, &bIsPush);
-	}
-	XClient_StreamPush_FileClose(xhStream);
-	return 1;
 }
 
 int Test_CodecPush()
 {
-	XHANDLE xhStream = NULL;
 	FILE* pSt_VFile = NULL;
 	FILE* pSt_AFile = NULL;
 	LPCXSTR lpszUrl = _X("rtmp://app.xyry.org/live/qyt");
@@ -180,7 +156,9 @@ int Test_CodecPush()
 	AVFrame_Frame_ParseInit(&xhAParse, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC);
 	AVFrame_Frame_ParseInit(&xhVParse, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
 
-	xhStream = XClient_StreamPush_CodecInit(lpszUrl, &st_MediaStream);
+	xhStream = XClient_StreamPush_CodecInit();
+	XClient_StreamPush_CodecOutput(xhStream, lpszUrl, "flv");
+	XClient_StreamPush_CodecCreate(xhStream, &st_MediaStream);
 	XClient_StreamPush_CodecWriteHdr(xhStream);
 
 	while (true)
@@ -230,8 +208,8 @@ int Test_CodecPush()
 
 int Test_RTMPPull()
 {
-	//LPCXSTR lpszPullUrl = _X("rtmp://10.0.3.155/live/qyt");
-	LPCXSTR lpszPullUrl = _X("srt://10.0.3.155:10080?streamid=#!::r=live/livestream,m=request");
+	LPCXSTR lpszPullUrl = _X("rtmp://app.xyry.org/live/qyt");
+	//LPCXSTR lpszPullUrl = _X("srt://10.0.3.155:10080?streamid=#!::r=live/livestream,m=request");
 	LPCXSTR lpszPushUrl = _X("rtmp://app.xyry.org/live/123");
 
 	int nStreamCount = 0;
@@ -244,26 +222,38 @@ int Test_RTMPPull()
 		printf("XClient_StreamPull_Init:%lX\n", StreamClient_GetLastError());
 		return -1;
 	}
-
+	XHANDLE pSt_VideoParameter = NULL;
+	XHANDLE pSt_AudioParameter = NULL;
+	AVCODEC_TIMEBASE st_VideoTime = {};
+	AVCODEC_TIMEBASE st_AudioTime = {};
 	for (int i = 0; i < nStreamCount; i++)
 	{
 		if (ppSt_PullStream[i]->enStreamType == ENUM_XCLIENT_STREAM_MEDIA_TYPE_VIDEO)
 		{
-			ppSt_PullStream[i]->bEnable = true;
+			XClient_StreamPull_GetAVCodec(xhStream, i, &pSt_VideoParameter);
+			XClient_StreamPull_GetTime(xhStream, i, &st_VideoTime);
 		}
 		else if (ppSt_PullStream[i]->enStreamType == ENUM_XCLIENT_STREAM_MEDIA_TYPE_AUDIO)
 		{
-			ppSt_PullStream[i]->bEnable = true;
+			XClient_StreamPull_GetAVCodec(xhStream, i, &pSt_AudioParameter);
+			XClient_StreamPull_GetTime(xhStream, i, &st_AudioTime);
+		}
+		else
+		{
+			printf("Unknown Stream:%d\n", i);
 		}
 	}
-	/*
-	if (!XClient_StreamPull_PushStream(xhStream, lpszPushUrl, &ppSt_PullStream, nStreamCount))
+
+	xhPush = XClient_StreamPush_CodecInit();
+	if (!XClient_StreamPush_CodecOutput(xhPush, lpszPushUrl, _X("flv")))
 	{
-		printf("XClient_StreamPull_PushStream:%lX\n", StreamClient_GetLastError());
-		return -1;
-	}*/
-	XENGINE_PROTOCOL_AVINFO st_MediaStream;
-	memset(&st_MediaStream, '\0', sizeof(XENGINE_PROTOCOL_AVINFO));
+		printf("XClient_StreamPush_CodecOutput:%lX\n", StreamClient_GetLastError());
+		return 0;
+	}
+	XClient_StreamPush_CodecCreate2(xhPush, pSt_VideoParameter);
+	XClient_StreamPush_CodecCreate2(xhPush, pSt_AudioParameter);
+	XClient_StreamPush_CodecTime(xhPush, &st_VideoTime, &st_AudioTime);
+	XClient_StreamPush_CodecWriteHdr(xhPush);
 
 	XClient_StreamPull_Start(xhStream);
 	bool bPull = true;

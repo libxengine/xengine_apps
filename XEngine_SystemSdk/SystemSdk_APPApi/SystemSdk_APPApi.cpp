@@ -174,7 +174,17 @@ int Test_EnumFile()
 #else
 	SystemApi_File_EnumFile("/tmp/", &ppszListDir, &nCount);
 #endif
+	for (int i = 0; i < nCount; i++)
+	{
+		printf("%s\n", ppszListDir[i]);
+	}
+	BaseLib_Memory_Free((XPPPMEM)&ppszListDir, nCount);
 
+#ifdef _MSC_BUILD
+	SystemApi_File_EnumFile("D:\\xengine_apps\\Debug\\*.dll", &ppszListDir, &nCount, true, 1);
+#else
+	SystemApi_File_EnumFile("/tmp/", &ppszListDir, &nCount);
+#endif
 	for (int i = 0; i < nCount; i++)
 	{
 		printf("%s\n", ppszListDir[i]);
@@ -214,12 +224,13 @@ int Test_EnumFile()
 }
 int main()
 {
+	Test_EnumFile();
 	Test_FileInfo();
 	Test_SerialInfo();
 	Test_DiskInfo();
 	Test_CPUInfo();
 	Test_ProcessInfo();
 	Test_SystemInfo();
-	Test_EnumFile();
+	
 	return 0;
 }
