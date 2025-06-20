@@ -43,6 +43,15 @@ XHTHREAD XCALLBACK ManagePool_ThreadPool(XPVOID lParam)
 	pInt_Number = NULL;
 	return 0;
 }
+XHTHREAD XCALLBACK ManagePool_ThreadPoolEx(XNETHANDLE xhToken, XPVOID lParam)
+{
+	int* pInt_Number = (int*)lParam;
+	printf(_X("%d\n"), *pInt_Number);
+
+	free(pInt_Number);
+	pInt_Number = NULL;
+	return 0;
+}
 void ThreadPool_Test()
 {
 	XHANDLE xhPool = ManagePool_Thread_DTCreate(2);
@@ -54,7 +63,7 @@ void ThreadPool_Test()
 	{
 		int* pInt = (int*)malloc(sizeof(int));
 		*pInt = i;
-		ManagePool_Thread_DTPostTask(xhPool, ManagePool_ThreadPool, pInt);
+		ManagePool_Thread_DTPostTask(xhPool, ManagePool_ThreadPoolEx, pInt);
 	}
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 	ManagePool_Thread_DTDestroy(xhPool);
@@ -64,7 +73,7 @@ void ThreadPool_Test()
 	{
 		int* pInt = (int*)malloc(sizeof(int));
 		*pInt = i;
-		ManagePool_Thread_CTPostTask(ManagePool_ThreadPool, pInt);
+		ManagePool_Thread_CTPostTask(ManagePool_ThreadPoolEx, pInt);
 	}
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 	ManagePool_Thread_CTDestroy();

@@ -84,8 +84,15 @@ int Test_BITStream()
 		}
 		if (0 == nAVIndex)
 		{
-			printf("BIT:%d\n", nMSGLen);
-			AVFrame_BITStream_Convert(xhToken, ptszMSGBuffer, nMSGLen);
+			int nListCount = 0;
+			AVFRAME_PARSEDATA** ppSt_Frame;
+			AVFrame_BITStream_Convert(xhToken, ptszMSGBuffer, nMSGLen, &ppSt_Frame, &nListCount);
+			for (int i = 0; i < nListCount; i++)
+			{
+				printf("Frame:%d\n", ppSt_Frame[i]->nMsgLen);
+				BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->ptszMsgBuffer);
+			}
+			BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
 		}
 		free(ptszMSGBuffer);
 	}
