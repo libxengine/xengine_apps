@@ -149,9 +149,9 @@ int Test_HttpCreate()
 }
 
 bool bRun = false;
-void XCALLBACK Download_Progress(XHANDLE xhToken, double dlTotal, double dlNow, double ulTotal, double ulNow, ENUM_XCLIENT_APIHELP_FILE_STATUS en_DownHttpStatus, XPVOID lParam)
+void XCALLBACK Download_Progress(XHANDLE xhToken, __int64x dlTotal, __int64x dlNow, __int64x ulTotal, __int64x ulNow, ENUM_XCLIENT_APIHELP_FILE_STATUS en_DownHttpStatus, XPVOID lParam)
 {
-	printf("下载任务：%p,总大小：%lf，已经下载大小：%lf，下载标识符：%d\n", xhToken, dlTotal, dlNow, en_DownHttpStatus);
+	printf("下载任务：%p,总大小：%lld，已经下载大小：%lld，下载标识符：%d\n", xhToken, dlTotal, dlNow, en_DownHttpStatus);
 
 	if (ENUM_XCLIENT_APIHELP_FILE_STATUS_COMPLETE == en_DownHttpStatus)
 	{
@@ -223,7 +223,7 @@ int upload_http()
 		{
 			break;
 		}
-		printf("上传任务：%p,总大小：%lf，已经上传大小：%lf，标识符：%d\n", xhUPLoad, st_TaskInfo.ulTotal, st_TaskInfo.ulNow, st_TaskInfo.en_DownStatus);
+		printf("上传任务：%p,总大小：%lld，已经上传大小：%lld，标识符：%d\n", xhUPLoad, st_TaskInfo.ulTotal, st_TaskInfo.ulNow, st_TaskInfo.en_DownStatus);
 	}
 	APIClient_File_Delete(xhUPLoad);
 	return 0;

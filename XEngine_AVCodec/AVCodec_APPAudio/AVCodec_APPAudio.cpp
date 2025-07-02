@@ -94,8 +94,10 @@ void Audio_Encode()
 		printf("AudioCodec_Stream_EnInit\n");
 		return;
 	}
+	int nSize = 0;
+	AudioCodec_Stream_GetSize(xhCoder, &nSize);
 #ifdef _MSC_BUILD
-	FILE* pSt_File = fopen("d:\\audio\\output.pcm", "rb");
+	FILE* pSt_File = fopen("d:\\audio\\b.pcm", "rb");
 	FILE* pSt_FileAac = fopen("d:\\audio\\output.aac", "wb");
 #else
 	FILE* pSt_File = fopen("output.pcm", "rb");
@@ -104,13 +106,13 @@ void Audio_Encode()
 
 	while (1)
 	{
-		XCHAR tszEnBuffer[4608];
+		XCHAR tszEnBuffer[4096];
 		XCHAR tszPCMBuffer[40960];
 
 		memset(tszEnBuffer, '\0', sizeof(tszEnBuffer));
 		memset(tszPCMBuffer, '\0', sizeof(tszPCMBuffer));
 
-		int nRet = fread(tszPCMBuffer, 1, 4608, pSt_File);
+		int nRet = fread(tszPCMBuffer, 1, 4096, pSt_File);
 		if (nRet <= 0)
 		{
 			break;

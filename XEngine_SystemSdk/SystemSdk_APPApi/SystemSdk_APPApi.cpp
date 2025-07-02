@@ -111,6 +111,15 @@ int Test_ProcessInfo()
 	memset(&st_LibTimer, '\0', sizeof(XENGINE_LIBTIME));
 	memset(&st_ProcessInfo, '\0', sizeof(SYSTEMAPI_PROCESS_INFOMATION));
 
+	int nListCount = 0;
+	SYSTEMAPI_PROCESS_INFO** ppSt_ListProcess;
+	SystemApi_System_GetProcessList(&ppSt_ListProcess, &nListCount);
+	for (int i = 0; i < nListCount; i++)
+	{
+		printf("%d:%s\n", ppSt_ListProcess[i]->nPid, ppSt_ListProcess[i]->tszProcessName);
+	}
+	BaseLib_Memory_Free((XPPPMEM)&ppSt_ListProcess, nListCount);
+
 	SystemApi_Process_GetProcessInfo(&st_ProcessInfo);
 	SystemApi_Process_GetProcessCpuUsage(&nUsage);
 	SystemApi_Process_GetUpTime(&st_LibTimer);

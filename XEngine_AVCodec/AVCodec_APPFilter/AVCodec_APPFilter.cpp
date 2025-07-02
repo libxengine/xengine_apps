@@ -55,8 +55,8 @@ int Test_FilterAudio()
 	st_AudioFilter.st_AudioInfo.nSampleFmt = 1;
 	st_AudioFilter.st_AudioInfo.nSampleRate = 44100;
 
-	AVFilter_Audio_Init(&xhToken, _X("volume=2.0"), &st_AudioFilter);
-	//AVFilter_Audio_Init(&xhToken, _X("aresample=sample_rate=48000"), &st_AudioFilter);
+	//AVFilter_Audio_Init(&xhToken, _X("volume=2.0"), &st_AudioFilter);
+	AVFilter_Audio_Init(&xhToken, _X("aresample=48000,aformat=sample_fmts=s16:channel_layouts=stereo"), &st_AudioFilter);
 
 #ifdef _MSC_BUILD
 	LPCXSTR lpszRFile = _X("D:\\audio\\3.pcm");
