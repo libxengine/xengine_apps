@@ -126,6 +126,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BaseLib_APPBaselib", "XEngi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BaseLib_APPSafe", "XEngine_BaseLib\BaseLib_APPSafe\BaseLib_APPSafe.vcxproj", "{48522C9D-830E-45B9-9684-67F47540E140}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RfcComponents_APPDns", "XEngine_RfcComponents\RfcComponents_APPDns\RfcComponents_APPDns.vcxproj", "{82319BC2-9707-4812-A648-F9625D2EB71E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -534,6 +536,14 @@ Global
 		{48522C9D-830E-45B9-9684-67F47540E140}.Release|x64.Build.0 = Release|x64
 		{48522C9D-830E-45B9-9684-67F47540E140}.Release|x86.ActiveCfg = Release|Win32
 		{48522C9D-830E-45B9-9684-67F47540E140}.Release|x86.Build.0 = Release|Win32
+		{82319BC2-9707-4812-A648-F9625D2EB71E}.Debug|x64.ActiveCfg = Debug|x64
+		{82319BC2-9707-4812-A648-F9625D2EB71E}.Debug|x64.Build.0 = Debug|x64
+		{82319BC2-9707-4812-A648-F9625D2EB71E}.Debug|x86.ActiveCfg = Debug|Win32
+		{82319BC2-9707-4812-A648-F9625D2EB71E}.Debug|x86.Build.0 = Debug|Win32
+		{82319BC2-9707-4812-A648-F9625D2EB71E}.Release|x64.ActiveCfg = Release|x64
+		{82319BC2-9707-4812-A648-F9625D2EB71E}.Release|x64.Build.0 = Release|x64
+		{82319BC2-9707-4812-A648-F9625D2EB71E}.Release|x86.ActiveCfg = Release|Win32
+		{82319BC2-9707-4812-A648-F9625D2EB71E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -589,6 +599,7 @@ Global
 		{B1BDE139-8458-4F70-BF6C-AB342AF6A42C} = {C2E175D6-0D1C-4B22-A125-B80EDA41E00F}
 		{65063435-C70D-4BA4-81F5-36E28CE581A3} = {C2E175D6-0D1C-4B22-A125-B80EDA41E00F}
 		{48522C9D-830E-45B9-9684-67F47540E140} = {C2E175D6-0D1C-4B22-A125-B80EDA41E00F}
+		{82319BC2-9707-4812-A648-F9625D2EB71E} = {A11E0BB3-4C3C-432C-B528-3417CAD0D5B1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7DA25D94-055D-4CEF-BDCD-F7BD3315697C}

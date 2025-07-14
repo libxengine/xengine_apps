@@ -15,19 +15,26 @@ using namespace std;
 
 #if 1 == _XENGINE_USER_DIR_SYSTEM
 #include <XEngine_Include/XEngine_CommHdr.h>
+#include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
+#include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
 #include <XEngine_Include/XEngine_Core/ManagePool_Define.h>
 #include <XEngine_Include/XEngine_Core/ManagePool_Error.h>
 #ifdef _MSC_BUILD
+#pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"XEngine_Core/XEngine_ManagePool.lib")
 #endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_ManagePool/ManagePool_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_ManagePool/ManagePool_Error.h"
 #ifdef _MSC_BUILD
 #ifdef _WIN64
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_ManagePool.lib")
 #else
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_ManagePool.lib")
 #endif
 #endif
@@ -118,6 +125,9 @@ int MemoryPool_Test()
 	p2 = (XCHAR*)ManagePool_Memory_Alloc(xmPool, 200);/*分配内存，在可分配内，但pool中没有足够的内存空间*/
 	memcpy(p2, "p2", 2);
 	printf("%s\n", p2);
+
+	int nMSize = 0;
+	ManagePool_Memory_GetSize(xmPool, p2, &nMSize);
 	//std::this_thread::sleep_for(std::chrono::seconds(10));
 	ManagePool_Memory_Free(xmPool, p1);
 	ManagePool_Memory_Free(xmPool, p2);
@@ -142,6 +152,30 @@ int MemoryPool_Test()
 	XCHAR* p7 = (XCHAR*)ManagePool_Memory_Alloc(xmPool, 5000);//分配大内存
 	memcpy(p7, "p7", 2);
 	printf("%s,%s,%s\n", p7, p4, p5);
+
+	XCHAR* p8 = (XCHAR*)ManagePool_Memory_Alloc(xmPool, 1024000);//分配大内存
+	memcpy(p8, "p8", 2);
+	printf("%s\n", p8);
+
+	int nSMCount = 0;
+	int nSCount = 0;
+	XENGINE_MANAGEPOOL_MEMORYINFO** ppSt_ListSmallMemory;
+	ManagePool_Memory_GetListSmall(xmPool, &ppSt_ListSmallMemory, &nSCount, &nSMCount);
+	for (int i = 0; i < nSCount; i++)
+	{
+		printf("%d = %s\n", ppSt_ListSmallMemory[i]->nMemSize, (LPCXSTR)ppSt_ListSmallMemory[i]->lPMemory);
+	}
+	BaseLib_Memory_Free((XPPPMEM)&ppSt_ListSmallMemory, nSCount);
+
+	int nLMCount = 0;
+	int nLCount = 0;
+	XENGINE_MANAGEPOOL_MEMORYINFO** ppSt_ListLargeMemory;
+	ManagePool_Memory_GetListLarge(xmPool, &ppSt_ListLargeMemory, &nLCount, &nLMCount);
+	for (int i = 0; i < nLCount; i++)
+	{
+		printf("%d = %s\n", ppSt_ListLargeMemory[i]->nMemSize, (LPCXSTR)ppSt_ListLargeMemory[i]->lPMemory);
+	}
+	BaseLib_Memory_Free((XPPPMEM)&ppSt_ListLargeMemory, nLCount);
 
 	ManagePool_Memory_CleanupAdd(xmPool, fun);/*注册销毁回调函数*/
 
