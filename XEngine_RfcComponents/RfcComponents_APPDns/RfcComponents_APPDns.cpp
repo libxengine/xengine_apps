@@ -57,7 +57,7 @@ int RfcComponents_APPDns_Domain()
 		return -1;
 	}
 	XClient_UDPSelect_Bind(m_Socket, 12333);
-	XClient_UDPSelect_Connect(m_Socket, "8.8.8.8", 53);
+	XClient_UDPSelect_Connect(m_Socket, "127.0.0.1", 53);
 
 	DNSProtocol_Packet_REQHeader(tszMsgBuffer, &nMsgLen, 123, "www.baidu.com", XENGINE_DNSPROTOCOL_QUERY_QUESTION_TYPE_A);
 
@@ -105,7 +105,7 @@ int RfcComponents_APPDns_IPAddr()
 	XClient_UDPSelect_Bind(m_Socket, 12333);
 	XClient_UDPSelect_Connect(m_Socket, "127.0.0.1", 53);
 
-	DNSProtocol_Packet_REQHeader(tszMsgBuffer, &nMsgLen, 123, "8.8.8.8", XENGINE_DNSPROTOCOL_QUERY_QUESTION_TYPE_PTR);
+	DNSProtocol_Packet_REQHeader(tszMsgBuffer, &nMsgLen, 123, "104.21.4.128", XENGINE_DNSPROTOCOL_QUERY_QUESTION_TYPE_PTR);
 
 	if (!XClient_UDPSelect_SendMsg(m_Socket, tszMsgBuffer, nMsgLen))
 	{
