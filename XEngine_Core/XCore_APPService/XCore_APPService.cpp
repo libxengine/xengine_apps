@@ -125,6 +125,24 @@ int test_udpxcore()
 	NetCore_UDPXCore_RegisterCallBackEx(xhUDPCore, Callback_UDPRecv);
 	return 0;
 }
+int test_udpselect()
+{
+	xhUDPCore = NetCore_UDPSelect_Start(5002);
+	if (NULL != xhUDPCore)
+	{
+		printf(_X("NetCore_UDPXCore_StartEx Start Is Ok!\n"));
+	}
+	else
+	{
+		printf(_X("NetCore_UDPXCore_StartEx Start Is Failed!\n"));
+	}
+	NetCore_UDPSelect_RegisterCallBack(xhUDPCore, Callback_UDPRecv);
+
+	std::this_thread::sleep_for(std::chrono::seconds(30));
+	NetCore_UDPSelect_Stop(xhUDPCore);
+	return 0;
+}
+
 int test_unixdomain()
 {
 #ifdef _MSC_BUILD
@@ -194,9 +212,10 @@ int main()
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 
-	test_tcpxpoll();
-	test_tcpxcore();
-	test_udpxcore();
+	//test_tcpxpoll();
+	//test_tcpxcore();
+	//test_udpxcore();
+	test_udpselect();
 	test_unixdomain();
 	test_udx();
 	

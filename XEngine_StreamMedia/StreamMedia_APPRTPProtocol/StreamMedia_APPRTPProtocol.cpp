@@ -63,7 +63,135 @@
 
 //Linux::g++ -std=c++20 -Wall -g StreamMedia_APPRTPProtocol.cpp -o StreamMedia_APPRTPProtocol.exe -lXEngine_BaseLib -lStreamMedia_RTPProtocol -lXEngine_AVFrame -lXEngine_AVHelp
 
-void TestPacket_RTP264()
+void TestPacket_RTP264_TCP()
+{
+	LPCXSTR lpszClientID = _X("xhSsrc");
+	XNETHANDLE xhFrame = 0;
+	if (!RTPProtocol_Packet_Insert(lpszClientID, false))
+	{
+		printf("errrno");
+		return;
+	}
+	AVFrame_Frame_ParseInit(&xhFrame, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
+	RTPProtocol_Packet_SetTime(lpszClientID, 96, 25);
+	RTPProtocol_Packet_SetLink(lpszClientID, 96, ENUM_STREAMMEDIA_RTPPROTOCOL_PAYLOAD_TYPE_H264);
+
+#ifdef _MSC_BUILD
+	LPCXSTR lpsz264File = _X("D:\\h264 file\\480p.264");
+	LPCXSTR lpszRTPFile = _X("D:\\h264 file\\480p.RTP");
+#else
+	LPCXSTR lpsz264File = _X("480p.264");
+	LPCXSTR lpszRTPFile = _X("480p.RTP");
+#endif
+	FILE* pSt_264File = fopen(lpsz264File, _X("rb"));
+	FILE* pSt_RTPFile = fopen(lpszRTPFile, _X("wb"));
+
+	int nCount = 0;
+	int nIndex = 0;
+	XCHAR tszMsgBuffer[10240];
+	while (1)
+	{
+		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+		int nRet = fread(tszMsgBuffer, 1, sizeof(tszMsgBuffer), pSt_264File);
+		if (nRet <= 0)
+		{
+			break;
+		}
+		int nFrameCount = 0;
+		int nPacketCount = 0;
+		AVFRAME_PARSEDATA** ppSt_Frame;
+		XENGINE_MSGBUFFER** ppSt_RTPPacket;
+
+		AVFrame_Frame_ParseGet(xhFrame, tszMsgBuffer, nRet, &ppSt_Frame, &nFrameCount);
+		for (int i = 0; i < nFrameCount; i++)
+		{
+			RTPProtocol_Packet_Packet(lpszClientID, 96, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer + 4, ppSt_Frame[i]->nMsgLen - 4, &ppSt_RTPPacket, &nPacketCount);
+			for (int j = 0; j < nPacketCount; j++)
+			{
+				printf("%d=%d\n", nIndex++, ppSt_RTPPacket[j]->nMSGLen);
+				nCount += ppSt_RTPPacket[j]->nMSGLen;
+				fwrite(ppSt_RTPPacket[j]->unData.tszMSGBuffer, 1, ppSt_RTPPacket[j]->nMSGLen, pSt_RTPFile);
+			}
+			BaseLib_Memory_Free((XPPPMEM)&ppSt_RTPPacket, nPacketCount);
+		}
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nFrameCount);
+	}
+	fclose(pSt_264File);
+	fclose(pSt_RTPFile);
+	AVFrame_Frame_ParseClose(xhFrame);
+	RTPProtocol_Packet_Delete(lpszClientID);
+}
+void TestParse_RTP264_TCP()
+{
+	RTPProtocol_Parse_Init(1);
+	LPCXSTR lpszClientID = _X("xhSsrc");
+	if (!RTPProtocol_Parse_Insert(lpszClientID, false))
+	{
+		printf("errrno");
+		return;
+	}
+	RTPProtocol_Parse_SetLink(lpszClientID, 96, ENUM_STREAMMEDIA_RTPPROTOCOL_PAYLOAD_TYPE_H264);
+#ifdef _MSC_BUILD
+	LPCXSTR lpsz264File = _X("D:\\h264 file\\480p_tcp.264");
+	LPCXSTR lpszRTPFile = _X("D:\\h264 file\\480p.RTP");
+#else
+	LPCXSTR lpsz264File = _X("480p_tcp.264");
+	LPCXSTR lpszRTPFile = _X("480p.RTP");
+#endif
+
+	FILE* pSt_264File = fopen(lpsz264File, _X("wb"));
+	FILE* pSt_RTPFile = fopen(lpszRTPFile, _X("rb"));
+	XCHAR tszMsgBuffer[8192];
+	int nCount = 0;
+	bool bKEYFrame = false;
+
+	while (true)
+	{
+		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
+		int nRet = fread(tszMsgBuffer, 1, sizeof(tszMsgBuffer), pSt_RTPFile);
+		if (nRet <= 0)
+		{
+			break;
+		}
+		if (!RTPProtocol_Parse_Send(lpszClientID, tszMsgBuffer, nRet))
+		{
+			printf("error\n");
+			continue;
+		}
+		while (1)
+		{
+			int nMsgLen = 0;
+			XCHAR* ptszMsgBuffer = NULL;
+			STREAMMEDIA_RTPPROTOCOL_HDR st_RTPHdr;
+			st_RTPHdr.nPayID = 96;
+			if (!RTPProtocol_Parse_Recv(lpszClientID, &ptszMsgBuffer, &nMsgLen, &st_RTPHdr))
+			{
+				BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+				break;
+			}
+			if (!bKEYFrame)
+			{
+				XENGINE_AVCODEC_VIDEOFRAMETYPE enFrameType;
+				AVHelp_Parse_NaluType(ptszMsgBuffer, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264, &enFrameType);
+				if ((ENUM_XENGINE_AVCODEC_VIDEO_FRAMETYPE_SPS == enFrameType) || (ENUM_XENGINE_AVCODEC_VIDEO_FRAMETYPE_PPS == enFrameType))
+				{
+					bKEYFrame = true;
+				}
+			}
+
+			fwrite(ptszMsgBuffer, 1, nMsgLen, pSt_264File);
+			fflush(pSt_264File);
+			printf("%d = %d\n", nCount++, nMsgLen);
+			BaseLib_Memory_FreeCStyle((XPPMEM)&ptszMsgBuffer);
+		}
+	}
+	fclose(pSt_264File);
+	fclose(pSt_RTPFile);
+	RTPProtocol_Parse_Delete(lpszClientID);
+	RTPProtocol_Parse_Destory();
+}
+
+void TestPacket_RTP264_UDP()
 {
 	LPCXSTR lpszClientID = _X("xhSsrc");
 	XNETHANDLE xhFrame = 0;
@@ -100,7 +228,7 @@ void TestPacket_RTP264()
 		int nFrameCount = 0;
 		int nPacketCount = 0;
 		AVFRAME_PARSEDATA** ppSt_Frame;
-		STREAMMEDIA_RTPPROTOCOL_PACKET** ppSt_RTPPacket;
+		XENGINE_MSGBUFFER** ppSt_RTPPacket;
 
 		AVFrame_Frame_ParseGet(xhFrame, tszMsgBuffer, nRet, &ppSt_Frame, &nFrameCount);
 		for (int i = 0; i < nFrameCount; i++)
@@ -108,12 +236,12 @@ void TestPacket_RTP264()
 			RTPProtocol_Packet_Packet(lpszClientID, 96, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer + 4, ppSt_Frame[i]->nMsgLen - 4, &ppSt_RTPPacket, &nPacketCount);
 			for (int j = 0; j < nPacketCount; j++)
 			{
-				printf("%d=%d\n", j, ppSt_RTPPacket[j]->nMsgLen);
+				printf("%d=%d\n", j, ppSt_RTPPacket[j]->nMSGLen);
 
 				char tszFSize[64] = {};
-				int nFSize = sprintf(tszFSize, "%d\r\n", ppSt_RTPPacket[j]->nMsgLen);
+				int nFSize = sprintf(tszFSize, "%d\r\n", ppSt_RTPPacket[j]->nMSGLen);
 				fwrite(tszFSize, 1, nFSize, pSt_File);
-				fwrite(ppSt_RTPPacket[j]->tszMsgBuffer, 1, ppSt_RTPPacket[j]->nMsgLen, pSt_RTPFile);
+				fwrite(ppSt_RTPPacket[j]->unData.tszMSGBuffer, 1, ppSt_RTPPacket[j]->nMSGLen, pSt_RTPFile);
 			}
 			BaseLib_Memory_Free((XPPPMEM)&ppSt_RTPPacket, nPacketCount);
 		}
@@ -126,7 +254,7 @@ void TestPacket_RTP264()
 	RTPProtocol_Packet_Delete(lpszClientID);
 }
 
-void TestParse_RTP264()
+void TestParse_RTP264_UDP()
 {
 	RTPProtocol_Parse_Init(1);
 	LPCXSTR lpszClientID = _X("xhSsrc");
@@ -138,9 +266,14 @@ void TestParse_RTP264()
 	RTPProtocol_Parse_SetLink(lpszClientID, 96, ENUM_STREAMMEDIA_RTPPROTOCOL_PAYLOAD_TYPE_H264);
 	RTPProtocol_Parse_SetLink(lpszClientID, 111, ENUM_STREAMMEDIA_RTPPROTOCOL_PAYLOAD_TYPE_OPUS);
 #ifdef _MSC_BUILD
-	LPCXSTR lpsz264File = _X("D:\\h264 file\\480p_1.264");
-	LPCXSTR lpszRTPFile = _X("D:\\h264 file\\480p.RTP");
-	LPCXSTR lpszFile = _X("D:\\h264 file\\1.txt");
+	LPCXSTR lpsz264File = _X("D:\\XEngine_StreamMedia\\XEngine_Source\\Debug\\480p_1.264");
+	LPCXSTR lpszOPUSFile = _X("D:\\XEngine_StreamMedia\\XEngine_Source\\Debug\\opus_1.opus");
+	LPCXSTR lpszRTPFile = _X("D:\\XEngine_StreamMedia\\XEngine_Source\\Debug\\1.h264");
+	LPCXSTR lpszFile = _X("D:\\XEngine_StreamMedia\\XEngine_Source\\Debug\\1.opus");
+
+	//LPCXSTR lpsz264File = _X("D:\\h264 file\\480p.264");
+	//LPCXSTR lpszRTPFile = _X("D:\\h264 file\\480p.RTP");
+	//LPCXSTR lpszFile = "D:\\h264 file\\1.txt";
 #else
 	LPCXSTR lpsz264File = _X("480p_1.264");
 	LPCXSTR lpszRTPFile = _X("480p.RTP");
@@ -165,6 +298,7 @@ void TestParse_RTP264()
 	fclose(pSt_File);
 
 	FILE* pSt_264File = fopen(lpsz264File, _X("wb"));
+	FILE* pSt_OPUSFile = fopen(lpszOPUSFile, _X("wb"));
 	FILE* pSt_RTPFile = fopen(lpszRTPFile, _X("rb"));
 	XCHAR tszMsgBuffer[8192];
 	int nCount = 0;
@@ -205,16 +339,33 @@ void TestParse_RTP264()
 					bKEYFrame = true;
 				}
 			}
-
 			fwrite(ptszMsgBuffer, 1, nMsgLen, pSt_264File);
 			printf("%d %d\n", i, nMsgLen);
 			fflush(pSt_264File);
-
+			free(ptszMsgBuffer);
+			ptszMsgBuffer = NULL;
+		}
+		while (1)
+		{
+			int nMsgLen = 0;
+			XCHAR* ptszMsgBuffer = NULL;
+			STREAMMEDIA_RTPPROTOCOL_HDR st_RTPHdr;
+			st_RTPHdr.nPayID = 111;
+			if (!RTPProtocol_Parse_Recv(lpszClientID, &ptszMsgBuffer, &nMsgLen, &st_RTPHdr))
+			{
+				free(ptszMsgBuffer);
+				ptszMsgBuffer = NULL;
+				break;
+			}
+			fwrite(ptszMsgBuffer, 1, nMsgLen, pSt_OPUSFile);
+			printf("%d %d\n", i, nMsgLen);
+			fflush(pSt_OPUSFile);
 			free(ptszMsgBuffer);
 			ptszMsgBuffer = NULL;
 		}
 	}
 	fclose(pSt_264File);
+	fclose(pSt_OPUSFile);
 	fclose(pSt_RTPFile);
 	RTPProtocol_Parse_Delete(lpszClientID);
 	RTPProtocol_Parse_Destory();
@@ -223,7 +374,7 @@ void TestPacket_RTP265()
 {
 	LPCXSTR lpszClientID = _X("xhSsrc");
 	XNETHANDLE xhFrame = 0;
-	if (!RTPProtocol_Packet_Insert(lpszClientID, false))
+	if (!RTPProtocol_Packet_Insert(lpszClientID))
 	{
 		printf("errrno");
 		return;
@@ -241,7 +392,7 @@ void TestPacket_RTP265()
 	LPCXSTR lpszRTPFile = _X("hevc.RTP");
 	FILE* pSt_File = fopen("2.txt", _X("wb"));
 #endif
-
+	int nIndex = 0;
 	FILE* pSt_264File = fopen(lpsz264File, _X("rb"));
 	FILE* pSt_RTPFile = fopen(lpszRTPFile, _X("wb"));
 	XCHAR tszMsgBuffer[10240];
@@ -257,21 +408,21 @@ void TestPacket_RTP265()
 		int nFrameCount = 0;
 		int nPacketCount = 0;
 		AVFRAME_PARSEDATA** ppSt_Frame;
-		STREAMMEDIA_RTPPROTOCOL_PACKET** ppSt_RTPPacket;
+		XENGINE_MSGBUFFER** ppSt_RTPPacket;
 
 		AVFrame_Frame_ParseGet(xhFrame, tszMsgBuffer, nRet, &ppSt_Frame, &nFrameCount);
 		for (int i = 0; i < nFrameCount; i++)
 		{
-			RTPProtocol_Packet_Packet(lpszClientID, 97, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen, &ppSt_RTPPacket, &nPacketCount);
+			//printf("%d\n", ppSt_Frame[i]->nMsgLen);
+			RTPProtocol_Packet_Packet(lpszClientID, 97, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer + 4, ppSt_Frame[i]->nMsgLen - 4, &ppSt_RTPPacket, &nPacketCount);
 			for (int j = 0; j < nPacketCount; j++)
 			{
-				printf("%d=%d\n", j, ppSt_RTPPacket[j]->nMsgLen);
-
+				printf("%d = %d,%d\n", nIndex++, j, ppSt_RTPPacket[j]->nMSGLen);
 				char tszFSize[64] = {};
-				int nFSize = sprintf(tszFSize, "%d\r\n", ppSt_RTPPacket[j]->nMsgLen);
+				int nFSize = sprintf(tszFSize, "%d\r\n", ppSt_RTPPacket[j]->nMSGLen);
 				fwrite(tszFSize, 1, nFSize, pSt_File);
 
-				fwrite(ppSt_RTPPacket[j]->tszMsgBuffer, 1, ppSt_RTPPacket[j]->nMsgLen, pSt_RTPFile);
+				fwrite(ppSt_RTPPacket[j]->unData.tszMSGBuffer, 1, ppSt_RTPPacket[j]->nMSGLen, pSt_RTPFile);
 			}
 			BaseLib_Memory_Free((XPPPMEM)&ppSt_RTPPacket, nPacketCount);
 		}
@@ -286,7 +437,7 @@ void TestParse_RTP265()
 {
 	LPCXSTR lpszClientID = _X("xhSsrc");
 	RTPProtocol_Parse_Init(1);
-	if (!RTPProtocol_Parse_Insert(lpszClientID, false))
+	if (!RTPProtocol_Parse_Insert(lpszClientID))
 	{
 		printf("errrno");
 		return;
@@ -296,24 +447,42 @@ void TestParse_RTP265()
 #ifdef _MSC_BUILD
 	LPCXSTR lpsz264File = _X("D:\\h264 file\\2_1.hevc");
 	LPCXSTR lpszRTPFile = _X("D:\\h264 file\\hevc.RTP");
+	LPCXSTR lpszTextFile = "D:\\h264 file\\2.txt";
 #else
 	LPCXSTR lpsz264File = _X("2_1.hevc");
 	LPCXSTR lpszRTPFile = _X("hevc.RTP");
+	LPCXSTR lpszTextFile = _X("2.txt");
 #endif
+	std::vector<int> stl_ListFSize;
+	FILE* pSt_File = fopen(lpszTextFile, _X("rb"));
+
+	char* ptszFileBuffer = (char*)malloc(XENGINE_MEMORY_SIZE_MAX);
+	memset(ptszFileBuffer, '\0', XENGINE_MEMORY_SIZE_MAX);
+	int nFLen = fread(ptszFileBuffer, 1, XENGINE_MEMORY_SIZE_MAX, pSt_File);
+
+	char* ptszTokStr = strtok(ptszFileBuffer, "\r\n");
+	while (NULL != ptszTokStr)
+	{
+		int nSize = atoi(ptszTokStr);
+		stl_ListFSize.push_back(nSize);
+		ptszTokStr = strtok(NULL, "\r\n");
+	}
+	fclose(pSt_File);
 
 	FILE* pSt_264File = fopen(lpsz264File, _X("wb"));
 	FILE* pSt_RTPFile = fopen(lpszRTPFile, _X("rb"));
 	XCHAR tszMsgBuffer[10240];
 	int i = 0;
 
-	while (1)
+	for (int i = 0; i < stl_ListFSize.size(); i++)
 	{
 		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
-		int nRet = fread(tszMsgBuffer, 1, sizeof(tszMsgBuffer), pSt_RTPFile);
+		int nRet = fread(tszMsgBuffer, 1, stl_ListFSize[i], pSt_RTPFile);
 		if (nRet <= 0)
 		{
 			break;
 		}
+		
 		RTPProtocol_Parse_Send(lpszClientID, tszMsgBuffer, nRet);
 		while (1)
 		{
@@ -329,7 +498,7 @@ void TestParse_RTP265()
 				ptszMsgBuffer = NULL;
 				break;
 			}
-			printf("%d=%d\n", i++, nMsgLen);
+			//printf("%d=%d\n", i++, nMsgLen);
 
 			fwrite(ptszMsgBuffer, 1, nMsgLen, pSt_264File);
 			free(ptszMsgBuffer);
@@ -345,7 +514,7 @@ void TestPacket_RTPAAC()
 {
 	LPCXSTR lpszClientID = _X("xhSsrc");
 	XNETHANDLE xhFrame = 0;
-	if (!RTPProtocol_Packet_Insert(lpszClientID))
+	if (!RTPProtocol_Packet_Insert(lpszClientID, false))
 	{
 		printf("errrno");
 		return;
@@ -376,7 +545,7 @@ void TestPacket_RTPAAC()
 		int nFrameCount = 0;
 		int nPacketCount = 0;
 		AVFRAME_PARSEDATA** ppSt_Frame;
-		STREAMMEDIA_RTPPROTOCOL_PACKET** ppSt_RTPPacket;
+		XENGINE_MSGBUFFER** ppSt_RTPPacket;
 
 		AVFrame_Frame_ParseGet(xhFrame, tszMsgBuffer, nRet, &ppSt_Frame, &nFrameCount);
 		for (int i = 0; i < nFrameCount; i++)
@@ -384,8 +553,8 @@ void TestPacket_RTPAAC()
 			RTPProtocol_Packet_Packet(lpszClientID, 95, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen, &ppSt_RTPPacket, &nPacketCount);
 			for (int j = 0; j < nPacketCount; j++)
 			{
-				printf("%d=%d\n", j, ppSt_RTPPacket[j]->nMsgLen);
-				fwrite(ppSt_RTPPacket[j]->tszMsgBuffer, 1, ppSt_RTPPacket[j]->nMsgLen, pSt_RTPFile);
+				printf("%d=%d\n", j, ppSt_RTPPacket[j]->nMSGLen);
+				fwrite(ppSt_RTPPacket[j]->unData.tszMSGBuffer, 1, ppSt_RTPPacket[j]->nMSGLen, pSt_RTPFile);
 			}
 			BaseLib_Memory_Free((XPPPMEM)&ppSt_RTPPacket, nPacketCount);
 		}
@@ -406,6 +575,7 @@ void TestParse_RTPAAC()
 		return;
 	}
 	RTPProtocol_Parse_SetLink(lpszClientID, 95, ENUM_STREAMMEDIA_RTPPROTOCOL_PAYLOAD_TYPE_AAC);
+	RTPProtocol_Parse_SetAAC(lpszClientID, 2, 44100);
 #ifdef _MSC_BUILD
 	LPCXSTR lpsz264File = _X("D:\\h264 file\\test_1.aac");
 	LPCXSTR lpszRTPFile = _X("D:\\h264 file\\test.RTP");
@@ -455,11 +625,14 @@ void TestParse_RTPAAC()
 }
 int main()
 {
-	//TestPacket_RTP264();
-	//TestParse_RTP264();
+	//TestPacket_RTP264_TCP();
+	//TestParse_RTP264_TCP();
+
+	//TestPacket_RTP264_UDP();
+	TestParse_RTP264_UDP();
 
 	//TestPacket_RTP265();
-	TestParse_RTP265();
+	//TestParse_RTP265();
 
 	TestPacket_RTPAAC();
 	TestParse_RTPAAC();

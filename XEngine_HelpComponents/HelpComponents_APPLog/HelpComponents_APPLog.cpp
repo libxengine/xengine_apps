@@ -52,7 +52,7 @@ int main()
 		printf("HelpComponents_XLog_Init:%lX\n", XLog_GetLastError());
 		return -1;
 	}
-	HelpComponents_XLog_StrongOPen(xhLog, "D:\\xengine_apps\\Debug\\stroage\\info.log", XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO);
+	HelpComponents_XLog_StrongOPen(xhLog, "D:\\xengine_apps\\Debug\\stroage\\key.log", XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO);
 	//HelpComponents_XLog_SetLogPriority(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_DEBUG);
 
 	HelpComponents_XLog_ValueInsert(xhLog, "$(int)", "1988");
@@ -62,6 +62,7 @@ int main()
 	HelpComponents_XLog_SetLogInterval(xhLog, 1000, 1000, 1000, 1000);
 	for (int i = 0; i < 100; i++)
 	{
+		//HelpComponents_XLog_SetClearly(xhLog);
 		XLOG_PRINT(xhLog, XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO, _X("xlog test 1=%d XENGINE_HELPCOMPONENTS_XLOG_IN_LOGLEVEL_INFO中文测试"), i);
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}

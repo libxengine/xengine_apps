@@ -45,53 +45,6 @@
 
 //Linux Macos:g++ -std=c++20 -Wall -g AVCodec_APPHelp.cpp -o AVCodec_APPHelp.exe -lXEngine_BaseLib -lXEngine_AVHelp
 
-void Test_MetaInfo()
-{
-	int nListCount = 0;
-	XENGINE_KEYVALUE** ppSt_MetaList;
-
-#ifdef _MSC_BUILD
-	LPCXSTR lpszFile = _X("D:\\h264 file\\1.mp4");
-#else
-	LPCXSTR lpszFile = _X("output.mp4");
-#endif
-
-	if (!AVHelp_MetaInfo_Get(lpszFile, &ppSt_MetaList, &nListCount))
-	{
-		return;
-	}
-	for (int i = 0; i < nListCount; i++)
-	{
-#ifdef _MSC_BUILD
-		XCHAR tszAStr[1024];
-		memset(tszAStr, '\0', sizeof(tszAStr));
-		int nLen = strlen(ppSt_MetaList[i]->tszStrKey);
-
-		BaseLib_Charset_UTFToAnsi(ppSt_MetaList[i]->tszStrVlu, tszAStr, &nLen);
-		printf("%s %s\n", ppSt_MetaList[i]->tszStrKey, tszAStr);
-#else
-		printf("%s %s\n", ppSt_MetaList[i]->tszStrKey, ppSt_MetaList[i]->tszStrVlu);
-#endif
-	}
-	BaseLib_Memory_Free((XPPPMEM)&ppSt_MetaList, nListCount);
-
-	nListCount = 0;
-	AVHELP_STREAMINFO** ppSt_ListFile;
-	AVHelp_MetaInfo_GetStream(lpszFile, &ppSt_ListFile, &nListCount);
-	for (int i = 0; i < nListCount; i++)
-	{
-		XENGINE_PROTOCOL_AVINFO st_AVInfo = {};
-		AVHelp_MetaInfo_GetAVInfo(lpszFile, i, &st_AVInfo);
-	}
-	BaseLib_Memory_Free((XPPPMEM)&ppSt_ListFile, nListCount);
-
-	double dlAVTime = 0;
-	AVHelp_MetaInfo_GetTime(lpszFile, 0, &dlAVTime);
-
-	double dlStartTime = 0;
-	AVHelp_MetaInfo_GetStartTime(lpszFile, 0, &dlStartTime);
-}
-
 void Test_PPS264Info()
 {
 #ifdef _MSC_BUILD
@@ -246,7 +199,6 @@ void Test_AVList()
 
 int main()
 {
-	Test_MetaInfo();
 	Test_PPS264Info();
 	Test_PPS265Info();
 	Test_AudioInfo();
