@@ -188,18 +188,18 @@ void Audio_DeCodec()
 			break;
 		}
 		int nListCount = 0;
-		AVFRAME_PARSEDATA** ppSt_Frame;
+		XENGINE_MSGBUFFER** ppSt_Frame;
 		AVFrame_Frame_ParseGet(xhParse, tszEnBuffer, nRet, &ppSt_Frame, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
 			int nListCount = 0;
 			AVCODEC_AUDIO_MSGBUFFER** ppSt_ListMsgBuffer;
-			AudioCodec_Stream_DeCodec(xhCoder, (uint8_t*)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen, &ppSt_ListMsgBuffer, &nListCount);
+			AudioCodec_Stream_DeCodec(xhCoder, (uint8_t*)ppSt_Frame[i]->unData.ptszMSGBuffer, ppSt_Frame[i]->nMSGLen, &ppSt_ListMsgBuffer, &nListCount);
 			for (int i = 0; i < nListCount; i++)
 			{
 				fwrite(ppSt_ListMsgBuffer[i]->ptszMsgBuffer, 1, ppSt_ListMsgBuffer[i]->nMsgLen, pSt_FileDeCodec);
 			}
-			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->ptszMsgBuffer);
+			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->unData.ptszMSGBuffer);
 		}
 		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
 		

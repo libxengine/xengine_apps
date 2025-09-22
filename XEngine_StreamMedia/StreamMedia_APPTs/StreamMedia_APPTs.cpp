@@ -264,7 +264,7 @@ bool TSFile_Packet()
 			break;
 		}
 		int nListCount = 0;
-		AVFRAME_PARSEDATA** ppSt_Frame;
+		XENGINE_MSGBUFFER** ppSt_Frame;
 
 		AVFrame_Frame_ParseGet(xhVideo, tszVBuffer, nRet, &ppSt_Frame, &nListCount);
 		for (int i = 0; i < nListCount; i++)
@@ -272,7 +272,7 @@ bool TSFile_Packet()
 			int nMSGCount = 0;
 			XBYTE** ptszMsgBuffer;
 
-			HLSProtocol_TSPacket_AVPacketTS(lpszClientID, &ptszMsgBuffer, &nMSGCount, 0x101, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen);
+			HLSProtocol_TSPacket_AVPacketTS(lpszClientID, &ptszMsgBuffer, &nMSGCount, 0x101, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer, ppSt_Frame[i]->nMSGLen);
 			for (int j = 0; j < nMSGCount; j++)
 			{
 				fwrite(ptszMsgBuffer[j], 1, 188, pSt_WFile);

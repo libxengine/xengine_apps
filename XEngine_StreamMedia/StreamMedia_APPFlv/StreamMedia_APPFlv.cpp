@@ -200,15 +200,17 @@ bool FLV_PacketVideo()
 			break;
 		}
 		int nListCount = 0;
-		AVFRAME_PARSEDATA** ppSt_Frame;
+		XENGINE_MSGBUFFER** ppSt_Frame;
 		AVFrame_Frame_ParseGet(xhVideo, tszRBBuffer, nRBLen, &ppSt_Frame, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
 			XCHAR tszMsgBuffer[102400];
-			FLVProtocol_Packet_FrameVideo(lpszClientID, tszMsgBuffer, &nWBLen, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen, nTimeStamp);
+			FLVProtocol_Packet_FrameVideo(lpszClientID, tszMsgBuffer, &nWBLen, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer, ppSt_Frame[i]->nMSGLen, nTimeStamp);
 			fwrite(tszMsgBuffer, 1, nWBLen, pSt_FLVFile);
 			nTimeStamp += 42; //每秒24帧
+			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->unData.ptszMSGBuffer);
 		}
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
 	}
 	FLVProtocol_Packet_FrameVideo(lpszClientID, tszWBBuffer, &nWBLen, NULL, 0, nTimeStamp);
 	fwrite(tszWBBuffer, 1, nWBLen, pSt_FLVFile);
@@ -296,15 +298,18 @@ bool FLV_PacketAudio()
 			break;
 		}
 		int nListCount = 0;
-		AVFRAME_PARSEDATA** ppSt_Frame;
+		XENGINE_MSGBUFFER** ppSt_Frame;
 		AVFrame_Frame_ParseGet(xhAudio, tszRBBuffer, nRBLen, &ppSt_Frame, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
 			XCHAR tszMsgBuffer[102400];
-			FLVProtocol_Packet_FrameAudio(lpszClientID, tszMsgBuffer, &nWBLen, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen, NULL, nTimeStamp);
+			FLVProtocol_Packet_FrameAudio(lpszClientID, tszMsgBuffer, &nWBLen, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer, ppSt_Frame[i]->nMSGLen, NULL, nTimeStamp);
 			fwrite(tszMsgBuffer, 1, nWBLen, pSt_FLVFile);
 			nTimeStamp += 93;
+
+			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->unData.ptszMSGBuffer);
 		}
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
 	}
 	fclose(pSt_AFile);
 	fclose(pSt_FLVFile);

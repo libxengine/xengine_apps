@@ -85,12 +85,12 @@ int Test_BITStream()
 		if (0 == nAVIndex)
 		{
 			int nListCount = 0;
-			AVFRAME_PARSEDATA** ppSt_Frame;
+			XENGINE_MSGBUFFER** ppSt_Frame;
 			AVFrame_BITStream_Convert(xhToken, ptszMSGBuffer, nMSGLen, &ppSt_Frame, &nListCount);
 			for (int i = 0; i < nListCount; i++)
 			{
-				printf("Frame:%d\n", ppSt_Frame[i]->nMsgLen);
-				BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->ptszMsgBuffer);
+				printf("Frame:%d\n", ppSt_Frame[i]->nMSGLen);
+				BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->unData.ptszMSGBuffer);
 			}
 			BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
 		}
@@ -126,12 +126,12 @@ int Test_Frame()
 		}
 
 		int nListCount = 0;
-		AVFRAME_PARSEDATA** ppSt_Frame;
+		XENGINE_MSGBUFFER** ppSt_Frame;
 		AVFrame_Frame_ParseGet(xhParse, tszBuffer, nRet, &ppSt_Frame, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
-			printf("Frame:%d\n", ppSt_Frame[i]->nMsgLen);
-			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->ptszMsgBuffer);
+			printf("Frame:%d\n", ppSt_Frame[i]->nMSGLen);
+			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->unData.ptszMSGBuffer);
 		}
 		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
 	}

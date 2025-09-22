@@ -334,21 +334,22 @@ int MP4_Packet()
 			break;
 		}
 		int nListCount = 0;
-		AVFRAME_PARSEDATA** ppSt_Frame;
+		XENGINE_MSGBUFFER** ppSt_Frame;
 		AVFrame_Frame_ParseGet(xhToken, tszRVBuffer, nRVLen, &ppSt_Frame, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
 			XENGINE_AVCODEC_VIDEOFRAMETYPE enVideoFrameType;
-			AVHelp_Parse_NaluType((LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264, &enVideoFrameType);
+			AVHelp_Parse_NaluType((LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264, &enVideoFrameType);
 
 			int nFrameType = 0;
 			if ((ENUM_XENGINE_AVCODEC_VIDEO_FRAMETYPE_SPS == enVideoFrameType) || (ENUM_XENGINE_AVCODEC_VIDEO_FRAMETYPE_PPS == enVideoFrameType) || (ENUM_XENGINE_AVCODEC_VIDEO_FRAMETYPE_I == enVideoFrameType))
 			{
 				nFrameType = 1;
 			}
-			MP4Protocol_Packet_FrameVideo(lpszClientID, ptszSDBuffer, &nSDLen, (LPCXSTR)ppSt_Frame[i]->ptszMsgBuffer, ppSt_Frame[i]->nMsgLen, nFilePos, nFrameType, 40);
+			MP4Protocol_Packet_FrameVideo(lpszClientID, ptszSDBuffer, &nSDLen, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer, ppSt_Frame[i]->nMSGLen, nFilePos, nFrameType, 40);
 			fwrite(ptszSDBuffer, 1, nSDLen, pSt_WFile);
 			nFilePos += nSDLen;
+			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->unData.ptszMSGBuffer);
 		}
 		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
 	}

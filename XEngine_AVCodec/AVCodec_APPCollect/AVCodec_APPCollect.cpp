@@ -35,12 +35,12 @@ using namespace std;
 FILE* pSt_File;
 int nWidth;
 int nHeight;
-void XCALLBACK XEngine_AVCollect_CBVideo(uint8_t* punStringY, int nAVLen, AVCOLLECT_TIMEINFO* pSt_TimeInfo, XPVOID lParam)
+void XCALLBACK XEngine_AVCollect_CBVideo(uint8_t* punStringY, int nAVLen, AVCODEC_TIMESTAMP* pSt_TimeInfo, XPVOID lParam)
 {
 	fwrite(punStringY, 1, nAVLen, pSt_File);
 	printf("%d\n", nAVLen);
 }
-void XCALLBACK XEngine_AVCollect_CBAudio(uint8_t* ptszAVBuffer, int nAVLen, AVCOLLECT_TIMEINFO* pSt_TimeInfo, XPVOID lParam)
+void XCALLBACK XEngine_AVCollect_CBAudio(uint8_t* ptszAVBuffer, int nAVLen, AVCODEC_TIMESTAMP* pSt_TimeInfo, XPVOID lParam)
 {
 }
 int main()

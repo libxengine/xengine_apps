@@ -134,7 +134,7 @@ int AVPacket_Test_FileLink()
 	{
 		int nAVIndex = 0;
 		int nMSGLen = 0;
-		AVCODEC_PACKETINFO st_AVPacket = {};
+		AVCODEC_TIMESTAMP st_AVPacket = {};
 		memset(ptszMSGBuffer, 0, XENGINE_MEMORY_SIZE_MID);
 		if (!AVFormat_UNPack_Read(xhVideo1, &nAVIndex, ptszMSGBuffer, &nMSGLen, &st_AVPacket))
 		{
@@ -149,7 +149,7 @@ int AVPacket_Test_FileLink()
 	{
 		int nAVIndex = 0;
 		int nMSGLen = 0;
-		AVCODEC_PACKETINFO st_AVPacket = {};
+		AVCODEC_TIMESTAMP st_AVPacket = {};
 		memset(ptszMSGBuffer, 0, XENGINE_MEMORY_SIZE_MID);
 		if (!AVFormat_UNPack_Read(xhVideo2, &nAVIndex, ptszMSGBuffer, &nMSGLen, &st_AVPacket))
 		{
@@ -282,7 +282,7 @@ int AVPacket_Test_FilePacket()
 	{
 		int nAVIndex = 0;
 		int nMSGLen = 0;
-		AVCODEC_PACKETINFO st_AVPacket = {};
+		AVCODEC_TIMESTAMP st_AVPacket = {};
 		memset(ptszMSGBuffer, 0, XENGINE_MEMORY_SIZE_MID);
 		if (!AVFormat_UNPack_Read(xhVideo, &nAVIndex, ptszMSGBuffer, &nMSGLen, &st_AVPacket))
 		{
@@ -294,7 +294,7 @@ int AVPacket_Test_FilePacket()
 	{
 		int nAVIndex = 0;
 		int nMSGLen = 0;
-		AVCODEC_PACKETINFO st_AVPacket = {};
+		AVCODEC_TIMESTAMP st_AVPacket = {};
 		memset(ptszMSGBuffer, 0, XENGINE_MEMORY_SIZE_MID);
 		if (!AVFormat_UNPack_Read(xhAudio1, &nAVIndex, ptszMSGBuffer, &nMSGLen, &st_AVPacket))
 		{
@@ -306,7 +306,7 @@ int AVPacket_Test_FilePacket()
 	{
 		int nAVIndex = 0;
 		int nMSGLen = 0;
-		AVCODEC_PACKETINFO st_AVPacket = {};
+		AVCODEC_TIMESTAMP st_AVPacket = {};
 		memset(ptszMSGBuffer, 0, XENGINE_MEMORY_SIZE_MID);
 		if (!AVFormat_UNPack_Read(xhAudio2, &nAVIndex, ptszMSGBuffer, &nMSGLen, &st_AVPacket))
 		{
@@ -384,7 +384,7 @@ int Test_RTMPPull()
 		int nMSGLen = 0;
 		int nAVIndex = -1;
 		memset(ptszMSGBuffer, 0, XENGINE_MEMORY_SIZE_MID);
-		AVCODEC_PACKETINFO st_AVPacket = {};
+		AVCODEC_TIMESTAMP st_AVPacket = {};
 		if (!AVFormat_UNPack_Read(xhUNPack, &nAVIndex, ptszMSGBuffer, &nMSGLen, &st_AVPacket))
 		{
 			break;
