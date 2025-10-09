@@ -18,7 +18,6 @@ using namespace std;
 #include <XEngine_Include/XEngine_Core/ManagePool_Define.h>
 #include <XEngine_Include/XEngine_StreamMedia/HLSProtocol_Define.h>
 #include <XEngine_Include/XEngine_StreamMedia/HLSProtocol_Error.h>
-#include <XEngine_Include/XEngine_AVCodec/AVCollect_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/VideoCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AudioCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVFrame_Define.h>
@@ -37,7 +36,6 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_ManagePool/ManagePool_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_HLSProtocol/HLSProtocol_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_HLSProtocol/HLSProtocol_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVCollect/AVCollect_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFrame/AVFrame_Define.h"
@@ -272,7 +270,7 @@ bool TSFile_Packet()
 			int nMSGCount = 0;
 			XBYTE** ptszMsgBuffer;
 
-			HLSProtocol_TSPacket_AVPacketTS(lpszClientID, &ptszMsgBuffer, &nMSGCount, 0x101, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer, ppSt_Frame[i]->nMSGLen);
+			HLSProtocol_TSPacket_AVPacketTS(lpszClientID, &ptszMsgBuffer, &nMSGCount, 0x101, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer, ppSt_Frame[i]->nMSGLen[0]);
 			for (int j = 0; j < nMSGCount; j++)
 			{
 				fwrite(ptszMsgBuffer[j], 1, 188, pSt_WFile);

@@ -346,7 +346,7 @@ int MP4_Packet()
 			{
 				nFrameType = 1;
 			}
-			MP4Protocol_Packet_FrameVideo(lpszClientID, ptszSDBuffer, &nSDLen, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer, ppSt_Frame[i]->nMSGLen, nFilePos, nFrameType, 40);
+			MP4Protocol_Packet_FrameVideo(lpszClientID, ptszSDBuffer, &nSDLen, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer, ppSt_Frame[i]->nMSGLen[0], nFilePos, nFrameType, 40);
 			fwrite(ptszSDBuffer, 1, nSDLen, pSt_WFile);
 			nFilePos += nSDLen;
 			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->unData.ptszMSGBuffer);

@@ -89,7 +89,7 @@ int Test_BITStream()
 			AVFrame_BITStream_Convert(xhToken, ptszMSGBuffer, nMSGLen, &ppSt_Frame, &nListCount);
 			for (int i = 0; i < nListCount; i++)
 			{
-				printf("Frame:%d\n", ppSt_Frame[i]->nMSGLen);
+				printf("Frame:%d\n", ppSt_Frame[i]->nMSGLen[0]);
 				BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->unData.ptszMSGBuffer);
 			}
 			BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
@@ -130,7 +130,7 @@ int Test_Frame()
 		AVFrame_Frame_ParseGet(xhParse, tszBuffer, nRet, &ppSt_Frame, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
-			printf("Frame:%d\n", ppSt_Frame[i]->nMSGLen);
+			printf("Frame:%d\n", ppSt_Frame[i]->nMSGLen[0]);
 			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->unData.ptszMSGBuffer);
 		}
 		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);

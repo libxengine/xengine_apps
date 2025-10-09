@@ -23,7 +23,6 @@ using namespace std;
 #include <XEngine_Include/XEngine_Client/XClient_Error.h>
 #include <XEngine_Include/XEngine_StreamMedia/RTMPProtocol_Define.h>
 #include <XEngine_Include/XEngine_StreamMedia/RTMPProtocol_Error.h>
-#include <XEngine_Include/XEngine_AVCodec/AVCollect_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/VideoCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AudioCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVHelp_Define.h>
@@ -48,7 +47,6 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Client/XClient_Socket/XClient_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_RTMPProtocol/RTMPProtocol_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_RTMPProtocol/RTMPProtocol_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVCollect/AVCollect_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Define.h"

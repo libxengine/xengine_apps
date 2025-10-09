@@ -16,7 +16,6 @@
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
 #include <XEngine_Include/XEngine_Core/ManagePool_Define.h>
-#include <XEngine_Include/XEngine_AVCodec/AVCollect_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/VideoCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AudioCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVFrame_Define.h>
@@ -39,7 +38,6 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_ManagePool/ManagePool_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_RTPProtocol/RTPProtocol_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_RTPProtocol/RTPProtocol_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVCollect/AVCollect_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Define.h"
@@ -105,12 +103,12 @@ void TestPacket_RTP264_TCP()
 		AVFrame_Frame_ParseGet(xhFrame, tszMsgBuffer, nRet, &ppSt_Frame, &nFrameCount);
 		for (int i = 0; i < nFrameCount; i++)
 		{
-			RTPProtocol_Packet_Packet(lpszClientID, 96, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer + 4, ppSt_Frame[i]->nMSGLen - 4, &ppSt_RTPPacket, &nPacketCount);
+			RTPProtocol_Packet_Packet(lpszClientID, 96, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer + 4, ppSt_Frame[i]->nMSGLen[0] - 4, &ppSt_RTPPacket, &nPacketCount);
 			for (int j = 0; j < nPacketCount; j++)
 			{
-				printf("%d=%d\n", nIndex++, ppSt_RTPPacket[j]->nMSGLen);
-				nCount += ppSt_RTPPacket[j]->nMSGLen;
-				fwrite(ppSt_RTPPacket[j]->unData.tszMSGBuffer, 1, ppSt_RTPPacket[j]->nMSGLen, pSt_RTPFile);
+				printf("%d=%d\n", nIndex++, ppSt_RTPPacket[j]->nMSGLen[0]);
+				nCount += ppSt_RTPPacket[j]->nMSGLen[0];
+				fwrite(ppSt_RTPPacket[j]->unData.tszMSGBuffer, 1, ppSt_RTPPacket[j]->nMSGLen[0], pSt_RTPFile);
 			}
 			BaseLib_Memory_Free((XPPPMEM)&ppSt_RTPPacket, nPacketCount);
 		}
@@ -233,15 +231,15 @@ void TestPacket_RTP264_UDP()
 		AVFrame_Frame_ParseGet(xhFrame, tszMsgBuffer, nRet, &ppSt_Frame, &nFrameCount);
 		for (int i = 0; i < nFrameCount; i++)
 		{
-			RTPProtocol_Packet_Packet(lpszClientID, 96, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer + 4, ppSt_Frame[i]->nMSGLen - 4, &ppSt_RTPPacket, &nPacketCount);
+			RTPProtocol_Packet_Packet(lpszClientID, 96, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer + 4, ppSt_Frame[i]->nMSGLen[0] - 4, &ppSt_RTPPacket, &nPacketCount);
 			for (int j = 0; j < nPacketCount; j++)
 			{
-				printf("%d=%d\n", j, ppSt_RTPPacket[j]->nMSGLen);
+				printf("%d=%d\n", j, ppSt_RTPPacket[j]->nMSGLen[0]);
 
 				char tszFSize[64] = {};
-				int nFSize = sprintf(tszFSize, "%d\r\n", ppSt_RTPPacket[j]->nMSGLen);
+				int nFSize = sprintf(tszFSize, "%d\r\n", ppSt_RTPPacket[j]->nMSGLen[0]);
 				fwrite(tszFSize, 1, nFSize, pSt_File);
-				fwrite(ppSt_RTPPacket[j]->unData.tszMSGBuffer, 1, ppSt_RTPPacket[j]->nMSGLen, pSt_RTPFile);
+				fwrite(ppSt_RTPPacket[j]->unData.tszMSGBuffer, 1, ppSt_RTPPacket[j]->nMSGLen[0], pSt_RTPFile);
 			}
 			BaseLib_Memory_Free((XPPPMEM)&ppSt_RTPPacket, nPacketCount);
 		}
@@ -414,15 +412,15 @@ void TestPacket_RTP265()
 		for (int i = 0; i < nFrameCount; i++)
 		{
 			//printf("%d\n", ppSt_Frame[i]->nMsgLen);
-			RTPProtocol_Packet_Packet(lpszClientID, 97, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer + 4, ppSt_Frame[i]->nMSGLen - 4, &ppSt_RTPPacket, &nPacketCount);
+			RTPProtocol_Packet_Packet(lpszClientID, 97, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer + 4, ppSt_Frame[i]->nMSGLen[0] - 4, &ppSt_RTPPacket, &nPacketCount);
 			for (int j = 0; j < nPacketCount; j++)
 			{
-				printf("%d = %d,%d\n", nIndex++, j, ppSt_RTPPacket[j]->nMSGLen);
+				printf("%d = %d,%d\n", nIndex++, j, ppSt_RTPPacket[j]->nMSGLen[0]);
 				char tszFSize[64] = {};
-				int nFSize = sprintf(tszFSize, "%d\r\n", ppSt_RTPPacket[j]->nMSGLen);
+				int nFSize = sprintf(tszFSize, "%d\r\n", ppSt_RTPPacket[j]->nMSGLen[0]);
 				fwrite(tszFSize, 1, nFSize, pSt_File);
 
-				fwrite(ppSt_RTPPacket[j]->unData.tszMSGBuffer, 1, ppSt_RTPPacket[j]->nMSGLen, pSt_RTPFile);
+				fwrite(ppSt_RTPPacket[j]->unData.tszMSGBuffer, 1, ppSt_RTPPacket[j]->nMSGLen[0], pSt_RTPFile);
 			}
 			BaseLib_Memory_Free((XPPPMEM)&ppSt_RTPPacket, nPacketCount);
 		}
@@ -550,11 +548,11 @@ void TestPacket_RTPAAC()
 		AVFrame_Frame_ParseGet(xhFrame, tszMsgBuffer, nRet, &ppSt_Frame, &nFrameCount);
 		for (int i = 0; i < nFrameCount; i++)
 		{
-			RTPProtocol_Packet_Packet(lpszClientID, 95, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer, ppSt_Frame[i]->nMSGLen, &ppSt_RTPPacket, &nPacketCount);
+			RTPProtocol_Packet_Packet(lpszClientID, 95, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer, ppSt_Frame[i]->nMSGLen[0], &ppSt_RTPPacket, &nPacketCount);
 			for (int j = 0; j < nPacketCount; j++)
 			{
-				printf("%d=%d\n", j, ppSt_RTPPacket[j]->nMSGLen);
-				fwrite(ppSt_RTPPacket[j]->unData.tszMSGBuffer, 1, ppSt_RTPPacket[j]->nMSGLen, pSt_RTPFile);
+				printf("%d=%d\n", j, ppSt_RTPPacket[j]->nMSGLen[0]);
+				fwrite(ppSt_RTPPacket[j]->unData.tszMSGBuffer, 1, ppSt_RTPPacket[j]->nMSGLen[0], pSt_RTPFile);
 			}
 			BaseLib_Memory_Free((XPPPMEM)&ppSt_RTPPacket, nPacketCount);
 		}

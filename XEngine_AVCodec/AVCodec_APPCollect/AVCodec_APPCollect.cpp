@@ -11,6 +11,8 @@ using namespace std;
 #if 1 == _XENGINE_USER_DIR_SYSTEM
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_ProtocolHdr.h>
+#include <XEngine_Include/XEngine_AVCodec/AudioCodec_Define.h>
+#include <XEngine_Include/XEngine_AVCodec/VideoCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVCollect_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVCollect_Error.h>
 #ifdef _MSC_BUILD
@@ -19,6 +21,8 @@ using namespace std;
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_ProtocolHdr.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVCollect/AVCollect_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVCollect/AVCollect_Error.h"
 #ifdef _MSC_BUILD
@@ -35,13 +39,14 @@ using namespace std;
 FILE* pSt_File;
 int nWidth;
 int nHeight;
-void XCALLBACK XEngine_AVCollect_CBVideo(uint8_t* punStringY, int nAVLen, AVCODEC_TIMESTAMP* pSt_TimeInfo, XPVOID lParam)
+void XCALLBACK XEngine_AVCollect_CBVideo(AVCODEC_VIDEO_MSGBUFFER* pSt_MSGBuffer, XPVOID lParam)
 {
-	fwrite(punStringY, 1, nAVLen, pSt_File);
-	printf("%d\n", nAVLen);
+	fwrite(pSt_MSGBuffer->st_MSGBuffer.unData.ptszMSGBuffer, 1, pSt_MSGBuffer->st_MSGBuffer.nMSGLen[0], pSt_File);
+	printf("%d\n", pSt_MSGBuffer->st_MSGBuffer.nMSGLen[0]);
 }
-void XCALLBACK XEngine_AVCollect_CBAudio(uint8_t* ptszAVBuffer, int nAVLen, AVCODEC_TIMESTAMP* pSt_TimeInfo, XPVOID lParam)
+void XCALLBACK XEngine_AVCollect_CBAudio(AVCODEC_AUDIO_MSGBUFFER* pSt_MSGBuffer, XPVOID lParam)
 {
+
 }
 int main()
 {
@@ -70,7 +75,7 @@ int main()
 	AVCollect_Video_GetInfo(xhVideo, &st_AVInfo);
 	printf("AVCollect_Screen_GetInfo:%d %d %lld\n", st_AVInfo.st_VideoInfo.nWidth, st_AVInfo.st_VideoInfo.nHeight, st_AVInfo.st_VideoInfo.nBitRate);
 	AVCollect_Video_Start(xhVideo);
-	/*
+
 	XHANDLE xhAudio = AVCollect_Audio_Init("dshow", _X("audio=virtual-audio-capturer"), XEngine_AVCollect_CBAudio);
 	if (NULL == xhAudio)
 	{
@@ -80,7 +85,7 @@ int main()
 	AVCollect_Audio_GetInfo(xhAudio, &st_AVInfo);
 	printf("AVCollect_Audio_GetInfo:%d %lld\n", st_AVInfo.st_AudioInfo.nSampleFmt, st_AVInfo.st_AudioInfo.nBitRate);
 	AVCollect_Audio_Start(xhAudio);
-	*/
+
 	std::this_thread::sleep_for(std::chrono::seconds(15));
 	AVCollect_Video_Destory(xhVideo);
 	fclose(pSt_File);

@@ -18,7 +18,6 @@ using namespace std;
 #include <XEngine_Include/XEngine_Core/ManagePool_Error.h>
 #include <XEngine_Include/XEngine_StreamMedia/FLVProtocol_Define.h>
 #include <XEngine_Include/XEngine_StreamMedia/FLVProtocol_Error.h>
-#include <XEngine_Include/XEngine_AVCodec/AVCollect_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/VideoCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AudioCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVFrame_Define.h>
@@ -37,7 +36,6 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_Core/XEngine_ManagePool/ManagePool_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_FLVProtocol/FLVProtocol_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_StreamMedia/StreamMedia_FLVProtocol/FLVProtocol_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVCollect/AVCollect_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFrame/AVFrame_Define.h"
@@ -205,7 +203,7 @@ bool FLV_PacketVideo()
 		for (int i = 0; i < nListCount; i++)
 		{
 			XCHAR tszMsgBuffer[102400];
-			FLVProtocol_Packet_FrameVideo(lpszClientID, tszMsgBuffer, &nWBLen, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer, ppSt_Frame[i]->nMSGLen, nTimeStamp);
+			FLVProtocol_Packet_FrameVideo(lpszClientID, tszMsgBuffer, &nWBLen, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer, ppSt_Frame[i]->nMSGLen[0], nTimeStamp);
 			fwrite(tszMsgBuffer, 1, nWBLen, pSt_FLVFile);
 			nTimeStamp += 42; //每秒24帧
 			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->unData.ptszMSGBuffer);
@@ -303,7 +301,7 @@ bool FLV_PacketAudio()
 		for (int i = 0; i < nListCount; i++)
 		{
 			XCHAR tszMsgBuffer[102400];
-			FLVProtocol_Packet_FrameAudio(lpszClientID, tszMsgBuffer, &nWBLen, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer, ppSt_Frame[i]->nMSGLen, NULL, nTimeStamp);
+			FLVProtocol_Packet_FrameAudio(lpszClientID, tszMsgBuffer, &nWBLen, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer, ppSt_Frame[i]->nMSGLen[0], NULL, nTimeStamp);
 			fwrite(tszMsgBuffer, 1, nWBLen, pSt_FLVFile);
 			nTimeStamp += 93;
 
