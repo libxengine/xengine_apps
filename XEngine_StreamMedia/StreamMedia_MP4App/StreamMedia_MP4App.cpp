@@ -19,6 +19,7 @@ using namespace std;
 #include <XEngine_Include/XEngine_NetHelp/APIHelp_Define.h>
 #include <XEngine_Include/XEngine_NetHelp/APIHelp_Error.h>
 #include <XEngine_Include/XEngine_AVCodec/VideoCodec_Define.h>
+#include <XEngine_Include/XEngine_AVCodec/AudioCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVHelp_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVHelp_Error.h>
 #include <XEngine_Include/XEngine_AVCodec/AVFrame_Define.h>
@@ -42,6 +43,7 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_APIHelp/APIHelp_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_NetHelp/NetHelp_APIHelp/APIHelp_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFrame/AVFrame_Define.h"
@@ -144,17 +146,7 @@ void MP4_PacketMoov(LPCXSTR lpszClientID, FILE* pSt_File, int nPos)
 	int nMINFPos = 0;
 	int nSTBLPos = 0;
 	XCHAR tszMSGBuffer[10240] = {};
-	MP4Protocol_Packet_HDRBox(lpszClientID, tszMSGBuffer, &nSize, _X("moov"));
-	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
-	nMOOVPos = nPos;
-	nPos += nSize;
-
-	memset(tszMSGBuffer, '\0', sizeof(tszMSGBuffer));
-	MP4Protocol_Packet_MVhd(lpszClientID, tszMSGBuffer, &nSize, 90090);
-	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
-	nPos += nSize;
-
-	memset(tszMSGBuffer, '\0', sizeof(tszMSGBuffer));
+	
 	MP4Protocol_Packet_HDRBox(lpszClientID, tszMSGBuffer, &nSize, _X("trak"));
 	fwrite(tszMSGBuffer, 1, nSize, pSt_File);
 	nTRAKPos = nPos;
@@ -281,7 +273,8 @@ void MP4_PacketMoov(LPCXSTR lpszClientID, FILE* pSt_File, int nPos)
 }
 int MP4_Packet()
 {
-	XNETHANDLE xhToken = 0;
+	XNETHANDLE xhVideo = 0;
+	XNETHANDLE xhAudio = 0;
 	LPCXSTR lpszClientID = _X("127777");
 
 #ifdef _MSC_BUILD
@@ -301,7 +294,9 @@ int MP4_Packet()
 	}
 	
 	MP4Protocol_Packet_Insert(lpszClientID);
-	AVFrame_Frame_ParseInit(&xhToken, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
+	MP4Protocol_Packet_SetTime(lpszClientID);
+	AVFrame_Frame_ParseInit(&xhVideo, ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264);
+	AVFrame_Frame_ParseInit(&xhAudio, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC);
 	
 	int nRVLen = 0;
 	int nSDLen = 0;
@@ -322,6 +317,14 @@ int MP4_Packet()
 	fwrite(ptszSDBuffer, 1, nSDLen, pSt_WFile);
 	nFilePos += nSDLen;
 
+	MP4Protocol_Packet_HDRBox(lpszClientID, ptszSDBuffer, &nSDLen, _X("moov"));
+	fwrite(ptszSDBuffer, 1, nSDLen, pSt_WFile);
+	nFilePos = nSDLen;
+
+	MP4Protocol_Packet_MVhd(lpszClientID, ptszSDBuffer, &nSDLen, 90090);
+	fwrite(ptszSDBuffer, 1, nSDLen, pSt_WFile);
+	nFilePos += nSDLen;
+
 	while (true)
 	{
 		nRVLen = 0;
@@ -335,7 +338,7 @@ int MP4_Packet()
 		}
 		int nListCount = 0;
 		XENGINE_MSGBUFFER** ppSt_Frame;
-		AVFrame_Frame_ParseGet(xhToken, tszRVBuffer, nRVLen, &ppSt_Frame, &nListCount);
+		AVFrame_Frame_ParseGet(xhVideo, tszRVBuffer, nRVLen, &ppSt_Frame, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
 			XENGINE_AVCODEC_VIDEOFRAMETYPE enVideoFrameType;
@@ -346,7 +349,7 @@ int MP4_Packet()
 			{
 				nFrameType = 1;
 			}
-			MP4Protocol_Packet_FrameVideo(lpszClientID, ptszSDBuffer, &nSDLen, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer, ppSt_Frame[i]->nMSGLen[0], nFilePos, nFrameType, 40);
+			MP4Protocol_Packet_FrameVideo(lpszClientID, ptszSDBuffer, &nSDLen, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer, ppSt_Frame[i]->nMSGLen[0], nFilePos, nFrameType);
 			fwrite(ptszSDBuffer, 1, nSDLen, pSt_WFile);
 			nFilePos += nSDLen;
 			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->unData.ptszMSGBuffer);
@@ -354,14 +357,42 @@ int MP4_Packet()
 		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
 	}
 	MP4Protocol_Packet_HDRBox(lpszClientID, ptszSDBuffer, &nSDLen, "mdat", NULL, nFilePos - nMDatPos - 8);
-
 	fseek(pSt_WFile, nMDatPos, SEEK_SET);
 	fwrite(ptszSDBuffer, 1, nSDLen, pSt_WFile);
 	fseek(pSt_WFile, nFilePos, SEEK_SET);
-
+	MP4_PacketMoov(lpszClientID, pSt_WFile, nFilePos);
+	//////////////////////////////////////////////////////////////////////////
+	while (true)
+	{
+		nRVLen = 0;
+		nSDLen = 0;
+		memset(tszRVBuffer, '\0', sizeof(tszRVBuffer));
+		memset(ptszSDBuffer, '\0', XENGINE_MEMORY_SIZE_MAX);
+		nRVLen = fread(tszRVBuffer, 1, sizeof(tszRVBuffer), pSt_RFile);
+		if (nRVLen <= 0)
+		{
+			break;
+		}
+		int nListCount = 0;
+		XENGINE_MSGBUFFER** ppSt_Frame;
+		AVFrame_Frame_ParseGet(xhVideo, tszRVBuffer, nRVLen, &ppSt_Frame, &nListCount);
+		for (int i = 0; i < nListCount; i++)
+		{
+			MP4Protocol_Packet_FrameAudio(lpszClientID, ptszSDBuffer, &nSDLen, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer, ppSt_Frame[i]->nMSGLen[0], nFilePos);
+			fwrite(ptszSDBuffer, 1, nSDLen, pSt_WFile);
+			nFilePos += nSDLen;
+			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->unData.ptszMSGBuffer);
+		}
+		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
+	}
+	MP4Protocol_Packet_HDRBox(lpszClientID, ptszSDBuffer, &nSDLen, "mdat", NULL, nFilePos - nMDatPos - 8);
+	fseek(pSt_WFile, nMDatPos, SEEK_SET);
+	fwrite(ptszSDBuffer, 1, nSDLen, pSt_WFile);
+	fseek(pSt_WFile, nFilePos, SEEK_SET);
 	MP4_PacketMoov(lpszClientID, pSt_WFile, nFilePos);
 
-	AVFrame_Frame_ParseClose(xhToken);
+	AVFrame_Frame_ParseClose(xhVideo);
+	AVFrame_Frame_ParseClose(xhAudio);
 	MP4Protocol_Packet_Delete(lpszClientID);
 	fclose(pSt_WFile);
 	fclose(pSt_RFile);

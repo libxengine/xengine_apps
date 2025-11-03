@@ -12,8 +12,6 @@
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Error.h>
-#include <XEngine_Include/XEngine_SystemSdk/ProcFile_Define.h>
-#include <XEngine_Include/XEngine_SystemSdk/ProcFile_Error.h>
 #include <XEngine_Include/XEngine_SystemSdk/SystemApi_Define.h>
 #include <XEngine_Include/XEngine_SystemSdk/SystemApi_Error.h>
 #ifdef _MSC_BUILD
@@ -24,8 +22,6 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_SystemSdk/XEngine_ProcFile/ProcFile_Define.h"
-#include "../../../XEngine/XEngine_SourceCode/XEngine_SystemSdk/XEngine_ProcFile/ProcFile_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_SystemSdk/XEngine_SystemApi/SystemApi_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_SystemSdk/XEngine_SystemApi/SystemApi_Error.h"
 #ifdef _MSC_BUILD
@@ -58,13 +54,6 @@ int Test_SerialInfo()
 	SystemApi_System_GetSystemVer(tszOSBuffer, tszOSVersion, tszOSVBuild, &dwOSProcessor);
 	printf("%s %s %s %lu\n", tszOSBuffer, tszOSVersion, tszOSVBuild, dwOSProcessor);
 
-#ifndef _MSC_BUILD
-#ifdef __linux__
-	strcpy(st_SDKSerial.tszDiskSerial, "sda");
-#else
-	strcpy(st_SDKSerial.tszDiskSerial, "macos");
-#endif
-#endif
 	if (!SystemApi_HardWare_GetSerial(&st_SDKSerial))
 	{
 		return -1;

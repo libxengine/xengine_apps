@@ -431,10 +431,13 @@ bool GetFileAndPath(LPCXSTR lpszUrl, XCHAR* ptszPath = NULL, XCHAR* ptszFile = N
 }
 int main()
 {
-	int64_t nStart = BaseLib_Time_GetTickCount();
-	Sleep(1000);
-	int64_t nEnd = BaseLib_Time_GetTickCount();
-	printf("%lld\n", nEnd - nStart);
+	for (int i = 0; i < 5; i++)
+	{
+		int64_t nStart = BaseLib_Time_GetTickCount();
+		Sleep(1000);
+		int64_t nEnd = BaseLib_Time_GetTickCount();
+		printf("%lld\n", nEnd - nStart);
+	}
 	if (setlocale(LC_ALL, ".UTF8") == NULL)
 	{
 		return -1;

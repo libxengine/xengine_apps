@@ -47,7 +47,6 @@
 
 int Test_FilterAudio()
 {
-	XNETHANDLE xhToken = 0;
 	AVFILTER_AUDIO_INFO st_AudioFilter = {};
 
 	st_AudioFilter.st_AudioInfo.nChannel = 1;
@@ -55,8 +54,8 @@ int Test_FilterAudio()
 	st_AudioFilter.st_AudioInfo.nSampleFmt = 1;
 	st_AudioFilter.st_AudioInfo.nSampleRate = 11025;
 
-	//AVFilter_Audio_Init(&xhToken, _X("volume=2.0"), &st_AudioFilter);
-	AVFilter_Audio_Init(&xhToken, _X("aresample=44100,aformat=sample_fmts=s16:channel_layouts=stereo"), &st_AudioFilter);
+	//XHANDLE xhToken = AVFilter_Audio_Init(_X("volume=2.0"), &st_AudioFilter);
+	XHANDLE xhToken = AVFilter_Audio_Init(_X("aresample=44100,aformat=sample_fmts=s16:channel_layouts=stereo"), &st_AudioFilter);
 
 #ifdef _MSC_BUILD
 	LPCXSTR lpszRFile = _X("D:\\audio\\3.pcm");
@@ -106,7 +105,6 @@ int Test_FilterAudio()
 
 int Test_FilterVideo()
 {
-	XNETHANDLE xhToken = 0;
 	AVFILTER_VIDEO_INFO st_VideoFilter = {};
 
 	st_VideoFilter.st_VideoInfo.nWidth = 720;
@@ -115,7 +113,7 @@ int Test_FilterVideo()
 	st_VideoFilter.st_VideoInfo.nFrameRate = 24;
 	st_VideoFilter.st_VideoInfo.nFormat = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
 
-	AVFilter_Video_Init(&xhToken, _X("eq=brightness=1.5:contrast=1.2"), &st_VideoFilter);
+	XHANDLE xhToken = AVFilter_Video_Init(_X("eq=brightness=1.5:contrast=1.2"), &st_VideoFilter);
 
 #ifdef _MSC_BUILD
 	FILE* pSt_RBFile = _xtfopen("D:\\h264 file\\480p.yuv", _X("rb"));
@@ -163,7 +161,6 @@ int Test_FilterVideo()
 }
 int Test_FilterMutliVideo()
 {
-	XNETHANDLE xhToken = 0;
 	int nVideoList = 4;
 	AVFILTER_VIDEO_INFO **ppSt_VideoInfo;
 
@@ -201,7 +198,7 @@ int Test_FilterMutliVideo()
 	ppSt_VideoInfo[3]->st_VideoInfo.nFormat = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
 	_tcsxcpy(ppSt_VideoInfo[3]->tszFilterName, "in3");
 	
-	AVFilter_Video_MIXInit(&xhToken, &ppSt_VideoInfo, nVideoList, _X("out"), _X("[in0]scale=360:240[in0_scaled];[in1]scale=360:240[in1_scaled];[in2]scale=360:240[in2_scaled];[in3]scale=360:240[in3_scaled];[in0_scaled][in1_scaled][in2_scaled][in3_scaled]xstack=inputs=4:layout=0_0|w0_0|0_h0|w0_h0[out]"));
+	XHANDLE xhToken = AVFilter_Video_MIXInit(&ppSt_VideoInfo, nVideoList, _X("out"), _X("[in0]scale=360:240[in0_scaled];[in1]scale=360:240[in1_scaled];[in2]scale=360:240[in2_scaled];[in3]scale=360:240[in3_scaled];[in0_scaled][in1_scaled][in2_scaled][in3_scaled]xstack=inputs=4:layout=0_0|w0_0|0_h0|w0_h0[out]"));
 
 #ifdef _MSC_BUILD
 	FILE* pSt_RBFile = _xtfopen("D:\\h264 file\\480p.yuv", _X("rb"));
@@ -253,8 +250,6 @@ int Test_FilterMutliVideo()
 
 void Test_FilterMutliAudio()
 {
-	XNETHANDLE xhFilter;
-
 #ifdef _MSC_BUILD
 	LPCXSTR lpszAudioFile1 = "d:\\audio\\3_out.pcm";
 	LPCXSTR lpszAudioFile2 = "d:\\audio\\4.pcm";
@@ -282,7 +277,8 @@ void Test_FilterMutliAudio()
 	ppSt_AudioFile[1]->nIndex = 1;
 	_tcsxcpy(ppSt_AudioFile[1]->tszFilterName, "in2");
 
-	if (!AVFilter_Audio_MIXInit(&xhFilter, &ppSt_AudioFile, 2, "out", "[in1][in2]amix=inputs=2:duration=longest,aformat=sample_fmts=s16:sample_rates=44100:channel_layouts=stereo[out]"))
+	XHANDLE xhFilter = AVFilter_Audio_MIXInit(&ppSt_AudioFile, 2, "out", "[in1][in2]amix=inputs=2:duration=longest,aformat=sample_fmts=s16:sample_rates=44100:channel_layouts=stereo[out]");
+	if (NULL == xhFilter)
 	{
 		printf("AudioCodec_Help_FilterInit\n");
 		return;

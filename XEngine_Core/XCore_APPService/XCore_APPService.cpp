@@ -72,19 +72,6 @@ void XCALLBACK Callback_UDPRecv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR
 	NetCore_UDPXCore_SendEx(xhUDPCore, lpszClientAddr, lpszRecvMsg, nMsgLen);
 }
 
-int test_tcpxpoll()
-{
-	if (NetCore_TCPXPoll_Start(5001))
-	{
-		printf(_X("test_tcpxpoll Start Is Ok!\n"));
-	}
-	else
-	{
-		printf(_X("test_tcpxpoll Start Is Failed!\n"));
-	}
-	NetCore_TCPXPoll_RegisterCallBack(TCPOverlapped_Login, TCPOverlapped_Recv, TCPOverlapped_Leave);
-	return 0;
-}
 int test_tcpxcore()
 {
 	xhTCPCore = NetCore_TCPXCore_StartEx(5000);
@@ -212,7 +199,6 @@ int main()
 	WSAStartup(MAKEWORD(2, 2), &st_WSAData);
 #endif
 
-	//test_tcpxpoll();
 	//test_tcpxcore();
 	//test_udpxcore();
 	test_udpselect();
@@ -220,7 +206,6 @@ int main()
 	test_udx();
 	
 	std::this_thread::sleep_for(std::chrono::seconds(5));
-	NetCore_TCPXPoll_Stop();
 	NetCore_TCPXCore_DestroyEx(xhTCPCore);
 	NetCore_UDPXCore_DestroyEx(xhUDPCore);
 	NetCore_UnixDomain_Stop();
