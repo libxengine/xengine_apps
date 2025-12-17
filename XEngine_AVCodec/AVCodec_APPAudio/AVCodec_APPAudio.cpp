@@ -313,6 +313,8 @@ int main()
 	}
 	BaseLib_Memory_Free((XPPPMEM)&pptszChList, nListCount);
 
+	printf("aac sample size:%d\n", AudioCodec_Help_GetSampleSize(ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC));
+
 	Audio_Encode();
 	Audio_DeCodec();
 	OPUS_Encode();

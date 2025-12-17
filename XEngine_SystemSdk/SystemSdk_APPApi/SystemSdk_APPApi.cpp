@@ -121,6 +121,9 @@ int Test_SystemInfo()
 {
 	int nUsage = 0;
 	int nProcessCount = 0;
+	int nWidth = 0;
+	int nHeight = 0;
+	XCHAR tszLanguage[64] = {};
 	XENGINE_LIBTIME st_LibTimer;
 	SYSTEMAPI_MEMORY_INFOMATION st_MemoryInfo;
 
@@ -131,6 +134,8 @@ int Test_SystemInfo()
 	SystemApi_System_GetCpuUsage(&nUsage);
 	SystemApi_System_GetProcessCount(&nProcessCount);
 	SystemApi_System_GetUpTime(&st_LibTimer);
+	SystemApi_System_GetScreen(&nWidth, &nHeight);
+	SystemApi_System_GetLanguage(tszLanguage);
 
 #ifdef _MSC_BUILD
 	XCHAR tszValueStr[128] = {};
@@ -168,7 +173,7 @@ int Test_EnumFile()
 	SystemApi_File_GetFileAttr(_X("D:\\xengine_apps\\x64"), &st_FileAttr);
 
 #ifdef _MSC_BUILD
-	SystemApi_File_EnumFile("D:\\xengine_apps\\x64", &ppszListDir, &nCount, true, 1);
+	SystemApi_File_EnumFile("D:\\Input\\1.测试剧集\\*.mp4", &ppszListDir, &nCount, true, 1);
 #else
 	SystemApi_File_EnumFile("/tmp/", &ppszListDir, &nCount);
 #endif
