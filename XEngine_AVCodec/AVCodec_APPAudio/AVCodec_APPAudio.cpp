@@ -83,9 +83,10 @@ void Audio_Encode()
 	st_AudioInfo.nChannel = 2;
 	st_AudioInfo.nSampleRate = 48000;
 	st_AudioInfo.nBitRate = 128000;
+	st_AudioInfo.nNBSample = 1152;
 	st_AudioInfo.nSampleFmt = ENUM_AVCODEC_AUDIO_SAMPLEFMT_S16;
-	st_AudioInfo.enAVCodec = ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC;
-	XHANDLE xhAudio = AudioCodec_Stream_EnInit(&st_AudioInfo, 0, 0, true);
+	st_AudioInfo.enAVCodec = ENUM_XENGINE_AVCODEC_AUDIO_TYPE_MP2;
+	XHANDLE xhAudio = AudioCodec_Stream_EnInit(&st_AudioInfo, false);
 	if (NULL == xhAudio)
 	{
 		printf("AudioCodec_Stream_EnInit\n");
@@ -94,67 +95,68 @@ void Audio_Encode()
 	int nSize = 0;
 	AudioCodec_Stream_GetSize(xhAudio, &nSize);
 #ifdef _MSC_BUILD
-	FILE* pSt_File = fopen("d:\\audio\\b.pcm", "rb");
-	FILE* pSt_FileAac = fopen("d:\\audio\\output.aac", "wb");
+	FILE* pSt_File = fopen("d:\\audio\\1.pcm", "rb");
+	FILE* pSt_FileMP2 = fopen("d:\\audio\\output.mp2", "wb");
 #else
-	FILE* pSt_File = fopen("output.pcm", "rb");
-	FILE* pSt_FileAac = fopen("output.aac", "wb");
+	FILE* pSt_File = fopen("1.pcm", "rb");
+	FILE* pSt_FileMP2 = fopen("output.mp2", "wb");
 #endif
 
 	while (1)
 	{
-		XCHAR tszEnBuffer[4096];
+		XCHAR tszEnBuffer[10240];
 		XCHAR tszPCMBuffer[40960];
 
 		memset(tszEnBuffer, '\0', sizeof(tszEnBuffer));
 		memset(tszPCMBuffer, '\0', sizeof(tszPCMBuffer));
 
-		int nRet = fread(tszPCMBuffer, 1, 4096, pSt_File);
+		int nRet = fread(tszPCMBuffer, 1, nSize, pSt_File);
 		if (nRet <= 0)
 		{
 			break;
 		}
+		XENGINE_MSGBUFFER st_MSGBuffer = {};
+		AVCODEC_TIMESTAMP st_TimeStamp = {};
+
+		st_MSGBuffer.nMSGLen[0] = nRet;
+		BaseLib_Memory_MSGMalloc(&st_MSGBuffer);
+		memcpy((XPVOID)st_MSGBuffer.unData.ptszMSGArray[0], tszPCMBuffer, nRet);
+
+		XHANDLE **ppSt_AVBuffer = NULL;
+		AVHelp_Memory_SetAudioBuffer(&st_MSGBuffer, &st_TimeStamp, &st_AudioInfo, &ppSt_AVBuffer, false);
 		int nListCount = 0;
-		AVCODEC_AUDIO_MSGBUFFER** ppSt_ListAudio;
-		AVCODEC_AUDIO_MSGBUFFER st_MSGBuffer = {};
-		st_MSGBuffer.st_AudioInfo.nChannel = 2;
-		st_MSGBuffer.st_AudioInfo.nNBSample = 1024;
-		st_MSGBuffer.st_AudioInfo.nSampleFmt = ENUM_AVCODEC_AUDIO_SAMPLEFMT_S16;
-		AudioCodec_Help_Malloc(&st_MSGBuffer);
-
-		memcpy(st_MSGBuffer.st_MSGBuffer.unData.ptszMSGArray[0], tszPCMBuffer, nRet);
-
-		if (AudioCodec_Stream_EnCodec(xhAudio, &st_MSGBuffer, &ppSt_ListAudio, &nListCount))
+		XHANDLE** ppSt_AVAudio;
+		AudioCodec_Stream_EnCodec(xhAudio, ppSt_AVBuffer[0], &ppSt_AVAudio, &nListCount);
+		for (int i = 0; i < nListCount; i++)
 		{
-			for (int i = 0; i < nListCount; i++)
-			{
-				XBYTE byAACHdr[8];
-				AVHelp_Packet_AACHdr(byAACHdr, 48000, 2, ppSt_ListAudio[i]->st_MSGBuffer.nMSGLen[0]);
+			XENGINE_MSGBUFFER st_MSGBuffer = {};
+			AVHelp_Memory_GetAudioBuffer(ppSt_AVAudio[i], &st_MSGBuffer, true);
 
-				fwrite(byAACHdr, 1, 7, pSt_FileAac);
-				fwrite(ppSt_ListAudio[i]->st_MSGBuffer.unData.ptszMSGArray[0], 1, ppSt_ListAudio[i]->st_MSGBuffer.nMSGLen[0], pSt_FileAac);
-				BaseLib_Memory_MSGFree(&ppSt_ListAudio[i]->st_MSGBuffer);
-			}
+			printf("Audio_EnCodec len:%d\n", st_MSGBuffer.nMSGLen[0]);
+			fwrite(st_MSGBuffer.unData.ptszMSGArray[0], 1, st_MSGBuffer.nMSGLen[0], pSt_FileMP2);
+			BaseLib_Memory_MSGFree(&st_MSGBuffer);
 		}
-		BaseLib_Memory_Free((XPPPMEM)&ppSt_ListAudio, nListCount);
+		//BaseLib_Memory_MSGFree(&st_MSGBuffer);  //auto free st_MSGBuffer when call  AVHelp_Memory_FreeAVList(&ppSt_AVBuffer, 1, false)
+		AVHelp_Memory_FreeAVList(&ppSt_AVBuffer, 1, false);
+		AVHelp_Memory_FreeAVList(&ppSt_AVAudio, nListCount, true);
 	}
 	int nListCount = 0;
-	AVCODEC_AUDIO_MSGBUFFER** ppSt_ListAudio;
-	AudioCodec_Stream_EnCodec(xhAudio, NULL, &ppSt_ListAudio, &nListCount);
-	BaseLib_Memory_Free((XPPPMEM)&ppSt_ListAudio, nListCount);
+	XHANDLE** ppSt_AVNULL;
+	AudioCodec_Stream_EnCodec(xhAudio, NULL, &ppSt_AVNULL, &nListCount);
+	AVHelp_Memory_FreeAVList(&ppSt_AVNULL, nListCount, true);
 
 	fclose(pSt_File);
-	fclose(pSt_FileAac);
+	fclose(pSt_FileMP2);
 	AudioCodec_Stream_Destroy(xhAudio);
 }
 
 void Audio_DeCodec()
 {
 #ifdef _MSC_BUILD
-	FILE* pSt_FileEnCode = fopen("d:\\audio\\output.aac", "rb");
+	FILE* pSt_FileEnCode = fopen("d:\\audio\\output.mp2", "rb");
 	FILE* pSt_FileDeCodec = fopen("d:\\audio\\output_de.pcm", "wb");
 #else
-	FILE* pSt_FileEnCode = fopen("output.aac", "rb");
+	FILE* pSt_FileEnCode = fopen("output.mp2", "rb");
 	FILE* pSt_FileDeCodec = fopen("output_de.pcm", "wb");
 #endif
 
@@ -164,11 +166,11 @@ void Audio_DeCodec()
 	memset(&st_AudioInfo, '\0', sizeof(AVCODEC_AUDIO_INFO));
 
 	st_AudioInfo.nSampleRate = 48000;
-	st_AudioInfo.nNBSample = 1024;
+	st_AudioInfo.nNBSample = 1152;
 	st_AudioInfo.nChannel = 2;
 	st_AudioInfo.nSampleFmt = ENUM_AVCODEC_AUDIO_SAMPLEFMT_S16;
 
-	XHANDLE xhAudio = AudioCodec_Stream_DeInit(ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC);
+	XHANDLE xhAudio = AudioCodec_Stream_DeInit(ENUM_XENGINE_AVCODEC_AUDIO_TYPE_MP2, NULL, NULL, ENUM_AVCODEC_AUDIO_SAMPLEFMT_S16);
 	if (NULL == xhAudio)
 	{
 		printf("AudioCodec_Stream_DeInit\n");
@@ -179,7 +181,7 @@ void Audio_DeCodec()
 	{
 		nLen = 10240;
 	}
-	AVFrame_Frame_ParseInit(&xhParse, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_AAC);
+	AVFrame_Frame_ParseInit(&xhParse, ENUM_XENGINE_AVCODEC_AUDIO_TYPE_MP2);
 
 	while (1)
 	{
@@ -192,32 +194,33 @@ void Audio_DeCodec()
 			break;
 		}
 		int nListCount = 0;
-		XENGINE_MSGBUFFER** ppSt_Frame;
-		AVFrame_Frame_ParseGet(xhParse, tszEnBuffer, nRet, &ppSt_Frame, &nListCount);
+		XHANDLE** ppSt_AVPacket;
+		AVFrame_Frame_ParseGet(xhParse, tszEnBuffer, nRet, &ppSt_AVPacket, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
-			AVCODEC_AUDIO_MSGBUFFER** ppSt_ListMsgBuffer;
-			AVCODEC_AUDIO_MSGBUFFER st_MSGBuffer = {};
-			st_MSGBuffer.st_MSGBuffer.nMSGLen[0] = ppSt_Frame[i]->nMSGLen[0];
-			BaseLib_Memory_MSGMalloc(&st_MSGBuffer.st_MSGBuffer);
-			st_MSGBuffer.st_MSGBuffer.unData.ptszMSGArray[0] = (uint8_t*)ppSt_Frame[i]->unData.ptszMSGBuffer;
-			
 			int nAVCount = 0;
-			AudioCodec_Stream_DeCodec(xhAudio, &st_MSGBuffer, &ppSt_ListMsgBuffer, &nAVCount);
-			for (int i = 0; i < nAVCount; i++)
+			XHANDLE** ppSt_AVFrame;
+			
+			AudioCodec_Stream_DeCodec(xhAudio, ppSt_AVPacket[i], &ppSt_AVFrame, &nAVCount);
+			for (int j = 0; j < nAVCount; j++)
 			{
-				fwrite(ppSt_ListMsgBuffer[i]->st_MSGBuffer.unData.ptszMSGArray[0], 1, ppSt_ListMsgBuffer[i]->st_MSGBuffer.nMSGLen[0], pSt_FileDeCodec);
-				BaseLib_Memory_MSGFree(&ppSt_ListMsgBuffer[i]->st_MSGBuffer);
+				XENGINE_MSGBUFFER st_MSGBuffer = {};
+				AVHelp_Memory_GetAudioBuffer(ppSt_AVFrame[j], &st_MSGBuffer, false);
+
+				printf("Audio_DeCodec len:%d\n", st_MSGBuffer.nMSGLen[0]);
+				fwrite(st_MSGBuffer.unData.ptszMSGArray[0], 1, st_MSGBuffer.nMSGLen[0], pSt_FileDeCodec);
+				BaseLib_Memory_MSGFree(&st_MSGBuffer);
 			}
-			BaseLib_Memory_Free((XPPPMEM)&ppSt_ListMsgBuffer, nAVCount);
+			AVHelp_Memory_FreeAVList(&ppSt_AVFrame, nAVCount, false);
 		}
-		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
+		AVHelp_Memory_FreeAVList(&ppSt_AVPacket, nListCount, true);
 	}
 	fclose(pSt_FileEnCode);
 	fclose(pSt_FileDeCodec);
 	AudioCodec_Stream_Destroy(xhAudio);
 	AVFrame_Frame_ParseClose(xhParse);
 }
+
 void OPUS_Encode()
 {
 	AVCODEC_AUDIO_INFO st_AudioInfo;
@@ -225,16 +228,20 @@ void OPUS_Encode()
 
 	st_AudioInfo.nChannel = 2;
 	st_AudioInfo.nSampleRate = 48000;
-	st_AudioInfo.nBitRate = 64000;
+	st_AudioInfo.nBitRate = 128000;
 	st_AudioInfo.nSampleFmt = ENUM_AVCODEC_AUDIO_SAMPLEFMT_S16;
 	st_AudioInfo.enAVCodec = ENUM_XENGINE_AVCODEC_AUDIO_TYPE_OPUS;
-
-	XHANDLE xhAudio = AudioCodec_Stream_EnInit(&st_AudioInfo);
+	XHANDLE xhAudio = AudioCodec_Stream_EnInit(&st_AudioInfo, false);
 	if (NULL == xhAudio)
 	{
 		printf("AudioCodec_Stream_EnInit\n");
 		return;
 	}
+
+	AudioCodec_Stream_GetInfo(xhAudio, NULL, NULL, &st_AudioInfo.nNBSample);
+	int nSize = 0;
+	AudioCodec_Stream_GetSize(xhAudio, &nSize);
+
 #ifdef _MSC_BUILD
 	FILE* pSt_File = fopen("d:\\audio\\mix.pcm", "rb");
 	FILE* pSt_FileAac = fopen("d:\\audio\\output1.opus", "wb");
@@ -243,8 +250,6 @@ void OPUS_Encode()
 	FILE* pSt_FileAac = fopen("output1.opus", "wb");
 #endif
 
-	int nSize = 0;
-	AudioCodec_Stream_GetSize(xhAudio, &nSize);
 	while (1)
 	{
 		XCHAR tszEnBuffer[4608];
@@ -253,37 +258,42 @@ void OPUS_Encode()
 		memset(tszEnBuffer, '\0', sizeof(tszEnBuffer));
 		memset(tszPCMBuffer, '\0', sizeof(tszPCMBuffer));
 
-		int nRet = fread(tszPCMBuffer, 1, sizeof(tszPCMBuffer), pSt_File);
+		int nRet = fread(tszPCMBuffer, 1, nSize, pSt_File);
 		if (nRet <= 0)
 		{
 			break;
 		}
 		int nListCount = 0;
-		AVCODEC_AUDIO_MSGBUFFER** ppSt_ListAudio;
+		XHANDLE** ppSt_AVAudio;
 
-		AVCODEC_AUDIO_MSGBUFFER st_MSGBuffer = {};
-		st_MSGBuffer.st_AudioInfo.nChannel = 2;
-		st_MSGBuffer.st_AudioInfo.nNBSample = 1024;
-		st_MSGBuffer.st_AudioInfo.nSampleFmt = ENUM_AVCODEC_AUDIO_SAMPLEFMT_S16;
+		XENGINE_MSGBUFFER st_MSGBuffer = {};
+		AVCODEC_TIMESTAMP st_TimeStamp = {};
 
-		st_MSGBuffer.st_MSGBuffer.nMSGLen[0] = nRet;
-		BaseLib_Memory_MSGMalloc(&st_MSGBuffer.st_MSGBuffer);
-		memcpy(st_MSGBuffer.st_MSGBuffer.unData.ptszMSGArray[0], tszPCMBuffer, nRet);
+		st_MSGBuffer.nMSGLen[0] = nRet;
+		BaseLib_Memory_MSGMalloc(&st_MSGBuffer);
+		memcpy((XPVOID)st_MSGBuffer.unData.ptszMSGArray[0], tszPCMBuffer, nRet);
 
-		if (AudioCodec_Stream_EnCodec(xhAudio, &st_MSGBuffer, &ppSt_ListAudio, &nListCount))
+		XHANDLE** ppSt_AVBuffer = NULL;
+		AVHelp_Memory_SetAudioBuffer(&st_MSGBuffer, &st_TimeStamp, &st_AudioInfo, &ppSt_AVBuffer, false);
+
+		AudioCodec_Stream_EnCodec(xhAudio, ppSt_AVBuffer[0], &ppSt_AVAudio, &nListCount);
+		for (int i = 0; i < nListCount; i++)
 		{
-			for (int i = 0; i < nListCount; i++)
-			{
-				fwrite(ppSt_ListAudio[i]->st_MSGBuffer.unData.ptszMSGArray[0], 1, ppSt_ListAudio[i]->st_MSGBuffer.nMSGLen[0], pSt_FileAac);
-				BaseLib_Memory_MSGFree(&ppSt_ListAudio[i]->st_MSGBuffer);
-			}
+			XENGINE_MSGBUFFER st_MSGBuffer = {};
+			AVHelp_Memory_GetAudioBuffer(ppSt_AVAudio[i], &st_MSGBuffer, true);
+
+			printf("Audio_OPUS len:%d\n", st_MSGBuffer.nMSGLen[0]);
+			fwrite(st_MSGBuffer.unData.ptszMSGArray[0], 1, st_MSGBuffer.nMSGLen[0], pSt_FileAac);
+			BaseLib_Memory_MSGFree(&st_MSGBuffer);
 		}
-		BaseLib_Memory_Free((XPPPMEM)&ppSt_ListAudio, nListCount);
+		AVHelp_Memory_FreeAVList(&ppSt_AVBuffer, 1, false);
+		AVHelp_Memory_FreeAVList(&ppSt_AVAudio, nListCount, true);
 	}
 	fclose(pSt_File);
 	fclose(pSt_FileAac);
 	AudioCodec_Stream_Destroy(xhAudio);
 }
+
 int main()
 {
 	int nListCount = 0;

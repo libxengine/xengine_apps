@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <thread>
 #if 1 == _XENGINE_USER_DIR_SYSTEM
 #include <XEngine_Include/XEngine_CommHdr.h>
 #include <XEngine_Include/XEngine_BaseLib/BaseLib_Define.h>
@@ -148,19 +148,9 @@ int Test_HttpCreate()
 	return 0;
 }
 
-bool bRun = false;
-void XCALLBACK Download_Progress(XHANDLE xhToken, __int64x dlTotal, __int64x dlNow, __int64x ulTotal, __int64x ulNow, ENUM_XCLIENT_APIHELP_FILE_STATUS en_DownHttpStatus, XPVOID lParam)
-{
-	printf("下载任务：%p,总大小：%lld，已经下载大小：%lld，下载标识符：%d\n", xhToken, dlTotal, dlNow, en_DownHttpStatus);
-
-	if (ENUM_XCLIENT_APIHELP_FILE_STATUS_COMPLETE == en_DownHttpStatus)
-	{
-		bRun = false;
-	}
-}
 int download_http()
 {
-	LPCXSTR lpszHttpAddr = _X("https://sw.pcmgr.qq.com/df8e46fd8131b749186d37c2db121537/65e83e7d/spcmgr/download/QQ_9.7.22.240304_01.exe");
+	LPCXSTR lpszHttpAddr = _X("https://sw.pcmgr.qq.com/121e1d336ec862a5f3e3f9a8cd0c923d/6965a900/spcmgr/download/QQ9.9.25.42941_guanjia_x64.exe");
 	//LPCXSTR lpszHttpAddr = _X("http://192.168.1.7:5101/QQ.exe");
 #ifdef _MSC_BUILD
 	LPCXSTR lpszFileAddr = _X("D:\\xengine_apps\\Debug\\QQ.exe");
@@ -168,16 +158,15 @@ int download_http()
 	LPCXSTR lpszFileAddr = _X("QQ.exe");
 #endif
 
-	XHANDLE xhDownCall = APIClient_File_Create(lpszHttpAddr, lpszFileAddr, true, NULL, Download_Progress);
+	XHANDLE xhDownCall = APIClient_File_Create(lpszHttpAddr, lpszFileAddr, true);
 	if (NULL == xhDownCall)
 	{
 		printf("下载失败！");
 		return -1;
 	}
-	bRun = true;
 	APIClient_File_Start(xhDownCall);
 
-	while (bRun)
+	while (true)
 	{
 		XCLIENT_APIFILE st_TaskInfo;
 		memset(&st_TaskInfo, '\0', sizeof(XCLIENT_APIFILE));
@@ -190,6 +179,8 @@ int download_http()
 		{
 			break;
 		}
+		printf("下载任务：总大小：%lld，已经下载大小：%lld，下载标识符：%d\n", st_TaskInfo.dlTotal, st_TaskInfo.dlNow, st_TaskInfo.en_DownStatus);
+		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 	APIClient_File_Delete(xhDownCall);
 	return 0;
@@ -232,10 +223,10 @@ int upload_http()
 int main()
 {
 	//upload_http();
-	//download_http();
+	download_http();
 
 	//Test_Http2Request();
-	Test_HttpRequest();
+	//Test_HttpRequest();
 	//Test_HttpCreate();
 
 	//NetHelp_APPClient_EMailPop3();

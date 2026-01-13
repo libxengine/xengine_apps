@@ -22,10 +22,13 @@ using namespace std;
 #include <XEngine_Include/XEngine_AVCodec/AudioCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVFrame_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVFrame_Error.h>
+#include <XEngine_Include/XEngine_AVCodec/AVHelp_Define.h>
+#include <XEngine_Include/XEngine_AVCodec/AVHelp_Error.h>
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"XEngine_StreamMedia/StreamMedia_FLVProtocol.lib")
 #pragma comment(lib,"XEngine_AVCodec/XEngine_AVFrame.lib")
+#pragma comment(lib,"XEngine_AVCodec/XEngine_AVHelp.lib")
 #endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
@@ -40,20 +43,24 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFrame/AVFrame_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFrame/AVFrame_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
 #ifdef _MSC_BUILD
 #ifdef _WIN64
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/StreamMedia_FLVProtocol.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_AVFrame.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_AVHelp.lib")
 #else
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/StreamMedia_FLVProtocol.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVFrame.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
 #endif
 #endif
 #endif
 
-//Linux::g++ -std=c++20 -Wall -g StreamMedia_APPFlv.cpp -o StreamMedia_APPFlv.exe -lXEngine_BaseLib -lStreamMedia_FLVProtocol -lXEngine_AVFrame
+//Linux::g++ -std=c++20 -Wall -g StreamMedia_APPFlv.cpp -o StreamMedia_APPFlv.exe -lXEngine_BaseLib -lStreamMedia_FLVProtocol -lXEngine_AVFrame -lXEngine_AVHelp
 
 bool FLV_Parse()
 {
@@ -198,17 +205,20 @@ bool FLV_PacketVideo()
 			break;
 		}
 		int nListCount = 0;
-		XENGINE_MSGBUFFER** ppSt_Frame;
-		AVFrame_Frame_ParseGet(xhVideo, tszRBBuffer, nRBLen, &ppSt_Frame, &nListCount);
+		XHANDLE** ppSt_AVFrame;
+		AVFrame_Frame_ParseGet(xhVideo, tszRBBuffer, nRBLen, &ppSt_AVFrame, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
+			XENGINE_MSGBUFFER st_MSGBuffer = {};
+			AVHelp_Memory_GetVideoBuffer(ppSt_AVFrame[i], &st_MSGBuffer, true);
+
 			XCHAR tszMsgBuffer[102400];
-			FLVProtocol_Packet_FrameVideo(lpszClientID, tszMsgBuffer, &nWBLen, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer, ppSt_Frame[i]->nMSGLen[0], nTimeStamp);
+			FLVProtocol_Packet_FrameVideo(lpszClientID, tszMsgBuffer, &nWBLen, (LPCXSTR)st_MSGBuffer.unData.ptszMSGBuffer, st_MSGBuffer.nMSGLen[0], nTimeStamp);
 			fwrite(tszMsgBuffer, 1, nWBLen, pSt_FLVFile);
 			nTimeStamp += 42; //每秒24帧
-			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->unData.ptszMSGBuffer);
+			BaseLib_Memory_MSGFree(&st_MSGBuffer);
 		}
-		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
+		AVHelp_Memory_FreeAVList(&ppSt_AVFrame, nListCount, true);
 	}
 	FLVProtocol_Packet_FrameVideo(lpszClientID, tszWBBuffer, &nWBLen, NULL, 0, nTimeStamp);
 	fwrite(tszWBBuffer, 1, nWBLen, pSt_FLVFile);
@@ -296,18 +306,21 @@ bool FLV_PacketAudio()
 			break;
 		}
 		int nListCount = 0;
-		XENGINE_MSGBUFFER** ppSt_Frame;
-		AVFrame_Frame_ParseGet(xhAudio, tszRBBuffer, nRBLen, &ppSt_Frame, &nListCount);
+		XHANDLE** ppSt_AVFrame;
+		AVFrame_Frame_ParseGet(xhAudio, tszRBBuffer, nRBLen, &ppSt_AVFrame, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
+			XENGINE_MSGBUFFER st_MSGBuffer = {};
+			AVHelp_Memory_GetAudioBuffer(ppSt_AVFrame[i], &st_MSGBuffer, true);
+
 			XCHAR tszMsgBuffer[102400];
-			FLVProtocol_Packet_FrameAudio(lpszClientID, tszMsgBuffer, &nWBLen, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer, ppSt_Frame[i]->nMSGLen[0], NULL, nTimeStamp);
+			FLVProtocol_Packet_FrameAudio(lpszClientID, tszMsgBuffer, &nWBLen, (LPCXSTR)st_MSGBuffer.unData.ptszMSGBuffer, st_MSGBuffer.nMSGLen[0], NULL, nTimeStamp);
 			fwrite(tszMsgBuffer, 1, nWBLen, pSt_FLVFile);
 			nTimeStamp += 93;
 
-			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->unData.ptszMSGBuffer);
+			BaseLib_Memory_MSGFree(&st_MSGBuffer);
 		}
-		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
+		AVHelp_Memory_FreeAVList(&ppSt_AVFrame, nListCount);
 	}
 	fclose(pSt_AFile);
 	fclose(pSt_FLVFile);

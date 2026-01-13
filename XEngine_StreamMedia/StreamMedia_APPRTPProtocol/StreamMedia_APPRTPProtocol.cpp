@@ -96,23 +96,26 @@ void TestPacket_RTP264_TCP()
 			break;
 		}
 		int nFrameCount = 0;
-		int nPacketCount = 0;
-		XENGINE_MSGBUFFER** ppSt_Frame;
-		XENGINE_MSGBUFFER** ppSt_RTPPacket;
-
-		AVFrame_Frame_ParseGet(xhFrame, tszMsgBuffer, nRet, &ppSt_Frame, &nFrameCount);
+		XHANDLE** ppSt_AVFrame;
+		AVFrame_Frame_ParseGet(xhFrame, tszMsgBuffer, nRet, &ppSt_AVFrame, &nFrameCount);
 		for (int i = 0; i < nFrameCount; i++)
 		{
-			RTPProtocol_Packet_Packet(lpszClientID, 96, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer + 4, ppSt_Frame[i]->nMSGLen[0] - 4, &ppSt_RTPPacket, &nPacketCount);
+			XENGINE_MSGBUFFER st_MSGBuffer = {};
+			AVHelp_Memory_GetVideoBuffer(ppSt_AVFrame[i], &st_MSGBuffer, false);
+
+			int nPacketCount = 0;
+			XENGINE_MSGBUFFER** ppSt_RTPPacket;
+			RTPProtocol_Packet_Packet(lpszClientID, 96, (LPCXSTR)st_MSGBuffer.unData.ptszMSGBuffer + 4, st_MSGBuffer.nMSGLen[0] - 4, &ppSt_RTPPacket, &nPacketCount);
 			for (int j = 0; j < nPacketCount; j++)
 			{
 				printf("%d=%d\n", nIndex++, ppSt_RTPPacket[j]->nMSGLen[0]);
 				nCount += ppSt_RTPPacket[j]->nMSGLen[0];
 				fwrite(ppSt_RTPPacket[j]->unData.tszMSGBuffer, 1, ppSt_RTPPacket[j]->nMSGLen[0], pSt_RTPFile);
 			}
+			BaseLib_Memory_MSGFree(&st_MSGBuffer);
 			BaseLib_Memory_Free((XPPPMEM)&ppSt_RTPPacket, nPacketCount);
 		}
-		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nFrameCount);
+		AVHelp_Memory_FreeAVList(&ppSt_AVFrame, nFrameCount);
 	}
 	fclose(pSt_264File);
 	fclose(pSt_RTPFile);
@@ -224,14 +227,16 @@ void TestPacket_RTP264_UDP()
 			break;
 		}
 		int nFrameCount = 0;
-		int nPacketCount = 0;
-		XENGINE_MSGBUFFER** ppSt_Frame;
-		XENGINE_MSGBUFFER** ppSt_RTPPacket;
-
-		AVFrame_Frame_ParseGet(xhFrame, tszMsgBuffer, nRet, &ppSt_Frame, &nFrameCount);
+		XHANDLE** ppSt_AVFrame;
+		AVFrame_Frame_ParseGet(xhFrame, tszMsgBuffer, nRet, &ppSt_AVFrame, &nFrameCount);
 		for (int i = 0; i < nFrameCount; i++)
 		{
-			RTPProtocol_Packet_Packet(lpszClientID, 96, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer + 4, ppSt_Frame[i]->nMSGLen[0] - 4, &ppSt_RTPPacket, &nPacketCount);
+			XENGINE_MSGBUFFER st_MSGBuffer = {};
+			AVHelp_Memory_GetVideoBuffer(ppSt_AVFrame[i], &st_MSGBuffer, false);
+
+			int nPacketCount = 0;
+			XENGINE_MSGBUFFER** ppSt_RTPPacket;
+			RTPProtocol_Packet_Packet(lpszClientID, 96, (LPCXSTR)st_MSGBuffer.unData.ptszMSGBuffer + 4, st_MSGBuffer.nMSGLen[0] - 4, &ppSt_RTPPacket, &nPacketCount);
 			for (int j = 0; j < nPacketCount; j++)
 			{
 				printf("%d=%d\n", j, ppSt_RTPPacket[j]->nMSGLen[0]);
@@ -241,9 +246,10 @@ void TestPacket_RTP264_UDP()
 				fwrite(tszFSize, 1, nFSize, pSt_File);
 				fwrite(ppSt_RTPPacket[j]->unData.tszMSGBuffer, 1, ppSt_RTPPacket[j]->nMSGLen[0], pSt_RTPFile);
 			}
+			BaseLib_Memory_MSGFree(&st_MSGBuffer);
 			BaseLib_Memory_Free((XPPPMEM)&ppSt_RTPPacket, nPacketCount);
 		}
-		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nFrameCount);
+		AVHelp_Memory_FreeAVList(&ppSt_AVFrame, nFrameCount);
 	}
 	fclose(pSt_264File);
 	fclose(pSt_RTPFile);
@@ -302,7 +308,7 @@ void TestParse_RTP264_UDP()
 	int nCount = 0;
 	bool bKEYFrame = false;
 
-	for (int i = 0; i < stl_ListFSize.size(); i++)
+	for (unsigned int i = 0; i < stl_ListFSize.size(); i++)
 	{
 		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 		int nRet = fread(tszMsgBuffer, 1, stl_ListFSize[i], pSt_RTPFile);
@@ -404,15 +410,17 @@ void TestPacket_RTP265()
 			break;
 		}
 		int nFrameCount = 0;
-		int nPacketCount = 0;
-		XENGINE_MSGBUFFER** ppSt_Frame;
-		XENGINE_MSGBUFFER** ppSt_RTPPacket;
-
-		AVFrame_Frame_ParseGet(xhFrame, tszMsgBuffer, nRet, &ppSt_Frame, &nFrameCount);
+		XHANDLE** ppSt_AVFrame;
+		AVFrame_Frame_ParseGet(xhFrame, tszMsgBuffer, nRet, &ppSt_AVFrame, &nFrameCount);
 		for (int i = 0; i < nFrameCount; i++)
 		{
 			//printf("%d\n", ppSt_Frame[i]->nMsgLen);
-			RTPProtocol_Packet_Packet(lpszClientID, 97, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer + 4, ppSt_Frame[i]->nMSGLen[0] - 4, &ppSt_RTPPacket, &nPacketCount);
+			XENGINE_MSGBUFFER st_MSGBuffer = {};
+			AVHelp_Memory_GetVideoBuffer(ppSt_AVFrame[i], &st_MSGBuffer, false);
+
+			int nPacketCount = 0;
+			XENGINE_MSGBUFFER** ppSt_RTPPacket;
+			RTPProtocol_Packet_Packet(lpszClientID, 97, (LPCXSTR)st_MSGBuffer.unData.ptszMSGBuffer + 4, st_MSGBuffer.nMSGLen[0] - 4, &ppSt_RTPPacket, &nPacketCount);
 			for (int j = 0; j < nPacketCount; j++)
 			{
 				printf("%d = %d,%d\n", nIndex++, j, ppSt_RTPPacket[j]->nMSGLen[0]);
@@ -422,9 +430,10 @@ void TestPacket_RTP265()
 
 				fwrite(ppSt_RTPPacket[j]->unData.tszMSGBuffer, 1, ppSt_RTPPacket[j]->nMSGLen[0], pSt_RTPFile);
 			}
+			BaseLib_Memory_MSGFree(&st_MSGBuffer);
 			BaseLib_Memory_Free((XPPPMEM)&ppSt_RTPPacket, nPacketCount);
 		}
-		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nFrameCount);
+		AVHelp_Memory_FreeAVList(&ppSt_AVFrame, nFrameCount);
 	}
 	fclose(pSt_264File);
 	fclose(pSt_RTPFile);
@@ -472,7 +481,7 @@ void TestParse_RTP265()
 	XCHAR tszMsgBuffer[10240];
 	int i = 0;
 
-	for (int i = 0; i < stl_ListFSize.size(); i++)
+	for (unsigned int i = 0; i < stl_ListFSize.size(); i++)
 	{
 		memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 		int nRet = fread(tszMsgBuffer, 1, stl_ListFSize[i], pSt_RTPFile);
@@ -541,22 +550,25 @@ void TestPacket_RTPAAC()
 			break;
 		}
 		int nFrameCount = 0;
-		int nPacketCount = 0;
-		XENGINE_MSGBUFFER** ppSt_Frame;
-		XENGINE_MSGBUFFER** ppSt_RTPPacket;
-
-		AVFrame_Frame_ParseGet(xhFrame, tszMsgBuffer, nRet, &ppSt_Frame, &nFrameCount);
+		XHANDLE** ppSt_AVFrame;
+		AVFrame_Frame_ParseGet(xhFrame, tszMsgBuffer, nRet, &ppSt_AVFrame, &nFrameCount);
 		for (int i = 0; i < nFrameCount; i++)
 		{
-			RTPProtocol_Packet_Packet(lpszClientID, 95, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer, ppSt_Frame[i]->nMSGLen[0], &ppSt_RTPPacket, &nPacketCount);
+			XENGINE_MSGBUFFER st_MSGBuffer = {};
+			AVHelp_Memory_GetAudioBuffer(ppSt_AVFrame[i], &st_MSGBuffer, false);
+
+			int nPacketCount = 0;
+			XENGINE_MSGBUFFER** ppSt_RTPPacket;
+			RTPProtocol_Packet_Packet(lpszClientID, 95, (LPCXSTR)st_MSGBuffer.unData.ptszMSGBuffer, st_MSGBuffer.nMSGLen[0], &ppSt_RTPPacket, &nPacketCount);
 			for (int j = 0; j < nPacketCount; j++)
 			{
 				printf("%d=%d\n", j, ppSt_RTPPacket[j]->nMSGLen[0]);
 				fwrite(ppSt_RTPPacket[j]->unData.tszMSGBuffer, 1, ppSt_RTPPacket[j]->nMSGLen[0], pSt_RTPFile);
 			}
+			BaseLib_Memory_MSGFree(&st_MSGBuffer);
 			BaseLib_Memory_Free((XPPPMEM)&ppSt_RTPPacket, nPacketCount);
 		}
-		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nFrameCount);
+		AVHelp_Memory_FreeAVList(&ppSt_AVFrame, nFrameCount);
 	}
 	fclose(pSt_264File);
 	fclose(pSt_RTPFile);

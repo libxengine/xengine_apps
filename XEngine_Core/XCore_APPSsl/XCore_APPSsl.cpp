@@ -89,19 +89,20 @@ void Cryptto()
 	memset(tszDeString, '\0', 1024);
 	memset(tszOutString, '\0', 1024);
 
-	if (!Cryption_Api_CryptEncodec(tszSourceBuffer, tszOutString, &nLen, lpszKey, ENUM_XENGINE_CRYPTION_SYMMETRIC_3DES))
+	XBYTE byIVStr[16] = {};
+	XBYTE bySalt[16] = {};
+	if (!Cryption_Api_CryptEncodec((LPCXBTR)tszSourceBuffer, tszOutString, &nLen, lpszKey, ENUM_XENGINE_CRYPTION_SYMMETRIC_AES128, byIVStr, bySalt))
 	{
 		return;
 	}
 	printf(_X("加密后的数据长度：%d,数据为：%s\n"), nLen, tszOutString);
 
-	if (!Cryption_Api_CryptDecodec(tszOutString, tszDeString, &nLen, lpszKey, ENUM_XENGINE_CRYPTION_SYMMETRIC_3DES))
+	if (!Cryption_Api_CryptDecodec(NULL, (XBYTE *)tszOutString, &nLen, lpszKey, ENUM_XENGINE_CRYPTION_SYMMETRIC_AES128, byIVStr, bySalt))
 	{
 		return;
 	}
 
-	printf(_X("解密后的数据长度：%d,数据为：\n"), nLen);
-	printf(_X("%s\n"), tszDeString);
+	printf(_X("解密后的数据长度：%d,数据为：%s\n"), nLen, tszOutString);
 }
 void RsaSSL()
 {
@@ -247,18 +248,21 @@ int XCrypto_Test()
 	memset(tszEncoder, '\0', sizeof(tszEncoder));
 	memset(tszDecoder, '\0', sizeof(tszDecoder));
 
-	if (!Cryption_XCrypto_Encoder(lpszFile, &nLen, tszEncoder, "123123"))
+	if (!Cryption_XCrypto_Encoder((LPCXBTR)lpszFile, &nLen, tszEncoder, "123123"))
 	{
 		return -1;
 	}
-	for (int i = 0; i < nLen; i++)
-	{
-		printf("%02X ", tszEncoder[i]);
-	}
-	printf("\r\n%s\n", tszEncoder);
-		
-	Cryption_XCrypto_Decoder((LPCXSTR)tszEncoder, &nLen, tszDecoder, "123123");
+	Cryption_XCrypto_Decoder((LPCXBTR)tszEncoder, &nLen, (XBYTE *)tszDecoder, "123123");
 	printf("%s\n", tszDecoder);
+
+	XCHAR tszMSGBuffer[4096] = {};
+	sprintf(tszMSGBuffer, _X("%s"), lpszFile);
+	if (!Cryption_XCrypto_Encoder(NULL, &nLen, (XBYTE*)tszMSGBuffer, "123123", FALSE))
+	{
+		return -1;
+	}
+	Cryption_XCrypto_Decoder(NULL, &nLen, (XBYTE *)tszMSGBuffer, "123123", FALSE);
+	printf("%s\n", tszMSGBuffer);
 	return 0;
 }
 int codec_test()

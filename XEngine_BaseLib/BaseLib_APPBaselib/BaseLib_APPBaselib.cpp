@@ -429,6 +429,7 @@ bool GetFileAndPath(LPCXSTR lpszUrl, XCHAR* ptszPath = NULL, XCHAR* ptszFile = N
 	}
 	return true;
 }
+
 int main()
 {
 	for (int i = 0; i < 5; i++)

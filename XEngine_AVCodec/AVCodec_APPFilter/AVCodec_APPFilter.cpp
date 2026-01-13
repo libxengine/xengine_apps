@@ -18,9 +18,12 @@
 #include <XEngine_Include/XEngine_AVCodec/AudioCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVFilter_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVFilter_Error.h>
+#include <XEngine_Include/XEngine_AVCodec/AVHelp_Define.h>
+#include <XEngine_Include/XEngine_AVCodec/AVHelp_Error.h>
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"XEngine_AVCodec/XEngine_AVFilter.lib")
+#pragma comment(lib,"XEngine_AVCodec/XEngine_AVHelp.lib")
 #endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
@@ -32,18 +35,22 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFilter/AVFilter_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFilter/AVFilter_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
 #ifdef _MSC_BUILD
 #ifdef _WIN64
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_AVFilter.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_AVHelp.lib")
 #else
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVFilter.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
 #endif
 #endif
 #endif
 
-//Linux MacOS:g++ -std=c++20 -Wall -g AVCodec_APPFilter.cpp -o AVCodec_APPFilter.exe -lXEngine_BaseLib -lXEngine_AVFilter 
+//Linux MacOS:g++ -std=c++20 -Wall -g AVCodec_APPFilter.cpp -o AVCodec_APPFilter.exe -lXEngine_BaseLib -lXEngine_AVFilter -lXEngine_AVHelp
 
 int Test_FilterAudio()
 {
@@ -53,6 +60,9 @@ int Test_FilterAudio()
 	st_AudioFilter.st_AudioInfo.nNBSample = 1024;
 	st_AudioFilter.st_AudioInfo.nSampleFmt = 1;
 	st_AudioFilter.st_AudioInfo.nSampleRate = 11025;
+
+	st_AudioFilter.st_AudioTime.nNum = 1;
+	st_AudioFilter.st_AudioTime.nDen = 11025;
 
 	//XHANDLE xhToken = AVFilter_Audio_Init(_X("volume=2.0"), &st_AudioFilter);
 	XHANDLE xhToken = AVFilter_Audio_Init(_X("aresample=44100,aformat=sample_fmts=s16:channel_layouts=stereo"), &st_AudioFilter);
@@ -80,23 +90,31 @@ int Test_FilterAudio()
 		{
 			break;
 		}
-		int nListCount = 0;
-		AVCODEC_AUDIO_MSGBUFFER** ppSt_MSGBuffer;
-		AVCODEC_AUDIO_MSGBUFFER st_MSGBuffer = {};
+		//填充内存
+		XENGINE_MSGBUFFER st_MSGBuffer = {};
+		AVCODEC_TIMESTAMP st_TimeStamp = {};
 
-		st_MSGBuffer.st_MSGBuffer.nMSGLen[0] = nRet;
-		st_MSGBuffer.st_MSGBuffer.unData.ptszMSGArray[0] = (XBYTE*)tszRDBuffer;
-		st_MSGBuffer.st_AudioInfo.nNBSample = 1024;
-		AVFilter_Audio_Cvt(xhToken, &st_MSGBuffer, &ppSt_MSGBuffer, &nListCount);
+		st_MSGBuffer.nMSGLen[0] = nRet;
+		BaseLib_Memory_MSGMalloc(&st_MSGBuffer);
+		memcpy((XPVOID)st_MSGBuffer.unData.ptszMSGArray[0], tszRDBuffer, nRet);
+
+		XHANDLE** ppSt_AVBuffer = NULL;
+		AVHelp_Memory_SetAudioBuffer(&st_MSGBuffer, &st_TimeStamp, &st_AudioFilter.st_AudioInfo, &ppSt_AVBuffer, false);
+		//处理
+		int nListCount = 0;
+		XHANDLE** ppSt_MSGBuffer;
+		AVFilter_Audio_Cvt(xhToken, ppSt_AVBuffer[0], &ppSt_MSGBuffer, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
-			fwrite(ppSt_MSGBuffer[i]->st_MSGBuffer.unData.ptszMSGArray[0], 1, ppSt_MSGBuffer[i]->st_MSGBuffer.nMSGLen[0], pSt_WFile);
-			printf("%d\n", ppSt_MSGBuffer[i]->st_MSGBuffer.nMSGLen[0]);
-			BaseLib_Memory_MSGFree(&ppSt_MSGBuffer[i]->st_MSGBuffer);
-		}
-		BaseLib_Memory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
-	}
+			XENGINE_MSGBUFFER st_MSGBuffer = {};
+			AVHelp_Memory_GetAudioBuffer(ppSt_MSGBuffer[i], &st_MSGBuffer, false);
 
+			printf("Test_FilterAudio len:%d\n", st_MSGBuffer.nMSGLen[0]);
+			fwrite(st_MSGBuffer.unData.ptszMSGArray[0], 1, st_MSGBuffer.nMSGLen[0], pSt_WFile);
+			BaseLib_Memory_MSGFree(&st_MSGBuffer);
+		}
+		AVHelp_Memory_FreeAVList(&ppSt_MSGBuffer, nListCount, false);
+	}
 	AVFilter_Audio_Destroy(xhToken);
 	fclose(pSt_RFile);
 	fclose(pSt_WFile);
@@ -109,9 +127,10 @@ int Test_FilterVideo()
 
 	st_VideoFilter.st_VideoInfo.nWidth = 720;
 	st_VideoFilter.st_VideoInfo.nHeight = 480;
-	st_VideoFilter.st_VideoInfo.nFrameBase = 1;
-	st_VideoFilter.st_VideoInfo.nFrameRate = 24;
 	st_VideoFilter.st_VideoInfo.nFormat = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
+
+	st_VideoFilter.st_VideoTime.nDen = 24;
+	st_VideoFilter.st_VideoTime.nNum = 1;
 
 	XHANDLE xhToken = AVFilter_Video_Init(_X("eq=brightness=1.5:contrast=1.2"), &st_VideoFilter);
 
@@ -134,22 +153,30 @@ int Test_FilterVideo()
 		{
 			break;
 		}
+		//填充内存
+		XENGINE_MSGBUFFER st_MSGBuffer = {};
+		AVCODEC_TIMESTAMP st_TimeStamp = {};
+
+		st_MSGBuffer.nMSGLen[0] = nRet;
+		BaseLib_Memory_MSGMalloc(&st_MSGBuffer);
+		memcpy((XPVOID)st_MSGBuffer.unData.ptszMSGArray[0], ptszRBBuffer, nRet);
+
+		XHANDLE** ppSt_AVBuffer = NULL;
+		AVHelp_Memory_SetVideoBuffer(&st_MSGBuffer, &st_TimeStamp, &st_VideoFilter.st_VideoInfo, &ppSt_AVBuffer, false);
+
 		int nListCount = 0;
-		AVCODEC_VIDEO_MSGBUFFER** ppSt_MSGBuffer;
-		AVCODEC_VIDEO_MSGBUFFER st_MSGBuffer = {};
-
-		st_MSGBuffer.st_MSGBuffer.nMSGLen[0] = nRet;
-		st_MSGBuffer.st_MSGBuffer.unData.ptszMSGBuffer = (XBYTE*)ptszRBBuffer;
-
-		AVFilter_Video_Cvt(xhToken, &st_MSGBuffer, &ppSt_MSGBuffer, &nListCount);
+		XHANDLE** ppSt_MSGBuffer;
+		AVFilter_Video_Cvt(xhToken, ppSt_AVBuffer[0], &ppSt_MSGBuffer, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
-			fwrite(ppSt_MSGBuffer[i]->st_MSGBuffer.unData.ptszMSGBuffer, 1, ppSt_MSGBuffer[i]->st_MSGBuffer.nMSGLen[0], pSt_WBFile);
-			nCount += ppSt_MSGBuffer[i]->st_MSGBuffer.nMSGLen[0];
-			printf("Count:%d\n", nCount);
-			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_MSGBuffer[i]->st_MSGBuffer.unData.ptszMSGBuffer);
+			XENGINE_MSGBUFFER st_MSGBuffer = {};
+			AVHelp_Memory_GetVideoBuffer(ppSt_MSGBuffer[i], &st_MSGBuffer, false);
+
+			printf("Test_FilterVideo len:%d\n", st_MSGBuffer.nMSGLen[0]);
+			fwrite(st_MSGBuffer.unData.ptszMSGBuffer, 1, st_MSGBuffer.nMSGLen[0], pSt_WBFile);
+			BaseLib_Memory_MSGFree(&st_MSGBuffer);
 		}
-		BaseLib_Memory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
+		AVHelp_Memory_FreeAVList(&ppSt_MSGBuffer, nListCount, false);
 	}
 
 	AVFilter_Video_Destroy(xhToken);
@@ -159,6 +186,7 @@ int Test_FilterVideo()
 	free(ptszRBBuffer);
 	return 0;
 }
+
 int Test_FilterMutliVideo()
 {
 	int nVideoList = 4;
@@ -169,33 +197,33 @@ int Test_FilterMutliVideo()
 	ppSt_VideoInfo[0]->nIndex = 0;
 	ppSt_VideoInfo[0]->st_VideoInfo.nWidth = 720;
 	ppSt_VideoInfo[0]->st_VideoInfo.nHeight = 480;
-	ppSt_VideoInfo[0]->st_VideoInfo.nFrameBase = 1;
-	ppSt_VideoInfo[0]->st_VideoInfo.nFrameRate = 24;
 	ppSt_VideoInfo[0]->st_VideoInfo.nFormat = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
+	ppSt_VideoInfo[0]->st_VideoTime.nDen = 1;
+	ppSt_VideoInfo[0]->st_VideoTime.nNum = 24;
 	_tcsxcpy(ppSt_VideoInfo[0]->tszFilterName, "in0");
 
 	ppSt_VideoInfo[1]->nIndex = 1;
 	ppSt_VideoInfo[1]->st_VideoInfo.nWidth = 720;
 	ppSt_VideoInfo[1]->st_VideoInfo.nHeight = 480;
-	ppSt_VideoInfo[1]->st_VideoInfo.nFrameBase = 1;
-	ppSt_VideoInfo[1]->st_VideoInfo.nFrameRate = 24;
 	ppSt_VideoInfo[1]->st_VideoInfo.nFormat = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
+	ppSt_VideoInfo[1]->st_VideoTime.nDen = 1;
+	ppSt_VideoInfo[1]->st_VideoTime.nNum = 24;
 	_tcsxcpy(ppSt_VideoInfo[1]->tszFilterName, "in1");
 
 	ppSt_VideoInfo[2]->nIndex = 2;
 	ppSt_VideoInfo[2]->st_VideoInfo.nWidth = 720;
 	ppSt_VideoInfo[2]->st_VideoInfo.nHeight = 480;
-	ppSt_VideoInfo[2]->st_VideoInfo.nFrameBase = 1;
-	ppSt_VideoInfo[2]->st_VideoInfo.nFrameRate = 24;
 	ppSt_VideoInfo[2]->st_VideoInfo.nFormat = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
+	ppSt_VideoInfo[2]->st_VideoTime.nDen = 1;
+	ppSt_VideoInfo[2]->st_VideoTime.nNum = 24;
 	_tcsxcpy(ppSt_VideoInfo[2]->tszFilterName, "in2");
 
 	ppSt_VideoInfo[3]->nIndex = 3;
 	ppSt_VideoInfo[3]->st_VideoInfo.nWidth = 720;
 	ppSt_VideoInfo[3]->st_VideoInfo.nHeight = 480;
-	ppSt_VideoInfo[3]->st_VideoInfo.nFrameBase = 1;
-	ppSt_VideoInfo[3]->st_VideoInfo.nFrameRate = 24;
 	ppSt_VideoInfo[3]->st_VideoInfo.nFormat = ENUM_AVCODEC_VIDEO_SAMPLEFMT_YUV420P;
+	ppSt_VideoInfo[3]->st_VideoTime.nDen = 1;
+	ppSt_VideoInfo[3]->st_VideoTime.nNum = 24;
 	_tcsxcpy(ppSt_VideoInfo[3]->tszFilterName, "in3");
 	
 	XHANDLE xhToken = AVFilter_Video_MIXInit(&ppSt_VideoInfo, nVideoList, _X("out"), _X("[in0]scale=360:240[in0_scaled];[in1]scale=360:240[in1_scaled];[in2]scale=360:240[in2_scaled];[in3]scale=360:240[in3_scaled];[in0_scaled][in1_scaled][in2_scaled][in3_scaled]xstack=inputs=4:layout=0_0|w0_0|0_h0|w0_h0[out]"));
@@ -210,7 +238,6 @@ int Test_FilterMutliVideo()
 
 	int nSize = 720 * 480 * 3 / 2;
 	XCHAR* ptszRBBuffer = (XCHAR*)malloc(nSize);
-	int nCount = 0;
 
 	while (true)
 	{
@@ -221,23 +248,34 @@ int Test_FilterMutliVideo()
 		}
 		for (int i = 0; i < 4; i++)
 		{
-			AVCODEC_VIDEO_MSGBUFFER st_MSGBuffer = {};
-			st_MSGBuffer.st_MSGBuffer.nMSGLen[0] = nRet;
-			st_MSGBuffer.st_MSGBuffer.unData.ptszMSGBuffer = (XBYTE*)ptszRBBuffer;
-			AVFilter_Video_MIXSend(xhToken, i, &st_MSGBuffer);
+			//填充内存
+			XENGINE_MSGBUFFER st_MSGBuffer = {};
+			AVCODEC_TIMESTAMP st_TimeStamp = {};
+
+			st_MSGBuffer.nMSGLen[0] = nRet;
+			BaseLib_Memory_MSGMalloc(&st_MSGBuffer);
+			memcpy((XPVOID)st_MSGBuffer.unData.ptszMSGArray[0], ptszRBBuffer, nRet);
+
+			XHANDLE** ppSt_AVBuffer = NULL;
+			AVHelp_Memory_SetVideoBuffer(&st_MSGBuffer, &st_TimeStamp, &ppSt_VideoInfo[i]->st_VideoInfo, &ppSt_AVBuffer, false);
+			AVFilter_Video_MIXSend(xhToken, i, ppSt_AVBuffer[0]);
+			BaseLib_Memory_MSGFree(&st_MSGBuffer);
+			AVHelp_Memory_FreeAVList(&ppSt_AVBuffer, 1, false);
 		}
 
 		int nListCount = 0;
-		AVCODEC_VIDEO_MSGBUFFER** ppSt_MSGBuffer;
+		XHANDLE** ppSt_MSGBuffer;
 		bool bRet = AVFilter_Video_MIXRecv(xhToken, &ppSt_MSGBuffer, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
-			fwrite(ppSt_MSGBuffer[i]->st_MSGBuffer.unData.ptszMSGBuffer, 1, ppSt_MSGBuffer[i]->st_MSGBuffer.nMSGLen[0], pSt_WBFile);
-			nCount += ppSt_MSGBuffer[i]->st_MSGBuffer.nMSGLen[0];
-			printf("Count:%d\n", nCount);
-			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_MSGBuffer[i]->st_MSGBuffer.unData.ptszMSGBuffer);
+			XENGINE_MSGBUFFER st_MSGBuffer = {};
+			AVHelp_Memory_GetVideoBuffer(ppSt_MSGBuffer[i], &st_MSGBuffer, false);
+
+			printf("Test_FilterMutliVideo len:%d\n", st_MSGBuffer.nMSGLen[0]);
+			fwrite(st_MSGBuffer.unData.ptszMSGBuffer, 1, st_MSGBuffer.nMSGLen[0], pSt_WBFile);
+			BaseLib_Memory_MSGFree(&st_MSGBuffer);
 		}
-		BaseLib_Memory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
+		AVHelp_Memory_FreeAVList(&ppSt_MSGBuffer, nListCount, false);
 	}
 
 	AVFilter_Video_MIXDestroy(xhToken);
@@ -268,6 +306,8 @@ void Test_FilterMutliAudio()
 	ppSt_AudioFile[0]->st_AudioInfo.nNBSample = 1024;
 	ppSt_AudioFile[0]->st_AudioInfo.nChannel = 2;
 	ppSt_AudioFile[0]->nIndex = 0;
+	ppSt_AudioFile[0]->st_AudioTime.nNum = 1;
+	ppSt_AudioFile[0]->st_AudioTime.nDen = 44100;
 	_tcsxcpy(ppSt_AudioFile[0]->tszFilterName, "in1");
 
 	ppSt_AudioFile[1]->st_AudioInfo.nSampleFmt = ENUM_AVCODEC_AUDIO_SAMPLEFMT_S16;
@@ -275,6 +315,8 @@ void Test_FilterMutliAudio()
 	ppSt_AudioFile[1]->st_AudioInfo.nNBSample = 1024;
 	ppSt_AudioFile[1]->st_AudioInfo.nChannel = 2;
 	ppSt_AudioFile[1]->nIndex = 1;
+	ppSt_AudioFile[1]->st_AudioTime.nNum = 1;
+	ppSt_AudioFile[1]->st_AudioTime.nDen = 44100;
 	_tcsxcpy(ppSt_AudioFile[1]->tszFilterName, "in2");
 
 	XHANDLE xhFilter = AVFilter_Audio_MIXInit(&ppSt_AudioFile, 2, "out", "[in1][in2]amix=inputs=2:duration=longest,aformat=sample_fmts=s16:sample_rates=44100:channel_layouts=stereo[out]");
@@ -306,30 +348,45 @@ void Test_FilterMutliAudio()
 		{
 			break;
 		}
-		AVCODEC_AUDIO_MSGBUFFER st_MSGBuffer1 = {};
-		st_MSGBuffer1.st_AudioInfo.nNBSample = 1024;
-		st_MSGBuffer1.st_MSGBuffer.nMSGLen[0] = nRet1;
-		st_MSGBuffer1.st_MSGBuffer.unData.ptszMSGArray[0] = (XBYTE*)tszEnBuffer1;
-		if (!AVFilter_Audio_MIXSend(xhFilter, 0, &st_MSGBuffer1))
+		//填充内存
+		XENGINE_MSGBUFFER st_MSGBuffer1 = {};
+		AVCODEC_TIMESTAMP st_TimeStamp = {};
+
+		st_MSGBuffer1.nMSGLen[0] = nRet1;
+		BaseLib_Memory_MSGMalloc(&st_MSGBuffer1);
+		memcpy((XPVOID)st_MSGBuffer1.unData.ptszMSGArray[0], tszEnBuffer1, nRet1);
+
+		XHANDLE** ppSt_AVBuffer1 = NULL;
+		AVHelp_Memory_SetAudioBuffer(&st_MSGBuffer1, &st_TimeStamp, &ppSt_AudioFile[0]->st_AudioInfo, &ppSt_AVBuffer1, false);
+		//
+		XENGINE_MSGBUFFER st_MSGBuffer2 = {};
+
+		st_MSGBuffer2.nMSGLen[0] = nRet2;
+		BaseLib_Memory_MSGMalloc(&st_MSGBuffer2);
+		memcpy((XPVOID)st_MSGBuffer2.unData.ptszMSGArray[0], tszEnBuffer2, nRet2);
+
+		XHANDLE** ppSt_AVBuffer2 = NULL;
+		AVHelp_Memory_SetAudioBuffer(&st_MSGBuffer2, &st_TimeStamp, &ppSt_AudioFile[1]->st_AudioInfo, &ppSt_AVBuffer2, false);
+
+		if (!AVFilter_Audio_MIXSend(xhFilter, 0, ppSt_AVBuffer1[0]))
 		{
 			printf("errno\n");
 		}
-		AVCODEC_AUDIO_MSGBUFFER st_MSGBuffer2 = {};
-		st_MSGBuffer2.st_AudioInfo.nNBSample = 1024;
-		st_MSGBuffer2.st_MSGBuffer.nMSGLen[0] = nRet2;
-		st_MSGBuffer2.st_MSGBuffer.unData.ptszMSGArray[0] = (XBYTE*)tszEnBuffer2;
-		if (!AVFilter_Audio_MIXSend(xhFilter, 1, &st_MSGBuffer2))
+		if (!AVFilter_Audio_MIXSend(xhFilter, 1, ppSt_AVBuffer2[0]))
 		{
 			printf("errno\n");
 		}
 		int nListCount = 0;
-		AVCODEC_AUDIO_MSGBUFFER** ppSt_MSGBuffer;
+		XHANDLE** ppSt_MSGBuffer;
 		AVFilter_Audio_MIXRecv(xhFilter, &ppSt_MSGBuffer, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
-			fwrite(ppSt_MSGBuffer[i]->st_MSGBuffer.unData.ptszMSGArray[0], 1, ppSt_MSGBuffer[i]->st_MSGBuffer.nMSGLen[0], pSt_FileAac);
-			printf("%d\n", ppSt_MSGBuffer[i]->st_MSGBuffer.nMSGLen[0]);
-			BaseLib_Memory_MSGFree(&ppSt_MSGBuffer[i]->st_MSGBuffer);
+			XENGINE_MSGBUFFER st_MSGBuffer = {};
+			AVHelp_Memory_GetAudioBuffer(ppSt_MSGBuffer[i], &st_MSGBuffer, false);
+
+			printf("Test_FilterMutliAudio len:%d\n", st_MSGBuffer.nMSGLen[0]);
+			fwrite(st_MSGBuffer.unData.ptszMSGArray[0], 1, st_MSGBuffer.nMSGLen[0], pSt_FileAac);
+			BaseLib_Memory_MSGFree(&st_MSGBuffer);
 		}
 		BaseLib_Memory_Free((XPPPMEM)&ppSt_MSGBuffer, nListCount);
 	}
@@ -338,6 +395,7 @@ void Test_FilterMutliAudio()
 	fclose(pSt_File2);
 	fclose(pSt_FileAac);
 }
+
 int main()
 {
 	Test_FilterAudio();

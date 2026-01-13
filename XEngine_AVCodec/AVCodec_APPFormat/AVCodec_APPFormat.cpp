@@ -115,6 +115,8 @@ int AVPacket_Test_FileLink()
 		AVFormat_UNPack_GetAVCodec(xhVideo1, ppSt_AVStream[i]->nAVIndex, &xhAVParameter);
 
 		AVFormat_Packet_StreamCreate(xhPacket, xhAVParameter);
+		st_TimeBase.nDen = 25;
+		st_TimeBase.nNum = 1;
 		AVFormat_Packet_TimeBase(xhPacket, 0, &st_TimeBase);
 	}
 	BaseLib_Memory_Free((XPPPMEM)&ppSt_AVStream, nAVStream);
@@ -125,22 +127,16 @@ int AVPacket_Test_FileLink()
 		return -1;
 	}
 
-	XBYTE* ptszMSGBuffer = (XBYTE*)malloc(XENGINE_MEMORY_SIZE_MID);
-	if (NULL == ptszMSGBuffer)
-	{
-		return -1;
-	}
 	while (true)
 	{
 		int nAVIndex = 0;
-		int nMSGLen = 0;
-		AVCODEC_TIMESTAMP st_AVPacket = {};
-		memset(ptszMSGBuffer, 0, XENGINE_MEMORY_SIZE_MID);
-		if (!AVFormat_UNPack_Read(xhVideo1, &nAVIndex, ptszMSGBuffer, &nMSGLen, &st_AVPacket))
+		XHANDLE **ppSt_AVPacket;
+		if (!AVFormat_UNPack_Read(xhVideo1, &nAVIndex, &ppSt_AVPacket))
 		{
 			break;
 		}
-		AVFormat_Packet_StreamWrite(xhPacket, 0, ptszMSGBuffer, nMSGLen);
+		AVFormat_Packet_StreamWrite(xhPacket, 0, ppSt_AVPacket[0]);
+		AVHelp_Memory_FreeAVList(&ppSt_AVPacket, 1);
 	}
 	//set last pts
 	bool bChanged = true;
@@ -148,15 +144,14 @@ int AVPacket_Test_FileLink()
 	while (true)
 	{
 		int nAVIndex = 0;
-		int nMSGLen = 0;
-		AVCODEC_TIMESTAMP st_AVPacket = {};
-		memset(ptszMSGBuffer, 0, XENGINE_MEMORY_SIZE_MID);
-		if (!AVFormat_UNPack_Read(xhVideo2, &nAVIndex, ptszMSGBuffer, &nMSGLen, &st_AVPacket))
+		XHANDLE **ppSt_AVPacket;
+		if (!AVFormat_UNPack_Read(xhVideo2, &nAVIndex, &ppSt_AVPacket))
 		{
 			break;
 		}
-		AVFormat_Packet_StreamWrite(xhPacket, 0, ptszMSGBuffer, nMSGLen, NULL, NULL, false, bChanged);
+		AVFormat_Packet_StreamWrite(xhPacket, 0, ppSt_AVPacket[0], NULL, false, bChanged);
 		bChanged = false;
+		AVHelp_Memory_FreeAVList(&ppSt_AVPacket, 1);
 	}
 	AVFormat_UNPack_Stop(xhVideo1);
 	AVFormat_UNPack_Stop(xhVideo2);
@@ -164,6 +159,96 @@ int AVPacket_Test_FileLink()
 	return 0;
 }
 
+int AVPacket_Test_PacketTest()
+{
+#ifdef _MSC_BUILD
+	LPCXSTR lpszVideoFile = "D:\\Input\\1.mp4";
+	LPCXSTR lpszDstFile = "D:\\output\\out.mp4";
+#else
+	LPCXSTR lpszVideoFile = "1.mp4";
+	LPCXSTR lpszDstFile = "out.mp4";
+#endif
+
+	XHANDLE xhPacket = AVFormat_Packet_Init();
+	if (NULL == xhPacket)
+	{
+		printf("AVFormat_Packet_Init:%lX\n", AVFormat_GetLastError());
+		return -1;
+	}
+	if (!AVFormat_Packet_Output(xhPacket, lpszDstFile))
+	{
+		printf("AVFormat_Packet_Output:%lX\n", AVFormat_GetLastError());
+		return -1;
+	}
+
+	XHANDLE xhVideo = AVFormat_UNPack_Init();
+	if (NULL == xhVideo)
+	{
+		printf("AVFormat_UNPack_Init:%lX\n", AVFormat_GetLastError());
+		return -1;
+	}
+	if (!AVFormat_UNPack_Input(xhVideo, lpszVideoFile))
+	{
+		printf("AVFormat_UNPack_Init:%lX\n", AVFormat_GetLastError());
+		return -1;
+	}
+	//get video stream and create out put stream
+	int nAVStream = 0;
+	AVCODEC_STREAMINFO** ppSt_AVStream = {};
+	AVFormat_UNPack_GetStream(xhVideo, &ppSt_AVStream, &nAVStream);
+	for (int i = 0; i < nAVStream; i++)
+	{
+		XHANDLE xhAVParameter = NULL;
+		AVCODEC_TIMEBASE st_TimeBase = {};
+
+		if (ENUM_AVFORMAT_STREAM_MEDIA_TYPE_VIDEO == ppSt_AVStream[i]->nAVCodecType)
+		{
+			if (ENUM_XENGINE_AVCODEC_VIDEO_TYPE_H264 == ppSt_AVStream[i]->nAVCodecID)
+			{
+				AVFormat_UNPack_GetTime(xhVideo, ppSt_AVStream[i]->nAVIndex, NULL, &st_TimeBase);
+				AVFormat_UNPack_GetAVCodec(xhVideo, ppSt_AVStream[i]->nAVIndex, &xhAVParameter);
+
+				AVFormat_Packet_StreamCreate(xhPacket, xhAVParameter);
+				AVFormat_Packet_TimeBase(xhPacket, i, &st_TimeBase);
+			}
+		}
+		else if (ENUM_AVFORMAT_STREAM_MEDIA_TYPE_AUDIO == ppSt_AVStream[i]->nAVCodecType)
+		{
+			AVFormat_UNPack_GetTime(xhVideo, ppSt_AVStream[i]->nAVIndex, NULL, &st_TimeBase);
+			AVFormat_UNPack_GetAVCodec(xhVideo, ppSt_AVStream[i]->nAVIndex, &xhAVParameter);
+
+			AVFormat_Packet_StreamCreate(xhPacket, xhAVParameter);
+			AVFormat_Packet_TimeBase(xhPacket, i, &st_TimeBase);
+		}
+	}
+	BaseLib_Memory_Free((XPPPMEM)&ppSt_AVStream, nAVStream);
+
+	if (!AVFormat_Packet_Start(xhPacket))
+	{
+		printf("AVFormat_UNPack_Start:%lX\n", AVFormat_GetLastError());
+		return -1;
+	}
+
+	while (true)
+	{
+		int nAVIndex = 0;
+		XHANDLE **ppSt_AVPacket;
+		
+		if (!AVFormat_UNPack_Read(xhVideo, &nAVIndex, &ppSt_AVPacket))
+		{
+			break;
+		}
+		if (0 == nAVIndex || 1 == nAVIndex)
+		{
+			AVFormat_Packet_StreamWrite(xhPacket, nAVIndex, ppSt_AVPacket[0]);
+		}
+		AVHelp_Memory_FreeAVList(&ppSt_AVPacket, 1);
+	}
+	
+	AVFormat_UNPack_Stop(xhVideo);
+	AVFormat_Packet_Stop(xhPacket);
+	return 0;
+}
 int AVPacket_Test_FilePacket()
 {
 #ifdef _MSC_BUILD
@@ -235,6 +320,8 @@ int AVPacket_Test_FilePacket()
 		AVFormat_UNPack_GetAVCodec(xhVideo, ppSt_AVStream[i]->nAVIndex, &xhAVParameter);
 
 		AVFormat_Packet_StreamCreate(xhPacket, xhAVParameter);
+		st_TimeBase.nDen = 25;
+		st_TimeBase.nNum = 1;
 		AVFormat_Packet_TimeBase(xhPacket, 0, &st_TimeBase);
 	}
 	BaseLib_Memory_Free((XPPPMEM)&ppSt_AVStream, nAVStream);
@@ -249,7 +336,7 @@ int AVPacket_Test_FilePacket()
 		AVFormat_UNPack_GetAVCodec(xhAudio1, ppSt_AVStream[i]->nAVIndex, &xhAVParameter);
 
 		AVFormat_Packet_StreamCreate(xhPacket, xhAVParameter);
-		AVFormat_Packet_TimeBase(xhPacket, 1, &st_TimeBase);
+		//AVFormat_Packet_TimeBase(xhPacket, 1, &st_TimeBase);
 	}
 	BaseLib_Memory_Free((XPPPMEM)&ppSt_AVStream, nAVStream);
 	//get audio 2 stream and create out put stream
@@ -263,7 +350,7 @@ int AVPacket_Test_FilePacket()
 		AVFormat_UNPack_GetAVCodec(xhAudio2, ppSt_AVStream[i]->nAVIndex, &xhAVParameter);
 
 		AVFormat_Packet_StreamCreate(xhPacket, xhAVParameter);
-		AVFormat_Packet_TimeBase(xhPacket, 2, &st_TimeBase);
+		//AVFormat_Packet_TimeBase(xhPacket, 2, &st_TimeBase);
 	}
 	BaseLib_Memory_Free((XPPPMEM)&ppSt_AVStream, nAVStream);
 
@@ -273,46 +360,40 @@ int AVPacket_Test_FilePacket()
 		return -1;
 	}
 	
-	XBYTE* ptszMSGBuffer = (XBYTE *)malloc(XENGINE_MEMORY_SIZE_MID);
-	if (NULL == ptszMSGBuffer)
+	while (true)
 	{
-		return -1;
+		int nAVIndex = 0;
+		XHANDLE** ppSt_AVPacket;
+		
+		if (!AVFormat_UNPack_Read(xhVideo, &nAVIndex, &ppSt_AVPacket))
+		{
+			break;
+		}
+		AVFormat_Packet_StreamWrite(xhPacket, 0, ppSt_AVPacket[0]);
+		AVHelp_Memory_FreeAVList(&ppSt_AVPacket, 1);
 	}
 	while (true)
 	{
 		int nAVIndex = 0;
-		int nMSGLen = 0;
-		AVCODEC_TIMESTAMP st_AVPacket = {};
-		memset(ptszMSGBuffer, 0, XENGINE_MEMORY_SIZE_MID);
-		if (!AVFormat_UNPack_Read(xhVideo, &nAVIndex, ptszMSGBuffer, &nMSGLen, &st_AVPacket))
+		XHANDLE **ppSt_AVPacket;
+
+		if (!AVFormat_UNPack_Read(xhAudio1, &nAVIndex, &ppSt_AVPacket))
 		{
 			break;
 		}
-		AVFormat_Packet_StreamWrite(xhPacket, 0, ptszMSGBuffer, nMSGLen);
+		AVFormat_Packet_StreamWrite(xhPacket, 1, ppSt_AVPacket[0]);
+		AVHelp_Memory_FreeAVList(&ppSt_AVPacket, 1);
 	}
 	while (true)
 	{
 		int nAVIndex = 0;
-		int nMSGLen = 0;
-		AVCODEC_TIMESTAMP st_AVPacket = {};
-		memset(ptszMSGBuffer, 0, XENGINE_MEMORY_SIZE_MID);
-		if (!AVFormat_UNPack_Read(xhAudio1, &nAVIndex, ptszMSGBuffer, &nMSGLen, &st_AVPacket))
+		XHANDLE** ppSt_AVPacket;
+		if (!AVFormat_UNPack_Read(xhAudio2, &nAVIndex, &ppSt_AVPacket))
 		{
 			break;
 		}
-		AVFormat_Packet_StreamWrite(xhPacket, 1, ptszMSGBuffer, nMSGLen);
-	}
-	while (true)
-	{
-		int nAVIndex = 0;
-		int nMSGLen = 0;
-		AVCODEC_TIMESTAMP st_AVPacket = {};
-		memset(ptszMSGBuffer, 0, XENGINE_MEMORY_SIZE_MID);
-		if (!AVFormat_UNPack_Read(xhAudio2, &nAVIndex, ptszMSGBuffer, &nMSGLen, &st_AVPacket))
-		{
-			break;
-		}
-		AVFormat_Packet_StreamWrite(xhPacket, 2, ptszMSGBuffer, nMSGLen);
+		AVFormat_Packet_StreamWrite(xhPacket, 2, ppSt_AVPacket[0]);
+		AVHelp_Memory_FreeAVList(&ppSt_AVPacket, 1);
 	}
 	AVFormat_UNPack_Stop(xhVideo);
 	AVFormat_UNPack_Stop(xhAudio1);
@@ -333,7 +414,7 @@ int Test_RTMPPull()
 	{
 		return -1;
 	}
-	if (!AVFormat_UNPack_Input(xhUNPack, lpszPullUrl, 5))
+	if (!AVFormat_UNPack_Input(xhUNPack, lpszPullUrl))
 	{
 		return -1;
 	}
@@ -374,22 +455,17 @@ int Test_RTMPPull()
 	AVFormat_Packet_TimeBase(xhPacket, 1, &st_AudioTime);
 	AVFormat_Packet_Start(xhPacket);
 
-	XBYTE* ptszMSGBuffer = (XBYTE*)malloc(XENGINE_MEMORY_SIZE_MID);
-	if (NULL == ptszMSGBuffer)
-	{
-		return -1;
-	}
 	while (true)
 	{
 		int nMSGLen = 0;
 		int nAVIndex = -1;
-		memset(ptszMSGBuffer, 0, XENGINE_MEMORY_SIZE_MID);
-		AVCODEC_TIMESTAMP st_AVPacket = {};
-		if (!AVFormat_UNPack_Read(xhUNPack, &nAVIndex, ptszMSGBuffer, &nMSGLen, &st_AVPacket))
+		XHANDLE** ppSt_AVPacket;
+		if (!AVFormat_UNPack_Read(xhUNPack, &nAVIndex, &ppSt_AVPacket))
 		{
 			break;
 		}
-		AVFormat_Packet_StreamWrite(xhPacket, nAVIndex, ptszMSGBuffer, nMSGLen, &st_AVPacket);
+		AVFormat_Packet_StreamWrite(xhPacket, nAVIndex, ppSt_AVPacket[0]);
+		AVHelp_Memory_FreeAVList(&ppSt_AVPacket, 1);
 	}
 	AVFormat_UNPack_Stop(xhUNPack);
 	AVFormat_Packet_Stop(xhPacket);
@@ -398,6 +474,7 @@ int Test_RTMPPull()
 
 int main()
 {
+	//AVPacket_Test_PacketTest();
 	AVPacket_Test_FilePacket();
 	AVPacket_Test_FileLink();
 	Test_RTMPPull();

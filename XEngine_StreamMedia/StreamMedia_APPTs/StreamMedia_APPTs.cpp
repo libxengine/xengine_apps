@@ -22,10 +22,13 @@ using namespace std;
 #include <XEngine_Include/XEngine_AVCodec/AudioCodec_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVFrame_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVFrame_Error.h>
+#include <XEngine_Include/XEngine_AVCodec/AVHelp_Define.h>
+#include <XEngine_Include/XEngine_AVCodec/AVHelp_Error.h>
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"XEngine_StreamMedia/StreamMedia_HLSProtocol.lib")
 #pragma comment(lib,"XEngine_AVCodec/XEngine_AVFrame.lib")
+#pragma comment(lib,"XEngine_AVCodec/XEngine_AVHelp.lib")
 #endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
@@ -40,20 +43,24 @@ using namespace std;
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AudioCodec/AudioCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFrame/AVFrame_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFrame/AVFrame_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
 #ifdef _MSC_BUILD
 #ifdef _WIN64
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/StreamMedia_HLSProtocol.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_AVFrame.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/x64/Debug/XEngine_AVHelp.lib")
 #else
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/StreamMedia_HLSProtocol.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVFrame.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
 #endif
 #endif
 #endif
 
-//Linux::g++ -std=c++20 -Wall -g StreamMedia_APPTs.cpp -o StreamMedia_APPTs.exe -lXEngine_BaseLib -lNetHelp_APIHelp -lStreamMedia_HLSProtocol -lXEngine_AVFrame
+//Linux::g++ -std=c++20 -Wall -g StreamMedia_APPTs.cpp -o StreamMedia_APPTs.exe -lXEngine_BaseLib -lNetHelp_APIHelp -lStreamMedia_HLSProtocol -lXEngine_AVFrame -lXEngine_AVHelp
 
 int M3U8File_Packet()
 {
@@ -262,22 +269,24 @@ bool TSFile_Packet()
 			break;
 		}
 		int nListCount = 0;
-		XENGINE_MSGBUFFER** ppSt_Frame;
-
-		AVFrame_Frame_ParseGet(xhVideo, tszVBuffer, nRet, &ppSt_Frame, &nListCount);
+		XHANDLE** ppSt_AVFrame;
+		AVFrame_Frame_ParseGet(xhVideo, tszVBuffer, nRet, &ppSt_AVFrame, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
 			int nMSGCount = 0;
 			XBYTE** ptszMsgBuffer;
+			XENGINE_MSGBUFFER st_MSGBuffer = {};
+			AVHelp_Memory_GetVideoBuffer(ppSt_AVFrame[i], &st_MSGBuffer, true);
 
-			HLSProtocol_TSPacket_AVPacketTS(lpszClientID, &ptszMsgBuffer, &nMSGCount, 0x101, (LPCXSTR)ppSt_Frame[i]->unData.ptszMSGBuffer, ppSt_Frame[i]->nMSGLen[0]);
+			HLSProtocol_TSPacket_AVPacketTS(lpszClientID, &ptszMsgBuffer, &nMSGCount, 0x101, (LPCXSTR)st_MSGBuffer.unData.ptszMSGBuffer, st_MSGBuffer.nMSGLen[0]);
 			for (int j = 0; j < nMSGCount; j++)
 			{
 				fwrite(ptszMsgBuffer[j], 1, 188, pSt_WFile);
 			}
+			BaseLib_Memory_MSGFree(&st_MSGBuffer);
 			BaseLib_Memory_Free((XPPPMEM)&ptszMsgBuffer, nMSGCount);
 		}
-		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
+		AVHelp_Memory_FreeAVList(&ppSt_AVFrame, nListCount);
 	}
 
 	fclose(pSt_WFile);

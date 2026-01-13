@@ -17,10 +17,13 @@
 #include <XEngine_Include/XEngine_AVCodec/VideoCodec_Error.h>
 #include <XEngine_Include/XEngine_AVCodec/AVFrame_Define.h>
 #include <XEngine_Include/XEngine_AVCodec/AVFrame_Error.h>
+#include <XEngine_Include/XEngine_AVCodec/AVHelp_Define.h>
+#include <XEngine_Include/XEngine_AVCodec/AVHelp_Error.h>
 #ifdef _MSC_BUILD
 #pragma comment(lib,"XEngine_BaseLib/XEngine_BaseLib.lib")
 #pragma comment(lib,"XEngine_AVCodec/XEngine_VideoCodec.lib")
 #pragma comment(lib,"XEngine_AVCodec/XEngine_AVFrame.lib")
+#pragma comment(lib,"XEngine_AVCodec/XEngine_AVHelp.lib")
 #endif
 #else
 #include "../../../XEngine/XEngine_SourceCode/XEngine_CommHdr.h"
@@ -29,6 +32,8 @@
 #include "../../../XEngine/XEngine_SourceCode/XEngine_BaseLib/XEngine_BaseLib/BaseLib_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_VideoCodec/VideoCodec_Error.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Define.h"
+#include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVHelp/AVHelp_Error.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFrame/AVFrame_Define.h"
 #include "../../../XEngine/XEngine_SourceCode/XEngine_AVCodec/XEngine_AVFrame/AVFrame_Error.h"
 #ifdef _MSC_BUILD
@@ -39,12 +44,13 @@
 #else
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_BaseLib.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_VideoCodec.lib")
+#pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVHelp.lib")
 #pragma comment(lib,"../../../XEngine/XEngine_SourceCode/Debug/XEngine_AVFrame.lib")
 #endif
 #endif
 #endif
 
-//Linux MacOS:g++ -std=c++20 -Wall -g AVCodec_APPVideo.cpp -o AVCodec_APPVideo.exe -lXEngine_BaseLib -lXEngine_VideoCodec -lXEngine_AVFrame
+//Linux MacOS:g++ -std=c++20 -Wall -g AVCodec_APPVideo.cpp -o AVCodec_APPVideo.exe -lXEngine_BaseLib -lXEngine_VideoCodec -lXEngine_AVFrame -lXEngine_AVHelp
 FILE* pSt_YUVFile;
 FILE* pSt_264File;
 
@@ -77,29 +83,25 @@ int Test_H265Hevc()
 		}
 
 		int nListCount = 0;
-		XENGINE_MSGBUFFER** ppSt_Frame;
-		AVFrame_Frame_ParseGet(xhParse, tszBuffer, nRet, &ppSt_Frame, &nListCount);
+		XHANDLE** ppSt_AVFrame;
+		AVFrame_Frame_ParseGet(xhParse, tszBuffer, nRet, &ppSt_AVFrame, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
 			int nVideoCount = 0;
-			AVCODEC_VIDEO_MSGBUFFER** ppSt_MSGBuffer;
-			AVCODEC_VIDEO_MSGBUFFER st_MSGBuffer = {};
-			st_MSGBuffer.st_MSGBuffer.nMSGLen[0] = ppSt_Frame[i]->nMSGLen[0];
-			st_MSGBuffer.st_MSGBuffer.unData.ptszMSGBuffer = ppSt_Frame[i]->unData.ptszMSGBuffer;
+			XHANDLE** ppSt_AVBuffer;
 
-			if (VideoCodec_Stream_DeCodec(xhVideo, &st_MSGBuffer, &ppSt_MSGBuffer, &nVideoCount))
+			VideoCodec_Stream_DeCodec(xhVideo, ppSt_AVFrame[i], &ppSt_AVBuffer, &nVideoCount);
+			for (int j = 0; j < nVideoCount; j++)
 			{
-				for (int j = 0; j < nVideoCount; j++)
-				{
-					printf("h265:%d\n", ppSt_MSGBuffer[j]->st_MSGBuffer.nMSGLen[0]);
-					fwrite(ppSt_MSGBuffer[j]->st_MSGBuffer.unData.ptszMSGBuffer, 1, ppSt_MSGBuffer[j]->st_MSGBuffer.nMSGLen[0], pSt_YUVFile);
-					BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_MSGBuffer[j]->st_MSGBuffer.unData.ptszMSGBuffer);
-				}
+				XENGINE_MSGBUFFER st_MSGBuffer = {};
+				AVHelp_Memory_GetVideoBuffer(ppSt_AVBuffer[j], &st_MSGBuffer, false);
+				printf("h265:%d\n", st_MSGBuffer.nMSGLen[0]);
+				fwrite(st_MSGBuffer.unData.ptszMSGBuffer, 1, st_MSGBuffer.nMSGLen[0], pSt_YUVFile);
+				BaseLib_Memory_MSGFree(&st_MSGBuffer);
 			}
-			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->unData.ptszMSGBuffer);
-			BaseLib_Memory_Free((XPPPMEM)&ppSt_MSGBuffer, nVideoCount);
+			AVHelp_Memory_FreeAVList(&ppSt_AVBuffer, nVideoCount, false);
 		}
-		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
+		AVHelp_Memory_FreeAVList(&ppSt_AVFrame, nListCount, true);
 	}
 	VideoCodec_Stream_Destroy(xhVideo);
 	AVFrame_Frame_ParseClose(xhParse);
@@ -107,6 +109,7 @@ int Test_H265Hevc()
 	fclose(pSt_File);
 	return 0;
 }
+
 int Test_Codech264()
 {
 #ifdef _MSC_BUILD
@@ -154,37 +157,38 @@ int Test_Codech264()
 		}
 
 		int nListCount = 0;
-		XENGINE_MSGBUFFER** ppSt_Frame;
-		AVFrame_Frame_ParseGet(xhParse, tszBuffer, nRet, &ppSt_Frame, &nListCount);
+		XHANDLE** ppSt_AVFrame;
+		AVFrame_Frame_ParseGet(xhParse, tszBuffer, nRet, &ppSt_AVFrame, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
 			int nDecodecCount = 0;
-			AVCODEC_VIDEO_MSGBUFFER** ppSt_MSGBuffer;
-			AVCODEC_VIDEO_MSGBUFFER st_MSGBuffer = {};
-			st_MSGBuffer.st_MSGBuffer.nMSGLen[0] = ppSt_Frame[i]->nMSGLen[0];
-			st_MSGBuffer.st_MSGBuffer.unData.ptszMSGBuffer = ppSt_Frame[i]->unData.ptszMSGBuffer;
-
-			VideoCodec_Stream_DeCodec(xhDeVideo, &st_MSGBuffer, &ppSt_MSGBuffer, &nDecodecCount);
+			XHANDLE** ppSt_AVBuffer;
+		
+			VideoCodec_Stream_DeCodec(xhDeVideo, ppSt_AVFrame[i], &ppSt_AVBuffer, &nDecodecCount);
 			for (int j = 0; j < nDecodecCount; j++)
 			{
-				fwrite(ppSt_MSGBuffer[j]->st_MSGBuffer.unData.ptszMSGBuffer, 1, ppSt_MSGBuffer[j]->st_MSGBuffer.nMSGLen[0], pSt_YUVFile);
+				XENGINE_MSGBUFFER st_DECodecBuffer = {};
+				AVHelp_Memory_GetVideoBuffer(ppSt_AVBuffer[j], &st_DECodecBuffer, false);
+				fwrite(st_DECodecBuffer.unData.ptszMSGBuffer, 1, st_DECodecBuffer.nMSGLen[0], pSt_YUVFile);
+				BaseLib_Memory_MSGFree(&st_DECodecBuffer);
 
 				int nEncoedcCount = 0;
-				AVCODEC_VIDEO_MSGBUFFER** ppSt_EncoedcBuffer;
-				VideoCodec_Stream_EnCodec(xhEnVideo, ppSt_MSGBuffer[j], &ppSt_EncoedcBuffer, &nEncoedcCount);
+				XHANDLE** ppSt_EncoedcBuffer;
+				VideoCodec_Stream_EnCodec(xhEnVideo, ppSt_AVBuffer[j], &ppSt_EncoedcBuffer, &nEncoedcCount);
 				for (int k = 0; k < nEncoedcCount; k++)
 				{
-					printf("h264:%d\n", ppSt_EncoedcBuffer[k]->st_MSGBuffer.nMSGLen[0]);
-					fwrite(ppSt_EncoedcBuffer[k]->st_MSGBuffer.unData.ptszMSGBuffer, 1, ppSt_EncoedcBuffer[k]->st_MSGBuffer.nMSGLen[0], pSt_264File);
-					BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_EncoedcBuffer[k]->st_MSGBuffer.unData.ptszMSGBuffer);
+					XENGINE_MSGBUFFER st_ENCodecBuffer = {};
+					AVHelp_Memory_GetVideoBuffer(ppSt_EncoedcBuffer[k], &st_ENCodecBuffer, true);
+
+					printf("h264:%d\n", st_ENCodecBuffer.nMSGLen[0]);
+					fwrite(st_ENCodecBuffer.unData.ptszMSGBuffer, 1, st_ENCodecBuffer.nMSGLen[0], pSt_264File);
+					BaseLib_Memory_MSGFree(&st_ENCodecBuffer);
 				}
-				BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_MSGBuffer[j]->st_MSGBuffer.unData.ptszMSGBuffer);
-				BaseLib_Memory_Free((XPPPMEM)&ppSt_EncoedcBuffer, nEncoedcCount);
+				AVHelp_Memory_FreeAVList(&ppSt_EncoedcBuffer, nEncoedcCount, true);
 			}
-			BaseLib_Memory_Free((XPPPMEM)&ppSt_MSGBuffer, nDecodecCount);
-			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->unData.ptszMSGBuffer);
+			AVHelp_Memory_FreeAVList(&ppSt_AVBuffer, nDecodecCount, false);
 		}
-		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
+		AVHelp_Memory_FreeAVList(&ppSt_AVFrame, nListCount, true);
 	}
 	fclose(pSt_File);
 	fclose(pSt_264File);
@@ -194,6 +198,7 @@ int Test_Codech264()
 	AVFrame_Frame_ParseClose(xhParse);
 	return 0;
 }
+
 int Test_CodechAVS()
 {
 #ifdef _MSC_BUILD
@@ -236,29 +241,33 @@ int Test_CodechAVS()
 		}
 
 		int nListCount = 0;
-		XENGINE_MSGBUFFER** ppSt_Frame;
+		XHANDLE** ppSt_Frame;
 		AVFrame_Frame_ParseGet(xhParse, tszBuffer, nRet, &ppSt_Frame, &nListCount);
 		for (int i = 0; i < nListCount; i++)
 		{
-			int nListCount = 0;
-			AVCODEC_VIDEO_MSGBUFFER** ppSt_MSGBuffer;
-			AVCODEC_VIDEO_MSGBUFFER st_MSGBuffer = {};
-			st_MSGBuffer.st_MSGBuffer.nMSGLen[0] = ppSt_Frame[i]->nMSGLen[0];
-			st_MSGBuffer.st_MSGBuffer.unData.ptszMSGBuffer = ppSt_Frame[i]->unData.ptszMSGBuffer;
-			VideoCodec_Stream_DeCodec(xhDeVideo, &st_MSGBuffer, &ppSt_MSGBuffer, &nListCount);
-			for (int i = 0; i < nListCount; i++)
+			int nAVCount = 0;
+			XHANDLE** ppSt_AVBuffer;
+			VideoCodec_Stream_DeCodec(xhDeVideo, ppSt_Frame[i], &ppSt_AVBuffer, &nAVCount);
+			for (int j = 0; j < nAVCount; j++)
 			{
-				fwrite(ppSt_MSGBuffer[i]->st_MSGBuffer.unData.ptszMSGBuffer, 1, ppSt_MSGBuffer[i]->st_MSGBuffer.nMSGLen[0], pSt_YUVFile);
-				BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_MSGBuffer[i]->st_MSGBuffer.unData.ptszMSGBuffer);
+				XENGINE_MSGBUFFER st_MSGBuffer = {};
+				AVHelp_Memory_GetVideoBuffer(ppSt_AVBuffer[j], &st_MSGBuffer, false);
+
+				printf("avs:%d\n", st_MSGBuffer.nMSGLen[0]);
+				fwrite(st_MSGBuffer.unData.ptszMSGBuffer, 1, st_MSGBuffer.nMSGLen[0], pSt_YUVFile);
+				BaseLib_Memory_MSGFree(&st_MSGBuffer);
 			}
-			BaseLib_Memory_FreeCStyle((XPPMEM)&ppSt_Frame[i]->unData.ptszMSGBuffer);
+			AVHelp_Memory_FreeAVList(&ppSt_AVBuffer, nAVCount, false);
 		}
-		BaseLib_Memory_Free((XPPPMEM)&ppSt_Frame, nListCount);
+		AVHelp_Memory_FreeAVList(&ppSt_Frame, nListCount, true);
 	}
 	VideoCodec_Stream_Destroy(xhDeVideo);
 	AVFrame_Frame_ParseClose(xhParse);
+	fclose(pSt_File);
+	fclose(pSt_YUVFile);
 	return 0;
 }
+
 int main()
 {
 	int nListCount = 0;
