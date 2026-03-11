@@ -234,37 +234,6 @@ void GetCert()
 		return;
 	}
 }
-int XCrypto_Test()
-{
-#ifdef _MSC_BUILD
-	LPCXSTR lpszFile = _X("K:\\netengineapp\\NetEngine_WINApps\\Debug\\test.Key");
-#else
-	LPCXSTR lpszFile = _X("test.Key");
-#endif
-	int nLen = strlen(lpszFile);
-	XBYTE tszEncoder[2048];
-	XCHAR tszDecoder[2048];
-
-	memset(tszEncoder, '\0', sizeof(tszEncoder));
-	memset(tszDecoder, '\0', sizeof(tszDecoder));
-
-	if (!Cryption_XCrypto_Encoder((LPCXBTR)lpszFile, &nLen, tszEncoder, "123123"))
-	{
-		return -1;
-	}
-	Cryption_XCrypto_Decoder((LPCXBTR)tszEncoder, &nLen, (XBYTE *)tszDecoder, "123123");
-	printf("%s\n", tszDecoder);
-
-	XCHAR tszMSGBuffer[4096] = {};
-	sprintf(tszMSGBuffer, _X("%s"), lpszFile);
-	if (!Cryption_XCrypto_Encoder(NULL, &nLen, (XBYTE*)tszMSGBuffer, "123123", FALSE))
-	{
-		return -1;
-	}
-	Cryption_XCrypto_Decoder(NULL, &nLen, (XBYTE *)tszMSGBuffer, "123123", FALSE);
-	printf("%s\n", tszMSGBuffer);
-	return 0;
-}
 int codec_test()
 {
 	LPCXSTR lpszHTTPCodec = _X("https://www.xyry.org/api?function=oil&param=北京");
@@ -285,7 +254,6 @@ int codec_test()
 int main()
 {
 	codec_test();
-	XCrypto_Test();
 	md5cal();
 	Cryptto();
 	RsaSSL();

@@ -102,6 +102,10 @@ void StringTest()
 	memset(tszValue, '\0', sizeof(tszValue));
 	memset(tszMsgBuffer, '\0', sizeof(tszMsgBuffer));
 
+	XCHAR tszFixStr[XPATH_MAX] = {};
+	_xstprintf(tszFixStr, _X("D:\\1231312\\adadad\\file.txt"));
+	BaseLib_String_FixPath(tszFixStr, 2);
+
 	_tcsxcpy(tszMsgBuffer, _X("123456789 : abcd"));
 
 	BaseLib_String_DelSub(tszMsgBuffer, _X("9"));

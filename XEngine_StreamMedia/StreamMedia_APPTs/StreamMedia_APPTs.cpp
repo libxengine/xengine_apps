@@ -68,6 +68,7 @@ int M3U8File_Packet()
 	LPCXSTR lpszRootFile = _X("D:\\xengine_apps\\Debug\\live\\root.m3u8");
 	LPCXSTR lpszLowFile = _X("D:\\xengine_apps\\Debug\\live\\low\\live.m3u8");
 	LPCXSTR lpszNormalFile = _X("D:\\xengine_apps\\Debug\\live\\normal\\live.m3u8");
+	LPCXSTR lpszHighFile = _X("./high/live.m3u8");
 #else
 	LPCXSTR lpszRootFile = _X("./live/root.m3u8");
 	LPCXSTR lpszLowFile = _X("./live/low/live.m3u8");
@@ -84,22 +85,31 @@ int M3U8File_Packet()
 		return -1;
 	}
 
-	if (!HLSProtocol_M3u8Packet_AddStream(xhRoot, &xhLow, lpszLowFile, true, 15, 100, 40000, 1, "www.xyry.org/live/low/live.m3u8"))
+	if (!HLSProtocol_M3u8Packet_AddStream(xhRoot, &xhLow, lpszLowFile, true, 4000000))
 	{
 		printf("HLSProtocol_M3u8Packet_AddStream:%lX\n", HLSProtocol_GetLastError());
 		return -1;
 	}
-	if (!HLSProtocol_M3u8Packet_AddStream(xhRoot, &xhNormal, lpszNormalFile, true, 15, 100, 40000, 1, "www.xyry.org/live/normal/live.m3u8"))
+	if (!HLSProtocol_M3u8Packet_AddStream(xhRoot, &xhNormal, lpszNormalFile, true, 4000000, 15, 100, 1))
 	{
 		printf("HLSProtocol_M3u8Packet_AddStream:%lX\n", HLSProtocol_GetLastError());
 		return -1;
 	}
-	HLSProtocol_M3u8Packet_AddFile(xhRoot, xhNormal, "1.ts", 233, false);
-	HLSProtocol_M3u8Packet_AddFile(xhRoot, xhNormal, "2.ts", 233, false);
+	if (!HLSProtocol_M3u8Packet_AddStream(xhRoot, NULL, lpszHighFile, true, 4000000, 15, 100, 1, _X("CODECS=\"avc1.64002a, mp4a.40.2\",RESOLUTION=1920x1080,FRAME-RATE=25.000"), NULL, false))
+	{
+		printf("HLSProtocol_M3u8Packet_AddStream:%lX\n", HLSProtocol_GetLastError());
+		return -1;
+	}
+
+	HLSProtocol_M3u8Packet_AddFile(xhRoot, xhNormal, "1.ts", 233);
+	HLSProtocol_M3u8Packet_AddFile(xhRoot, xhNormal, "2.ts", 233);
 	HLSProtocol_M3u8Packet_AddFile(xhRoot, xhNormal);
 
-	//HLSProtocol_M3u8Packet_Delete(xhRoot, xhNormal);
-	//HLSProtocol_M3u8Packet_Delete(xhRoot);
+	HLSProtocol_M3u8Packet_AddFile(xhRoot, xhLow);
+
+	HLSProtocol_M3u8Packet_Delete(xhRoot, xhNormal);
+	HLSProtocol_M3u8Packet_Delete(xhRoot, xhLow);
+	HLSProtocol_M3u8Packet_Delete(xhRoot);
 	printf("wandan\n");
 	return 0;
 }
