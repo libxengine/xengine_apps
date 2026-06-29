@@ -162,6 +162,7 @@ int Test_FileInfo()
 	SystemApi_File_DeleteMutilFolder("./stroage/");
 #endif
 
+	SystemApi_File_CreateSparseFileA("D:\\xengine_apps\\Debug\\filesparse.s", 1024 * 1024 * 10);
 	return 0;
 }
 
