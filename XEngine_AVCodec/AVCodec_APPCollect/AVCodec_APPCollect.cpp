@@ -62,16 +62,14 @@ int nWidth;
 int nHeight;
 void XCALLBACK XEngine_AVCollect_CBVideo(XHANDLE*** pSt_AVBuffer, XPVOID lParam)
 {
-	XHANDLE** ppSt_AVFrame;
 	AVCODEC_TIMESTAMP st_TimeStamp = {};
-	VideoCodec_Help_ScaleConvert(xhToken, (*pSt_AVBuffer)[0], &ppSt_AVFrame);
+	VideoCodec_Help_ScaleConvert(xhToken, (*pSt_AVBuffer)[0]);
 
 	XENGINE_MSGBUFFER st_MSGBuffer = {};
-	AVHelp_Memory_GetVideoBuffer(ppSt_AVFrame[0], &st_MSGBuffer, false);
+	AVHelp_Memory_GetVideoBuffer((*pSt_AVBuffer)[0], &st_MSGBuffer, false);
 	printf("XEngine_AVCollect_CBVideo:%d\n", st_MSGBuffer.nMSGLen[0]);
 	fwrite(st_MSGBuffer.unData.ptszMSGBuffer, 1, st_MSGBuffer.nMSGLen[0], pSt_File);
 	BaseLib_Memory_MSGFree(&st_MSGBuffer);
-	AVHelp_Memory_FreeAVList(&ppSt_AVFrame, 1, false);
 }
 void XCALLBACK XEngine_AVCollect_CBAudio(XHANDLE*** pSt_AVBuffer, XPVOID lParam)
 {
