@@ -128,6 +128,11 @@ void StringTest()
 	XCHAR tszFileDrive[XPATH_MAX];
 	XCHAR tszFileExt[XPATH_MAX];
 
+	LPCXSTR lpszFile = _X("/ad");
+	memset(tszFileDir, '\0', XPATH_MAX);
+	memset(tszFileName, '\0', XPATH_MAX);
+	BaseLib_String_GetFileAndPath(lpszFile, tszFileDir, tszFileName);
+
 	memset(tszFileDir, '\0', XPATH_MAX);
 	memset(tszFileName, '\0', XPATH_MAX);
 	memset(tszFileDrive, '\0', XPATH_MAX);

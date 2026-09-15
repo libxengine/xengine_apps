@@ -60,6 +60,7 @@ using namespace std;
 //Linux::g++ -std=c++20 -Wall -g XCore_APPSslServer.cpp -o XCore_APPSslServer.exe -lXEngine_BaseLib -lXEngine_Core -lXEngine_Cryption -lNetHelp_APIAddr
 
 XHANDLE xhSSL = NULL;
+XHANDLE xhSelect = NULL;
 bool XCALLBACK TCPSelect_CBLogin(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
 	printf("recv_Login:%s\n", lpszClientAddr);
@@ -88,7 +89,7 @@ void XCALLBACK TCPSelect_CBRecv(LPCXSTR lpszClientAddr, XSOCKET hSocket, LPCXSTR
 	int nSLen = 2048;
 	XCHAR tszSDBuffer[2048] = {};
 	Cryption_Server_SendMsgEx(xhSSL, lpszClientAddr, tszMsgBuffer, nLen, tszSDBuffer, &nSLen);
-	NetCore_TCPSelect_Send(lpszClientAddr, tszSDBuffer, nSLen);
+	NetCore_TCPSelect_SendEx(xhSelect, lpszClientAddr, tszSDBuffer, nSLen);
 }
 void XCALLBACK TCPSelect_CBLeave(LPCXSTR lpszClientAddr, XSOCKET hSocket, XPVOID lParam)
 {
@@ -195,19 +196,20 @@ int XCore_TSLTest(LPCXSTR lpszCAFile, LPCXSTR lpszSrvFile, LPCXSTR lpszKeyFile)
 		printf("Cryption_Server_Init %lX\n", Cryption_GetLastError());
 		return -1;
 	}
-	if (!NetCore_TCPSelect_Start(5604))
+	xhSelect = NetCore_TCPSelect_StartEx(5604);
+	if (NULL == xhSelect)
 	{
 		printf("NetCore_TCPIocp_StartEx %lX\n", Cryption_GetLastError());
 		return -1;
 	}
-	NetCore_TCPSelect_RegisterCallBack(TCPSelect_CBLogin, TCPSelect_CBRecv, TCPSelect_CBLeave);
+	NetCore_TCPSelect_RegisterCallBackEx(xhSelect, TCPSelect_CBLogin, TCPSelect_CBRecv, TCPSelect_CBLeave);
 	printf("ok\n");
 	while (1)
 	{
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 
-	NetCore_TCPSelect_Stop();
+	NetCore_TCPSelect_StopEx(xhSelect);
 	return 0;
 }
 
