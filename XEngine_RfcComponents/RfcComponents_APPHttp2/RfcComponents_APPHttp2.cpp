@@ -152,7 +152,6 @@ XHTHREAD NetCore_Thread()
 									{
 										//只有POST才有后续数据
 										HttpProtocol_Server2_GetClientEx(xhHttp, ppSt_ListClient[i]->tszClientAddr, ppSt_PKTStream[j]->nStreamID, &enFrameType, &ptszMsgBuffer, &nMsgLen);
-										ppSt_PKTStream[j]->nPktCount--;
 									}
 								}
 								int nSSLLen = 2048;
