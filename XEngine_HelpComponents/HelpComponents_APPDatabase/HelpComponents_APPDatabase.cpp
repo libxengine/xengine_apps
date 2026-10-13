@@ -49,19 +49,19 @@ int Test_SQLite()
 		LPCXSTR lpszSQLSerial = _X("create table AuthReg_Serial(ID INTEGER PRIMARY KEY,UserName TEXT,SerialNumber TEXT,UsedTime TEXT,nMaxTime integer,bIsUsed boolean)");
 		LPCXSTR lpszSQLInsert = _X("INSERT INTO AuthReg_User values('0','123123aa','123123','2011/1/2-12:33:22','0','FF01X0F012','486179','511025198807018792')");
 		LPCXSTR lpszSQLInsertO = _X("INSERT INTO AuthReg_User values(NULL,'aaadddzxc','123123','2012/3/2-01:44:22','0','AFAFAWFAFAF4124AA','22222','515325325235325235')");
-		if (!DataBase_SQLite_Exec(xhData, lpszSQLTable))
+		if (!DataBase_SQLite_Execute(xhData, lpszSQLTable))
 		{
 			return false;
 		}
-		if (!DataBase_SQLite_Exec(xhData, lpszSQLSerial))
+		if (!DataBase_SQLite_Execute(xhData, lpszSQLSerial))
 		{
 			return false;
 		}
-		if (!DataBase_SQLite_Exec(xhData, lpszSQLInsert))
+		if (!DataBase_SQLite_Execute(xhData, lpszSQLInsert))
 		{
 			return false;
 		}
-		if (!DataBase_SQLite_Exec(xhData, lpszSQLInsertO))
+		if (!DataBase_SQLite_Execute(xhData, lpszSQLInsertO))
 		{
 			return false;
 		}
@@ -71,7 +71,7 @@ int Test_SQLite()
 	int nRow = 0;
 	int nColume = 0;
 	int nIndex = 0;
-	if (!DataBase_SQLite_GetTable(xhData, lpszSQLQuery, &pszResult, &nRow, &nColume))
+	if (!DataBase_SQLite_ExecQuery(xhData, lpszSQLQuery, &pszResult, &nRow, &nColume))
 	{
 		return false;
 	}
@@ -85,7 +85,7 @@ int Test_SQLite()
 		}
 		printf("-------\n");
 	}
-	DataBase_SQLite_FreeTable(pszResult);
+	DataBase_SQLite_FreeResult(pszResult);
 	DataBase_SQLite_Close(xhData);
 	return 0;
 }
@@ -106,18 +106,15 @@ int mysql_test()
 		return false;
 	}
 
-	__int64u dwLine = 0;
-	__int64u dwField = 0;
-	XNETHANDLE xhTableResult;
-	XCHAR tszSQLQuery[2048];
-
-	memset(tszSQLQuery, '\0', sizeof(tszSQLQuery));
+	int nRecordCount = 0;
+	int nFieldCount = 0;
+	XCHAR tszSQLQuery[2048] = {};
+	XCHAR** pptszResult;
 	sprintf(tszSQLQuery, _X("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='XEngine_ListInfo' AND TABLE_TYPE='BASE TABLE'"));
-	if (DataBase_MySQL_ExecuteQuery(xhDBDay, &xhTableResult, tszSQLQuery, &dwLine, &dwField))
+	if (DataBase_MySQL_ExecQuery(xhDBDay, tszSQLQuery, &pptszResult, &nRecordCount, &nFieldCount))
 	{
-		for (__int64u i = 0; i < dwLine; i++)
+		for (int i = 0; i < nRecordCount; i++)
 		{
-			XCHAR** pptszResult = DataBase_MySQL_GetResult(xhDBDay, xhTableResult);
 			if (NULL == pptszResult[0])
 			{
 				continue;
@@ -125,7 +122,7 @@ int mysql_test()
 			printf("%s\n", pptszResult[0]);
 		}
 	}
-	DataBase_MySQL_FreeResult(xhDBDay, xhTableResult);
+	DataBase_MySQL_FreeResult(pptszResult, nRecordCount * nFieldCount);
 	return 1;
 }
 
@@ -134,14 +131,14 @@ int mongodb_test()
 	XNETHANDLE xhToken;
 
 	LPCXSTR lpszConnectName = _X("mongodb://root:11@192.168.1.110/?authSource=admin");
-	if (!DataBase_Mongo_Connect(&xhToken, lpszConnectName))
+	if (!DataBase_Mongo_ConnectWithStr(&xhToken, lpszConnectName))
 	{
 		return -1;
 	}
 
 	int nListCount = 0;
 	XCHAR** ppszResult = NULL;
-	if (!DataBase_Mongo_FindJson(xhToken, _X("xyry"), _X("test"), NULL, NULL, &ppszResult, &nListCount))
+	if (!DataBase_Mongo_ExecQuery(xhToken, "{\"test\": 1}", "collname", &ppszResult, &nListCount))
 	{
 		return -2;
 	}
@@ -157,7 +154,6 @@ int mongodb_test()
 int postgredb_test()
 {
 	XNETHANDLE xhToken;
-	XNETHANDLE xhTable;
 	DATABASE_MYSQL_CONNECTINFO st_ConnectInfo;
 	memset(&st_ConnectInfo, '\0', sizeof(DATABASE_MYSQL_CONNECTINFO));
 
@@ -168,30 +164,26 @@ int postgredb_test()
 	strcpy(st_ConnectInfo.tszSQLName, _X("xyry"));
 	strcpy(st_ConnectInfo.tszSQLPass, _X("123123"));
 
-	if (!DataBase_Postgre_ConnectWithStruct(&xhToken, &st_ConnectInfo))
+	if (!DataBase_Postgre_Connect(&xhToken, &st_ConnectInfo))
 	{
 		return -1;
 	}
 
 	int nRecordCount = 0;
 	int nFieldCount = 0;
-	
-	if (!DataBase_Postgre_QueryResult(xhToken, &xhTable, _X("SELECT * FROM \"List\""), &nRecordCount, &nFieldCount))
+	XCHAR** pptszResult = NULL;
+	if (!DataBase_Postgre_ExecQuery(xhToken, _X("SELECT * FROM \"List\""), &pptszResult, &nRecordCount, &nFieldCount))
 	{
 		return -2;
 	}
-	int nListCount = 0;
-	DATABASE_POSTGRE_DATAINFO** ppSt_ListData;
-	if (!DataBase_Postgre_GetResult(xhToken, xhTable, &ppSt_ListData, &nListCount, nRecordCount, nFieldCount))
+	for (int i = 0; i < nRecordCount; i++)
 	{
-		return -3;
+		for (int j = 0; j < nFieldCount; j++)
+		{
+			printf("字段名:%s > 字段值:%s\n", pptszResult[j], pptszResult[i * nFieldCount + j]);
+		}
 	}
-	for (int i = 0; i < nListCount; i++)
-	{
-		printf("Name:%s Value:%s Len:%d Type:%d\n", ppSt_ListData[i]->ptszName, ppSt_ListData[i]->ptszValue, ppSt_ListData[i]->unLen, ppSt_ListData[i]->unOidType);
-	}
-	DataBase_Postgre_FreeResult(xhToken, xhTable);
-	BaseLib_Memory_Free((XPPPMEM)&ppSt_ListData, nListCount);
+	DataBase_Postgre_FreeResult(&pptszResult, nRecordCount * nFieldCount);
 	DataBase_Postgre_Close(xhToken);
 	return 0;
 }
